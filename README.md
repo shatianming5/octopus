@@ -122,6 +122,9 @@ baselines/       External KV-sharing & multi-agent baseline reproductions (Route
 tests/           Unit & GPU integration test suites (pytest)
 docs/            Detailed protocol specifications and systems design documents
 paper/           Technical report: PDF (Octopus.pdf) and its Overleaf LaTeX source (main.tex, figures/, scripts/)
+results/         Experiment records and reports, one directory per run (index: results/README.md)
+data/            Small dataset splits and manifests (search split, SWE task bundles)
+assets/          Figures used in this README
 ```
 
 Module imports enforce a strict acyclic layering (`runtime / serving ← rl ← envs ← eval ← tools`, with `envs.swe` and `envs.search` mutually isolated), verified automatically via `python scripts/import_graph.py`.
