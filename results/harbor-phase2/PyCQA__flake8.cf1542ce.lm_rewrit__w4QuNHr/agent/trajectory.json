@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "PyCQA__flake8.cf1542ce.lm_rewrit__w4QuNHr__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# FileProcessor.read_lines() doesn't handle stdin correctly when filename is \"-\"\n\n## Description\n\nI've discovered an issue with the `FileProcessor.read_lines()` method when processing input from stdin. When the filename is set to \"-\" (which is the standard convention for reading from stdin), the code is not correctly handling this case.\n\nCurrently, when using flake8 with stdin input like this:\n\n```\ncat file.py | flake8 -\n```\n\nThe code is not properly processing the input. The issue appears to be in the `read_lines()` method in `processor.py`.\n\n## Steps to reproduce\n\n1. Create a Python file with form feed characters (e.g., `\\f`) that splits lines\n2. Pipe this file to flake8 using stdin:\n\n```\ncat file_with_form_feed.py | flake8 -\n```\n\n## Expected behavior\n\nFlake8 should correctly process the file from stdin when the filename is \"-\", just as it would process a regular file.\n\n## Actual behavior\n\nThe stdin input is not being processed correctly. The issue seems to be that when the filename is \"-\", the code is not properly setting the filename to the stdin display name and reading lines from stdin.\n\nThis is likely related to the change in the `read_lines()` method where the condition for checking stdin has changed and no longer properly handles the \"-\" case in the same way."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository and the `read_lines()` implementation to see how stdin (`-`) is handled.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-0ef1bc5e-dd71-4c94-8849-c9afbc8dbc5f-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -50 && cat /testbed/README* 2>/dev/null | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-0ef1bc5e-dd71-4c94-8849-c9afbc8dbc5f-0",
+            "content": "lake8/discover_files.py\n/testbed/src/flake8/utils.py\n/testbed/src/flake8/options/__init__.py\n/testbed/src/flake8/options/config.py\n/testbed/src/flake8/options/manager.py\n/testbed/src/flake8/options/aggregator.py\n/testbed/src/flake8/options/parse_args.py\n/testbed/src/flake8/main/__init__.py\n/testbed/src/flake8/main/debug.py\n/testbed/src/flake8/main/application.py\n/testbed/src/flake8/main/options.py\n/testbed/src/flake8/main/cli.py\n/testbed/src/flake8/style_guide.py\n/testbed/src/flake8/defaults.py\n/testbed/src/flake8/plugins/__init__.py\n/testbed/src/flake8/plugins/reporter.py\n/testbed/src/flake8/plugins/pyflakes.py\n/testbed/src/flake8/plugins/pycodestyle.py\n/testbed/src/flake8/plugins/finder.py\n/testbed/src/flake8/formatting/__init__.py\n/testbed/src/flake8/formatting/default.py\n/testbed/src/flake8/formatting/base.py\n/testbed/src/flake8/formatting/_windows_color.py\n/testbed/src/flake8/_compat.py\n/testbed/src/flake8/api/__init__.py\n/testbed/src/flake8/api/legacy.py\n/testbed/tests/__init__.py\n/testbed/tests/unit/test_decision_engine.py\n/testbed/tests/unit/test_main_options.py\n/testbed/tests/unit/test_options_config.py\n/testbed/tests/unit/test_application.py\n/testbed/tests/unit/test_option.py\n/testbed/tests/unit/__init__.py\n/testbed/tests/unit/test_nothing_formatter.py\n/testbed/tests/unit/test_base_formatter.py\n/testbed/tests/unit/test_checker_manager.py\n/testbed/tests/unit/test_violation.py\n/testbed/tests/unit/test_debug.py\n/testbed/tests/unit/test_exceptions.py\n/testbed/tests/unit/conftest.py\n/testbed/tests/unit/test_legacy_api.py\n/testbed/tests/unit/test_discover_files.py\n/testbed/tests/unit/plugins/pycodestyle_test.py\n.. image:: https://github.com/PyCQA/flake8/workflows/main/badge.svg\n   :target: https://github.com/PyCQA/flake8/actions?query=workflow%3Amain\n   :alt: build status\n\n.. image:: https://results.pre-commit.ci/badge/github/PyCQA/flake8/main.svg\n   :target: https://results.pre-commit.ci/latest/github/PyCQA/flake8/main\n   :alt: pre-commit.ci status\n\n.. image:: https://img.shields.io/discord/825463413634891776.svg\n   :target: https://discord.gg/qYxpadCgkx\n   :alt: Discord\n\n========\n Flake8\n========\n\nFlake8 is a wrapper around these tools:\n\n- PyFlakes\n- pycodestyle\n- Ned Batchelder's McCabe script\n\nFlake8 runs all the tools by launching the single ``flake8`` command.\nIt displays the warnings in a per-file, merged output.\n\nIt also adds a few features:\n\n- files that contain this line are skipped::\n\n    # flake8: noqa\n\n- lines that contain a ``# noqa`` comment at the end will not issue warnings.\n- you can ignore specific errors on a line with ``# noqa: <error>``, e.g.,\n  ``# noqa: E234``. Multiple codes can be given, separated by comma. The ``noqa`` token is case insensitive, the colon before the list of codes is required otherwise the part after ``noqa`` is ignored\n- Git and Mercurial hooks\n- extendable through ``flake8.extension`` and ``flake8.formatting`` entry\n  points\n\n\nQuickstart\n==========\n\nSee our `quickstart documentation\n<https://flake8.pycqa.org/en/latest/index.html#quickstart>`_ for how to install\nand get started with Flake8.\n\n\nFrequently Asked Questions\n==========================\n\nFlake8 maintains an `FAQ <https://flake8.pycqa.org/en/latest/faq.html>`_ in its\ndocumentation.\n\n\nQuestions or Feedback\n=====================\n\nIf you have questions you'd like to ask the developers, or feedback you'd like\nto provide, feel free to use the mailing list: code-quality@python.org\n\nWe would love to hear from you. Additionally, if you have a feature you'd like\nto suggest, the mailing list would be the best place for it.\n\n\nLinks\n=====\n\n* `Flake8 Documentation <https://flake8.pycqa.org/en/latest/>`_\n\n* `GitHub Project <https://github.com/pycqa/flake8>`_\n\n* `All (Open and Closed) Issues\n  <https://github.com/pycqa/flake8/issues?q=is%3Aissue>`_\n\n* `Code-Quality Archives\n  <https://mail.python.org/mailman/listinfo/code-quality>`_\n\n* `Code of Conduct\n  <https://flake8.pycqa.org/en/latest/internal/contributing.html#code-of-conduct>`_\n\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-27eced90-71db-4001-8f80-ddb9715d4bf8-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "find /testbed -name \"*processor*\" -o -name \"*processor.py\" | head -20; echo \"====\"; cat /testbed/src/flake8/processor.py 2>/dev/null | head -20; ls /testbed/src/flake8/"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-27eced90-71db-4001-8f80-ddb9715d4bf8-1",
+            "content": "/testbed/src/flake8/processor.py\n/testbed/tests/unit/test_file_processor.py\n====\n\"\"\"Module containing our file processor that tokenizes a file for checks.\"\"\"\nfrom __future__ import annotations\n\nimport argparse\nimport ast\nimport functools\nimport logging\nimport tokenize\nfrom typing import Any\nfrom typing import Generator\nfrom typing import List\nfrom typing import Tuple\n\nfrom flake8 import defaults\nfrom flake8 import utils\nfrom flake8._compat import FSTRING_END\nfrom flake8._compat import FSTRING_MIDDLE\nfrom flake8.plugins.finder import LoadedPlugin\n\nLOG = logging.getLogger(__name__)\n__init__.py\n__main__.py\n_compat.py\napi\nchecker.py\ndefaults.py\ndiscover_files.py\nexceptions.py\nformatting\nmain\noptions\nplugins\nprocessor.py\nstatistics.py\nstyle_guide.py\nutils.py\nviolation.py\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-f50cb660-fcbf-48e7-938a-d615fcc236a9-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/src/flake8/processor.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-f50cb660-fcbf-48e7-938a-d615fcc236a9-2",
+            "content": "ame = self.options.stdin_display_name or \"stdin\"\n            lines = self.read_lines_from_stdin()\n        else:\n            lines = self.read_lines_from_filename()\n        return lines\n\n    def read_lines_from_filename(self) -> list[str]:\n        \"\"\"Read the lines for a file.\"\"\"\n        try:\n            with tokenize.open(self.filename) as fd:\n                return fd.readlines()\n        except (SyntaxError, UnicodeError):\n            # If we can't detect the codec with tokenize.detect_encoding, or\n            # the detected encoding is incorrect, just fallback to latin-1.\n            with open(self.filename, encoding=\"latin-1\") as fd:\n                return fd.readlines()\n\n    def read_lines_from_stdin(self) -> list[str]:\n        \"\"\"Read the lines from standard in.\"\"\"\n        return utils.stdin_get_lines()\n\n    def should_ignore_file(self) -> bool:\n        \"\"\"Check if ``flake8: noqa`` is in the file to be ignored.\n\n        :returns:\n            True if a line matches :attr:`defaults.NOQA_FILE`,\n            otherwise False\n        \"\"\"\n        if not self.options.disable_noqa and any(\n            defaults.NOQA_FILE.match(line) for line in self.lines\n        ):\n            return True\n        elif any(defaults.NOQA_FILE.search(line) for line in self.lines):\n            LOG.warning(\n                \"Detected `flake8: noqa` on line with code. To ignore an \"\n                \"error on a line use `noqa` instead.\"\n            )\n            return False\n        else:\n            return False\n\n    def strip_utf_bom(self) -> None:\n        \"\"\"Strip the UTF bom from the lines of the file.\"\"\"\n        if not self.lines:\n            # If we have nothing to analyze quit early\n            return\n\n        # If the first byte of the file is a UTF-8 BOM, strip it\n        if self.lines[0][:1] == \"\\uFEFF\":\n            self.lines[0] = self.lines[0][1:]\n        elif self.lines[0][:3] == \"\\xEF\\xBB\\xBF\":\n            self.lines[0] = self.lines[0][3:]\n\n\ndef is_eol_token(token: tokenize.TokenInfo) -> bool:\n    \"\"\"Check if the token is an end-of-line token.\"\"\"\n    return token[0] in NEWLINE or token[4][token[3][1] :].lstrip() == \"\\\\\\n\"\n\n\ndef is_multiline_string(token: tokenize.TokenInfo) -> bool:\n    \"\"\"Check if this is a multiline string.\"\"\"\n    return token.type == FSTRING_END or (\n        token.type == tokenize.STRING and \"\\n\" in token.string\n    )\n\n\ndef token_is_newline(token: tokenize.TokenInfo) -> bool:\n    \"\"\"Check if the token type is a newline token type.\"\"\"\n    return token[0] in NEWLINE\n\n\ndef count_parentheses(current_parentheses_count: int, token_text: str) -> int:\n    \"\"\"Count the number of parentheses.\"\"\"\n    if token_text in \"([{\":  # nosec\n        return current_parentheses_count + 1\n    elif token_text in \"}])\":  # nosec\n        return current_parentheses_count - 1\n    return current_parentheses_count\n\n\ndef expand_indent(line: str) -> int:\n    r\"\"\"Return the amount of indentation.\n\n    Tabs are expanded to the next multiple of 8.\n\n    >>> expand_indent('    ')\n    4\n    >>> expand_indent('\\t')\n    8\n    >>> expand_indent('       \\t')\n    8\n    >>> expand_indent('        \\t')\n    16\n    \"\"\"\n    return len(line.expandtabs(8))\n\n\n# NOTE(sigmavirus24): This was taken wholesale from\n# https://github.com/PyCQA/pycodestyle. The in-line comments were edited to be\n# more descriptive.\ndef mutate_string(text: str) -> str:\n    \"\"\"Replace contents with 'xxx' to prevent syntax matching.\n\n    >>> mutate_string('\"abc\"')\n    '\"xxx\"'\n    >>> mutate_string(\"'''abc'''\")\n    \"'''xxx'''\"\n    >>> mutate_string(\"r'abc'\")\n    \"r'xxx'\"\n    \"\"\"\n    # NOTE(sigmavirus24): If there are string modifiers (e.g., b, u, r)\n    # use the last \"character\" to determine if we're using single or double\n    # quotes and then find the first instance of it\n    start = text.index(text[-1]) + 1\n    end = len(text) - 1\n    # Check for triple-quoted strings\n    if text[-3:] in ('\"\"\"', \"'''\"):\n        start += 2\n        end -= 2\n    return text[:start] + \"x\" * (end - start) + text[end:]\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-a8e9e3ab-d7ed-4290-9a72-a08d4aa67766-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "wc -l /testbed/src/flake8/processor.py; echo \"====\"; sed -n '1,250p' /testbed/src/flake8/processor.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-a8e9e3ab-d7ed-4290-9a72-a08d4aa67766-3",
+            "content": "one:\n        \"\"\"Update the indent level based on the logical line mapping.\"\"\"\n        (start_row, start_col) = mapping[0][1]\n        start_line = self.lines[start_row - 1]\n        self.indent_level = expand_indent(start_line[:start_col])\n        if self.blank_before < self.blank_lines:\n            self.blank_before = self.blank_lines\n\n    def update_checker_state_for(self, plugin: LoadedPlugin) -> None:\n        \"\"\"Update the checker_state attribute for the plugin.\"\"\"\n        if \"checker_state\" in plugin.parameters:\n            self.checker_state = self._checker_states.setdefault(\n                plugin.entry_name, {}\n            )\n\n    def next_logical_line(self) -> None:\n        \"\"\"Record the previous logical line.\n\n        This also resets the tokens list and the blank_lines count.\n        \"\"\"\n        if self.logical_line:\n            self.previous_indent_level = self.indent_level\n            self.previous_logical = self.logical_line\n            if not self.indent_level:\n                self.previous_unindented_logical_line = self.logical_line\n        self.blank_lines = 0\n        self.tokens = []\n\n    def build_logical_line_tokens(self) -> _Logical:  # noqa: C901\n        \"\"\"Build the mapping, comments, and logical line lists.\"\"\"\n        logical = []\n        comments = []\n        mapping: _LogicalMapping = []\n        length = 0\n        previous_row = previous_column = None\n        for token_type, text, start, end, line in self.tokens:\n            if token_type in SKIP_TOKENS:\n                continue\n            if not mapping:\n                mapping = [(0, start)]\n            if token_type == tokenize.COMMENT:\n                comments.append(text)\n                continue\n            if token_type == tokenize.STRING:\n                text = mutate_string(text)\n            elif token_type == FSTRING_MIDDLE:  # pragma: >=3.12 cover\n                # A curly brace in an FSTRING_MIDDLE token must be an escaped\n                # curly brace. Both 'text' and 'end' will account for the\n                # escaped version of the token (i.e. a single brace) rather\n                # than the raw double brace version, so we must counteract this\n                brace_offset = text.count(\"{\") + text.count(\"}\")\n                text = \"x\" * (len(text) + brace_offset)\n                end = (end[0], end[1] + brace_offset)\n            if previous_row:\n                (start_row, start_column) = start\n                if previous_row != start_row:\n                    row_index = previous_row - 1\n                    column_index = previous_column - 1\n                    previous_text = self.lines[row_index][column_index]\n                    if previous_text == \",\" or (\n                        previous_text not in \"{[(\" and text not in \"}])\"\n                    ):\n                        text = f\" {text}\"\n                elif previous_column != start_column:\n                    text = line[previous_column:start_column] + text\n            logical.append(text)\n            length += len(text)\n            mapping.append((length, end))\n            (previous_row, previous_column) = end\n        return comments, logical, mapping\n\n    def build_ast(self) -> ast.AST:\n        \"\"\"Build an abstract syntax tree from the list of lines.\"\"\"\n        return ast.parse(\"\".join(self.lines))\n\n    def build_logical_line(self) -> tuple[str, str, _LogicalMapping]:\n        \"\"\"Build a logical line from the current tokens list.\"\"\"\n        comments, logical, mapping_list = self.build_logical_line_tokens()\n        joined_comments = \"\".join(comments)\n        self.logical_line = \"\".join(logical)\n        self.statistics[\"logical lines\"] += 1\n        return joined_comments, self.logical_line, mapping_list\n\n    def keyword_arguments_for(\n        self,\n        parameters: dict[str, bool],\n        arguments: dict[str, Any],\n    ) -> dict[str, Any]:\n        \"\"\"Generate the keyword arguments for a list of parameters.\"\"\"\n        ret = {}\n        for param, required in parameters.items():\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-0262b4b6-25be-49d0-baed-d19e9e069513-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "grep -n \"read_lines\\|stdin\\|filename\" /testbed/src/flake8/processor.py | head -80; echo \"==== GIT LOG ====\"; cd /testbed && git log --oneline -20; echo \"==== GIT STATUS ====\"; git status; echo \"==== DIFF ====\"; git log --all --oneline | head -30"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-0262b4b6-25be-49d0-baed-d19e9e069513-4",
+            "content": "64:        filename: str,\n70:        :param filename: Name of the file to process\n73:        self.filename = filename\n74:        self.lines = lines if lines is not None else self.read_lines()\n325:    def read_lines(self) -> list[str]:\n327:        if self.filename == \"-\":\n328:            self.filename = self.options.stdin_display_name or \"stdin\"\n329:            lines = self.read_lines_from_stdin()\n331:            lines = self.read_lines_from_filename()\n334:    def read_lines_from_filename(self) -> list[str]:\n337:            with tokenize.open(self.filename) as fd:\n342:            with open(self.filename, encoding=\"latin-1\") as fd:\n345:    def read_lines_from_stdin(self) -> list[str]:\n347:        return utils.stdin_get_lines()\n==== GIT LOG ====\nd56f31a Initial commit\n==== GIT STATUS ====\nOn branch main\nYour branch is up to date with 'origin/main'.\n\nUntracked files:\n  (use \"git add <file>...\" to include in what will be committed)\n\t.gitkeep\n\nnothing added to commit but untracked files present (use \"git add\" to track)\n==== DIFF ====\n1facb22 Remove F2P Tests\n15b3636 Bug Patch\nfa6ea0f Remove F2P Tests\ndefc7f5 Bug Patch\n2d50ca5 Remove F2P Tests\nbcf8d0b Bug Patch\n436b0da Remove F2P Tests\nf267b38 Bug Patch\n1c06c35 Remove F2P Tests\n3b7d0d2 Bug Patch\nc0b2b99 Remove F2P Tests\n23609c6 Bug Patch\n9050eca Remove F2P Tests\n62e6917 Bug Patch\n0869c81 Remove F2P Tests\nb95b916 Bug Patch\ne25f5bb Remove F2P Tests\n93568f1 Bug Patch\n285b6dd Remove F2P Tests\n46b4304 Bug Patch\n98637e5 Remove F2P Tests\n62ac556 Bug Patch\nda6b7a9 Remove F2P Tests\ncff56f7 Bug Patch\ncb54ce7 Remove F2P Tests\n72ce895 Bug Patch\n117e5bd Remove F2P Tests\ne1a8aa7 Bug Patch\nf18aee6 Remove F2P Tests\nfb1b35b Bug Patch\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-133257b6-4217-4bb8-b7f4-acf23bbe5ef0-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '50,90p' /testbed/src/flake8/processor.py; echo \"==== READ_LINES ====\"; sed -n '310,360p' /testbed/src/flake8/processor.py; echo \"==== TESTS ====\"; cat /testbed/tests/unit/test_file_processor.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-133257b6-4217-4bb8-b7f4-acf23bbe5ef0-5",
+            "content": "\n        lines=[\n            \"Line 1\",\n        ],\n    )\n\n    with pytest.raises(AttributeError):\n        file_processor.keyword_arguments_for({\"fake\": True}, {})\n\n\ndef test_processor_split_line(default_options):\n    file_processor = processor.FileProcessor(\n        \"-\",\n        default_options,\n        lines=[\n            'x = \"\"\"\\n',\n            \"contents\\n\",\n            '\"\"\"\\n',\n        ],\n    )\n    token = tokenize.TokenInfo(\n        3,\n        '\"\"\"\\ncontents\\n\"\"\"',\n        (1, 4),\n        (3, 3),\n        'x = \"\"\"\\ncontents\\n\"\"\"\\n',\n    )\n    expected = [('x = \"\"\"\\n', 1, True), (\"contents\\n\", 2, True)]\n    assert file_processor.multiline is False\n    actual = [\n        (line, file_processor.line_number, file_processor.multiline)\n        for line in file_processor.multiline_string(token)\n    ]\n    assert file_processor.multiline is False\n    assert expected == actual\n    assert file_processor.line_number == 3\n\n\ndef test_build_ast(default_options):\n    \"\"\"Verify the logic for how we build an AST for plugins.\"\"\"\n    file_processor = processor.FileProcessor(\n        \"-\", default_options, lines=[\"a = 1\\n\"]\n    )\n\n    module = file_processor.build_ast()\n    assert isinstance(module, ast.Module)\n\n\ndef test_next_logical_line_updates_the_previous_logical_line(default_options):\n    \"\"\"Verify that we update our tracking of the previous logical line.\"\"\"\n    file_processor = processor.FileProcessor(\n        \"-\", default_options, lines=[\"a = 1\\n\"]\n    )\n\n    file_processor.indent_level = 1\n    file_processor.logical_line = \"a = 1\"\n    assert file_processor.previous_logical == \"\"\n    assert file_processor.previous_indent_level == 0\n\n    file_processor.next_logical_line()\n    assert file_processor.previous_logical == \"a = 1\"\n    assert file_processor.previous_indent_level == 1\n\n\ndef test_visited_new_blank_line(default_options):\n    \"\"\"Verify we update the number of blank lines seen.\"\"\"\n    file_processor = processor.FileProcessor(\n        \"-\", default_options, lines=[\"a = 1\\n\"]\n    )\n\n    assert file_processor.blank_lines == 0\n    file_processor.visited_new_blank_line()\n    assert file_processor.blank_lines == 1\n\n\n@pytest.mark.parametrize(\n    \"string, expected\",\n    [\n        ('\"\"', '\"\"'),\n        (\"''\", \"''\"),\n        ('\"a\"', '\"x\"'),\n        (\"'a'\", \"'x'\"),\n        ('\"x\"', '\"x\"'),\n        (\"'x'\", \"'x'\"),\n        ('\"abcdef\"', '\"xxxxxx\"'),\n        (\"'abcdef'\", \"'xxxxxx'\"),\n        ('\"\"\"\"\"\"', '\"\"\"\"\"\"'),\n        (\"''''''\", \"''''''\"),\n        ('\"\"\"a\"\"\"', '\"\"\"x\"\"\"'),\n        (\"'''a'''\", \"'''x'''\"),\n        ('\"\"\"x\"\"\"', '\"\"\"x\"\"\"'),\n        (\"'''x'''\", \"'''x'''\"),\n        ('\"\"\"abcdef\"\"\"', '\"\"\"xxxxxx\"\"\"'),\n        (\"'''abcdef'''\", \"'''xxxxxx'''\"),\n        ('\"\"\"xxxxxx\"\"\"', '\"\"\"xxxxxx\"\"\"'),\n        (\"'''xxxxxx'''\", \"'''xxxxxx'''\"),\n    ],\n)\ndef test_mutate_string(string, expected, default_options):\n    \"\"\"Verify we appropriately mutate the string to sanitize it.\"\"\"\n    actual = processor.mutate_string(string)\n    assert expected == actual\n\n\n@pytest.mark.parametrize(\n    \"string, expected\",\n    [\n        (\"    \", 4),\n        (\"      \", 6),\n        (\"\\t\", 8),\n        (\"\\t\\t\", 16),\n        (\"       \\t\", 8),\n        (\"        \\t\", 16),\n    ],\n)\ndef test_expand_indent(string, expected):\n    \"\"\"Verify we correctly measure the amount of indentation.\"\"\"\n    actual = processor.expand_indent(string)\n    assert expected == actual\n\n\n@pytest.mark.parametrize(\n    \"current_count, token_text, expected\",\n    [\n        (0, \"(\", 1),\n        (0, \"[\", 1),\n        (0, \"{\", 1),\n        (1, \")\", 0),\n        (1, \"]\", 0),\n        (1, \"}\", 0),\n        (10, \"+\", 10),\n    ],\n)\ndef test_count_parentheses(current_count, token_text, expected):\n    \"\"\"Verify our arithmetic is correct.\"\"\"\n    assert processor.count_parentheses(current_count, token_text) == expected\n\n\ndef test_nonexistent_file(default_options):\n    \"\"\"Verify that FileProcessor raises IOError when a file does not exist.\"\"\"\n    with pytest.raises(IOError):\n        processor.FileProcessor(\"foobar.py\", default_options)\n"
+          }
+        ]
+      }
+    }
+  ]
+}

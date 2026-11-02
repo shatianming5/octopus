@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "jaraco__inflect.c079a96a.lm_rewr__f9bKqRN__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# millfn doesn't raise NumOutOfRangeError for indices beyond the mill array\n\n## Description\n\nThe `millfn` method in the `engine` class has been modified to return the largest defined magnitude suffix instead of raising a `NumOutOfRangeError` when the index is out of range.\n\nPreviously, when an index was provided that was larger than the length of the `mill` array, the method would raise a `NumOutOfRangeError`. Now, it returns the last element of the `mill` array instead.\n\nFor example:\n```python\np = inflect.engine()\np.millfn(12)  # Previously raised NumOutOfRangeError, now returns ' decillion'\n```\n\nThis change breaks backward compatibility for code that expects an exception to be raised when the index is out of range.\n\nBug introduced in the recent patch that modified the `millfn` method to return the largest defined magnitude suffix instead of raising an error.\n\n## Reproduction\n\n```python\nfrom inflect import engine\n\np = engine()\n# This should raise NumOutOfRangeError but now returns ' decillion'\nresult = p.millfn(12)\nprint(f\"Result: {result}\")\nprint(\"Expected: NumOutOfRangeError should have been raised\")\n```"
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository and the `millfn` implementation to restore `NumOutOfRangeError` for out-of-range indices.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-1e421d48-82db-460f-8b84-b24270f329e0-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -50 && cat /testbed/README* 2>/dev/null | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-1e421d48-82db-460f-8b84-b24270f329e0-0",
+            "content": " 1005 1005     0 Sep 22 15:44 .gitkeep\n-rw-r--r-- 1 root root   150 Jul 13  2025 .pre-commit-config.yaml\n-rw-r--r-- 1 root root   334 Jul 13  2025 .readthedocs.yaml\n-rw-r--r-- 1 root root  1023 Jul 13  2025 LICENSE\n-rw-r--r-- 1 root root  7728 Jul 13  2025 NEWS.rst\n-rw-r--r-- 1 root root 23034 Jul 13  2025 README.rst\n-rw-r--r-- 1 root root   180 Jul 13  2025 SECURITY.md\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 docs\ndrwxr-xr-x 3 root root  4096 Jul 13  2025 inflect\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 inflect.egg-info\n-rw-r--r-- 1 root root   375 Jul 13  2025 mypy.ini\n-rw-r--r-- 1 root root  1694 Jul 13  2025 pyproject.toml\n-rw-r--r-- 1 root root   584 Jul 13  2025 pytest.ini\n-rw-r--r-- 1 root root   633 Jul 13  2025 ruff.toml\n-rw-r--r-- 1 root root   126 Jul 13  2025 tea.yaml\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 tests\n-rw-r--r-- 1 root root    44 Jul 13  2025 towncrier.toml\n-rw-r--r-- 1 root root  1324 Jul 13  2025 tox.ini\n/testbed/inflect/__init__.py\n/testbed/inflect/compat/py38.py\n/testbed/inflect/compat/__init__.py\n/testbed/tests/test_inflections.py\n/testbed/tests/test_classical_names.py\n/testbed/tests/test_classical_ancient.py\n/testbed/tests/test_classical_person.py\n/testbed/tests/test_pl_si.py\n/testbed/tests/test_an.py\n/testbed/tests/test_compounds.py\n/testbed/tests/test_join.py\n/testbed/tests/test_numwords.py\n/testbed/tests/test_classical_zero.py\n/testbed/tests/test_pwd.py\n/testbed/tests/test_unicode.py\n/testbed/tests/test_classical_all.py\n/testbed/tests/test_classical_herd.py\n/testbed/docs/conf.py\n.. image:: https://img.shields.io/pypi/v/inflect.svg\n   :target: https://pypi.org/project/inflect\n\n.. image:: https://img.shields.io/pypi/pyversions/inflect.svg\n\n.. image:: https://github.com/jaraco/inflect/actions/workflows/main.yml/badge.svg\n   :target: https://github.com/jaraco/inflect/actions?query=workflow%3A%22tests%22\n   :alt: tests\n\n.. image:: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v2.json\n    :target: https://github.com/astral-sh/ruff\n    :alt: Ruff\n\n.. image:: https://readthedocs.org/projects/inflect/badge/?version=latest\n   :target: https://inflect.readthedocs.io/en/latest/?badge=latest\n\n.. image:: https://img.shields.io/badge/skeleton-2024-informational\n   :target: https://blog.jaraco.com/skeleton\n\n.. image:: https://tidelift.com/badges/package/pypi/inflect\n   :target: https://tidelift.com/subscription/pkg/pypi-inflect?utm_source=pypi-inflect&utm_medium=readme\n\nNAME\n====\n\ninflect.py - Accurately generate plurals, singular nouns, ordinals, indefinite articles, and word-based representations of numbers. This functionality is limited to English.\n\nSYNOPSIS\n========\n\n.. code-block:: python\n    \n    >>> import inflect\n    >>> p = inflect.engine()\n\nSimple example with pluralization and word-representation of numbers:\n\n.. code-block:: python\n    \n    >>> count=1\n    >>> print('There', p.plural_verb('was', count), p.number_to_words(count), p.plural_noun('person', count), 'by the door.')\n    There was one person by the door.\n\nWhen ``count=243``, the same code will generate:\n\n.. code-block:: python\n    \n    There were two hundred and forty-three people by the door.\n\n\nMethods\n=======\n\n- ``plural``, ``plural_noun``, ``plural_verb``, ``plural_adj``, ``singular_noun``, ``no``, ``num``\n- ``compare``, ``compare_nouns``, ``compare_nouns``, ``compare_adjs``\n- ``a``, ``an``\n- ``present_participle``\n- ``ordinal``, ``number_to_words``\n- ``join``\n- ``inflect``, ``classical``, ``gender``\n- ``defnoun``, ``defverb``, ``defadj``, ``defa``, ``defan``\n\nPlurality/Singularity\n---------------------\nUnconditionally Form the Plural\n^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n.. code-block:: python\n    \n    >>> \"the plural of person is \" + p.plural(\"person\")\n    'the plural of person is people'\n\nConditionally Form the Plural\n^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n.. code-block:: python\n    \n    >>> \"the plural of 1 person is \" + p.plural(\"person\", 1)\n    'the plural of 1 person is person'\n\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-3bf61fc6-42ca-4528-9e4d-fafdffb9d722-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "rg -n \"millfn|NumOutOfRangeError|mill\" /testbed/inflect --type py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-3bf61fc6-42ca-4528-9e4d-fafdffb9d722-1",
+            "content": "bash: line 1: rg: command not found\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-c9524378-5e39-49c6-af7f-007972b4dcf4-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "grep -n \"millfn\\|NumOutOfRangeError\\|mill\" /testbed/inflect/__init__.py | head -100"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-c9524378-5e39-49c6-af7f-007972b4dcf4-2",
+            "content": "48: NumOutOfRangeError\n98:class NumOutOfRangeError(Exception):\n441:    \"millennium\",\n1945:mill = [\n1948:    \" million\",\n2075:        self.mill_count = 0\n3681:    def millfn(self, ind: int = 0) -> str:\n3682:        if ind > len(mill) - 1:\n3683:            raise NumOutOfRangeError\n3684:        return mill[ind]\n3687:        return f\"{unit[units]}{self.millfn(mindex)}\"\n3697:            mill_part = self.millfn(mindex)\n3698:            return f\"{tens_part}{hyphen}{unit_part}{mill_part}\"\n3699:        return f\"{teen[units]}{mill[mindex]}\"\n3707:                f\"{self.tenfn(tens, units)}{self.millfn(mindex)}, \"\n3710:            return f\"{self.tenfn(tens, units)}{self.millfn(mindex)}, \"\n3758:            int(mo.group(1)), int(mo.group(2)), int(mo.group(3)), self.mill_count\n3760:        self.mill_count += 1\n3764:        return f\"{self.tenfn(int(mo.group(1)), int(mo.group(2)), self.mill_count)}, \"\n3767:        return f\"{self.unitfn(int(mo.group(1)), self.mill_count)}, \"\n3788:            self.mill_count = 0\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-23b2182e-e5e2-4d84-966d-c4f99e7c368f-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '90,110p' /testbed/inflect/__init__.py; echo \"====\"; sed -n '1935,1980p' /testbed/inflect/__init__.py; echo \"====\"; sed -n '3670,3720p' /testbed/inflect/__init__.py; echo \"====\"; cat /testbed/NEWS.rst | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-23b2182e-e5e2-4d84-966d-c4f99e7c368f-3",
+            "content": "class BadNumValueError(Exception):\n    pass\n\n\nclass BadChunkingOptionError(Exception):\n    pass\n\n\nclass NumOutOfRangeError(Exception):\n    pass\n\n\nclass BadUserDefinedPatternError(Exception):\n    pass\n\n\nclass BadRcFileError(Exception):\n    pass\n\n\nclass BadGenderError(Exception):\n====\n    \"\",\n    \"twenty\",\n    \"thirty\",\n    \"forty\",\n    \"fifty\",\n    \"sixty\",\n    \"seventy\",\n    \"eighty\",\n    \"ninety\",\n]\nmill = [\n    \" \",\n    \" thousand\",\n    \" million\",\n    \" billion\",\n    \" trillion\",\n    \" quadrillion\",\n    \" quintillion\",\n    \" sextillion\",\n    \" septillion\",\n    \" octillion\",\n    \" nonillion\",\n    \" decillion\",\n]\n\n\n# SUPPORT CLASSICAL PLURALIZATIONS\n\ndef_classical = dict(\n    all=False, zero=False, herd=False, names=True, persons=False, ancient=False\n)\n\nall_classical = {k: True for k in def_classical}\nno_classical = {k: False for k in def_classical}\n\n\n# Maps strings to built-in constant types\nstring_to_constant = {\"True\": True, \"False\": False, \"None\": None}\n\n\n# Pre-compiled regular expression objects\nDOLLAR_DIGITS = re.compile(r\"\\$(\\d+)\")\nFUNCTION_CALL = re.compile(r\"((\\w+)\\([^)]*\\)*)\", re.IGNORECASE)\nPARTITION_WORD = re.compile(r\"\\A(\\s*)(.+?)(\\s*)\\Z\")\nPL_SB_POSTFIX_ADJ_STEMS_RE = re.compile(\n    rf\"^(?:{pl_sb_postfix_adj_stems})$\", re.IGNORECASE\n====\n                        n = int(str(num)[:-1])\n                else:\n                    n = int(num)  # type: ignore[arg-type]\n            try:\n                post = nth[n % 100]\n            except KeyError:\n                post = nth[n % 10]\n            return f\"{num}{post}\"\n        else:\n            return self._sub_ord(num)\n\n    def millfn(self, ind: int = 0) -> str:\n        if ind > len(mill) - 1:\n            raise NumOutOfRangeError\n        return mill[ind]\n\n    def unitfn(self, units: int, mindex: int = 0) -> str:\n        return f\"{unit[units]}{self.millfn(mindex)}\"\n\n    def tenfn(self, tens, units, mindex=0) -> str:\n        if tens != 1:\n            tens_part = ten[tens]\n            if tens and units:\n                hyphen = \"-\"\n            else:\n                hyphen = \"\"\n            unit_part = unit[units]\n            mill_part = self.millfn(mindex)\n            return f\"{tens_part}{hyphen}{unit_part}{mill_part}\"\n        return f\"{teen[units]}{mill[mindex]}\"\n\n    def hundfn(self, hundreds: int, tens: int, units: int, mindex: int) -> str:\n        if hundreds:\n            andword = f\" {self._number_args['andword']} \" if tens or units else \"\"\n            # use unit not unitfn as simpler\n            return (\n                f\"{unit[hundreds]} hundred{andword}\"\n                f\"{self.tenfn(tens, units)}{self.millfn(mindex)}, \"\n            )\n        if tens or units:\n            return f\"{self.tenfn(tens, units)}{self.millfn(mindex)}, \"\n        return \"\"\n\n    def group1sub(self, mo: Match) -> str:\n        units = int(mo.group(1))\n        if units == 1:\n            return f\" {self._number_args['one']}, \"\n        elif units:\n            return f\"{unit[units]}, \"\n        else:\n            return f\" {self._number_args['zero']}, \"\n====\nv7.5.0\n======\n\nFeatures\n--------\n\n- Updated `ast` classes for Python 3.14 compatibility. (#225)\n\n\nv7.4.0\n======\n\nFeatures\n--------\n\n- Handle a single apostrophe more gracefully. (#218)\n\n\nv7.3.1\n======\n\nBugfixes\n--------\n\n- Set minimum version of more-itertools to 8.5 (#215)\n\n\nv7.3.0\n======\n\nFeatures\n--------\n\n- Restricted typing_extensions to Python 3.8. (#211)\n\n\nv7.2.1\n======\n\nBugfixes\n--------\n\n- Refactored number_to_words toward reduced complexity.\n\n\nv7.2.0\n======\n\nFeatures\n--------\n\n- Replace pydantic with typeguard (#195)\n\n\nv7.1.0\n======\n\nFeatures\n--------\n\n- Now handle 'pair of x' in pl_sb_uninflected_complete (#188)\n\n\nv7.0.0\n======\n\nFeatures\n--------\n\n- Refine type hint for ``singular_noun`` to indicate a literal return type for ``False``. (#186)\n\n\nDeprecations and Removals\n-------------------------\n\n- Removed methods renamed in 0.2.0.\n\n\nv6.2.0\n======\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-ec67a019-6844-410d-843f-ab6924b7b6e3-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cd /testbed && git log --oneline -20 && git status && git diff && cat tests/test_numwords.py | head -200"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-ec67a019-6844-410d-843f-ab6924b7b6e3-4",
+            "content": "rteen\", \"thirteenth\"],\n        [\"14\", \"fourteen\", \"one, four\", \"fourteen\", \"fourteen\", \"fourteenth\"],\n        [\"15\", \"fifteen\", \"one, five\", \"fifteen\", \"fifteen\", \"fifteenth\"],\n        [\"16\", \"sixteen\", \"one, six\", \"sixteen\", \"sixteen\", \"sixteenth\"],\n        [\"17\", \"seventeen\", \"one, seven\", \"seventeen\", \"seventeen\", \"seventeenth\"],\n        [\"18\", \"eighteen\", \"one, eight\", \"eighteen\", \"eighteen\", \"eighteenth\"],\n        [\"19\", \"nineteen\", \"one, nine\", \"nineteen\", \"nineteen\", \"nineteenth\"],\n        [\"20\", \"twenty\", \"two, zero\", \"twenty\", \"twenty\", \"twentieth\"],\n        [\"21\", \"twenty-one\", \"two, one\", \"twenty-one\", \"twenty-one\", \"twenty-first\"],\n        [\n            \"29\",\n            \"twenty-nine\",\n            \"two, nine\",\n            \"twenty-nine\",\n            \"twenty-nine\",\n            \"twenty-ninth\",\n        ],\n        [\n            \"99\",\n            \"ninety-nine\",\n            \"nine, nine\",\n            \"ninety-nine\",\n            \"ninety-nine\",\n            \"ninety-ninth\",\n        ],\n        [\n            \"100\",\n            \"one hundred\",\n            \"one, zero, zero\",\n            \"ten, zero\",\n            \"one zero zero\",\n            \"one hundredth\",\n        ],\n        [\n            \"101\",\n            \"one hundred and one\",\n            \"one, zero, one\",\n            \"ten, one\",\n            \"one zero one\",\n            \"one hundred and first\",\n        ],\n        [\n            \"110\",\n            \"one hundred and ten\",\n            \"one, one, zero\",\n            \"eleven, zero\",\n            \"one ten\",\n            \"one hundred and tenth\",\n        ],\n        [\n            \"111\",\n            \"one hundred and eleven\",\n            \"one, one, one\",\n            \"eleven, one\",\n            \"one eleven\",\n            \"one hundred and eleventh\",\n        ],\n        [\n            \"900\",\n            \"nine hundred\",\n            \"nine, zero, zero\",\n            \"ninety, zero\",\n            \"nine zero zero\",\n            \"nine hundredth\",\n        ],\n        [\n            \"999\",\n            \"nine hundred and ninety-nine\",\n            \"nine, nine, nine\",\n            \"ninety-nine, nine\",\n            \"nine ninety-nine\",\n            \"nine hundred and ninety-ninth\",\n        ],\n        [\n            \"1000\",\n            \"one thousand\",\n            \"one, zero, zero, zero\",\n            \"ten, zero zero\",\n            \"one zero zero, zero\",\n            \"one thousandth\",\n        ],\n        [\n            \"1001\",\n            \"one thousand and one\",\n            \"one, zero, zero, one\",\n            \"ten, zero one\",\n            \"one zero zero, one\",\n            \"one thousand and first\",\n        ],\n        [\n            \"1010\",\n            \"one thousand and ten\",\n            \"one, zero, one, zero\",\n            \"ten, ten\",\n            \"one zero one, zero\",\n            \"one thousand and tenth\",\n        ],\n        [\n            \"1100\",\n            \"one thousand, one hundred\",\n            \"one, one, zero, zero\",\n            \"eleven, zero zero\",\n            \"one ten, zero\",\n            \"one thousand, one hundredth\",\n        ],\n        [\n            \"2000\",\n            \"two thousand\",\n            \"two, zero, zero, zero\",\n            \"twenty, zero zero\",\n            \"two zero zero, zero\",\n            \"two thousandth\",\n        ],\n        [\n            \"10000\",\n            \"ten thousand\",\n            \"one, zero, zero, zero, zero\",\n            \"ten, zero zero, zero\",\n            \"one zero zero, zero zero\",\n            \"ten thousandth\",\n        ],\n        [\n            \"100000\",\n            \"one hundred thousand\",\n            \"one, zero, zero, zero, zero, zero\",\n            \"ten, zero zero, zero zero\",\n            \"one zero zero, zero zero zero\",\n            \"one hundred thousandth\",\n        ],\n        [\n            \"100001\",\n            \"one hundred thousand and one\",\n            \"one, zero, zero, zero, zero, one\",\n            \"ten, zero zero, zero one\",\n            \"one zero zero, zero zero one\",\n            \"one hundred thousand and first\",\n        ],\n        [\n            \"123456\",\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "The current `millfn` already raises `NumOutOfRangeError`; I'll check git history, tests, and related code next.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-a769a455-b580-4f10-9f87-cff951e42563-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cd /testbed && git log --oneline -20 && echo \"====STATUS====\" && git status && echo \"====DIFF====\" && git diff HEAD && echo \"====BRANCH====\" && git branch -a | head -30"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-a769a455-b580-4f10-9f87-cff951e42563-5",
+            "content": "91b5d26 Initial commit\n====STATUS====\nOn branch main\nYour branch is up to date with 'origin/main'.\n\nUntracked files:\n  (use \"git add <file>...\" to include in what will be committed)\n\t.gitkeep\n\nnothing added to commit but untracked files present (use \"git add\" to track)\n====DIFF====\n====BRANCH====\n* main\n  remotes/origin/HEAD -> origin/main\n  remotes/origin/jaraco__inflect.c079a96a.combine_file__1m7cawal\n  remotes/origin/jaraco__inflect.c079a96a.combine_file__p1km6bf3\n  remotes/origin/jaraco__inflect.c079a96a.combine_file__y2ozfoh0\n  remotes/origin/jaraco__inflect.c079a96a.func_basic__0hwljtvh\n  remotes/origin/jaraco__inflect.c079a96a.func_basic__1jrv4g0i\n  remotes/origin/jaraco__inflect.c079a96a.func_basic__1ohhrkta\n  remotes/origin/jaraco__inflect.c079a96a.func_basic__20t8s193\n  remotes/origin/jaraco__inflect.c079a96a.func_basic__22egpvdf\n  remotes/origin/jaraco__inflect.c079a96a.func_basic__31p51k97\n  remotes/origin/jaraco__inflect.c079a96a.func_basic__3aqb71hm\n  remotes/origin/jaraco__inflect.c079a96a.func_basic__536jolbn\n  remotes/origin/jaraco__inflect.c079a96a.func_basic__56s87rnj\n  remotes/origin/jaraco__inflect.c079a96a.func_basic__5cucjnbf\n  remotes/origin/jaraco__inflect.c079a96a.func_basic__5pzge45q\n  remotes/origin/jaraco__inflect.c079a96a.func_basic__5u2jk6g0\n  remotes/origin/jaraco__inflect.c079a96a.func_basic__5zij2jtw\n  remotes/origin/jaraco__inflect.c079a96a.func_basic__6gtfj0qx\n  remotes/origin/jaraco__inflect.c079a96a.func_basic__77wgjd4m\n  remotes/origin/jaraco__inflect.c079a96a.func_basic__8n3tlyhx\n  remotes/origin/jaraco__inflect.c079a96a.func_basic__94dyt8wx\n  remotes/origin/jaraco__inflect.c079a96a.func_basic__9lsc3k23\n  remotes/origin/jaraco__inflect.c079a96a.func_basic__9yqwwre7\n  remotes/origin/jaraco__inflect.c079a96a.func_basic__ad7j58hw\n  remotes/origin/jaraco__inflect.c079a96a.func_basic__b9j1i5wg\n  remotes/origin/jaraco__inflect.c079a96a.func_basic__bm66rqbr\n  remotes/origin/jaraco__inflect.c079a96a.func_basic__c5803m21\n  remotes/origin/jaraco__inflect.c079a96a.func_basic__c5fpg5vt\n  remotes/origin/jaraco__inflect.c079a96a.func_basic__cey00xv0\n"
+          }
+        ]
+      }
+    }
+  ]
+}

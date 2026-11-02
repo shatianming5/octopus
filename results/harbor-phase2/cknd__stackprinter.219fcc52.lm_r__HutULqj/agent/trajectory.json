@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "cknd__stackprinter.219fcc52.lm_r__HutULqj__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# Bug: source_annotation function returns incorrect data structure for head_lines\n\n## Description\n\nI found an issue with the `annotate` function in `source_inspection.py`. The function is supposed to return a tuple where the fourth element is a list of line numbers for the head of the code, but it's returning a tuple of two values instead.\n\nHere's what's happening:\n\nIn the current implementation, the function returns:\n```python\nreturn source_map, line2names, name2lines, head_lns, lineno\n```\n\nWhere `head_lns` is defined as:\n```python\nhead_lns = (None, None)\nif head_s is not None and head_e is not None:\n    head_lns = (head_s + line_offset, head_e + line_offset)\n```\n\nThis means `head_lns` is a tuple of two values (start, end), but the code that uses this function expects a list of line numbers.\n\n## Steps to reproduce\n\n```python\nimport stackprinter.source_inspection as si\n\n# Sample source code\nsource_lines = [\n    \"def example_function():\",\n    \"    # This is a comment\",\n    \"    x = 10\",\n    \"    y = 20\",\n    \"    return x + y\"\n]\n\n# Call the annotate function\nsource_map, line2names, name2lines, head_lns, lineno = si.annotate(source_lines, line_offset=0, lineno=0)\n\n# This will fail because head_lns is a tuple (start, end) instead of a list of line numbers\nprint(f\"head_lns: {head_lns}\")\n# Expected: head_lns: [0, 1, 2, 3]\n# Actual: head_lns: (0, 3)\n\n# Try to iterate through head_lns\nfor line in head_lns:\n    print(line)\n# This works but doesn't include all the expected line numbers\n```\n\n## Expected behavior\n\nThe fourth return value (`head_lns`) should be a list of all line numbers in the head section, not just a tuple with the start and end line numbers.\n\n## Additional information\n\nThis issue affects code that expects to iterate through all line numbers in the head section, not just the start and end points."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository and the `annotate` function to see how `head_lns` is currently built.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-5fb697d1-05a5-4fe7-9213-b1321cfb0008-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -name \"*.py\" | head -50 && cat /testbed/README.md 2>/dev/null | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-5fb697d1-05a5-4fe7-9213-b1321cfb0008-0",
+            "content": "ackprinter/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/cknd/stackprinter/actions/workflows/build.yml)\n\n# Better tracebacks\n\nThis is a more helpful version of Python's built-in exception message: It shows more code context and the current values of nearby variables. That answers many of the questions I'd ask an interactive debugger: Where in the code was the crash, what's in the relevant variables, and why was _that_ function called with _those_ arguments. It either prints to the console or gives you a string for logging.\n\n```bash\npip3 install stackprinter\n```\n### Before\n```\nTraceback (most recent call last):\n  File \"demo.py\", line 12, in <module>\n    dangerous_function(somelist + anotherlist)\n  File \"demo.py\", line 6, in dangerous_function\n    return sorted(blub, key=lambda xs: sum(xs))\n  File \"demo.py\", line 6, in <lambda>\n    return sorted(blub, key=lambda xs: sum(xs))\nTypeError: unsupported operand type(s) for +: 'int' and 'str'\n```\n\n### After\n```\nFile demo.py, line 12, in <module>\n    9        somelist = [[1,2], [3,4]]\n    10       anotherlist = [['5', 6]]\n    11       spam = numpy.zeros((3,3))\n--> 12       dangerous_function(somelist + anotherlist)\n    13   except:\n    ..................................................\n     somelist = [[1, 2, ], [3, 4, ], ]\n     anotherlist = [['5', 6, ], ]\n     spam = 3x3 array([[0. 0. 0.]\n                       [0. 0. 0.]\n                       [0. 0. 0.]])\n    ..................................................\n\nFile demo.py, line 6, in dangerous_function\n    5    def dangerous_function(blub):\n--> 6        return sorted(blub, key=lambda xs: sum(xs))\n    ..................................................\n     blub = [[1, 2, ], [3, 4, ], ['5', 6, ], ]\n    ..................................................\n\nFile demo.py, line 6, in <lambda>\n    3\n    4\n    5    def dangerous_function(blub):\n--> 6        return sorted(blub, key=lambda xs: sum(xs))\n    7\n    ..................................................\n     xs = ['5', 6, ]\n    ..................................................\n\nTypeError: unsupported operand type(s) for +: 'int' and 'str'\n```\nI rarely use this locally instead of a real debugger, but it helps me sleep when my code runs somewhere where the only debug tool is a log file (though it's not a fully-grown [error monitoring system](https://sentry.io/welcome/)).\n\nBy default, it tries to be somewhat polite about screen space, showing only a few source lines & the function header, and only the variables _that appear in those lines_, and using only (?) 500 characters per variable. You can [configure](https://github.com/cknd/stackprinter/blob/master/stackprinter/__init__.py#L28-L149) exactly how verbose things should be.\n\nIt outputs plain text normally, which is good for log files. There's also a color mode for some reason 🌈, with a few different color schemes for light and dark backgrounds. (The colors [track different variables](https://medium.com/@brianwill/making-semantic-highlighting-useful-9aeac92411df) instead of the language syntax.)\n\n<img src=\"https://raw.githubusercontent.com/cknd/stackprinter/master/notebook.png\" width=\"500\">\n\n# Usage\n\n## Option 1: Set and forget\nTo replace the default python crash printout, call `set_excepthook()` somewhere once. Afterwards, any uncaught exception will be printed with an extended traceback (to stderr, by default). You could also [make this permanent for your python installation](#making-it-stick).\n\n```python\nimport stackprinter\nstackprinter.set_excepthook(style='darkbg2')  # for jupyter notebooks try style='lightbg'\n```\n## Option 2: Call it selectively during exception handling\nFor more control, call [`show()`](https://github.com/cknd/stackprinter/blob/master/stackprinter/__init__.py#L166-L183) or [`format()`](https://github.com/cknd/stackprinter/blob/master/stackprinter/__init__.py#L28-L149) inside an `except` block. `show()` prints to stderr, `format()` returns a string, for custom logging.\n\n```python\ntry:\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-7612a452-dcc3-4b3d-a9d8-588f9d192d40-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "find /testbed -type f -name \"*.py\" | sort && echo \"====\" && ls -la /testbed/stackprinter/"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-7612a452-dcc3-4b3d-a9d8-588f9d192d40-1",
+            "content": "/testbed/demo.py\n/testbed/demo_chained_exceptions.py\n/testbed/demo_complex.py\n/testbed/demo_exceptiongroups.py\n/testbed/demo_keyboard_interrupt.py\n/testbed/demo_logging.py\n/testbed/demo_logging_hack.py\n/testbed/demo_pprint.py\n/testbed/demo_thread_stack.py\n/testbed/demo_traceprinter.py\n/testbed/setup.py\n/testbed/stackprinter/__init__.py\n/testbed/stackprinter/colorschemes.py\n/testbed/stackprinter/extraction.py\n/testbed/stackprinter/formatting.py\n/testbed/stackprinter/frame_formatting.py\n/testbed/stackprinter/prettyprinting.py\n/testbed/stackprinter/source_inspection.py\n/testbed/stackprinter/tracing.py\n/testbed/stackprinter/utils.py\n/testbed/tests/conftest.py\n/testbed/tests/source.py\n/testbed/tests/test_formatting.py\n/testbed/tests/test_frame_inspection.py\n/testbed/tests/test_source_inspection.py\n/testbed/tests/test_utils.py\n====\ntotal 96\ndrwxr-xr-x 2 root root  4096 Jul 12  2025 .\ndrwxr-xr-x 1 root root  4096 Sep 22 17:10 ..\n-rw-r--r-- 1 root root 11257 Jul 12  2025 __init__.py\n-rw-r--r-- 1 root root  7361 Jul 12  2025 colorschemes.py\n-rw-r--r-- 1 root root  6808 Jul 12  2025 extraction.py\n-rw-r--r-- 1 root root  9014 Jul 12  2025 formatting.py\n-rw-r--r-- 1 root root 15066 Jul 12  2025 frame_formatting.py\n-rw-r--r-- 1 root root  7208 Jul 12  2025 prettyprinting.py\n-rw-r--r-- 1 root root  8652 Jul 12  2025 source_inspection.py\n-rw-r--r-- 1 root root  5763 Jul 12  2025 tracing.py\n-rw-r--r-- 1 root root  2651 Jul 12  2025 utils.py\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-7488109f-273f-458b-ab6b-3c8a1ca72a1f-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/stackprinter/source_inspection.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-7488109f-273f-458b-ab6b-3c8a1ca72a1f-2",
+            "content": "   head_e = None\n    name_end = -2\n    acceptable_multiline_tokens = [tokenize.STRING]\n    if hasattr(tokenize, \"FSTRING_START\"):\n        # we're >= python 3.12\n        acceptable_multiline_tokens.extend([\n            tokenize.FSTRING_START,\n            tokenize.FSTRING_MIDDLE,\n            tokenize.FSTRING_END])\n\n    for ttype, string, (sline, scol), (eline, ecol), line in tokenizer:\n        sline -= 1  # we deal in line indices counting from 0\n        eline -= 1\n\n        if ttype not in acceptable_multiline_tokens:\n            assert sline == eline, \"Can't accept non-string multiline tokens\"\n\n        if ttype == tokenize.NAME:\n            if string in kwlist:\n                tokens.append([KEYWORD, string, (sline, scol), (eline, ecol)])\n                if head_s is None and string == 'def':\n                    # while we're here, note the start of the call signature\n                    head_s = sline\n\n            elif not dot_continuation:\n                tokens.append([VAR, string, (sline, scol), (eline, ecol)])\n            else:\n                # this name seems to be part of an attribute lookup,\n                # which we want to treat as one long name.\n                prev = tokens[-1]\n                extended_name = prev[1] + \".\" + string\n                old_eline, old_ecol = prev[3]\n                end_line = max(old_eline, eline)\n                end_col = max(old_ecol, ecol)\n                tokens[-1] = [VAR, extended_name, prev[2], (end_line, end_col)]\n                dot_continuation = False\n            was_name = True\n            name_end = ecol - 1\n        else:\n            if string == '.' and was_name and scol == name_end + 1:\n                dot_continuation = True\n                continue\n            elif string == '(':\n                open_parens += 1\n            elif string == ')':\n                # while we're here, note the end of the call signature.\n                # the parens counting is necessary because default keyword\n                # args can contain '(', ')', e.g. in object instantiations.\n                open_parens -= 1\n                if head_e is None and open_parens == 0 and head_s is not None:\n                    head_e = sline\n\n            if ttype == tokenize.OP:\n                tokens.append([OP, string, (sline, scol), (eline, ecol)])\n            if ttype == tokenize.COMMENT:\n                tokens.append([COMMENT, string, (sline, scol), (eline, ecol)])\n            was_name = False\n            name_end = -2\n\n    # TODO: proper handling of keyword argument assignments: left hand sides\n    # should be treated as variables _only_ in the header of the current\n    # function, and outside of calls, but not when calling other functions...\n    # this is getting silly.\n    return tokens, head_s, head_e\n\n\ndef join_broken_lines(source_lines):\n    \"\"\"\n    Collapse backslash-continued lines into the first (upper) line\n    \"\"\"\n\n    # TODO meditate whether this is a good idea\n\n    n_lines = len(source_lines)\n    unbroken_lines = []\n    k = 0\n    lineno_corrections = defaultdict(lambda: 0)\n    while k < n_lines:\n        line = source_lines[k]\n\n        gobbled_lines = []\n        while (line.endswith('\\\\\\n')\n               and k + 1 < n_lines\n               and line.lstrip()[0] != '#'):\n            k_continued = k\n            k += 1\n            nextline = source_lines[k]\n            nextline_stripped = nextline.lstrip()\n            line = line[:-2] + nextline_stripped\n\n            indent = ''\n            n_raw, n_stripped = len(nextline), len(nextline_stripped)\n            if n_raw != n_stripped:\n                white_char = nextline[0]\n                fudge = 3 if white_char == ' ' else 0\n                indent = white_char * max(0, (n_raw - n_stripped - fudge))\n\n            gobbled_lines.append(indent + \"\\n\" )\n            lineno_corrections[k] = k_continued - k\n\n        unbroken_lines.append(line)\n        unbroken_lines.extend(gobbled_lines)\n        k += 1\n\n    return unbroken_lines, lineno_corrections\n\n\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-9dc392e2-94c1-4ef1-86ed-87c054015b79-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "wc -l /testbed/stackprinter/source_inspection.py && echo \"==== FULL FILE ====\" && cat -n /testbed/stackprinter/source_inspection.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-9dc392e2-94c1-4ef1-86ed-87c054015b79-3",
+            "content": "kenize.NAME:\n   163\t            if string in kwlist:\n   164\t                tokens.append([KEYWORD, string, (sline, scol), (eline, ecol)])\n   165\t                if head_s is None and string == 'def':\n   166\t                    # while we're here, note the start of the call signature\n   167\t                    head_s = sline\n   168\t\n   169\t            elif not dot_continuation:\n   170\t                tokens.append([VAR, string, (sline, scol), (eline, ecol)])\n   171\t            else:\n   172\t                # this name seems to be part of an attribute lookup,\n   173\t                # which we want to treat as one long name.\n   174\t                prev = tokens[-1]\n   175\t                extended_name = prev[1] + \".\" + string\n   176\t                old_eline, old_ecol = prev[3]\n   177\t                end_line = max(old_eline, eline)\n   178\t                end_col = max(old_ecol, ecol)\n   179\t                tokens[-1] = [VAR, extended_name, prev[2], (end_line, end_col)]\n   180\t                dot_continuation = False\n   181\t            was_name = True\n   182\t            name_end = ecol - 1\n   183\t        else:\n   184\t            if string == '.' and was_name and scol == name_end + 1:\n   185\t                dot_continuation = True\n   186\t                continue\n   187\t            elif string == '(':\n   188\t                open_parens += 1\n   189\t            elif string == ')':\n   190\t                # while we're here, note the end of the call signature.\n   191\t                # the parens counting is necessary because default keyword\n   192\t                # args can contain '(', ')', e.g. in object instantiations.\n   193\t                open_parens -= 1\n   194\t                if head_e is None and open_parens == 0 and head_s is not None:\n   195\t                    head_e = sline\n   196\t\n   197\t            if ttype == tokenize.OP:\n   198\t                tokens.append([OP, string, (sline, scol), (eline, ecol)])\n   199\t            if ttype == tokenize.COMMENT:\n   200\t                tokens.append([COMMENT, string, (sline, scol), (eline, ecol)])\n   201\t            was_name = False\n   202\t            name_end = -2\n   203\t\n   204\t    # TODO: proper handling of keyword argument assignments: left hand sides\n   205\t    # should be treated as variables _only_ in the header of the current\n   206\t    # function, and outside of calls, but not when calling other functions...\n   207\t    # this is getting silly.\n   208\t    return tokens, head_s, head_e\n   209\t\n   210\t\n   211\tdef join_broken_lines(source_lines):\n   212\t    \"\"\"\n   213\t    Collapse backslash-continued lines into the first (upper) line\n   214\t    \"\"\"\n   215\t\n   216\t    # TODO meditate whether this is a good idea\n   217\t\n   218\t    n_lines = len(source_lines)\n   219\t    unbroken_lines = []\n   220\t    k = 0\n   221\t    lineno_corrections = defaultdict(lambda: 0)\n   222\t    while k < n_lines:\n   223\t        line = source_lines[k]\n   224\t\n   225\t        gobbled_lines = []\n   226\t        while (line.endswith('\\\\\\n')\n   227\t               and k + 1 < n_lines\n   228\t               and line.lstrip()[0] != '#'):\n   229\t            k_continued = k\n   230\t            k += 1\n   231\t            nextline = source_lines[k]\n   232\t            nextline_stripped = nextline.lstrip()\n   233\t            line = line[:-2] + nextline_stripped\n   234\t\n   235\t            indent = ''\n   236\t            n_raw, n_stripped = len(nextline), len(nextline_stripped)\n   237\t            if n_raw != n_stripped:\n   238\t                white_char = nextline[0]\n   239\t                fudge = 3 if white_char == ' ' else 0\n   240\t                indent = white_char * max(0, (n_raw - n_stripped - fudge))\n   241\t\n   242\t            gobbled_lines.append(indent + \"\\n\" )\n   243\t            lineno_corrections[k] = k_continued - k\n   244\t\n   245\t        unbroken_lines.append(line)\n   246\t        unbroken_lines.extend(gobbled_lines)\n   247\t        k += 1\n   248\t\n   249\t    return unbroken_lines, lineno_corrections\n   250\t\n   251\t\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-c983eab4-b5d5-47a6-a58c-f96dea50082d-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '1,140p' /testbed/stackprinter/source_inspection.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-c983eab4-b5d5-47a6-a58c-f96dea50082d-4",
+            "content": " file\n\n    lineno: int\n        A line number you're especially interested in. If this line moves around\n        while treating multiline statements, the corrected nr will be returned.\n        Otherwise, the given nr will be returned.\n\n    max_line: int\n        Stop analysing after this many lines\n\n    Returns\n    ---\n     source_map: OrderedDict\n        Maps line numbers to a list of tokens. Each token is a (string, TYPE)\n        tuple. Concatenating the first elements of all tokens of all lines\n        restores the original source, weird whitespaces/indentations and all\n        (in contrast to python's built-in `tokenize`). However, multiline\n        statements (those with a trailing backslash) are secretly collapsed\n        into their first line.\n\n     line2names: dict\n        Maps each line number to a list of variables names that occur there\n\n     name2lines: dict\n        Maps each variable name to a list of line numbers where it occurs\n\n     head_lns: (int, int) or (None, None)\n        Line numbers of the beginning and end of the function header\n\n     lineno: int\n        identical to the supplied argument lineno, unless that line had to be\n        moved when collapsing a backslash-continued multiline statement.\n    \"\"\"\n    if not source_lines:\n        return {}, {}, {}, [], lineno\n\n    assert isinstance(line_offset, int)\n    assert isinstance(lineno, int)\n    assert isinstance(max_line, int)\n\n    source_lines, lineno_corrections = join_broken_lines(source_lines)\n    lineno += lineno_corrections[lineno - line_offset]\n\n    max_line_relative = min(len(source_lines), max_line-line_offset)\n    tokens, head_s, head_e = _tokenize(source_lines[:max_line_relative])\n\n    tokens_by_line = defaultdict(list)\n    name2lines = defaultdict(list)\n    line2names = defaultdict(list)\n    for ttype, string, (sline, scol), (eline, ecol) in tokens:\n        ln = sline + line_offset\n        tokens_by_line[ln].append((ttype, scol, ecol, string))\n        if ttype == VAR:\n            name2lines[string].append(ln)\n            line2names[ln].append(string)\n\n    source_map = {}\n    for ln, line in enumerate(source_lines):\n        ln = ln + line_offset\n        regions = []\n        col = 0\n        for ttype, tok_start, tok_end, string in tokens_by_line[ln]:\n            if tok_start > col:\n                snippet = line[col:tok_start]\n                regions.append((snippet, RAW))\n                col = tok_start\n            snippet = line[tok_start:tok_end]\n            if snippet != string:\n                msg = (\"Token %r doesn't match raw source %r\"\n                       \" in line %s: %r\" % (string, snippet, ln, line))\n                warnings.warn(msg)\n            regions.append((snippet, ttype))\n            col = tok_end\n\n        if col < len(line):\n            snippet = line[col:]\n            regions.append((snippet, RAW))\n\n        source_map[ln] = regions\n\n    if head_s is not None and head_e is not None:\n        head_lines = list(range(head_s + line_offset, 1 + head_e + line_offset))\n    else:\n        head_lines = []\n\n    return source_map, line2names, name2lines, head_lines, lineno\n\n\ndef _tokenize(source_lines):\n    \"\"\"\n    Split a list of source lines into tokens\n\n    Params\n    ---\n    source_lines: list of str\n\n    Returns\n    ---\n\n    list of tokens, each a list of this format:\n        [TOKENTYPE, 'string', (startline, startcolumn), (endline, endcol)]\n\n    \"\"\"\n\n    tokenizer = tokenize.generate_tokens(iter(source_lines).__next__)\n    # Dragons! This is a trick from the `inspect` standard lib module: Using the\n    # undocumented method generate_tokens() instead of the official tokenize(),\n    # since the latter doesn't accept strings (only `readline()`s). The official\n    # way would be to repackage our list of strings, something like this.. :(\n    #   source = \"\".join(source_lines)\n    #   source_bytes = BytesIO(source.encode('utf-8')).readline\n    #   tokenizer = tokenize.tokenize(source_bytes)\n\n    tokens = []\n\n    dot_continuation = False\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-e8bbc589-46e9-43e1-93c3-57c91285540a-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/tests/test_source_inspection.py && echo \"========\" && cat /testbed/tests/test_frame_inspection.py && echo \"======== GIT LOG ========\" && cd /testbed && git log --oneline -20 && git status && git log --all --oneline | head -40"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-e8bbc589-46e9-43e1-93c3-57c91285540a-5",
+            "content": "from source import sourcelines\nfrom stackprinter import source_inspection as si\n\n\ndef test_source_annotation(sourcelines):\n    \"\"\" \"\"\"\n    line_offset = 23\n    source_map, line2names, name2lines, head_lns, lineno = si.annotate(sourcelines, line_offset, 42)\n\n    # see that we didn't forget or invent any lines\n    assert len(source_map) == len(sourcelines)\n\n    # reassemble the original source, whitespace and all\n    # (except when we hit the `\\`-line continuations at the bottom of the\n    # file - parsing collapses continued lines, so those can't be reconstructed.)\n    for k, (true_line, parsed_line) in enumerate(zip(sourcelines, source_map.values())):\n        if '\\\\' in true_line:\n            assert k >= 50\n            break\n        reconstructed_line = ''.join([snippet for snippet, ttype in parsed_line])\n        assert reconstructed_line == true_line\n\n\n    # see if we found this known token\n    assert source_map[17 + line_offset][5] == ('lambda', 'KW')\n\n    # see if we found this name\n    assert \"spam_spam_spam\" in line2names[17 + line_offset]\n    assert 17 + line_offset in name2lines[\"spam_spam_spam\"]\n\n    # see if we found this multiline function header\n    assert head_lns == [k + line_offset for k in [4,5,6,7]]\n\n    # ... and that lineno survived the roundtrip\n    assert lineno == 42========\nimport sys\nimport pytest\nimport stackprinter.extraction as ex\n\n@pytest.fixture\ndef frameinfo():\n    somevalue = 'spam'\n\n    supersecretthings = \"gaaaah\"\n    class Blob():\n        pass\n    someobject = Blob()\n    someobject.secretattribute = \"uarrgh\"\n\n    fr = sys._getframe()\n    hidden = [r\".*secret.*\", r\"someobject\\..*attribute\"]\n    return ex.get_info(fr, suppressed_vars=hidden)\n\ndef test_frameinfo(frameinfo):\n    fi = frameinfo\n    assert fi.filename.endswith('test_frame_inspection.py')\n    assert fi.function == 'frameinfo'\n    assert fi.assignments['somevalue'] == 'spam'\n    assert isinstance(fi.assignments['supersecretthings'], ex.CensoredVariable)\n    assert isinstance(fi.assignments['someobject.secretattribute'], ex.CensoredVariable)\n======== GIT LOG ========\n60ab176 Initial commit\nOn branch main\nYour branch is up to date with 'origin/main'.\n\nUntracked files:\n  (use \"git add <file>...\" to include in what will be committed)\n\t.gitkeep\n\tstackprinter.egg-info/\n\nnothing added to commit but untracked files present (use \"git add\" to track)\ndedb5e0 Remove F2P Tests\n187395a Bug Patch\n693f175 Remove F2P Tests\nf9c11fb Bug Patch\nbcaef4c Remove F2P Tests\n9418a1e Bug Patch\n76256ea Remove F2P Tests\n4b0f4da Bug Patch\n22d8eb7 Remove F2P Tests\n82869e2 Bug Patch\n5a09a8c Remove F2P Tests\na16d6bf Bug Patch\n56e6df0 Remove F2P Tests\n1675276 Bug Patch\n8ae17c2 Remove F2P Tests\n8009ab0 Bug Patch\naae8d7b Remove F2P Tests\nfd9f893 Bug Patch\n9c292ee Remove F2P Tests\n8b543e6 Bug Patch\nf36525f Remove F2P Tests\n7dd16c9 Bug Patch\n90b6d02 Remove F2P Tests\nd3ae1e6 Bug Patch\n9ec0625 Remove F2P Tests\n7045034 Bug Patch\nf4a1fe1 Remove F2P Tests\nfd157ca Bug Patch\n70a3907 Remove F2P Tests\nafd6e6e Bug Patch\nadf2991 Remove F2P Tests\nafa06b3 Bug Patch\n80e9bb2 Remove F2P Tests\n495a3da Bug Patch\n1a5d848 Remove F2P Tests\n709a712 Bug Patch\n247fec7 Remove F2P Tests\n06ab0c7 Bug Patch\naa50b91 Remove F2P Tests\nabdde6f Bug Patch\n"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "jd__tenacity.0d40e76f.lm_rewrite__HfbeXxm__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# sum() with wait objects doesn't work correctly\n\n### What happened?\n\nWhen trying to use the built-in `sum()` function with multiple wait strategies, I get incorrect results. The code below should return a wait time between 6 and 9 seconds, but it fails:\n\n```python\nfrom tenacity import Retrying, wait_fixed, wait_random, wait_none\n\n# This should combine all wait strategies\nr = Retrying(wait=sum([wait_fixed(1), wait_random(0, 3), wait_fixed(5), wait_none()]))\n\n# Try to get the wait time\nwait_time = r.wait(retry_state)  # This doesn't work correctly\n```\n\n### What did you expect to happen?\n\nI expected the `sum()` function to work with wait objects, combining them properly. The wait time should be between 6 and 9 seconds (1 + [0-3] + 5 + 0).\n\n### Minimal Complete Verifiable Example\n\n```python\nfrom tenacity import Retrying, wait_fixed, wait_random, wait_none\n\n# Create a retry state\ndef make_retry_state(attempt_number, seconds_since_start):\n    retry_state = mock.Mock(spec=RetryCallState)\n    retry_state.attempt_number = attempt_number\n    retry_state.seconds_since_start = seconds_since_start\n    return retry_state\n\n# Try to combine wait strategies using sum()\nr = Retrying(wait=sum([wait_fixed(1), wait_random(0, 3), wait_fixed(5), wait_none()]))\nwait_time = r.wait(make_retry_state(1, 5))\n\nprint(f\"Wait time: {wait_time}\")\n# Should be between 6 and 9, but isn't working correctly\n```\n\n### Environment\n\n- tenacity version: latest\n- Python version: 3.10"
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository and how wait strategies combine so we can fix `sum()` with wait objects.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-8dd2aa49-2414-4a94-b91b-7b111f43cd7e-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -50 && cat /testbed/README.md | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-8dd2aa49-2414-4a94-b91b-7b111f43cd7e-0",
+            "content": "total 80\ndrwxr-xr-x 1 root root  4096 Sep 22 17:20 .\ndrwxr-xr-x 1 root root  4096 Sep 22 17:20 ..\n-rw-r--r-- 1 root root   294 Jul 13  2025 .editorconfig\ndrwxr-xr-x 8 root root  4096 Jul 13  2025 .git\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 .github\n-rw-r--r-- 1 root root    92 Jul 13  2025 .gitignore\n-rw-rw-r-- 1 1005 1005     0 Sep 22 15:44 .gitkeep\n-rw-r--r-- 1 root root  1097 Jul 13  2025 .mergify.yml\n-rw-r--r-- 1 root root   102 Jul 13  2025 .readthedocs.yml\n-rw-r--r-- 1 root root 11357 Jul 13  2025 LICENSE\nlrwxrwxrwx 1 root root    20 Jul 13  2025 README.rst -> doc/source/index.rst\ndrwxr-xr-x 3 root root  4096 Jul 13  2025 doc\n-rw-r--r-- 1 root root   641 Jul 13  2025 pyproject.toml\ndrwxr-xr-x 3 root root  4096 Jul 13  2025 releasenotes\n-rw-r--r-- 1 root root    41 Jul 13  2025 reno.yaml\n-rw-r--r-- 1 root root  1201 Jul 13  2025 setup.cfg\n-rw-r--r-- 1 root root   674 Jul 13  2025 setup.py\ndrwxr-xr-x 3 root root  4096 Jul 13  2025 tenacity\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 tests\n-rw-r--r-- 1 root root   698 Jul 13  2025 tox.ini\n/testbed/tenacity/_utils.py\n/testbed/tenacity/__init__.py\n/testbed/tenacity/retry.py\n/testbed/tenacity/stop.py\n/testbed/tenacity/before_sleep.py\n/testbed/tenacity/after.py\n/testbed/tenacity/wait.py\n/testbed/tenacity/nap.py\n/testbed/tenacity/before.py\n/testbed/tenacity/tornadoweb.py\n/testbed/tenacity/asyncio/__init__.py\n/testbed/tenacity/asyncio/retry.py\n/testbed/tests/__init__.py\n/testbed/tests/test_tornado.py\n/testbed/tests/test_tenacity.py\n/testbed/tests/test_issue_478.py\n/testbed/tests/test_utils.py\n/testbed/tests/test_asyncio.py\n/testbed/tests/test_after.py\n/testbed/setup.py\n/testbed/doc/source/conf.py\ncat: /testbed/README.md: No such file or directory\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-6a0d697c-1b2e-4d68-9055-eb9f779cba06-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/tenacity/wait.py && echo \"======== TESTS ========\" && cat /testbed/tests/test_tenacity.py | head -200"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-6a0d697c-1b2e-4d68-9055-eb9f779cba06-1",
+            "content": ", *args, **kwargs):\n                pass\n\n        repr(ConcreteRetrying())\n\n    def test_callstate_repr(self):\n        rs = RetryCallState(None, None, (), {})\n        rs.idle_for = 1.1111111\n        assert repr(rs).endswith(\"attempt #1; slept for 1.11; last result: none yet>\")\n        rs = make_retry_state(2, 5)\n        assert repr(rs).endswith(\n            \"attempt #2; slept for 0.0; last result: returned None>\"\n        )\n        rs = make_retry_state(\n            0, 0, last_result=tenacity.Future.construct(1, ValueError(\"aaa\"), True)\n        )\n        assert repr(rs).endswith(\n            \"attempt #0; slept for 0.0; last result: failed (ValueError aaa)>\"\n        )\n\n\nclass TestStopConditions(unittest.TestCase):\n    def test_never_stop(self):\n        r = Retrying()\n        self.assertFalse(r.stop(make_retry_state(3, 6546)))\n\n    def test_stop_any(self):\n        stop = tenacity.stop_any(\n            tenacity.stop_after_delay(1), tenacity.stop_after_attempt(4)\n        )\n\n        def s(*args):\n            return stop(make_retry_state(*args))\n\n        self.assertFalse(s(1, 0.1))\n        self.assertFalse(s(2, 0.2))\n        self.assertFalse(s(2, 0.8))\n        self.assertTrue(s(4, 0.8))\n        self.assertTrue(s(3, 1.8))\n        self.assertTrue(s(4, 1.8))\n\n    def test_stop_all(self):\n        stop = tenacity.stop_all(\n            tenacity.stop_after_delay(1), tenacity.stop_after_attempt(4)\n        )\n\n        def s(*args):\n            return stop(make_retry_state(*args))\n\n        self.assertFalse(s(1, 0.1))\n        self.assertFalse(s(2, 0.2))\n        self.assertFalse(s(2, 0.8))\n        self.assertFalse(s(4, 0.8))\n        self.assertFalse(s(3, 1.8))\n        self.assertTrue(s(4, 1.8))\n\n    def test_stop_or(self):\n        stop = tenacity.stop_after_delay(1) | tenacity.stop_after_attempt(4)\n\n        def s(*args):\n            return stop(make_retry_state(*args))\n\n        self.assertFalse(s(1, 0.1))\n        self.assertFalse(s(2, 0.2))\n        self.assertFalse(s(2, 0.8))\n        self.assertTrue(s(4, 0.8))\n        self.assertTrue(s(3, 1.8))\n        self.assertTrue(s(4, 1.8))\n\n    def test_stop_and(self):\n        stop = tenacity.stop_after_delay(1) & tenacity.stop_after_attempt(4)\n\n        def s(*args):\n            return stop(make_retry_state(*args))\n\n        self.assertFalse(s(1, 0.1))\n        self.assertFalse(s(2, 0.2))\n        self.assertFalse(s(2, 0.8))\n        self.assertFalse(s(4, 0.8))\n        self.assertFalse(s(3, 1.8))\n        self.assertTrue(s(4, 1.8))\n\n    def test_stop_after_attempt(self):\n        r = Retrying(stop=tenacity.stop_after_attempt(3))\n        self.assertFalse(r.stop(make_retry_state(2, 6546)))\n        self.assertTrue(r.stop(make_retry_state(3, 6546)))\n        self.assertTrue(r.stop(make_retry_state(4, 6546)))\n\n    def test_stop_after_delay(self):\n        for delay in (1, datetime.timedelta(seconds=1)):\n            with self.subTest():\n                r = Retrying(stop=tenacity.stop_after_delay(delay))\n                self.assertFalse(r.stop(make_retry_state(2, 0.999)))\n                self.assertTrue(r.stop(make_retry_state(2, 1)))\n                self.assertTrue(r.stop(make_retry_state(2, 1.001)))\n\n    def test_stop_before_delay(self):\n        for delay in (1, datetime.timedelta(seconds=1)):\n            with self.subTest():\n                r = Retrying(stop=tenacity.stop_before_delay(delay))\n                self.assertFalse(\n                    r.stop(make_retry_state(2, 0.999, upcoming_sleep=0.0001))\n                )\n                self.assertTrue(r.stop(make_retry_state(2, 1, upcoming_sleep=0.001)))\n                self.assertTrue(r.stop(make_retry_state(2, 1, upcoming_sleep=1)))\n\n                # It should act the same as stop_after_delay if upcoming sleep is 0\n                self.assertFalse(r.stop(make_retry_state(2, 0.999, upcoming_sleep=0)))\n                self.assertTrue(r.stop(make_retry_state(2, 1, upcoming_sleep=0)))\n                self.assertTrue(r.stop(make_retry_state(2, 1.001, upcoming_sleep=0)))\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-7a1b3373-c6fe-4a5f-9711-4038aac13f29-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/tenacity/wait.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-7a1b3373-c6fe-4a5f-9711-4038aac13f29-2",
+            "content": "s.MAX_WAIT,  # noqa\n    ) -> None:\n        self.start = _utils.to_seconds(start)\n        self.increment = _utils.to_seconds(increment)\n        self.max = _utils.to_seconds(max)\n\n    def __call__(self, retry_state: \"RetryCallState\") -> float:\n        result = self.start + (self.increment * (retry_state.attempt_number - 1))\n        return max(0, min(result, self.max))\n\n\nclass wait_exponential(wait_base):\n    \"\"\"Wait strategy that applies exponential backoff.\n\n    It allows for a customized multiplier and an ability to restrict the\n    upper and lower limits to some maximum and minimum value.\n\n    The intervals are fixed (i.e. there is no jitter), so this strategy is\n    suitable for balancing retries against latency when a required resource is\n    unavailable for an unknown duration, but *not* suitable for resolving\n    contention between multiple processes for a shared resource. Use\n    wait_random_exponential for the latter case.\n    \"\"\"\n\n    def __init__(\n        self,\n        multiplier: typing.Union[int, float] = 1,\n        max: _utils.time_unit_type = _utils.MAX_WAIT,  # noqa\n        exp_base: typing.Union[int, float] = 2,\n        min: _utils.time_unit_type = 0,  # noqa\n    ) -> None:\n        self.multiplier = multiplier\n        self.min = _utils.to_seconds(min)\n        self.max = _utils.to_seconds(max)\n        self.exp_base = exp_base\n\n    def __call__(self, retry_state: \"RetryCallState\") -> float:\n        try:\n            exp = self.exp_base ** (retry_state.attempt_number - 1)\n            result = self.multiplier * exp\n        except OverflowError:\n            return self.max\n        return max(max(0, self.min), min(result, self.max))\n\n\nclass wait_random_exponential(wait_exponential):\n    \"\"\"Random wait with exponentially widening window.\n\n    An exponential backoff strategy used to mediate contention between multiple\n    uncoordinated processes for a shared resource in distributed systems. This\n    is the sense in which \"exponential backoff\" is meant in e.g. Ethernet\n    networking, and corresponds to the \"Full Jitter\" algorithm described in\n    this blog post:\n\n    https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/\n\n    Each retry occurs at a random time in a geometrically expanding interval.\n    It allows for a custom multiplier and an ability to restrict the upper\n    limit of the random interval to some maximum value.\n\n    Example::\n\n        wait_random_exponential(multiplier=0.5,  # initial window 0.5s\n                                max=60)          # max 60s timeout\n\n    When waiting for an unavailable resource to become available again, as\n    opposed to trying to resolve contention for a shared resource, the\n    wait_exponential strategy (which uses a fixed interval) may be preferable.\n\n    \"\"\"\n\n    def __call__(self, retry_state: \"RetryCallState\") -> float:\n        high = super().__call__(retry_state=retry_state)\n        return random.uniform(self.min, high)\n\n\nclass wait_exponential_jitter(wait_base):\n    \"\"\"Wait strategy that applies exponential backoff and jitter.\n\n    It allows for a customized initial wait, maximum wait and jitter.\n\n    This implements the strategy described here:\n    https://cloud.google.com/storage/docs/retry-strategy\n\n    The wait time is min(initial * 2**n + random.uniform(0, jitter), maximum)\n    where n is the retry count.\n    \"\"\"\n\n    def __init__(\n        self,\n        initial: float = 1,\n        max: float = _utils.MAX_WAIT,  # noqa\n        exp_base: float = 2,\n        jitter: float = 1,\n    ) -> None:\n        self.initial = initial\n        self.max = max\n        self.exp_base = exp_base\n        self.jitter = jitter\n\n    def __call__(self, retry_state: \"RetryCallState\") -> float:\n        jitter = random.uniform(0, self.jitter)\n        try:\n            exp = self.exp_base ** (retry_state.attempt_number - 1)\n            result = self.initial * exp + jitter\n        except OverflowError:\n            result = self.max\n        return max(0, min(result, self.max))\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-792cba5f-6e51-4cd6-abdf-04fdac901476-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "wc -l /testbed/tenacity/wait.py /testbed/tests/test_tenacity.py && echo \"==== wait.py full ====\" && cat -n /testbed/tenacity/wait.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-792cba5f-6e51-4cd6-abdf-04fdac901476-3",
+            "content": ". there is no jitter), so this strategy is\n   145\t    suitable for balancing retries against latency when a required resource is\n   146\t    unavailable for an unknown duration, but *not* suitable for resolving\n   147\t    contention between multiple processes for a shared resource. Use\n   148\t    wait_random_exponential for the latter case.\n   149\t    \"\"\"\n   150\t\n   151\t    def __init__(\n   152\t        self,\n   153\t        multiplier: typing.Union[int, float] = 1,\n   154\t        max: _utils.time_unit_type = _utils.MAX_WAIT,  # noqa\n   155\t        exp_base: typing.Union[int, float] = 2,\n   156\t        min: _utils.time_unit_type = 0,  # noqa\n   157\t    ) -> None:\n   158\t        self.multiplier = multiplier\n   159\t        self.min = _utils.to_seconds(min)\n   160\t        self.max = _utils.to_seconds(max)\n   161\t        self.exp_base = exp_base\n   162\t\n   163\t    def __call__(self, retry_state: \"RetryCallState\") -> float:\n   164\t        try:\n   165\t            exp = self.exp_base ** (retry_state.attempt_number - 1)\n   166\t            result = self.multiplier * exp\n   167\t        except OverflowError:\n   168\t            return self.max\n   169\t        return max(max(0, self.min), min(result, self.max))\n   170\t\n   171\t\n   172\tclass wait_random_exponential(wait_exponential):\n   173\t    \"\"\"Random wait with exponentially widening window.\n   174\t\n   175\t    An exponential backoff strategy used to mediate contention between multiple\n   176\t    uncoordinated processes for a shared resource in distributed systems. This\n   177\t    is the sense in which \"exponential backoff\" is meant in e.g. Ethernet\n   178\t    networking, and corresponds to the \"Full Jitter\" algorithm described in\n   179\t    this blog post:\n   180\t\n   181\t    https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/\n   182\t\n   183\t    Each retry occurs at a random time in a geometrically expanding interval.\n   184\t    It allows for a custom multiplier and an ability to restrict the upper\n   185\t    limit of the random interval to some maximum value.\n   186\t\n   187\t    Example::\n   188\t\n   189\t        wait_random_exponential(multiplier=0.5,  # initial window 0.5s\n   190\t                                max=60)          # max 60s timeout\n   191\t\n   192\t    When waiting for an unavailable resource to become available again, as\n   193\t    opposed to trying to resolve contention for a shared resource, the\n   194\t    wait_exponential strategy (which uses a fixed interval) may be preferable.\n   195\t\n   196\t    \"\"\"\n   197\t\n   198\t    def __call__(self, retry_state: \"RetryCallState\") -> float:\n   199\t        high = super().__call__(retry_state=retry_state)\n   200\t        return random.uniform(self.min, high)\n   201\t\n   202\t\n   203\tclass wait_exponential_jitter(wait_base):\n   204\t    \"\"\"Wait strategy that applies exponential backoff and jitter.\n   205\t\n   206\t    It allows for a customized initial wait, maximum wait and jitter.\n   207\t\n   208\t    This implements the strategy described here:\n   209\t    https://cloud.google.com/storage/docs/retry-strategy\n   210\t\n   211\t    The wait time is min(initial * 2**n + random.uniform(0, jitter), maximum)\n   212\t    where n is the retry count.\n   213\t    \"\"\"\n   214\t\n   215\t    def __init__(\n   216\t        self,\n   217\t        initial: float = 1,\n   218\t        max: float = _utils.MAX_WAIT,  # noqa\n   219\t        exp_base: float = 2,\n   220\t        jitter: float = 1,\n   221\t    ) -> None:\n   222\t        self.initial = initial\n   223\t        self.max = max\n   224\t        self.exp_base = exp_base\n   225\t        self.jitter = jitter\n   226\t\n   227\t    def __call__(self, retry_state: \"RetryCallState\") -> float:\n   228\t        jitter = random.uniform(0, self.jitter)\n   229\t        try:\n   230\t            exp = self.exp_base ** (retry_state.attempt_number - 1)\n   231\t            result = self.initial * exp + jitter\n   232\t        except OverflowError:\n   233\t            result = self.max\n   234\t        return max(0, min(result, self.max))\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-9746d042-247d-4ab3-b41e-a0f249a39942-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "python3 -c \"\nwith open('/testbed/tenacity/wait.py') as f:\n    print(f.read())\n\""
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-9746d042-247d-4ab3-b41e-a0f249a39942-4",
+            "content": ".MAX_WAIT,  # noqa\n    ) -> None:\n        self.start = _utils.to_seconds(start)\n        self.increment = _utils.to_seconds(increment)\n        self.max = _utils.to_seconds(max)\n\n    def __call__(self, retry_state: \"RetryCallState\") -> float:\n        result = self.start + (self.increment * (retry_state.attempt_number - 1))\n        return max(0, min(result, self.max))\n\n\nclass wait_exponential(wait_base):\n    \"\"\"Wait strategy that applies exponential backoff.\n\n    It allows for a customized multiplier and an ability to restrict the\n    upper and lower limits to some maximum and minimum value.\n\n    The intervals are fixed (i.e. there is no jitter), so this strategy is\n    suitable for balancing retries against latency when a required resource is\n    unavailable for an unknown duration, but *not* suitable for resolving\n    contention between multiple processes for a shared resource. Use\n    wait_random_exponential for the latter case.\n    \"\"\"\n\n    def __init__(\n        self,\n        multiplier: typing.Union[int, float] = 1,\n        max: _utils.time_unit_type = _utils.MAX_WAIT,  # noqa\n        exp_base: typing.Union[int, float] = 2,\n        min: _utils.time_unit_type = 0,  # noqa\n    ) -> None:\n        self.multiplier = multiplier\n        self.min = _utils.to_seconds(min)\n        self.max = _utils.to_seconds(max)\n        self.exp_base = exp_base\n\n    def __call__(self, retry_state: \"RetryCallState\") -> float:\n        try:\n            exp = self.exp_base ** (retry_state.attempt_number - 1)\n            result = self.multiplier * exp\n        except OverflowError:\n            return self.max\n        return max(max(0, self.min), min(result, self.max))\n\n\nclass wait_random_exponential(wait_exponential):\n    \"\"\"Random wait with exponentially widening window.\n\n    An exponential backoff strategy used to mediate contention between multiple\n    uncoordinated processes for a shared resource in distributed systems. This\n    is the sense in which \"exponential backoff\" is meant in e.g. Ethernet\n    networking, and corresponds to the \"Full Jitter\" algorithm described in\n    this blog post:\n\n    https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/\n\n    Each retry occurs at a random time in a geometrically expanding interval.\n    It allows for a custom multiplier and an ability to restrict the upper\n    limit of the random interval to some maximum value.\n\n    Example::\n\n        wait_random_exponential(multiplier=0.5,  # initial window 0.5s\n                                max=60)          # max 60s timeout\n\n    When waiting for an unavailable resource to become available again, as\n    opposed to trying to resolve contention for a shared resource, the\n    wait_exponential strategy (which uses a fixed interval) may be preferable.\n\n    \"\"\"\n\n    def __call__(self, retry_state: \"RetryCallState\") -> float:\n        high = super().__call__(retry_state=retry_state)\n        return random.uniform(self.min, high)\n\n\nclass wait_exponential_jitter(wait_base):\n    \"\"\"Wait strategy that applies exponential backoff and jitter.\n\n    It allows for a customized initial wait, maximum wait and jitter.\n\n    This implements the strategy described here:\n    https://cloud.google.com/storage/docs/retry-strategy\n\n    The wait time is min(initial * 2**n + random.uniform(0, jitter), maximum)\n    where n is the retry count.\n    \"\"\"\n\n    def __init__(\n        self,\n        initial: float = 1,\n        max: float = _utils.MAX_WAIT,  # noqa\n        exp_base: float = 2,\n        jitter: float = 1,\n    ) -> None:\n        self.initial = initial\n        self.max = max\n        self.exp_base = exp_base\n        self.jitter = jitter\n\n    def __call__(self, retry_state: \"RetryCallState\") -> float:\n        jitter = random.uniform(0, self.jitter)\n        try:\n            exp = self.exp_base ** (retry_state.attempt_number - 1)\n            result = self.initial * exp + jitter\n        except OverflowError:\n            result = self.max\n        return max(0, min(result, self.max))\n\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-d467745c-2a66-4097-a786-72b3be2d6f9f-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "head -n 120 /testbed/tenacity/wait.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-d467745c-2a66-4097-a786-72b3be2d6f9f-5",
+            "content": "# Copyright 2016–2021 Julien Danjou\n# Copyright 2016 Joshua Harlow\n# Copyright 2013-2014 Ray Holder\n#\n# Licensed under the Apache License, Version 2.0 (the \"License\");\n# you may not use this file except in compliance with the License.\n# You may obtain a copy of the License at\n#\n# http://www.apache.org/licenses/LICENSE-2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License for the specific language governing permissions and\n# limitations under the License.\n\nimport abc\nimport random\nimport typing\n\nfrom tenacity import _utils\n\nif typing.TYPE_CHECKING:\n    from tenacity import RetryCallState\n\n\nclass wait_base(abc.ABC):\n    \"\"\"Abstract base class for wait strategies.\"\"\"\n\n    @abc.abstractmethod\n    def __call__(self, retry_state: \"RetryCallState\") -> float:\n        pass\n\n    def __add__(self, other: \"wait_base\") -> \"wait_combine\":\n        return wait_combine(self, other)\n\n    def __radd__(self, other: \"wait_base\") -> typing.Union[\"wait_combine\", \"wait_base\"]:\n        # make it possible to use multiple waits with the built-in sum function\n        if other == 0:  # type: ignore[comparison-overlap]\n            return self\n        return self.__add__(other)\n\n\nWaitBaseT = typing.Union[\n    wait_base, typing.Callable[[\"RetryCallState\"], typing.Union[float, int]]\n]\n\n\nclass wait_fixed(wait_base):\n    \"\"\"Wait strategy that waits a fixed amount of time between each retry.\"\"\"\n\n    def __init__(self, wait: _utils.time_unit_type) -> None:\n        self.wait_fixed = _utils.to_seconds(wait)\n\n    def __call__(self, retry_state: \"RetryCallState\") -> float:\n        return self.wait_fixed\n\n\nclass wait_none(wait_fixed):\n    \"\"\"Wait strategy that doesn't wait at all before retrying.\"\"\"\n\n    def __init__(self) -> None:\n        super().__init__(0)\n\n\nclass wait_random(wait_base):\n    \"\"\"Wait strategy that waits a random amount of time between min/max.\"\"\"\n\n    def __init__(\n        self, min: _utils.time_unit_type = 0, max: _utils.time_unit_type = 1\n    ) -> None:  # noqa\n        self.wait_random_min = _utils.to_seconds(min)\n        self.wait_random_max = _utils.to_seconds(max)\n\n    def __call__(self, retry_state: \"RetryCallState\") -> float:\n        return self.wait_random_min + (\n            random.random() * (self.wait_random_max - self.wait_random_min)\n        )\n\n\nclass wait_combine(wait_base):\n    \"\"\"Combine several waiting strategies.\"\"\"\n\n    def __init__(self, *strategies: wait_base) -> None:\n        self.wait_funcs = strategies\n\n    def __call__(self, retry_state: \"RetryCallState\") -> float:\n        return sum(x(retry_state=retry_state) for x in self.wait_funcs)\n\n\nclass wait_chain(wait_base):\n    \"\"\"Chain two or more waiting strategies.\n\n    If all strategies are exhausted, the very last strategy is used\n    thereafter.\n\n    For example::\n\n        @retry(wait=wait_chain(*[wait_fixed(1) for i in range(3)] +\n                               [wait_fixed(2) for j in range(5)] +\n                               [wait_fixed(5) for k in range(4)))\n        def wait_chained():\n            print(\"Wait 1s for 3 attempts, 2s for 5 attempts and 5s\n                   thereafter.\")\n    \"\"\"\n\n    def __init__(self, *strategies: wait_base) -> None:\n        self.strategies = strategies\n\n    def __call__(self, retry_state: \"RetryCallState\") -> float:\n        wait_func_no = min(max(retry_state.attempt_number, 1), len(self.strategies))\n        wait_func = self.strategies[wait_func_no - 1]\n        return wait_func(retry_state=retry_state)\n\n\nclass wait_incrementing(wait_base):\n    \"\"\"Wait an incremental amount of time after each attempt.\n\n    Starting at a starting value and incrementing by a value for each attempt\n    (and restricting the upper limit to some maximum value).\n"
+          }
+        ]
+      }
+    }
+  ]
+}

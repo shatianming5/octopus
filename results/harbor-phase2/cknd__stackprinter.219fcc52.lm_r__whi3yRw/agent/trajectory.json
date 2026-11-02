@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "cknd__stackprinter.219fcc52.lm_r__whi3yRw__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "**Issue Text**\n\nStackprinter fails to format exceptions and frames after refactoring\n\n**Description**\n\nAfter refactoring the `get_info` function in `extraction.py`, stackprinter is no longer able to properly format exceptions and frames. The function signature was changed and the `annotate` function is being called with incorrect parameters.\n\nI tried to use stackprinter to format an exception:\n\n```python\nimport stackprinter\n\ndef cause_error():\n    x = [1, 2, 3]\n    return x[10]  # This will raise an IndexError\n\ntry:\n    cause_error()\nexcept:\n    print(stackprinter.format())\n```\n\nBut instead of getting a nicely formatted stack trace, I get an error about incorrect function arguments.\n\n**To Reproduce**\n\nSteps to reproduce the behavior:\n1. Import stackprinter\n2. Try to format an exception using `stackprinter.format()`\n3. Observe that it fails with an error about incorrect arguments to the `annotate` function\n\n**Expected behavior**\n\nStackprinter should properly format the exception with variable values and source code context, as it did before the refactoring.\n\n**Root cause**\n\nThe `annotate` function is being called with different parameters than it expects. The function signature was changed during refactoring but the call site wasn't updated to match.\n\nThe issue is in the `get_info` function in `extraction.py` where it calls `annotate` with incorrect parameters:\n\n```python\nsource_text = ''.join(source_lines)\nsource_map, head_lns, line2names, name2lines = annotate(\n    source_text, \n    startline, \n    frame.f_code.co_name\n)\n```\n\nBut the `annotate` function expects different parameters and returns different values."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository and the `get_info`/`annotate` call site to find the signature mismatch.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-d2bdd602-0290-4e61-bbeb-87c68807e3a4-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -50 && cat /testbed/README.md 2>/dev/null | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-d2bdd602-0290-4e61-bbeb-87c68807e3a4-0",
+            "content": "ackprinter/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/cknd/stackprinter/actions/workflows/build.yml)\n\n# Better tracebacks\n\nThis is a more helpful version of Python's built-in exception message: It shows more code context and the current values of nearby variables. That answers many of the questions I'd ask an interactive debugger: Where in the code was the crash, what's in the relevant variables, and why was _that_ function called with _those_ arguments. It either prints to the console or gives you a string for logging.\n\n```bash\npip3 install stackprinter\n```\n### Before\n```\nTraceback (most recent call last):\n  File \"demo.py\", line 12, in <module>\n    dangerous_function(somelist + anotherlist)\n  File \"demo.py\", line 6, in dangerous_function\n    return sorted(blub, key=lambda xs: sum(xs))\n  File \"demo.py\", line 6, in <lambda>\n    return sorted(blub, key=lambda xs: sum(xs))\nTypeError: unsupported operand type(s) for +: 'int' and 'str'\n```\n\n### After\n```\nFile demo.py, line 12, in <module>\n    9        somelist = [[1,2], [3,4]]\n    10       anotherlist = [['5', 6]]\n    11       spam = numpy.zeros((3,3))\n--> 12       dangerous_function(somelist + anotherlist)\n    13   except:\n    ..................................................\n     somelist = [[1, 2, ], [3, 4, ], ]\n     anotherlist = [['5', 6, ], ]\n     spam = 3x3 array([[0. 0. 0.]\n                       [0. 0. 0.]\n                       [0. 0. 0.]])\n    ..................................................\n\nFile demo.py, line 6, in dangerous_function\n    5    def dangerous_function(blub):\n--> 6        return sorted(blub, key=lambda xs: sum(xs))\n    ..................................................\n     blub = [[1, 2, ], [3, 4, ], ['5', 6, ], ]\n    ..................................................\n\nFile demo.py, line 6, in <lambda>\n    3\n    4\n    5    def dangerous_function(blub):\n--> 6        return sorted(blub, key=lambda xs: sum(xs))\n    7\n    ..................................................\n     xs = ['5', 6, ]\n    ..................................................\n\nTypeError: unsupported operand type(s) for +: 'int' and 'str'\n```\nI rarely use this locally instead of a real debugger, but it helps me sleep when my code runs somewhere where the only debug tool is a log file (though it's not a fully-grown [error monitoring system](https://sentry.io/welcome/)).\n\nBy default, it tries to be somewhat polite about screen space, showing only a few source lines & the function header, and only the variables _that appear in those lines_, and using only (?) 500 characters per variable. You can [configure](https://github.com/cknd/stackprinter/blob/master/stackprinter/__init__.py#L28-L149) exactly how verbose things should be.\n\nIt outputs plain text normally, which is good for log files. There's also a color mode for some reason 🌈, with a few different color schemes for light and dark backgrounds. (The colors [track different variables](https://medium.com/@brianwill/making-semantic-highlighting-useful-9aeac92411df) instead of the language syntax.)\n\n<img src=\"https://raw.githubusercontent.com/cknd/stackprinter/master/notebook.png\" width=\"500\">\n\n# Usage\n\n## Option 1: Set and forget\nTo replace the default python crash printout, call `set_excepthook()` somewhere once. Afterwards, any uncaught exception will be printed with an extended traceback (to stderr, by default). You could also [make this permanent for your python installation](#making-it-stick).\n\n```python\nimport stackprinter\nstackprinter.set_excepthook(style='darkbg2')  # for jupyter notebooks try style='lightbg'\n```\n## Option 2: Call it selectively during exception handling\nFor more control, call [`show()`](https://github.com/cknd/stackprinter/blob/master/stackprinter/__init__.py#L166-L183) or [`format()`](https://github.com/cknd/stackprinter/blob/master/stackprinter/__init__.py#L28-L149) inside an `except` block. `show()` prints to stderr, `format()` returns a string, for custom logging.\n\n```python\ntry:\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-07fedfc2-3ce1-4b8a-9080-051d36adfd12-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "find /testbed -type f -name \"*.py\" | sort && echo \"==== extraction.py ====\" && cat /testbed/stackprinter/extraction.py 2>/dev/null || find /testbed -name \"*extraction*\""
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-07fedfc2-3ce1-4b8a-9080-051d36adfd12-1",
+            "content": "return tb_or_frame\n\n    if isinstance(tb_or_frame, types.TracebackType):\n        tb = tb_or_frame\n        lineno = tb.tb_lineno if lineno is None else lineno\n        frame = tb.tb_frame\n    elif isinstance(tb_or_frame, types.FrameType):\n        frame = tb_or_frame\n        lineno = frame.f_lineno if lineno is None else lineno\n    else:\n        raise ValueError('Cant inspect this: ' + repr(tb_or_frame))\n\n    filename = inspect.getsourcefile(frame) or inspect.getfile(frame)\n    function = frame.f_code.co_name\n\n    try:\n        source, startline = get_source(frame)\n        # this can be slow (tens of ms) the first time it is called, since\n        # inspect.get_source internally calls inspect.getmodule, for no\n        # other purpose than updating the linecache. seems like a bad tradeoff\n        # for our case, but this is not the time & place to fork `inspect`.\n    except:\n        source = []\n        startline = lineno\n\n    source_map, line2names, name2lines, head_lns, lineno = annotate(source, startline, lineno)\n\n    if function in NON_FUNCTION_SCOPES:\n        head_lns = []\n\n    names = name2lines.keys()\n    assignments = get_vars(names, frame.f_locals, frame.f_globals, suppressed_vars)\n\n    finfo =  FrameInfo(filename, function, lineno, source_map, head_lns,\n                       line2names, name2lines, assignments)\n    return finfo\n\n\ndef get_source(frame):\n    \"\"\"\n    get source lines for this frame\n\n    Params\n    ---\n    frame : frame object\n\n    Returns\n    ---\n    lines : list of str\n\n    startline : int\n        location of lines[0] in the original source file\n    \"\"\"\n\n    # TODO find out what's faster: Allowing inspect's getsourcelines\n    # to tokenize the whole file to find the surrounding code block,\n    # or getting the whole file quickly via linecache & feeding all\n    # of it to our own instance of tokenize, then clipping to\n    # desired context afterwards.\n\n    if frame.f_code.co_name in NON_FUNCTION_SCOPES:\n        lines, _ = inspect.findsource(frame)\n        startline = 1\n    else:\n        lines, startline = inspect.getsourcelines(frame)\n\n    return lines, startline\n\n\ndef get_vars(names, loc, glob, suppressed_vars):\n    assignments = []\n    for name in names:\n        if match(name, suppressed_vars):\n            assignments.append((name, CensoredVariable()))\n        else:\n            try:\n                val = lookup(name, loc, glob)\n            except LookupError:\n                pass\n            else:\n                assignments.append((name, val))\n    return OrderedDict(assignments)\n\n\ndef lookup(name, scopeA, scopeB):\n    basename, *attr_path = name.split('.')\n    if basename in scopeA:\n        val = scopeA[basename]\n    elif basename in scopeB:\n        val = scopeB[basename]\n    else:\n        # not all names in the source file will be\n        # defined (yet) when we get to see the frame\n        raise LookupError(basename)\n\n    for k, attr in enumerate(attr_path):\n        try:\n            val = getattr(val, attr)\n        except Exception as e:\n            # return a special value in case of lookup errors\n            # (note: getattr can raise anything, e.g. if a complex\n            # @property fails).\n            return UnresolvedAttribute(basename, attr_path, k, val,\n                                       e.__class__.__name__, str(e))\n    return val\n\n\nclass CensoredVariable():\n    def __repr__(self):\n        return \"*****\"\n\nclass UnresolvedAttribute():\n    \"\"\"\n    Container value for failed dot attribute lookups\n    \"\"\"\n    def __init__(self, basename, attr_path, failure_idx, value,\n                exc_type, exc_str):\n        self.basename = basename\n        self.attr_path = attr_path\n        self.first_failed = attr_path[failure_idx]\n        self.failure_idx = failure_idx\n        self.last_resolvable_value = value\n        self.exc_type = exc_type\n        self.exc_str = exc_str\n\n    @property\n    def last_resolvable_name(self):\n        return self.basename + '.'.join([''] + self.attr_path[:self.failure_idx])\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-59f260ba-3b06-45d6-a177-92913511704e-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed/stackprinter/ && wc -l /testbed/stackprinter/*.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-59f260ba-3b06-45d6-a177-92913511704e-2",
+            "content": "total 96\ndrwxr-xr-x 2 root root  4096 Jul 12  2025 .\ndrwxr-xr-x 1 root root  4096 Sep 22 17:48 ..\n-rw-r--r-- 1 root root 11257 Jul 12  2025 __init__.py\n-rw-r--r-- 1 root root  7361 Jul 12  2025 colorschemes.py\n-rw-r--r-- 1 root root  6808 Jul 12  2025 extraction.py\n-rw-r--r-- 1 root root  9014 Jul 12  2025 formatting.py\n-rw-r--r-- 1 root root 15066 Jul 12  2025 frame_formatting.py\n-rw-r--r-- 1 root root  7208 Jul 12  2025 prettyprinting.py\n-rw-r--r-- 1 root root  8652 Jul 12  2025 source_inspection.py\n-rw-r--r-- 1 root root  5763 Jul 12  2025 tracing.py\n-rw-r--r-- 1 root root  2651 Jul 12  2025 utils.py\n  356 /testbed/stackprinter/__init__.py\n  251 /testbed/stackprinter/colorschemes.py\n  201 /testbed/stackprinter/extraction.py\n  251 /testbed/stackprinter/formatting.py\n  381 /testbed/stackprinter/frame_formatting.py\n  259 /testbed/stackprinter/prettyprinting.py\n  251 /testbed/stackprinter/source_inspection.py\n  194 /testbed/stackprinter/tracing.py\n  100 /testbed/stackprinter/utils.py\n 2244 total\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-f25d7f6b-726d-4c34-953c-d678e4ae3f6b-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/stackprinter/extraction.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-f25d7f6b-726d-4c34-953c-d678e4ae3f6b-3",
+            "content": "return tb_or_frame\n\n    if isinstance(tb_or_frame, types.TracebackType):\n        tb = tb_or_frame\n        lineno = tb.tb_lineno if lineno is None else lineno\n        frame = tb.tb_frame\n    elif isinstance(tb_or_frame, types.FrameType):\n        frame = tb_or_frame\n        lineno = frame.f_lineno if lineno is None else lineno\n    else:\n        raise ValueError('Cant inspect this: ' + repr(tb_or_frame))\n\n    filename = inspect.getsourcefile(frame) or inspect.getfile(frame)\n    function = frame.f_code.co_name\n\n    try:\n        source, startline = get_source(frame)\n        # this can be slow (tens of ms) the first time it is called, since\n        # inspect.get_source internally calls inspect.getmodule, for no\n        # other purpose than updating the linecache. seems like a bad tradeoff\n        # for our case, but this is not the time & place to fork `inspect`.\n    except:\n        source = []\n        startline = lineno\n\n    source_map, line2names, name2lines, head_lns, lineno = annotate(source, startline, lineno)\n\n    if function in NON_FUNCTION_SCOPES:\n        head_lns = []\n\n    names = name2lines.keys()\n    assignments = get_vars(names, frame.f_locals, frame.f_globals, suppressed_vars)\n\n    finfo =  FrameInfo(filename, function, lineno, source_map, head_lns,\n                       line2names, name2lines, assignments)\n    return finfo\n\n\ndef get_source(frame):\n    \"\"\"\n    get source lines for this frame\n\n    Params\n    ---\n    frame : frame object\n\n    Returns\n    ---\n    lines : list of str\n\n    startline : int\n        location of lines[0] in the original source file\n    \"\"\"\n\n    # TODO find out what's faster: Allowing inspect's getsourcelines\n    # to tokenize the whole file to find the surrounding code block,\n    # or getting the whole file quickly via linecache & feeding all\n    # of it to our own instance of tokenize, then clipping to\n    # desired context afterwards.\n\n    if frame.f_code.co_name in NON_FUNCTION_SCOPES:\n        lines, _ = inspect.findsource(frame)\n        startline = 1\n    else:\n        lines, startline = inspect.getsourcelines(frame)\n\n    return lines, startline\n\n\ndef get_vars(names, loc, glob, suppressed_vars):\n    assignments = []\n    for name in names:\n        if match(name, suppressed_vars):\n            assignments.append((name, CensoredVariable()))\n        else:\n            try:\n                val = lookup(name, loc, glob)\n            except LookupError:\n                pass\n            else:\n                assignments.append((name, val))\n    return OrderedDict(assignments)\n\n\ndef lookup(name, scopeA, scopeB):\n    basename, *attr_path = name.split('.')\n    if basename in scopeA:\n        val = scopeA[basename]\n    elif basename in scopeB:\n        val = scopeB[basename]\n    else:\n        # not all names in the source file will be\n        # defined (yet) when we get to see the frame\n        raise LookupError(basename)\n\n    for k, attr in enumerate(attr_path):\n        try:\n            val = getattr(val, attr)\n        except Exception as e:\n            # return a special value in case of lookup errors\n            # (note: getattr can raise anything, e.g. if a complex\n            # @property fails).\n            return UnresolvedAttribute(basename, attr_path, k, val,\n                                       e.__class__.__name__, str(e))\n    return val\n\n\nclass CensoredVariable():\n    def __repr__(self):\n        return \"*****\"\n\nclass UnresolvedAttribute():\n    \"\"\"\n    Container value for failed dot attribute lookups\n    \"\"\"\n    def __init__(self, basename, attr_path, failure_idx, value,\n                exc_type, exc_str):\n        self.basename = basename\n        self.attr_path = attr_path\n        self.first_failed = attr_path[failure_idx]\n        self.failure_idx = failure_idx\n        self.last_resolvable_value = value\n        self.exc_type = exc_type\n        self.exc_str = exc_str\n\n    @property\n    def last_resolvable_name(self):\n        return self.basename + '.'.join([''] + self.attr_path[:self.failure_idx])\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-0ef60f6b-9bc9-453c-82c3-56804c6a9483-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '1,201p' /testbed/stackprinter/extraction.py && echo \"======= source_inspection.py =======\" && sed -n '1,251p' /testbed/stackprinter/source_inspection.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-0ef60f6b-9bc9-453c-82c3-56804c6a9483-4",
+            "content": "RuntimeError: Command timed out after 20 seconds"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-989655ce-1c6b-4307-a3b7-5452df5ae048-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "head -n 80 /testbed/stackprinter/extraction.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-989655ce-1c6b-4307-a3b7-5452df5ae048-5",
+            "content": "import types\nimport inspect\nfrom collections import OrderedDict, namedtuple\nfrom stackprinter.source_inspection import annotate\nfrom stackprinter.utils import match\n\nNON_FUNCTION_SCOPES =  ['<module>', '<lambda>', '<listcomp>']\n\n_FrameInfo = namedtuple('_FrameInfo',\n                        ['filename', 'function', 'lineno', 'source_map',\n                         'head_lns', 'line2names', 'name2lines', 'assignments'])\n\nclass FrameInfo(_FrameInfo):\n    # give this namedtuple type a friendlier string representation\n    def __str__(self):\n        return (\"<FrameInfo %s, line %s, scope %s>\" %\n                (self.filename, self.lineno, self.function))\n\n\ndef get_info(tb_or_frame, lineno=None, suppressed_vars=[]):\n    \"\"\"\n    Get a frame representation that's easy to format\n\n\n    Params\n    ---\n    tb: Traceback object or Frame object\n\n    lineno: int (optional)\n        Override which source line is treated as the important one. For trace-\n        back objects this defaults to the last executed line (tb.tb_lineno).\n        For frame objects, it defaults the currently executed one (fr.f_lineno).\n\n\n    Returns\n    ---\n    FrameInfo, a named tuple with the following fields:\n\n         filename: Path of the executed source file\n\n         function: Name of the scope\n\n         lineno: Highlighted line (last executed line)\n\n         source_map: OrderedDict\n            Maps line numbers to a list of tokens. Each token is a (string, type)\n            tuple. Concatenating the first elements of all tokens of all lines\n            restores the original source, weird whitespaces/indentations and all\n            (in contrast to python's built-in `tokenize`). However, multiline\n            statements (those with a trailing backslash) are secretly collapsed\n            into their first line.\n\n         head_lns: (int, int) or (None, None)\n            Line numbers of the beginning and end of the function header\n\n         line2names: dict\n            Maps each line number to a list of variables names that occur there\n\n         name2lines: dict\n            Maps each variable name to a list of line numbers where it occurs\n\n         assignments: OrderedDict\n            Holds current values of all variables that occur in the source and\n            are found in the given frame's locals or globals. Attribute lookups\n            with dot notation are treated as one variable, so if `self.foo.zup`\n            occurs in the source, this dict will get a key 'self.foo.zup' that\n            holds the fully resolved value.\n            (TODO: it would be easy to return the whole attribute lookup chain,\n            so maybe just do that & let formatting decide which parts to show?)\n            (TODO: Support []-lookups just like . lookups)\n    \"\"\"\n\n    if isinstance(tb_or_frame, FrameInfo):\n        return tb_or_frame\n\n    if isinstance(tb_or_frame, types.TracebackType):\n        tb = tb_or_frame\n        lineno = tb.tb_lineno if lineno is None else lineno\n        frame = tb.tb_frame\n    elif isinstance(tb_or_frame, types.FrameType):\n"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "actions": [],
+  "contexts": [],
+  "errors": [
+    "TimeoutExpired: Command '['nvidia-smi', '-i', '0', '--query-gpu=uuid', '--format=csv,noheader']' timed out after 5 seconds"
+  ],
+  "failure_memory": {
+    "failed_actions": [],
+    "observations": [],
+    "path_discovery_required": false,
+    "recovery_resources": [],
+    "rejected_proposals": 0,
+    "resource_revisions": {},
+    "verification_required": false,
+    "workspace_revision": 0
+  },
+  "model_patch": "",
+  "model_requests": 0,
+  "official_resolved": null,
+  "protocol": {
+    "agent_policy": "failure_aware_v4",
+    "block_size": 16,
+    "container_cpus": 2,
+    "container_memory": "8g",
+    "container_pids": 256,
+    "container_python": "/usr/bin/python3",
+    "container_workdir": "/testbed",
+    "cpu_budget_seconds": 1800,
+    "cpu_evaluator_timeout_seconds": 1800,
+    "decision_format": "openhands_xml_v1",
+    "directory_search_format": "matching_files_v1",
+    "dtype": "bfloat16",
+    "edit_feedback": "match_count",
+    "editor_view_override": {
+      "inspection_contract": "whole_file_or_1based_inclusive_range",
+      "max_lines": null,
+      "max_output_chars": 16000,
+      "read_output_format": "cat_n_numbered"
+    },
+    "generation_seed": 17,
+    "gpu_budget_seconds": 1170,
+    "gpu_episode_timeout_seconds": 1070,
+    "gpu_memory_utilization": 0.9,
+    "history_format": "chat_turns_v1",
+    "inspection_contract": "bounded_v1",
+    "max_actions": 100,
+    "max_model_len": 32768,
+    "max_num_batched_tokens": 8192,
+    "max_num_seqs": 1,
+    "max_output_tokens_per_action": 4096,
+    "max_tool_input_chars": 16000,
+    "max_tool_output_chars": 16000,
+    "message_policy": "codeact_continue_v1",
+    "new_task_assets_bytes_max": 2000000000,
+    "phase_timeout_seconds": 1200,
+    "profile": "expanded_actor_reference_v1",
+    "read_output_format": "raw",
+    "search_pattern_syntax": "regex_v1",
+    "shell_read_semantics": "native_stdout; cat is raw; no adapter line window",
+    "temperature": 0,
+    "tool_timeout_seconds": 30,
+    "view_truncation_policy": "openhands_aci_v0_1_0"
+  },
+  "relay": {
+    "returncode": 0,
+    "timed_out": false,
+    "wall_seconds": 103.41540292208083
+  },
+  "schema": "octopus-lighthouse-expanded-actor-episode-v1",
+  "solver_e2e_seconds": 93.84062884899322,
+  "status": "infrastructure_failure",
+  "task": {
+    "base_commit": "a5dbdd2eff4238213dcaad404d0e06d8d5d2489b",
+    "instance_id": "GoogleChrome__lighthouse-10176",
+    "repo": "GoogleChrome/lighthouse"
+  },
+  "tool_boundary": {
+    "container_id": "c494e34e7f44a2102ccc9975d290f1a90e7c98514a039ae30498f2bafdd2e508",
+    "profile": "expanded_actor_reference_v1",
+    "shell_boundary": {
+      "executor": "docker_native_bash_task_v1",
+      "filesystem": "writable task and dedicated scratch; read-only runtime/proc; controller Git inaccessible",
+      "gid": 65534,
+      "landlock_abi": 4,
+      "source_evidence": false,
+      "test_verification": false,
+      "uid": 65534
+    },
+    "shell_cwd": "each call starts at the repository root; no persistent shell"
+  }
+}

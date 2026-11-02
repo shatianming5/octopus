@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "marshmallow-code__apispec.8b4215__S95UUnS__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# Schema with many=True not working with schema2parameters\n\n## Description\n\nWhen using a schema with `many=True` in `schema2parameters` with a location other than 'body'/'json', the function doesn't raise an exception as expected. Instead, it tries to process the schema and fails silently.\n\n## Steps to reproduce\n\nHere's a simple example that demonstrates the issue:\n\n```python\nfrom apispec import APISpec\nfrom apispec.ext.marshmallow import MarshmallowPlugin\nfrom marshmallow import Schema, fields\n\n# Create an APISpec\nspec = APISpec(\n    title=\"Test API\",\n    version=\"1.0.0\",\n    openapi_version=\"2.0\",\n    plugins=[MarshmallowPlugin()],\n)\n\n# Create a schema with many=True\nclass UserSchema(Schema):\n    name = fields.Str()\n    email = fields.Email()\n\n# This should raise an AssertionError but doesn't\nparameters = spec.components.plugins[\"marshmallow\"].converter.schema2parameters(\n    UserSchema(many=True), \n    location=\"query\"\n)\n```\n\n## Expected behavior\n\nWhen using a schema with `many=True` with a location other than 'body'/'json', the function should raise an AssertionError with a message indicating that schemas with many=True are only supported for 'json' location.\n\n## Actual behavior\n\nThe function processes the schema without raising an exception, but the resulting parameters are incorrect. The `many=True` attribute is ignored, which can lead to unexpected behavior in the generated OpenAPI specification.\n\nAdditionally, I noticed that dump_only fields aren't being properly excluded from parameters when using schema2parameters with query location.\n\n## Environment\n\n- apispec version: 6.3.0\n- marshmallow version: 3.19.0\n- Python version: 3.10"
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository and locate how `schema2parameters` handles `many=True` so we can fix the missing assertion.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-8e2a65b2-cf8f-4f45-8042-54ebd1bd8a66-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -50 && cat /testbed/setup.py 2>/dev/null || cat /testbed/pyproject.toml 2>/dev/null || cat /testbed/setup.cfg 2>/dev/null"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-8e2a65b2-cf8f-4f45-8042-54ebd1bd8a66-0",
+            "content": "t\n-rw-r--r-- 1 root root 41285 Jul 13  2025 CHANGELOG.rst\n-rw-r--r-- 1 root root  3502 Jul 13  2025 CONTRIBUTING.rst\n-rw-r--r-- 1 root root  1087 Jul 13  2025 LICENSE\n-rw-r--r-- 1 root root  8339 Jul 13  2025 README.rst\n-rw-r--r-- 1 root root   275 Jul 13  2025 RELEASING.md\n-rw-r--r-- 1 root root   192 Jul 13  2025 SECURITY.md\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 docs\n-rw-r--r-- 1 root root  2488 Jul 13  2025 pyproject.toml\n-rw-r--r-- 1 root root   212 Jul 13  2025 readthedocs.yml\ndrwxr-xr-x 3 root root  4096 Jul 13  2025 src\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 tests\n-rw-r--r-- 1 root root   778 Jul 13  2025 tox.ini\n/testbed/src/apispec/exceptions.py\n/testbed/src/apispec/__init__.py\n/testbed/src/apispec/ext/marshmallow/openapi.py\n/testbed/src/apispec/ext/marshmallow/__init__.py\n/testbed/src/apispec/ext/marshmallow/common.py\n/testbed/src/apispec/ext/marshmallow/field_converter.py\n/testbed/src/apispec/ext/marshmallow/schema_resolver.py\n/testbed/src/apispec/ext/__init__.py\n/testbed/src/apispec/core.py\n/testbed/src/apispec/plugin.py\n/testbed/src/apispec/yaml_utils.py\n/testbed/src/apispec/utils.py\n/testbed/tests/schemas.py\n/testbed/tests/__init__.py\n/testbed/tests/test_ext_marshmallow_field.py\n/testbed/tests/test_ext_marshmallow.py\n/testbed/tests/test_core.py\n/testbed/tests/conftest.py\n/testbed/tests/utils.py\n/testbed/tests/test_ext_marshmallow_common.py\n/testbed/tests/test_yaml_utils.py\n/testbed/tests/test_utils.py\n/testbed/tests/test_ext_marshmallow_openapi.py\n/testbed/docs/conf.py\n[project]\nname = \"apispec\"\nversion = \"6.8.1\"\ndescription = \"A pluggable API specification generator. Currently supports the OpenAPI Specification (f.k.a. the Swagger specification).\"\nreadme = \"README.rst\"\nlicense = { file = \"LICENSE\" }\nauthors = [{ name = \"Steven Loria\", email = \"sloria1@gmail.com\" }]\nmaintainers = [\n  { name = \"Steven Loria\", email = \"sloria1@gmail.com\" },\n  { name = \"Jérôme Lafréchoux\", email = \"jerome@jolimont.fr\" },\n]\nclassifiers = [\n  \"Development Status :: 5 - Production/Stable\",\n  \"Intended Audience :: Developers\",\n  \"License :: OSI Approved :: MIT License\",\n  \"Programming Language :: Python :: 3\",\n  \"Programming Language :: Python :: 3.9\",\n  \"Programming Language :: Python :: 3.10\",\n  \"Programming Language :: Python :: 3.11\",\n  \"Programming Language :: Python :: 3.12\",\n  \"Programming Language :: Python :: 3.13\",\n]\nkeywords = [\n  \"apispec\",\n  \"swagger\",\n  \"openapi\",\n  \"specification\",\n  \"oas\",\n  \"documentation\",\n  \"spec\",\n  \"rest\",\n  \"api\",\n]\nrequires-python = \">=3.9\"\ndependencies = [\"packaging>=21.3\"]\n\n[project.urls]\nChangelog = \"https://apispec.readthedocs.io/en/latest/changelog.html\"\nFunding = \"https://opencollective.com/marshmallow\"\nIssues = \"https://github.com/marshmallow-code/apispec/issues\"\nSource = \"https://github.com/marshmallow-code/apispec\"\nTidelift = \"https://tidelift.com/subscription/pkg/pypi-apispec?utm_source=pypi-apispec&utm_medium=pypi\"\n\n[project.optional-dependencies]\nyaml = [\"PyYAML>=3.10\"]\nmarshmallow = [\"marshmallow>=3.18.0\"]\ndocs = [\n  \"apispec[marshmallow]\",\n  \"pyyaml==6.0.2\",\n  \"sphinx==8.1.3\",\n  \"sphinx-issues==5.0.0\",\n  \"sphinx-rtd-theme==3.0.2\",\n]\ntests = [\"apispec[yaml,marshmallow]\", \"openapi-spec-validator==0.7.1\", \"pytest\"]\ndev = [\"apispec[tests]\", \"tox\", \"pre-commit>=3.5,<5.0\"]\n\n[build-system]\nrequires = [\"flit_core<4\"]\nbuild-backend = \"flit_core.buildapi\"\n\n[tool.flit.sdist]\ninclude = [\n  \"docs/\",\n  \"tests/\",\n  \"CHANGELOG.rst\",\n  \"CONTRIBUTING.rst\",\n  \"SECURITY.md\",\n  \"tox.ini\",\n]\nexclude = [\"docs/_build/\"]\n\n[tool.ruff]\nsrc = [\"src\"]\nfix = true\nshow-fixes = true\noutput-format = \"full\"\n\n[tool.ruff.format]\ndocstring-code-format = true\n\n[tool.ruff.lint]\nignore = [\"E203\", \"E266\", \"E501\", \"E731\"]\nselect = [\n  \"B\",  # flake8-bugbear\n  \"E\",  # pycodestyle error\n  \"F\",  # pyflakes\n  \"I\",  # isort\n  \"UP\", # pyupgrade\n  \"W\",  # pycodestyle warning\n]\n\n[tool.mypy]\nignore_missing_imports = true\nwarn_unreachable = true\nwarn_unused_ignores = true\nwarn_redundant_casts = true\nno_implicit_optional = true\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-96b23821-050f-420f-b4f8-568642eae7c2-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/src/apispec/ext/marshmallow/openapi.py && echo \"===== TESTS =====\" && cat /testbed/tests/test_ext_marshmallow_openapi.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-96b23821-050f-420f-b4f8-568642eae7c2-1",
+            "content": "RuntimeError: Command timed out after 20 seconds"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-174ef897-5eb9-410c-b2ce-1146baba0763-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "wc -l /testbed/src/apispec/ext/marshmallow/openapi.py /testbed/tests/test_ext_marshmallow_openapi.py /testbed/src/apispec/ext/marshmallow/__init__.py /testbed/src/apispec/ext/marshmallow/common.py /testbed/src/apispec/ext/marshmallow/field_converter.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-174ef897-5eb9-410c-b2ce-1146baba0763-2",
+            "content": "  302 /testbed/src/apispec/ext/marshmallow/openapi.py\n  685 /testbed/tests/test_ext_marshmallow_openapi.py\n  245 /testbed/src/apispec/ext/marshmallow/__init__.py\n  150 /testbed/src/apispec/ext/marshmallow/common.py\n  643 /testbed/src/apispec/ext/marshmallow/field_converter.py\n 2025 total\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-47cc6501-dc6c-40c7-9712-9a1acffb28d6-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '1,302p' /testbed/src/apispec/ext/marshmallow/openapi.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-47cc6501-dc6c-40c7-9712-9a1acffb28d6-3",
+            "content": "RuntimeError: Command timed out after 20 seconds"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-f8fda997-823d-42e9-93a7-7a5f590f56c3-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "python3 -c \"\nwith open('/testbed/src/apispec/ext/marshmallow/openapi.py') as f:\n    print(f.read())\n\""
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-f8fda997-823d-42e9-93a7-7a5f590f56c3-4",
+            "content": "if \"deprecated\" in prop:\n                ret[\"deprecated\"] = prop.pop(\"deprecated\")\n            ret[\"schema\"] = prop\n\n        for param_attr_func in self.parameter_attribute_functions:\n            ret.update(param_attr_func(field, ret=ret))\n\n        return ret\n\n    def field2required(\n        self, field: marshmallow.fields.Field, **kwargs: typing.Any\n    ) -> dict:\n        \"\"\"Return the dictionary of OpenAPI parameter attributes for a required field.\n\n        :param Field field: A marshmallow field.\n        :rtype: dict\n        \"\"\"\n        ret = {}\n        partial = getattr(field.parent, \"partial\", False)\n        ret[\"required\"] = field.required and (\n            not partial or (is_collection(partial) and field.name not in partial)  # type:ignore\n        )\n        return ret\n\n    def list2param(self, field: marshmallow.fields.Field, **kwargs: typing.Any) -> dict:\n        \"\"\"Return a dictionary of parameter properties from\n        :class:`List <marshmallow.fields.List` fields.\n\n        :param Field field: A marshmallow field.\n        :rtype: dict\n        \"\"\"\n        ret: dict = {}\n        if isinstance(field, marshmallow.fields.List):\n            if self.openapi_version.major < 3:\n                ret[\"collectionFormat\"] = \"multi\"\n            else:\n                ret[\"explode\"] = True\n                ret[\"style\"] = \"form\"\n        return ret\n\n    def schema2jsonschema(self, schema):\n        \"\"\"Return the JSON Schema Object for a given marshmallow\n        :class:`Schema <marshmallow.Schema>` instance. Schema may optionally\n        provide the ``title`` and ``description`` class Meta options.\n\n        https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#schemaObject\n\n        :param Schema schema: A marshmallow Schema instance\n        :rtype: dict, a JSON Schema Object\n        \"\"\"\n        fields = get_fields(schema)\n        Meta = getattr(schema, \"Meta\", None)\n        partial = getattr(schema, \"partial\", None)\n\n        jsonschema = self.fields2jsonschema(fields, partial=partial)\n\n        if hasattr(Meta, \"title\"):\n            jsonschema[\"title\"] = Meta.title\n        if hasattr(Meta, \"description\"):\n            jsonschema[\"description\"] = Meta.description\n        if hasattr(Meta, \"unknown\") and Meta.unknown != marshmallow.EXCLUDE:\n            jsonschema[\"additionalProperties\"] = Meta.unknown == marshmallow.INCLUDE\n\n        return jsonschema\n\n    def fields2jsonschema(self, fields, *, partial=None):\n        \"\"\"Return the JSON Schema Object given a mapping between field names and\n        :class:`Field <marshmallow.Field>` objects.\n\n        :param dict fields: A dictionary of field name field object pairs\n        :param bool|tuple partial: Whether to override a field's required flag.\n            If `True` no fields will be set as required. If an iterable fields\n            in the iterable will not be marked as required.\n        :rtype: dict, a JSON Schema Object\n        \"\"\"\n        jsonschema = {\"type\": \"object\", \"properties\": {}}\n\n        for field_name, field_obj in fields.items():\n            observed_field_name = field_obj.data_key or field_name\n            prop = self.field2property(field_obj)\n            jsonschema[\"properties\"][observed_field_name] = prop\n\n            if field_obj.required:\n                if not partial or (\n                    is_collection(partial) and field_name not in partial\n                ):\n                    jsonschema.setdefault(\"required\", []).append(observed_field_name)\n\n        if \"required\" in jsonschema:\n            jsonschema[\"required\"].sort()\n\n        return jsonschema\n\n    def get_ref_dict(self, schema):\n        \"\"\"Method to create a dictionary containing a JSON reference to the\n        schema in the spec\n        \"\"\"\n        schema_key = make_schema_key(schema)\n        ref_schema = self.spec.components.get_ref(\"schema\", self.refs[schema_key])\n        if getattr(schema, \"many\", False):\n            return {\"type\": \"array\", \"items\": ref_schema}\n        return ref_schema\n\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-bdcbf346-9e44-44eb-86bc-793bfd893856-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "python3 -c \"\nwith open('/testbed/src/apispec/ext/marshmallow/openapi.py') as f:\n    content = f.read()\nprint(len(content.splitlines()))\nprint('---')\nprint('\\n'.join(content.splitlines()[:200]))\n\""
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-bdcbf346-9e44-44eb-86bc-793bfd893856-5",
+            "content": "sn't already present.\n\n        Typically will return a dictionary with the reference to the schema's\n        path in the spec unless the `schema_name_resolver` returns `None`, in\n        which case the returned dictionary will contain a JSON Schema Object\n        representation of the schema.\n\n        :param schema: schema to add to the spec\n        \"\"\"\n        try:\n            schema_instance = resolve_schema_instance(schema)\n        # If schema is a string and is not found in registry,\n        # assume it is a schema reference\n        except marshmallow.exceptions.RegistryError:\n            return schema\n        schema_key = make_schema_key(schema_instance)\n        if schema_key not in self.refs:\n            name = self.schema_name_resolver(schema)\n            if not name:\n                try:\n                    json_schema = self.schema2jsonschema(schema_instance)\n                except RuntimeError as exc:\n                    raise APISpecError(\n                        f\"Name resolver returned None for schema {schema} which is \"\n                        \"part of a chain of circular referencing schemas. Please\"\n                        \" ensure that the schema_name_resolver passed to\"\n                        \" MarshmallowPlugin returns a string for all circular\"\n                        \" referencing schemas.\"\n                    ) from exc\n                if getattr(schema, \"many\", False):\n                    return {\"type\": \"array\", \"items\": json_schema}\n                return json_schema\n            name = get_unique_schema_name(self.spec.components, name)\n            self.spec.components.schema(name, schema=schema)\n        return self.get_ref_dict(schema_instance)\n\n    def schema2parameters(\n        self,\n        schema,\n        *,\n        location,\n        name: str = \"body\",\n        required: bool = False,\n        description: str | None = None,\n    ):\n        \"\"\"Return an array of OpenAPI parameters given a given marshmallow\n        :class:`Schema <marshmallow.Schema>`. If `location` is \"body\", then return an array\n        of a single parameter; else return an array of a parameter for each included field in\n        the :class:`Schema <marshmallow.Schema>`.\n\n        In OpenAPI 3, only \"query\", \"header\", \"path\" or \"cookie\" are allowed for the location\n        of parameters. \"requestBody\" is used when fields are in the body.\n\n        https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#parameterObject\n        \"\"\"\n        location = __location_map__.get(location, location)\n        # OAS 2 body parameter\n        if location == \"body\":\n            param = {\n                \"in\": location,\n                \"required\": required,\n                \"name\": name,\n                \"schema\": self.resolve_nested_schema(schema),\n            }\n            if description:\n                param[\"description\"] = description\n            return [param]\n\n        assert not getattr(\n            schema, \"many\", False\n        ), \"Schemas with many=True are only supported for 'json' location (aka 'in: body')\"\n\n        fields = get_fields(schema, exclude_dump_only=True)\n\n        return [\n            self._field2parameter(\n                field_obj,\n                name=field_obj.data_key or field_name,\n                location=location,\n            )\n            for field_name, field_obj in fields.items()\n        ]\n\n    def _field2parameter(\n        self, field: marshmallow.fields.Field, *, name: str, location: str\n    ) -> dict:\n        \"\"\"Return an OpenAPI parameter as a `dict`, given a marshmallow\n        :class:`Field <marshmallow.Field>`.\n\n        https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#parameterObject\n        \"\"\"\n        ret: dict = {\"in\": location, \"name\": name}\n\n        prop = self.field2property(field)\n        if self.openapi_version.major < 3:\n            ret.update(prop)\n        else:\n            if \"description\" in prop:\n                ret[\"description\"] = prop.pop(\"description\")\n"
+          }
+        ]
+      }
+    }
+  ]
+}

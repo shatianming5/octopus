@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "pyutils__line_profiler.a646bf0f.__K74YAdK__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# Bug: Generator profiling doesn't handle send() method correctly\n\n## Description\n\nWhen profiling a generator function with `ContextualProfile`, the `send()` method doesn't work correctly. The profiler wrapper doesn't properly handle the generator protocol, causing generators that use `send()` to fail.\n\n## Steps to reproduce\n\n```python\nimport functools\nfrom line_profiler import ContextualProfile\n\ndef g(n):\n    \"\"\"A simple generator function that uses send()\"\"\"\n    x = yield n * 2\n    yield n + x\n\n# Create a profile instance\nprofile = ContextualProfile()\ng_wrapped = profile(g)\n\n# Use the generator\ni = g_wrapped(10)\nresult1 = next(i)  # Should return 20\nprint(f\"First yield: {result1}\")\n\nresult2 = i.send(30)  # Should return 40, but fails\nprint(f\"After send: {result2}\")\n```\n\n## Expected behavior\n\nThe generator should work normally with the `send()` method, allowing values to be sent into the generator and continuing execution.\n\n## Actual behavior\n\nWhen trying to use `send()` on a profiled generator, it fails. The profiler wrapper doesn't properly maintain the generator's state between yields, so the `send()` method doesn't work as expected.\n\n## Environment\n- Python 3.10\n- line_profiler version: latest\n\n## Traceback\n\n```\nTraceback (most recent call last):\n  File \"test_generator.py\", line 15, in <module>\n    result2 = i.send(30)  # Should return 40, but fails\nTypeError: 'NoneType' object is not callable\n```\n\nThe issue is in the `profile_generator` method in `ContextualProfile` class, which doesn't correctly implement the generator protocol when wrapping generator functions.\n\n<END WRITING>"
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository structure and locate the generator profiling code related to `send()`.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-725280d2-6095-4b95-9177-6b209052e0f6-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -100"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-725280d2-6095-4b95-9177-6b209052e0f6-0",
+            "content": "total 184\ndrwxr-xr-x 1 root root  4096 Sep 22 16:25 .\ndrwxr-xr-x 1 root root  4096 Sep 22 16:25 ..\n-rw-r--r-- 1 root root   503 Jul 14  2025 .codecov.yml\ndrwxr-xr-x 8 root root  4096 Jul 14  2025 .git\ndrwxr-xr-x 2 root root  4096 Jul 14  2025 .github\n-rw-r--r-- 1 root root   255 Jul 14  2025 .gitignore\n-rw-rw-r-- 1 1005 1005     0 Sep 22 15:44 .gitkeep\n-rw-r--r-- 1 root root   428 Jul 14  2025 .readthedocs.yml\n-rw-r--r-- 1 root root  6260 Jul 14  2025 CHANGELOG.rst\n-rw-r--r-- 1 root root  1410 Jul 14  2025 CMakeLists.txt\n-rw-r--r-- 1 root root  1616 Jul 14  2025 LICENSE.txt\n-rw-r--r-- 1 root root 13871 Jul 14  2025 LICENSE_Python.txt\n-rw-r--r-- 1 root root   380 Jul 14  2025 MANIFEST.in\n-rw-r--r-- 1 root root 20971 Jul 14  2025 README.rst\n-rwxr-xr-x 1 root root   668 Jul 14  2025 build_wheels.sh\n-rwxr-xr-x 1 root root   812 Jul 14  2025 clean.sh\ndrwxr-xr-x 3 root root  4096 Jul 14  2025 dev\ndrwxr-xr-x 4 root root  4096 Jul 14  2025 docs\n-rwxr-xr-x 1 root root 15044 Jul 14  2025 kernprof.py\ndrwxr-xr-x 3 root root  4096 Jul 14  2025 line_profiler\ndrwxr-xr-x 2 root root  4096 Jul 14  2025 line_profiler.egg-info\n-rwxr-xr-x 1 root root 15899 Jul 14  2025 publish.sh\n-rw-r--r-- 1 root root  2233 Jul 14  2025 pyproject.toml\ndrwxr-xr-x 2 root root  4096 Jul 14  2025 requirements\n-rw-r--r-- 1 root root   108 Jul 14  2025 requirements.txt\n-rwxr-xr-x 1 root root   163 Jul 14  2025 run_linter.sh\n-rwxr-xr-x 1 root root  6955 Jul 14  2025 run_tests.py\n-rwxr-xr-x 1 root root 11043 Jul 14  2025 setup.py\ndrwxr-xr-x 2 root root  4096 Jul 14  2025 tests\n/testbed/dev/autoprofile-poc.py\n/testbed/dev/maintain/port_utilities.py\n/testbed/kernprof.py\n/testbed/run_tests.py\n/testbed/tests/test_line_profiler.py\n/testbed/tests/test_complex_case.py\n/testbed/tests/test_explicit_profile.py\n/testbed/tests/complex_example.py\n/testbed/tests/test_duplicate_functions.py\n/testbed/tests/test_ipython.py\n/testbed/tests/test_kernprof.py\n/testbed/tests/test_cli.py\n/testbed/tests/test_autoprofile.py\n/testbed/tests/test_import.py\n/testbed/setup.py\n/testbed/line_profiler/autoprofile/profmod_extractor.py\n/testbed/line_profiler/autoprofile/line_profiler_utils.py\n/testbed/line_profiler/autoprofile/ast_profle_transformer.py\n/testbed/line_profiler/autoprofile/ast_tree_profiler.py\n/testbed/line_profiler/autoprofile/__init__.py\n/testbed/line_profiler/autoprofile/autoprofile.py\n/testbed/line_profiler/autoprofile/util_static.py\n/testbed/line_profiler/__main__.py\n/testbed/line_profiler/__init__.py\n/testbed/line_profiler/line_profiler.py\n/testbed/line_profiler/ipython_extension.py\n/testbed/line_profiler/explicit_profiler.py\n/testbed/docs/source/conf.py\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-9032ecf2-a3a9-41ad-8640-9d5d0ed97db1-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/line_profiler/line_profiler.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-9032ecf2-a3a9-41ad-8640-9d5d0ed97db1-1",
+            "content": " if we should force-terminal or just specify the color system\n        # write_console = Console(file=stream, force_terminal=True, soft_wrap=True)\n        write_console = Console(file=stream, soft_wrap=True, color_system='standard')\n        write_console.print(table)\n        stream.write('\\n')\n    else:\n        for lineno, line in zip(linenos, sublines):\n            nhits, time, per_hit, percent = display.get(lineno, empty)\n            line_ = line.rstrip('\\n').rstrip('\\r')\n            txt = template % (lineno, nhits, time, per_hit, percent, line_)\n            try:\n                stream.write(txt)\n            except UnicodeEncodeError:\n                # todo: better handling of windows encoding issue\n                # for now just work around it\n                line_ = 'UnicodeEncodeError - help wanted for a fix'\n                txt = template % (lineno, nhits, time, per_hit, percent, line_)\n                stream.write(txt)\n\n            stream.write('\\n')\n    stream.write('\\n')\n\n\ndef show_text(stats, unit, output_unit=None, stream=None, stripzeros=False,\n              details=True, summarize=False, sort=False, rich=False):\n    \"\"\" Show text for the given timings.\n    \"\"\"\n    if stream is None:\n        stream = sys.stdout\n\n    if output_unit is not None:\n        stream.write('Timer unit: %g s\\n\\n' % output_unit)\n    else:\n        stream.write('Timer unit: %g s\\n\\n' % unit)\n\n    if sort:\n        # Order by ascending duration\n        stats_order = sorted(stats.items(), key=lambda kv: sum(t[2] for t in kv[1]))\n    else:\n        # Default ordering\n        stats_order = sorted(stats.items())\n\n    if details:\n        # Show detailed per-line information for each function.\n        for (fn, lineno, name), timings in stats_order:\n            show_func(fn, lineno, name, stats[fn, lineno, name], unit,\n                      output_unit=output_unit, stream=stream,\n                      stripzeros=stripzeros, rich=rich)\n\n    if summarize:\n        # Summarize the total time for each function\n        for (fn, lineno, name), timings in stats_order:\n            total_time = sum(t[2] for t in timings) * unit\n            if not stripzeros or total_time:\n                line = '%6.2f seconds - %s:%s - %s\\n' % (total_time, fn, lineno, name)\n                stream.write(line)\n\n\ndef load_stats(filename):\n    \"\"\" Utility function to load a pickled LineStats object from a given\n    filename.\n    \"\"\"\n    with open(filename, 'rb') as f:\n        return pickle.load(f)\n\n\ndef main():\n    \"\"\"\n    The line profiler CLI to view output from ``kernprof -l``.\n    \"\"\"\n    def positive_float(value):\n        val = float(value)\n        if val <= 0:\n            raise ArgumentError\n        return val\n\n    parser = ArgumentParser()\n    parser.add_argument('-V', '--version', action='version', version=__version__)\n    parser.add_argument(\n        '-u',\n        '--unit',\n        default='1e-6',\n        type=positive_float,\n        help='Output unit (in seconds) in which the timing info is displayed (default: 1e-6)',\n    )\n    parser.add_argument(\n        '-z',\n        '--skip-zero',\n        action='store_true',\n        help='Hide functions which have not been called',\n    )\n    parser.add_argument(\n        '-r',\n        '--rich',\n        action='store_true',\n        help='Use rich formatting',\n    )\n    parser.add_argument(\n        '-t',\n        '--sort',\n        action='store_true',\n        help='Sort by ascending total time',\n    )\n    parser.add_argument(\n        '-m',\n        '--summarize',\n        action='store_true',\n        help='Print a summary of total function time',\n    )\n    parser.add_argument('profile_output', help='*.lprof file created by kernprof')\n\n    args = parser.parse_args()\n    lstats = load_stats(args.profile_output)\n    show_text(\n        lstats.timings, lstats.unit, output_unit=args.unit,\n        stripzeros=args.skip_zero,\n        rich=args.rich,\n        sort=args.sort,\n        summarize=args.summarize,\n    )\n\n\nif __name__ == '__main__':\n    main()\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-0296aaa9-9abf-432e-a0ed-d870558a820a-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "rg -n \"ContextualProfile|profile_generator|class LineProfiler\" /testbed --type py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-0296aaa9-9abf-432e-a0ed-d870558a820a-2",
+            "content": "bash: line 1: rg: command not found\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-f8fc51b8-3650-4294-b554-396a9904ee75-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "grep -n \"ContextualProfile\\|profile_generator\\|class LineProfiler\" /testbed -r --include=\"*.py\""
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-f8fc51b8-3650-4294-b554-396a9904ee75-3",
+            "content": "/testbed/kernprof.py:124:class ContextualProfile(Profile):\n/testbed/kernprof.py:162:    # ContextualProfile can use the same implementation.\n/testbed/kernprof.py:347:        prof = ContextualProfile()\n/testbed/kernprof.py:392:            if isinstance(prof, ContextualProfile):\n/testbed/kernprof.py:402:            if isinstance(prof, ContextualProfile):\n/testbed/tests/test_kernprof.py:2:from kernprof import ContextualProfile\n/testbed/tests/test_kernprof.py:20:        profile = ContextualProfile()\n/testbed/tests/test_kernprof.py:48:        profile = ContextualProfile()\n/testbed/tests/test_kernprof.py:59:        profile = ContextualProfile()\n/testbed/line_profiler/line_profiler.py:53:class LineProfiler(CLineProfiler):\n/testbed/line_profiler/ipython_extension.py:37:class LineProfilerMagics(Magics):\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-3f45ad8f-c3d7-45a1-bc16-3e810f6377e7-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/kernprof.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-3f45ad8f-c3d7-45a1-bc16-3e810f6377e7-4",
+            "content": "\n    parser.add_argument('-p', '--prof-mod', type=str, default='',\n                        help=\"List of modules, functions and/or classes to profile specified by their name or path. \"\n                        \"List is comma separated, adding the current script path profiles full script. \"\n                        \"Only works with line_profiler -l, --line-by-line\")\n    parser.add_argument('--prof-imports', action='store_true',\n                        help=\"If specified, modules specified to `--prof-mod` will also autoprofile modules that they import. \"\n                        \"Only works with line_profiler -l, --line-by-line\")\n\n    parser.add_argument('script', help='The python script file to run')\n    parser.add_argument('args', nargs='...', help='Optional script arguments')\n\n    options = parser.parse_args(args)\n\n    if not options.outfile:\n        extension = 'lprof' if options.line_by_line else 'prof'\n        options.outfile = '%s.%s' % (os.path.basename(options.script), extension)\n\n    sys.argv = [options.script] + options.args\n    if options.setup is not None:\n        # Run some setup code outside of the profiler. This is good for large\n        # imports.\n        setup_file = find_script(options.setup)\n        __file__ = setup_file\n        __name__ = '__main__'\n        # Make sure the script's directory is on sys.path instead of just\n        # kernprof.py's.\n        sys.path.insert(0, os.path.dirname(setup_file))\n        ns = locals()\n        execfile(setup_file, ns, ns)\n\n    if options.line_by_line:\n        import line_profiler\n        prof = line_profiler.LineProfiler()\n        options.builtin = True\n    else:\n        prof = ContextualProfile()\n\n    # If line_profiler is installed, then overwrite the explicit decorator\n    try:\n        import line_profiler\n    except ImportError:\n        ...\n    else:\n        line_profiler.profile._kernprof_overwrite(prof)\n\n    if options.builtin:\n        builtins.__dict__['profile'] = prof\n\n    script_file = find_script(options.script)\n    __file__ = script_file\n    __name__ = '__main__'\n    # Make sure the script's directory is on sys.path instead of just\n    # kernprof.py's.\n    sys.path.insert(0, os.path.dirname(script_file))\n\n    if options.output_interval:\n        rt = RepeatedTimer(max(options.output_interval, 1), prof.dump_stats, options.outfile)\n    original_stdout = sys.stdout\n    if options.output_interval:\n        rt = RepeatedTimer(max(options.output_interval, 1), prof.dump_stats, options.outfile)\n    try:\n        try:\n            execfile_ = execfile\n            ns = locals()\n            if options.prof_mod and options.line_by_line:\n                from line_profiler.autoprofile import autoprofile\n                prof_mod = options.prof_mod.split(',')\n                autoprofile.run(script_file, ns, prof_mod=prof_mod, profile_imports=options.prof_imports)\n            elif options.builtin:\n                execfile(script_file, ns, ns)\n            else:\n                prof.runctx('execfile_(%r, globals())' % (script_file,), ns, ns)\n        except (KeyboardInterrupt, SystemExit):\n            pass\n    finally:\n        if options.output_interval:\n            rt.stop()\n        prof.dump_stats(options.outfile)\n        print('Wrote profile results to %s' % options.outfile)\n        if options.view:\n            if isinstance(prof, ContextualProfile):\n                prof.print_stats()\n            else:\n                prof.print_stats(output_unit=options.unit,\n                                 stripzeros=options.skip_zero,\n                                 rich=options.rich,\n                                 stream=original_stdout)\n        else:\n            print('Inspect results with:')\n            py_exe = _python_command()\n            if isinstance(prof, ContextualProfile):\n                print(f'{py_exe} -m pstats \"{options.outfile}\"')\n            else:\n                print(f'{py_exe} -m line_profiler -rmt \"{options.outfile}\"')\n\n\nif __name__ == '__main__':\n    main(sys.argv[1:])\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-d459c001-fe7b-4bd8-8372-acfb775d6c7c-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '1,250p' /testbed/kernprof.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-d459c001-fe7b-4bd8-8372-acfb775d6c7c-5",
+            "content": "\"\" Return True if a function is a generator.\n    \"\"\"\n    isgen = (f.__code__.co_flags & CO_GENERATOR) != 0\n    return isgen\n\n\nclass ContextualProfile(Profile):\n    \"\"\" A subclass of Profile that adds a context manager for Python\n    2.5 with: statements and a decorator.\n    \"\"\"\n\n    def __init__(self, *args, **kwds):\n        super().__init__(*args, **kwds)\n        self.enable_count = 0\n\n    def enable_by_count(self, subcalls=True, builtins=True):\n        \"\"\" Enable the profiler if it hasn't been enabled before.\n        \"\"\"\n        if self.enable_count == 0:\n            self.enable(subcalls=subcalls, builtins=builtins)\n        self.enable_count += 1\n\n    def disable_by_count(self):\n        \"\"\" Disable the profiler if the number of disable requests matches the\n        number of enable requests.\n        \"\"\"\n        if self.enable_count > 0:\n            self.enable_count -= 1\n            if self.enable_count == 0:\n                self.disable()\n\n    def __call__(self, func):\n        \"\"\" Decorate a function to start the profiler on function entry and stop\n        it on function exit.\n        \"\"\"\n        # FIXME: refactor this into a utility function so that both it and\n        # line_profiler can use it.\n        if is_generator(func):\n            wrapper = self.wrap_generator(func)\n        else:\n            wrapper = self.wrap_function(func)\n        return wrapper\n\n    # FIXME: refactor this stuff so that both LineProfiler and\n    # ContextualProfile can use the same implementation.\n    def wrap_generator(self, func):\n        \"\"\" Wrap a generator to profile it.\n        \"\"\"\n        @functools.wraps(func)\n        def wrapper(*args, **kwds):\n            g = func(*args, **kwds)\n            # The first iterate will not be a .send()\n            self.enable_by_count()\n            try:\n                item = next(g)\n            except StopIteration:\n                return\n            finally:\n                self.disable_by_count()\n            input = (yield item)\n            # But any following one might be.\n            while True:\n                self.enable_by_count()\n                try:\n                    item = g.send(input)\n                except StopIteration:\n                    return\n                finally:\n                    self.disable_by_count()\n                input = (yield item)\n        return wrapper\n\n    def wrap_function(self, func):\n        \"\"\" Wrap a function to profile it.\n        \"\"\"\n        @functools.wraps(func)\n        def wrapper(*args, **kwds):\n            self.enable_by_count()\n            try:\n                result = func(*args, **kwds)\n            finally:\n                self.disable_by_count()\n            return result\n        return wrapper\n\n    def __enter__(self):\n        self.enable_by_count()\n\n    def __exit__(self, exc_type, exc_val, exc_tb):\n        self.disable_by_count()\n\n\nclass RepeatedTimer(object):\n    \"\"\"\n    Background timer for outputting file every n seconds.\n\n    Adapted from [SO474528]_.\n\n    References:\n        .. [SO474528] https://stackoverflow.com/questions/474528/execute-function-every-x-seconds/40965385#40965385\n    \"\"\"\n    def __init__(self, interval, dump_func, outfile):\n        self._timer = None\n        self.interval = interval\n        self.dump_func = dump_func\n        self.outfile = outfile\n        self.is_running = False\n        self.next_call = time.time()\n        self.start()\n\n    def _run(self):\n        self.is_running = False\n        self.start()\n        self.dump_func(self.outfile)\n\n    def start(self):\n        if not self.is_running:\n            self.next_call += self.interval\n            self._timer = threading.Timer(self.next_call - time.time(), self._run)\n            self._timer.start()\n            self.is_running = True\n\n    def stop(self):\n        self._timer.cancel()\n        self.is_running = False\n\n\ndef find_script(script_name):\n    \"\"\" Find the script.\n\n    If the input is not a file, then $PATH will be searched.\n    \"\"\"\n    if os.path.isfile(script_name):\n"
+          }
+        ]
+      }
+    }
+  ]
+}

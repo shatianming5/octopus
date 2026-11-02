@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "pyca__pyopenssl.04766a49.lm_rewr__VNhwo4V__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# X509Req.verify() returns incorrect result for invalid signatures\n\n## Description\n\nThe `X509Req.verify()` method in the `crypto` module returns incorrect results when verifying certificate signing requests with invalid signatures.\n\n## Steps/Code to Reproduce\n\n```python\nfrom OpenSSL import crypto\n\n# Create a certificate request\nrequest = crypto.X509Req()\npkey = crypto.load_privatekey(crypto.FILETYPE_PEM, open('private_key.pem').read())\nrequest.set_pubkey(pkey)\nrequest.sign(pkey, 'sha256')\n\n# Try to verify with a different key\ndifferent_key = crypto.load_privatekey(crypto.FILETYPE_PEM, open('different_key.pem').read())\nresult = request.verify(different_key)\n\nprint(f\"Verification result: {result}\")  # Should be False, but returns True\n```\n\n## Expected Results\n\nWhen verifying a certificate request with an incorrect key, the `verify()` method should return `False` to indicate that the signature is invalid.\n\n## Actual Results\n\nThe `verify()` method incorrectly returns `True` even when the signature verification should fail. This happens because the method is not properly handling the return value from the OpenSSL library.\n\n## Versions\n```\nPython: 3.10.15\npyOpenSSL: 24.0.0\nOpenSSL: 3.4.0\n```\n\nThis issue could lead to security problems where invalid certificate requests are incorrectly considered valid."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository and locate the X509Req.verify() implementation to determine why invalid signatures still return True.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-e3df2717-1239-4a81-9859-2e4f6c4b938e-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" -o -name \"*.c\" -o -name \"*.h\" -o -name \"README*\" -o -name \"setup.py\" -o -name \"pyproject.toml\" | head -100"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-e3df2717-1239-4a81-9859-2e4f6c4b938e-0",
+            "content": "total 116\ndrwxr-xr-x 1 root root  4096 Sep 22 17:13 .\ndrwxr-xr-x 1 root root  4096 Sep 22 17:13 ..\ndrwxr-xr-x 8 root root  4096 Jul 13  2025 .git\ndrwxr-xr-x 4 root root  4096 Jul 13  2025 .github\n-rw-r--r-- 1 root root   144 Jul 13  2025 .gitignore\n-rw-rw-r-- 1 1005 1005     0 Sep 22 15:44 .gitkeep\n-rw-r--r-- 1 root root   119 Jul 13  2025 .readthedocs.yml\n-rw-r--r-- 1 root root 24998 Jul 13  2025 CHANGELOG.rst\n-rw-r--r-- 1 root root  3337 Jul 13  2025 CODE_OF_CONDUCT.rst\n-rw-r--r-- 1 root root  5281 Jul 13  2025 CONTRIBUTING.rst\n-rw-r--r-- 1 root root  1152 Jul 13  2025 INSTALL.rst\n-rw-r--r-- 1 root root 11358 Jul 13  2025 LICENSE\n-rw-r--r-- 1 root root   243 Jul 13  2025 MANIFEST.in\n-rw-r--r-- 1 root root  1665 Jul 13  2025 README.rst\ndrwxr-xr-x 4 root root  4096 Jul 13  2025 doc\n-rw-r--r-- 1 root root  1035 Jul 13  2025 pyproject.toml\n-rw-r--r-- 1 root root   359 Jul 13  2025 setup.cfg\n-rw-r--r-- 1 root root  3198 Jul 13  2025 setup.py\ndrwxr-xr-x 4 root root  4096 Jul 13  2025 src\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 tests\n-rw-r--r-- 1 root root  1397 Jul 13  2025 tox.ini\n/testbed/src/OpenSSL/version.py\n/testbed/src/OpenSSL/__init__.py\n/testbed/src/OpenSSL/debug.py\n/testbed/src/OpenSSL/_util.py\n/testbed/src/OpenSSL/rand.py\n/testbed/src/OpenSSL/crypto.py\n/testbed/src/OpenSSL/SSL.py\n/testbed/pyproject.toml\n/testbed/README.rst\n/testbed/tests/test_ssl.py\n/testbed/tests/__init__.py\n/testbed/tests/test_crypto.py\n/testbed/tests/test_debug.py\n/testbed/tests/conftest.py\n/testbed/tests/test_rand.py\n/testbed/tests/test_util.py\n/testbed/tests/util.py\n/testbed/setup.py\n/testbed/doc/README\n/testbed/doc/conf.py\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-88dd546e-bc20-4d52-8811-709bca994bff-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "grep -n \"verify\\|X509Req\" /testbed/src/OpenSSL/crypto.py | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-88dd546e-bc20-4d52-8811-709bca994bff-1",
+            "content": "57:    \"X509Req\",\n970:class X509Req:\n1001:    ) -> X509Req:\n1008:        :rtype: X509Req\n1058:                \"Invalid version. The only valid version for X509Req is 0.\"\n1089:        # The name is owned by the X509Req structure.  As long as the X509Name\n1090:        # Python object is alive, keep the X509Req Python object alive.\n1192:    def verify(self, pkey: PKey) -> bool:\n1202:            problem verifying the signature.\n1207:        result = _lib.X509_REQ_verify(self._req, pkey._pkey)\n1214:_X509ReqInternal = X509Req\n1217:    X509Req,\n1224:    name=\"X509Req\",\n1747:    An X.509 store is used to describe a context in which to verify a\n1753:    verify a certificate. To carry out the actual verification process, see\n1913:    An exception raised when an error occurred while verifying a certificate\n1914:    using `OpenSSL.X509StoreContext.verify_certificate`.\n1990:        When a call to native OpenSSL X509_verify_cert fails, additional\n1994:            _lib.X509_verify_cert_error_string(\n2010:    def _verify_certificate(self) -> Any:\n2028:        ret = _lib.X509_verify_cert(store_ctx)\n2045:    def verify_certificate(self) -> None:\n2055:        self._verify_certificate()\n2068:        store_ctx = self._verify_certificate()\n2390:def dump_certificate_request(type: int, req: X509Req) -> bytes:\n2436:def load_certificate_request(type: int, buffer: bytes) -> X509Req:\n2438:    Load a certificate request (X509Req) from the string *buffer* encoded with\n2443:    :return: The X509Req object\n2463:    x509req = _X509ReqInternal.__new__(_X509ReqInternal)\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-39308d05-c275-47dc-8e85-d59897d3fb94-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '970,1220p' /testbed/src/OpenSSL/crypto.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-39308d05-c275-47dc-8e85-d59897d3fb94-2",
+            "content": "aram extensions: The X.509 extensions to add.\n        :type extensions: iterable of :py:class:`X509Extension`\n        :return: ``None``\n        \"\"\"\n        warnings.warn(\n            (\n                \"This API is deprecated and will be removed in a future \"\n                \"version of pyOpenSSL. You should use pyca/cryptography's \"\n                \"X.509 APIs instead.\"\n            ),\n            DeprecationWarning,\n            stacklevel=2,\n        )\n\n        stack = _lib.sk_X509_EXTENSION_new_null()\n        _openssl_assert(stack != _ffi.NULL)\n\n        stack = _ffi.gc(stack, _lib.sk_X509_EXTENSION_free)\n\n        for ext in extensions:\n            if not isinstance(ext, _X509ExtensionInternal):\n                raise ValueError(\"One of the elements is not an X509Extension\")\n\n            # TODO push can fail (here and elsewhere)\n            _lib.sk_X509_EXTENSION_push(stack, ext._extension)\n\n        add_result = _lib.X509_REQ_add_extensions(self._req, stack)\n        _openssl_assert(add_result == 1)\n\n    def get_extensions(self) -> list[_X509ExtensionInternal]:\n        \"\"\"\n        Get X.509 extensions in the certificate signing request.\n\n        :return: The X.509 extensions in this request.\n        :rtype: :py:class:`list` of :py:class:`X509Extension` objects.\n\n        .. versionadded:: 0.15\n        \"\"\"\n        warnings.warn(\n            (\n                \"This API is deprecated and will be removed in a future \"\n                \"version of pyOpenSSL. You should use pyca/cryptography's \"\n                \"X.509 APIs instead.\"\n            ),\n            DeprecationWarning,\n            stacklevel=2,\n        )\n\n        exts = []\n        native_exts_obj = _lib.X509_REQ_get_extensions(self._req)\n        native_exts_obj = _ffi.gc(\n            native_exts_obj,\n            lambda x: _lib.sk_X509_EXTENSION_pop_free(\n                x,\n                _ffi.addressof(_lib._original_lib, \"X509_EXTENSION_free\"),\n            ),\n        )\n\n        for i in range(_lib.sk_X509_EXTENSION_num(native_exts_obj)):\n            ext = _X509ExtensionInternal.__new__(_X509ExtensionInternal)\n            extension = _lib.X509_EXTENSION_dup(\n                _lib.sk_X509_EXTENSION_value(native_exts_obj, i)\n            )\n            ext._extension = _ffi.gc(extension, _lib.X509_EXTENSION_free)\n            exts.append(ext)\n        return exts\n\n    def sign(self, pkey: PKey, digest: str) -> None:\n        \"\"\"\n        Sign the certificate signing request with this key and digest type.\n\n        :param pkey: The key pair to sign with.\n        :type pkey: :py:class:`PKey`\n        :param digest: The name of the message digest to use for the signature,\n            e.g. :py:data:`\"sha256\"`.\n        :type digest: :py:class:`str`\n        :return: ``None``\n        \"\"\"\n        if pkey._only_public:\n            raise ValueError(\"Key has only public part\")\n\n        if not pkey._initialized:\n            raise ValueError(\"Key is uninitialized\")\n\n        digest_obj = _lib.EVP_get_digestbyname(_byte_string(digest))\n        if digest_obj == _ffi.NULL:\n            raise ValueError(\"No such digest method\")\n\n        sign_result = _lib.X509_REQ_sign(self._req, pkey._pkey, digest_obj)\n        _openssl_assert(sign_result > 0)\n\n    def verify(self, pkey: PKey) -> bool:\n        \"\"\"\n        Verifies the signature on this certificate signing request.\n\n        :param PKey key: A public key.\n\n        :return: ``True`` if the signature is correct.\n        :rtype: bool\n\n        :raises OpenSSL.crypto.Error: If the signature is invalid or there is a\n            problem verifying the signature.\n        \"\"\"\n        if not isinstance(pkey, PKey):\n            raise TypeError(\"pkey must be a PKey instance\")\n\n        result = _lib.X509_REQ_verify(self._req, pkey._pkey)\n        if result <= 0:\n            _raise_current_error()\n\n        return result\n\n\n_X509ReqInternal = X509Req\n\nutils.deprecated(\n    X509Req,\n    __name__,\n    (\n        \"CSR support in pyOpenSSL is deprecated. You should use the APIs \"\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll compare related verify implementations and tests to see how return values are supposed to be handled.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-37b51ca1-3548-4a12-878e-7d34b835ad94-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "grep -n \"def verify\\|X509_verify\\|X509_REQ_verify\\|request.verify\\|X509Req\" /testbed/src/OpenSSL/crypto.py /testbed/tests/test_crypto.py | head -100"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-37b51ca1-3548-4a12-878e-7d34b835ad94-3",
+            "content": "Req object\n/testbed/src/OpenSSL/crypto.py:2463:    x509req = _X509ReqInternal.__new__(_X509ReqInternal)\n/testbed/tests/test_crypto.py:36:    X509Req,\n/testbed/tests/test_crypto.py:861:    req = X509Req()\n/testbed/tests/test_crypto.py:1599:        `X509Req.sign` raises `ValueError` when passed a `PKey` with no parts.\n/testbed/tests/test_crypto.py:1608:        `X509Req.sign` raises `ValueError` when passed a `PKey` with no private\n/testbed/tests/test_crypto.py:1621:        `X509Req.sign` raises `ValueError` when passed a digest name which is\n/testbed/tests/test_crypto.py:1632:        `X509Req.sign` succeeds when passed a private key object and a\n/testbed/tests/test_crypto.py:1633:        valid digest function. `X509Req.verify` can be used to check\n/testbed/tests/test_crypto.py:1644:            assert request.verify(pub)\n/testbed/tests/test_crypto.py:1649:                request.verify(key)\n/testbed/tests/test_crypto.py:1652:class TestX509Req(_PKeyInteractionTestsMixin):\n/testbed/tests/test_crypto.py:1654:    Tests for `OpenSSL.crypto.X509Req`.\n/testbed/tests/test_crypto.py:1659:        Create and return a new `X509Req`.\n/testbed/tests/test_crypto.py:1661:        return X509Req()\n/testbed/tests/test_crypto.py:1665:        `X509Req` can be used to create instances of that type.\n/testbed/tests/test_crypto.py:1667:        assert is_consistent_type(X509Req, \"X509Req\")\n/testbed/tests/test_crypto.py:1671:        `X509Req` takes no arguments and returns an `X509Req` instance.\n/testbed/tests/test_crypto.py:1673:        request = X509Req()\n/testbed/tests/test_crypto.py:1674:        assert isinstance(request, X509Req)\n/testbed/tests/test_crypto.py:1678:        `X509Req.set_version` sets the X.509 version of the certificate\n/testbed/tests/test_crypto.py:1679:        request. `X509Req.get_version` returns the X.509 version of the\n/testbed/tests/test_crypto.py:1682:        request = X509Req()\n/testbed/tests/test_crypto.py:1689:        `X509Req.set_version` raises `TypeError` if called with a non-`int`\n/testbed/tests/test_crypto.py:1692:        request = X509Req()\n/testbed/tests/test_crypto.py:1700:        `X509Req.get_subject` returns an `X509Name` for the subject of the\n/testbed/tests/test_crypto.py:1704:        request = X509Req()\n/testbed/tests/test_crypto.py:1715:        `X509Req.add_extensions` accepts a `list` of `X509Extension` instances\n/testbed/tests/test_crypto.py:1718:        request = X509Req()\n/testbed/tests/test_crypto.py:1730:        `X509Req.get_extensions` returns a `list` of extensions added to this\n/testbed/tests/test_crypto.py:1733:        request = X509Req()\n/testbed/tests/test_crypto.py:1764:        `X509Req.add_extensions` raises `TypeError` if called with a\n/testbed/tests/test_crypto.py:1768:        request = X509Req()\n/testbed/tests/test_crypto.py:1776:        `X509Req.verify` raises `TypeError` if passed anything other than a\n/testbed/tests/test_crypto.py:1779:        request = X509Req()\n/testbed/tests/test_crypto.py:1781:            request.verify(object())\n/testbed/tests/test_crypto.py:1785:        `X509Req.verify` raises `OpenSSL.crypto.Error` if called with a\n/testbed/tests/test_crypto.py:1788:        request = X509Req()\n/testbed/tests/test_crypto.py:1791:            request.verify(pkey)\n/testbed/tests/test_crypto.py:1795:        `X509Req.verify` raises `OpenSSL.crypto.Error` if called with a\n/testbed/tests/test_crypto.py:1799:        request = X509Req()\n/testbed/tests/test_crypto.py:1805:            request.verify(another_pkey)\n/testbed/tests/test_crypto.py:1809:        `X509Req.verify` returns `True` if called with a `OpenSSL.crypto.PKey`\n/testbed/tests/test_crypto.py:1812:        request = X509Req()\n/testbed/tests/test_crypto.py:1816:        assert request.verify(pkey)\n/testbed/tests/test_crypto.py:1820:        req = X509Req.from_cryptography(crypto_req)\n/testbed/tests/test_crypto.py:1821:        assert isinstance(req, X509Req)\n/testbed/tests/test_crypto.py:1825:            X509Req.from_cryptography(object())\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-376225ce-72cd-45c0-ae8e-875bc3210191-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '1580,1820p' /testbed/tests/test_crypto.py; echo \"==== CHANGELOG ====\"; head -80 /testbed/CHANGELOG.rst; echo \"==== git log ====\"; cd /testbed && git log --oneline -20 && git log --all --oneline --grep=\"verify\" | head -20"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-376225ce-72cd-45c0-ae8e-875bc3210191-4",
+            "content": "_pem)\n        request.set_pubkey(pkey)\n        request.sign(pkey, GOOD_DIGEST)\n        assert request.verify(pkey)\n\n    def test_convert_from_cryptography(self):\n        crypto_req = x509.load_pem_x509_csr(cleartextCertificateRequestPEM)\n        req = X509Req.from_cryptography(crypto_req)\n==== CHANGELOG ====\nChangelog\n=========\n\nVersions are year-based with a strict backward-compatibility policy.\nThe third digit is only for regressions.\n\n24.3.0 (2024-11-27)\n-------------------\n\nBackward-incompatible changes:\n^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n- Removed the deprecated ``OpenSSL.crypto.CRL``, ``OpenSSL.crypto.Revoked``, ``OpenSSL.crypto.dump_crl``, and ``OpenSSL.crypto.load_crl``. ``cryptography.x509``'s CRL functionality should be used instead.\n- Removed the deprecated ``OpenSSL.crypto.sign`` and ``OpenSSL.crypto.verify``. ``cryptography.hazmat.primitives.asymmetric``'s signature APIs should be used instead.\n\nDeprecations:\n^^^^^^^^^^^^^\n\n- Deprecated ``OpenSSL.rand`` - callers should use ``os.urandom()`` instead.\n- Deprecated ``add_extensions`` and ``get_extensions`` on ``OpenSSL.crypto.X509Req`` and ``OpenSSL.crypto.X509``. These should have been deprecated at the same time ``X509Extension`` was. Users should use pyca/cryptography's X.509 APIs instead.\n- Deprecated ``OpenSSL.crypto.get_elliptic_curves`` and ``OpenSSL.crypto.get_elliptic_curve``, as well as passing the reult of them to ``OpenSSL.SSL.Context.set_tmp_ecdh``, users should instead pass curves from ``cryptography``.\n- Deprecated passing ``X509`` objects to ``OpenSSL.SSL.Context.use_certificate``, ``OpenSSL.SSL.Connection.use_certificate``, ``OpenSSL.SSL.Context.add_extra_chain_cert``, and ``OpenSSL.SSL.Context.add_client_ca``, users should instead pass ``cryptography.x509.Certificate`` instances. This is in preparation for deprecating pyOpenSSL's ``X509`` entirely.\n- Deprecated passing ``PKey`` objects to ``OpenSSL.SSL.Context.use_privatekey`` and ``OpenSSL.SSL.Connection.use_privatekey``, users should instead pass ``cryptography`` priate key instances. This is in preparation for deprecating pyOpenSSL's ``PKey`` entirely.\n\nChanges:\n^^^^^^^^\n\n* ``cryptography`` maximum version has been increased to 44.0.x.\n* ``OpenSSL.SSL.Connection.get_certificate``, ``OpenSSL.SSL.Connection.get_peer_certificate``, ``OpenSSL.SSL.Connection.get_peer_cert_chain``, and ``OpenSSL.SSL.Connection.get_verified_chain`` now take an ``as_cryptography`` keyword-argument. When ``True`` is passed then ``cryptography.x509.Certificate`` are returned, instead of ``OpenSSL.crypto.X509``. In the future, passing ``False`` (the default) will be deprecated.\n\n\n24.2.1 (2024-07-20)\n-------------------\n\nBackward-incompatible changes:\n^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\nDeprecations:\n^^^^^^^^^^^^^\n\nChanges:\n^^^^^^^^\n\n- Fixed changelog to remove sphinx specific restructured text strings.\n\n\n24.2.0 (2024-07-20)\n-------------------\n\nBackward-incompatible changes:\n^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\nDeprecations:\n^^^^^^^^^^^^^\n\n- Deprecated ``OpenSSL.crypto.X509Req``, ``OpenSSL.crypto.load_certificate_request``, ``OpenSSL.crypto.dump_certificate_request``. Instead, ``cryptography.x509.CertificateSigningRequest``, ``cryptography.x509.CertificateSigningRequestBuilder``, ``cryptography.x509.load_der_x509_csr``, or ``cryptography.x509.load_pem_x509_csr`` should be used.\n\nChanges:\n^^^^^^^^\n\n- Added type hints for the ``SSL`` module.\n  `#1308 <https://github.com/pyca/pyopenssl/pull/1308>`_.\n- Changed ``OpenSSL.crypto.PKey.from_cryptography_key`` to accept public and private EC, ED25519, ED448 keys.\n  `#1310 <https://github.com/pyca/pyopenssl/pull/1310>`_.\n\n24.1.0 (2024-03-09)\n-------------------\n\nBackward-incompatible changes:\n^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n* Removed the deprecated ``OpenSSL.crypto.PKCS12`` and\n  ``OpenSSL.crypto.NetscapeSPKI``. ``OpenSSL.crypto.PKCS12`` may be replaced\n  by the PKCS#12 APIs in the ``cryptography`` package.\n\nDeprecations:\n^^^^^^^^^^^^^\n\nChanges:\n^^^^^^^^\n==== git log ====\ne09c764 Initial commit\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-e8a3378d-abd6-450b-8705-b3e71c05d020-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/src/OpenSSL/_util.py; echo \"====\"; sed -n '1,200p' /testbed/src/OpenSSL/crypto.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-e8a3378d-abd6-450b-8705-b3e71c05d020-5",
+            "content": "ficate_request\",\n    \"dump_privatekey\",\n    \"dump_publickey\",\n    \"get_elliptic_curve\",\n    \"get_elliptic_curves\",\n    \"load_certificate\",\n    \"load_certificate_request\",\n    \"load_privatekey\",\n    \"load_publickey\",\n]\n\n\n_PrivateKey = Union[\n    dsa.DSAPrivateKey,\n    ec.EllipticCurvePrivateKey,\n    ed25519.Ed25519PrivateKey,\n    ed448.Ed448PrivateKey,\n    rsa.RSAPrivateKey,\n]\n_PublicKey = Union[\n    dsa.DSAPublicKey,\n    ec.EllipticCurvePublicKey,\n    ed25519.Ed25519PublicKey,\n    ed448.Ed448PublicKey,\n    rsa.RSAPublicKey,\n]\n_Key = Union[_PrivateKey, _PublicKey]\nStrOrBytesPath = Union[str, bytes, PathLike]\nPassphraseCallableT = Union[bytes, Callable[..., bytes]]\n\n\nFILETYPE_PEM: int = _lib.SSL_FILETYPE_PEM\nFILETYPE_ASN1: int = _lib.SSL_FILETYPE_ASN1\n\n# TODO This was an API mistake.  OpenSSL has no such constant.\nFILETYPE_TEXT = 2**16 - 1\n\nTYPE_RSA: int = _lib.EVP_PKEY_RSA\nTYPE_DSA: int = _lib.EVP_PKEY_DSA\nTYPE_DH: int = _lib.EVP_PKEY_DH\nTYPE_EC: int = _lib.EVP_PKEY_EC\n\n\nclass Error(Exception):\n    \"\"\"\n    An error occurred in an `OpenSSL.crypto` API.\n    \"\"\"\n\n\n_raise_current_error = partial(_exception_from_error_queue, Error)\n_openssl_assert = _make_assert(Error)\n\n\ndef _new_mem_buf(buffer: bytes | None = None) -> Any:\n    \"\"\"\n    Allocate a new OpenSSL memory BIO.\n\n    Arrange for the garbage collector to clean it up automatically.\n\n    :param buffer: None or some bytes to use to put into the BIO so that they\n        can be read out.\n    \"\"\"\n    if buffer is None:\n        bio = _lib.BIO_new(_lib.BIO_s_mem())\n        free = _lib.BIO_free\n    else:\n        data = _ffi.new(\"char[]\", buffer)\n        bio = _lib.BIO_new_mem_buf(data, len(buffer))\n\n        # Keep the memory alive as long as the bio is alive!\n        def free(bio: Any, ref: Any = data) -> Any:\n            return _lib.BIO_free(bio)\n\n    _openssl_assert(bio != _ffi.NULL)\n\n    bio = _ffi.gc(bio, free)\n    return bio\n\n\ndef _bio_to_string(bio: Any) -> bytes:\n    \"\"\"\n    Copy the contents of an OpenSSL BIO object into a Python byte string.\n    \"\"\"\n    result_buffer = _ffi.new(\"char**\")\n    buffer_length = _lib.BIO_get_mem_data(bio, result_buffer)\n    return _ffi.buffer(result_buffer[0], buffer_length)[:]\n\n\ndef _set_asn1_time(boundary: Any, when: bytes) -> None:\n    \"\"\"\n    The the time value of an ASN1 time object.\n\n    @param boundary: An ASN1_TIME pointer (or an object safely\n        castable to that type) which will have its value set.\n    @param when: A string representation of the desired time value.\n\n    @raise TypeError: If C{when} is not a L{bytes} string.\n    @raise ValueError: If C{when} does not represent a time in the required\n        format.\n    @raise RuntimeError: If the time value cannot be set for some other\n        (unspecified) reason.\n    \"\"\"\n    if not isinstance(when, bytes):\n        raise TypeError(\"when must be a byte string\")\n    # ASN1_TIME_set_string validates the string without writing anything\n    # when the destination is NULL.\n    _openssl_assert(boundary != _ffi.NULL)\n\n    set_result = _lib.ASN1_TIME_set_string(boundary, when)\n    if set_result == 0:\n        raise ValueError(\"Invalid string\")\n\n\ndef _new_asn1_time(when: bytes) -> Any:\n    \"\"\"\n    Behaves like _set_asn1_time but returns a new ASN1_TIME object.\n\n    @param when: A string representation of the desired time value.\n\n    @raise TypeError: If C{when} is not a L{bytes} string.\n    @raise ValueError: If C{when} does not represent a time in the required\n        format.\n    @raise RuntimeError: If the time value cannot be set for some other\n        (unspecified) reason.\n    \"\"\"\n    ret = _lib.ASN1_TIME_new()\n    _openssl_assert(ret != _ffi.NULL)\n    ret = _ffi.gc(ret, _lib.ASN1_TIME_free)\n    _set_asn1_time(ret, when)\n    return ret\n\n\ndef _get_asn1_time(timestamp: Any) -> bytes | None:\n    \"\"\"\n    Retrieve the time value of an ASN1 time object.\n\n    @param timestamp: An ASN1_GENERALIZEDTIME* (or an object safely castable to\n        that type) from which the time value will be retrieved.\n"
+          }
+        ]
+      }
+    }
+  ]
+}

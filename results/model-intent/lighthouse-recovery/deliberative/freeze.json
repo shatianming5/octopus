@@ -1,0 +1,95 @@
+{
+  "assets": {
+    "docker_image_bytes": 917648984,
+    "task_checkout_bytes": 187173393,
+    "total_new_task_assets_bytes": 1104822377
+  },
+  "before_model_outputs": true,
+  "claim": "Absolute official quality preflight only. No paired policy pilot is authorized unless official resolved=true and genuine existing natural contention is separately evidenced.",
+  "execution": {
+    "cuda_visible_devices": "9",
+    "device_uuid": "GPU-3e940a5a-a24d-b615-dc69-df141ced7af0",
+    "model_path": "/home/user/octopus-tool-recovery-lora-v1-20260915/run/merged",
+    "python": "/home/user/octopus-r2-20260913/venv/bin/python",
+    "source_dir": "/home/user/octopus-lighthouse-deliberative-v1-20260915",
+    "ssh_host": "user@198.51.100.10",
+    "ssh_port": 20183
+  },
+  "frozen_at": "2026-09-15T20:02:48.827273+00:00",
+  "implementation": {
+    "lighthouse_quality.py": "a383ee0fe84aa75ba6a2b0d7b5578ddf73767bcc1e17a58b758aa4c317d68f5b",
+    "lighthouse_quality_solver.py": "78ae7d23562e123fbc474569d4ee7931783f5e13cc983f2356b1bfa4bea8b993",
+    "lighthouse_tool_worker.py": "c5d89820804b20a153e7af367709a9c2968aa5f2af6630502efdd3b2a49a0367",
+    "p1_relay.py": "e2cf4aabb04621a68fa66f3ff9b7feee27790b281641406f0fba60ca84e79208",
+    "run_lighthouse_quality.sh": "412af9d703896687019785eccb0fafcfa02e2ea6bcf489faeee43fe26ed74f08",
+    "tool_recovery_lora.py": "0e1549958d3294cad4c5c7475c7d705b07c4e7d6a986e6e6f157e6f345be7fd2"
+  },
+  "model": {
+    "adapter_sha256": "7819bf7aedc03be3c8d38c45c13570510e970598035aaa230c1c9e3172bfee84",
+    "model_path": "/home/user/octopus-tool-recovery-lora-v1-20260915/run/merged",
+    "name": "Qwen/Qwen2.5-7B-Instruct",
+    "prediction_name": "octopus-qwen-tool-recovery-lora",
+    "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "training_runs": 1,
+    "treatment": "tool_recovery_lora"
+  },
+  "official_evaluator": {
+    "both_reported_bugs_covered_by_official_test_patch": true,
+    "eval_sh_sha256": "d0b36b59a62a37edc11305408d39efc2bed3c79dcfaf068b417a2487e896c867",
+    "fail_to_pass": [
+      "lighthouse-core/test/audits/dobetterweb/js-libraries-test.js"
+    ],
+    "masked_from_solver": [
+      "eval.sh",
+      "test.patch",
+      "gold.patch",
+      "hints.md"
+    ],
+    "pass_to_pass": [],
+    "problem_statement_sha256": "45b6ecd56cbd435573a17df1a9afba0a55f23fab79b1a71385215e9a6f3adb7c",
+    "quality_floor": "official resolved=true; every FAIL_TO_PASS and PASS_TO_PASS test passes",
+    "task_repo_commit": "8d3ed32f37af9ceb8b5778b92a0088384ed057d4",
+    "task_yaml_sha256": "34f996cee987a516948231b017cc8983c629d2a5534ab18d917defe3617d8bbb",
+    "tests_json_sha256": "bee10dfefc86aebff3efff4270740d348ded25c0141f2d9fb8aabbd7cddb3106"
+  },
+  "protocol": {
+    "agent_policy": "failure_aware_v1",
+    "block_size": 16,
+    "container_cpus": 4,
+    "container_memory": "8g",
+    "container_pids": 256,
+    "container_python": "/usr/bin/python3",
+    "container_workdir": "/testbed",
+    "cpu_budget_seconds": 1800,
+    "cpu_evaluator_timeout_seconds": 1800,
+    "decision_format": "deliberative_v1",
+    "dtype": "bfloat16",
+    "generation_seed": 17,
+    "gpu_budget_seconds": 1170,
+    "gpu_episode_timeout_seconds": 1070,
+    "gpu_memory_utilization": 0.9,
+    "max_actions": 12,
+    "max_journal_tokens": 8192,
+    "max_model_len": 16384,
+    "max_num_batched_tokens": 8192,
+    "max_num_seqs": 2,
+    "max_output_tokens_per_action": 512,
+    "max_root_tokens": 6144,
+    "max_tool_input_chars": 16000,
+    "max_tool_output_chars": 6000,
+    "new_task_assets_bytes_max": 2000000000,
+    "read_output_format": "raw",
+    "single_method": "apc",
+    "temperature": 0,
+    "tool_timeout_seconds": 30
+  },
+  "schema": "octopus-lighthouse-quality-freeze-v1",
+  "solver_task": {
+    "base_commit": "a5dbdd2eff4238213dcaad404d0e06d8d5d2489b",
+    "image": "sha256:b8d51faee583632569625837d3f5b1a8a58f19c90f659597bd33234b145f7eae",
+    "instance_id": "GoogleChrome__lighthouse-10176",
+    "issue": "Duplicated stack packs\nRepro.: run lighthouse or PSI on https://abcnews.go.com/  and open Minify JavaScript\r\n\r\n----------\r\n\r\n![image](https://user-images.githubusercontent.com/39191/67442906-7c9d1380-f5b7-11e9-9449-e93d77734fb2.png)\r\n![image](https://user-images.githubusercontent.com/39191/67443023-f92ff200-f5b7-11e9-9d58-39d1a4985ffa.png)\r\n\r\n\r\n-------\r\n\r\nThis is due to the addition of the new \"Fast Path\" checks landed in [js-lib-detector here](https://github.com/johnmichel/Library-Detector-for-Chrome/pull/140). (In general I like the idea. :) We then [rolled into Lighthouse here](https://github.com/GoogleChrome/lighthouse/pull/9797).\r\n\r\nThere's actually two bugs here. \r\n\r\n1. We have two stack packs. \r\n   - My preferred fix is to add real `id` properties into js-library-detector and then we can upgrade [this superloose coupling](https://github.com/GoogleChrome/lighthouse/blob/dab020167000860c2b8fc43ee76963eb83d63a94/lighthouse-core/lib/stack-collector.js#L83). @housseindjirdeh can you help out with this?\r\n1. We're showing these new experimental `React (Fast Path)` entries to users within the bestpractices/js-libraries audit. [Screenshot here](https://github.com/johnmichel/Library-Detector-for-Chrome/pull/140#issuecomment-545685789).  I don't think anybody intended these to be user-visible. :)\r\n   -  @anniesullie I imagine you're planning to collect this data from the `httparchive:lighthouse` tables?\r\n   - Pending that answer, I'm wondering if we can continue to expose the signals in the JSON, but hide it from the user. TBH I don't think we have a great mechanism for that, but it's something we can noodle on.\n",
+    "repo": "GoogleChrome/lighthouse"
+  },
+  "stopping": "Official quality failure stops Step3 with no task substitution. Infrastructure failures are repaired under the same frozen setup. Quality pass without genuine natural contention returns evidence for parent choice and does not launch a pilot."
+}

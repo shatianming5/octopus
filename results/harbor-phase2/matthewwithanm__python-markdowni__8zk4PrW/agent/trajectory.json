@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "matthewwithanm__python-markdowni__8zk4PrW__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# Whitespace removal around code blocks breaks nested tags\n\n## Description\n\nI found a bug in the latest version of markdownify. When using code tags with other HTML elements inside them, the whitespace handling is incorrect, causing the content to be improperly rendered.\n\nFor example, if you try to convert HTML with code tags that contain other elements, the output is incorrect:\n\n```html\n<code>foo`Hello`bar</code>\n```\n\nThis should convert to:\n```\n`foo`Hello`bar`\n```\n\nBut instead, it's removing whitespace or not properly handling the nested content.\n\nSimilarly, when using heading tags with nested elements, the whitespace handling is incorrect:\n\n```html\n<h3>A <strong>strong</strong> B</h3>\n```\n\nShould convert to:\n```\n### A **strong** B\n```\n\nBut the output is missing proper spacing.\n\nThe issue seems to be related to the `should_remove_whitespace_outside` function which is incorrectly handling whitespace around certain elements, particularly code blocks and heading tags with nested elements.\n\nThis is breaking any HTML conversion that has nested tags inside code blocks or headings."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository structure and the whitespace-handling code around nested tags.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-ceb033bc-4663-4cf5-88d2-29142b60c3ec-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -50 && cat /testbed/README.md 2>/dev/null | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-ceb033bc-4663-4cf5-88d2-29142b60c3ec-0",
+            "content": "total 56\ndrwxr-xr-x 1 root root 4096 Sep 22 17:55 .\ndrwxr-xr-x 1 root root 4096 Sep 22 17:55 ..\ndrwxr-xr-x 8 root root 4096 Jul 13  2025 .git\n-rw-r--r-- 1 root root  104 Jul 13  2025 .gitignore\n-rw-rw-r-- 1 1005 1005    0 Sep 22 15:44 .gitkeep\n-rw-r--r-- 1 root root 1083 Jul 13  2025 LICENSE\n-rw-r--r-- 1 root root   31 Jul 13  2025 MANIFEST.in\n-rw-r--r-- 1 root root 7503 Jul 13  2025 README.rst\ndrwxr-xr-x 2 root root 4096 Jul 13  2025 markdownify\ndrwxr-xr-x 2 root root 4096 Jul 13  2025 markdownify.egg-info\n-rw-r--r-- 1 root root 1276 Jul 13  2025 pyproject.toml\n-rw-r--r-- 1 root root  210 Jul 13  2025 shell.nix\ndrwxr-xr-x 2 root root 4096 Jul 13  2025 tests\n-rw-r--r-- 1 root root  211 Jul 13  2025 tox.ini\n/testbed/tests/test_conversions.py\n/testbed/tests/test_lists.py\n/testbed/tests/__init__.py\n/testbed/tests/test_escaping.py\n/testbed/tests/test_basic.py\n/testbed/tests/test_args.py\n/testbed/tests/test_tables.py\n/testbed/tests/test_advanced.py\n/testbed/tests/test_custom_converter.py\n/testbed/markdownify/main.py\n/testbed/markdownify/__init__.py\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-86207ddf-cb8b-432d-b0e2-62b7144a221c-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/markdownify/__init__.py && echo \"===== MAIN =====\" && cat /testbed/markdownify/main.py && echo \"===== TESTS =====\" && ls -la /testbed/tests/"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-86207ddf-cb8b-432d-b0e2-62b7144a221c-1",
+            "content": "DIN if not \"\n                        \"provided.\")\n    parser.add_argument('-s', '--strip', nargs='*',\n                        help=\"A list of tags to strip. This option can't be used with \"\n                        \"the --convert option.\")\n    parser.add_argument('-c', '--convert', nargs='*',\n                        help=\"A list of tags to convert. This option can't be used with \"\n                        \"the --strip option.\")\n    parser.add_argument('-a', '--autolinks', action='store_true',\n                        help=\"A boolean indicating whether the 'automatic link' style \"\n                        \"should be used when a 'a' tag's contents match its href.\")\n    parser.add_argument('--default-title', action='store_false',\n                        help=\"A boolean to enable setting the title of a link to its \"\n                        \"href, if no title is given.\")\n    parser.add_argument('--heading-style', default=UNDERLINED,\n                        choices=(ATX, ATX_CLOSED, UNDERLINED),\n                        help=\"Defines how headings should be converted.\")\n    parser.add_argument('-b', '--bullets', default='*+-',\n                        help=\"A string of bullet styles to use; the bullet will \"\n                        \"alternate based on nesting level.\")\n    parser.add_argument('--strong-em-symbol', default=ASTERISK,\n                        choices=(ASTERISK, UNDERSCORE),\n                        help=\"Use * or _ to convert strong and italics text\"),\n    parser.add_argument('--sub-symbol', default='',\n                        help=\"Define the chars that surround '<sub>'.\")\n    parser.add_argument('--sup-symbol', default='',\n                        help=\"Define the chars that surround '<sup>'.\")\n    parser.add_argument('--newline-style', default=SPACES,\n                        choices=(SPACES, BACKSLASH),\n                        help=\"Defines the style of <br> conversions: two spaces \"\n                        \"or backslash at the and of the line thet should break.\")\n    parser.add_argument('--code-language', default='',\n                        help=\"Defines the language that should be assumed for all \"\n                        \"'<pre>' sections.\")\n    parser.add_argument('--no-escape-asterisks', dest='escape_asterisks',\n                        action='store_false',\n                        help=\"Do not escape '*' to '\\\\*' in text.\")\n    parser.add_argument('--no-escape-underscores', dest='escape_underscores',\n                        action='store_false',\n                        help=\"Do not escape '_' to '\\\\_' in text.\")\n    parser.add_argument('-i', '--keep-inline-images-in', nargs='*',\n                        help=\"Images are converted to their alt-text when the images are \"\n                        \"located inside headlines or table cells. If some inline images \"\n                        \"should be converted to markdown images instead, this option can \"\n                        \"be set to a list of parent tags that should be allowed to \"\n                        \"contain inline images.\")\n    parser.add_argument('-w', '--wrap', action='store_true',\n                        help=\"Wrap all text paragraphs at --wrap-width characters.\")\n    parser.add_argument('--wrap-width', type=int, default=80)\n\n    args = parser.parse_args(argv)\n    print(markdownify(**vars(args)))\n\n\nif __name__ == '__main__':\n    main()\n===== TESTS =====\ntotal 56\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 .\ndrwxr-xr-x 1 root root  4096 Sep 22 17:55 ..\n-rw-r--r-- 1 root root     0 Jul 13  2025 __init__.py\n-rw-r--r-- 1 root root  1269 Jul 13  2025 test_advanced.py\n-rw-r--r-- 1 root root   746 Jul 13  2025 test_args.py\n-rw-r--r-- 1 root root   305 Jul 13  2025 test_basic.py\n-rw-r--r-- 1 root root 14859 Jul 13  2025 test_conversions.py\n-rw-r--r-- 1 root root   892 Jul 13  2025 test_custom_converter.py\n-rw-r--r-- 1 root root  3268 Jul 13  2025 test_escaping.py\n-rw-r--r-- 1 root root  2847 Jul 13  2025 test_lists.py\n-rw-r--r-- 1 root root  6157 Jul 13  2025 test_tables.py\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-07b29133-028f-45ef-89ac-7d69dd8c96f8-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "wc -l /testbed/markdownify/__init__.py && cat /testbed/markdownify/__init__.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-07b29133-028f-45ef-89ac-7d69dd8c96f8-2",
+            "content": "_as_inline):\n        if convert_as_inline:\n            return ' ' + text.strip() + ' '\n        if self.options['wrap']:\n            # Preserve newlines (and preceding whitespace) resulting\n            # from <br> tags.  Newlines in the input have already been\n            # replaced by spaces.\n            lines = text.split('\\n')\n            new_lines = []\n            for line in lines:\n                line = line.lstrip()\n                line_no_trailing = line.rstrip()\n                trailing = line[len(line_no_trailing):]\n                line = fill(line,\n                            width=self.options['wrap_width'],\n                            break_long_words=False,\n                            break_on_hyphens=False)\n                new_lines.append(line + trailing)\n            text = '\\n'.join(new_lines)\n        return '\\n\\n%s\\n\\n' % text if text else ''\n\n    def convert_pre(self, el, text, convert_as_inline):\n        if not text:\n            return ''\n        code_language = self.options['code_language']\n\n        if self.options['code_language_callback']:\n            code_language = self.options['code_language_callback'](el) or code_language\n\n        return '\\n```%s\\n%s\\n```\\n' % (code_language, text)\n\n    def convert_script(self, el, text, convert_as_inline):\n        return ''\n\n    def convert_style(self, el, text, convert_as_inline):\n        return ''\n\n    convert_s = convert_del\n\n    convert_strong = convert_b\n\n    convert_samp = convert_code\n\n    convert_sub = abstract_inline_conversion(lambda self: self.options['sub_symbol'])\n\n    convert_sup = abstract_inline_conversion(lambda self: self.options['sup_symbol'])\n\n    def convert_table(self, el, text, convert_as_inline):\n        return '\\n\\n' + text + '\\n'\n\n    def convert_caption(self, el, text, convert_as_inline):\n        return text + '\\n'\n\n    def convert_figcaption(self, el, text, convert_as_inline):\n        return '\\n\\n' + text + '\\n\\n'\n\n    def convert_td(self, el, text, convert_as_inline):\n        colspan = 1\n        if 'colspan' in el.attrs and el['colspan'].isdigit():\n            colspan = int(el['colspan'])\n        return ' ' + text.strip().replace(\"\\n\", \" \") + ' |' * colspan\n\n    def convert_th(self, el, text, convert_as_inline):\n        colspan = 1\n        if 'colspan' in el.attrs and el['colspan'].isdigit():\n            colspan = int(el['colspan'])\n        return ' ' + text.strip().replace(\"\\n\", \" \") + ' |' * colspan\n\n    def convert_tr(self, el, text, convert_as_inline):\n        cells = el.find_all(['td', 'th'])\n        is_headrow = (\n            all([cell.name == 'th' for cell in cells])\n            or (not el.previous_sibling and not el.parent.name == 'tbody')\n            or (not el.previous_sibling and el.parent.name == 'tbody' and len(el.parent.parent.find_all(['thead'])) < 1)\n        )\n        overline = ''\n        underline = ''\n        if is_headrow and not el.previous_sibling:\n            # first row and is headline: print headline underline\n            full_colspan = 0\n            for cell in cells:\n                if 'colspan' in cell.attrs and cell['colspan'].isdigit():\n                    full_colspan += int(cell[\"colspan\"])\n                else:\n                    full_colspan += 1\n            underline += '| ' + ' | '.join(['---'] * full_colspan) + ' |' + '\\n'\n        elif (not el.previous_sibling\n              and (el.parent.name == 'table'\n                   or (el.parent.name == 'tbody'\n                       and not el.parent.previous_sibling))):\n            # first row, not headline, and:\n            # - the parent is table or\n            # - the parent is tbody at the beginning of a table.\n            # print empty headline above this row\n            overline += '| ' + ' | '.join([''] * len(cells)) + ' |' + '\\n'\n            overline += '| ' + ' | '.join(['---'] * len(cells)) + ' |' + '\\n'\n        return overline + '|' + text + '\\n' + underline\n\n\ndef markdownify(html, **options):\n    return MarkdownConverter(**options).convert(html)\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-5a837b40-20b5-4d21-b1f3-f87831254418-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '1,250p' /testbed/markdownify/__init__.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-5a837b40-20b5-4d21-b1f3-f87831254418-3",
+            "content": "tside(el.next_sibling))\n            if (isinstance(el, NavigableString)\n                    and six.text_type(el).strip() == ''\n                    and can_extract):\n                el.extract()\n\n        # Convert the children first\n        for el in node.children:\n            if isinstance(el, Comment) or isinstance(el, Doctype):\n                continue\n            elif isinstance(el, NavigableString):\n                text += self.process_text(el)\n            else:\n                text_strip = text.rstrip('\\n')\n                newlines_left = len(text) - len(text_strip)\n                next_text = self.process_tag(el, convert_children_as_inline)\n                next_text_strip = next_text.lstrip('\\n')\n                newlines_right = len(next_text) - len(next_text_strip)\n                newlines = '\\n' * max(newlines_left, newlines_right)\n                text = text_strip + newlines + next_text_strip\n\n        if not children_only:\n            convert_fn = getattr(self, 'convert_%s' % node.name, None)\n            if convert_fn and self.should_convert_tag(node.name):\n                text = convert_fn(node, text, convert_as_inline)\n\n        return text\n\n    def process_text(self, el):\n        text = six.text_type(el) or ''\n\n        # normalize whitespace if we're not inside a preformatted element\n        if not el.find_parent('pre'):\n            if self.options['wrap']:\n                text = all_whitespace_re.sub(' ', text)\n            else:\n                text = newline_whitespace_re.sub('\\n', text)\n                text = whitespace_re.sub(' ', text)\n\n        # escape special characters if we're not inside a preformatted or code element\n        if not el.find_parent(['pre', 'code', 'kbd', 'samp']):\n            text = self.escape(text)\n\n        # remove leading whitespace at the start or just after a\n        # block-level element; remove traliing whitespace at the end\n        # or just before a block-level element.\n        if (should_remove_whitespace_outside(el.previous_sibling)\n                or (should_remove_whitespace_inside(el.parent)\n                    and not el.previous_sibling)):\n            text = text.lstrip()\n        if (should_remove_whitespace_outside(el.next_sibling)\n                or (should_remove_whitespace_inside(el.parent)\n                    and not el.next_sibling)):\n            text = text.rstrip()\n\n        return text\n\n    def __getattr__(self, attr):\n        # Handle headings\n        m = convert_heading_re.match(attr)\n        if m:\n            n = int(m.group(1))\n\n            def convert_tag(el, text, convert_as_inline):\n                return self._convert_hn(n, el, text, convert_as_inline)\n\n            convert_tag.__name__ = 'convert_h%s' % n\n            setattr(self, convert_tag.__name__, convert_tag)\n            return convert_tag\n\n        raise AttributeError(attr)\n\n    def should_convert_tag(self, tag):\n        tag = tag.lower()\n        strip = self.options['strip']\n        convert = self.options['convert']\n        if strip is not None:\n            return tag not in strip\n        elif convert is not None:\n            return tag in convert\n        else:\n            return True\n\n    def escape(self, text):\n        if not text:\n            return ''\n        if self.options['escape_misc']:\n            text = re.sub(r'([\\\\&<`[>~=+|])', r'\\\\\\1', text)\n            # A sequence of one or more consecutive '-', preceded and\n            # followed by whitespace or start/end of fragment, might\n            # be confused with an underline of a header, or with a\n            # list marker.\n            text = re.sub(r'(\\s|^)(-+(?:\\s|$))', r'\\1\\\\\\2', text)\n            # A sequence of up to six consecutive '#', preceded and\n            # followed by whitespace or start/end of fragment, might\n            # be confused with an ATX heading.\n            text = re.sub(r'(\\s|^)(#{1,6}(?:\\s|$))', r'\\1\\\\\\2', text)\n            # '.' or ')' preceded by up to nine digits might be\n            # confused with a list item.\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-65b8434f-c0fa-41f1-849c-cc846a0208d8-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat -n /testbed/markdownify/__init__.py | head -200"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-65b8434f-c0fa-41f1-849c-cc846a0208d8-4",
+            "content": "up):\n   126\t        return self.process_tag(soup, convert_as_inline=False, children_only=True)\n   127\t\n   128\t    def process_tag(self, node, convert_as_inline, children_only=False):\n   129\t        text = ''\n   130\t\n   131\t        # markdown headings or cells can't include\n   132\t        # block elements (elements w/newlines)\n   133\t        isHeading = html_heading_re.match(node.name) is not None\n   134\t        isCell = node.name in ['td', 'th']\n   135\t        convert_children_as_inline = convert_as_inline\n   136\t\n   137\t        if not children_only and (isHeading or isCell):\n   138\t            convert_children_as_inline = True\n   139\t\n   140\t        # Remove whitespace-only textnodes just before, after or\n   141\t        # inside block-level elements.\n   142\t        should_remove_inside = should_remove_whitespace_inside(node)\n   143\t        for el in node.children:\n   144\t            # Only extract (remove) whitespace-only text node if any of the\n   145\t            # conditions is true:\n   146\t            # - el is the first element in its parent (block-level)\n   147\t            # - el is the last element in its parent (block-level)\n   148\t            # - el is adjacent to a block-level node\n   149\t            can_extract = (should_remove_inside and (not el.previous_sibling\n   150\t                                                     or not el.next_sibling)\n   151\t                           or should_remove_whitespace_outside(el.previous_sibling)\n   152\t                           or should_remove_whitespace_outside(el.next_sibling))\n   153\t            if (isinstance(el, NavigableString)\n   154\t                    and six.text_type(el).strip() == ''\n   155\t                    and can_extract):\n   156\t                el.extract()\n   157\t\n   158\t        # Convert the children first\n   159\t        for el in node.children:\n   160\t            if isinstance(el, Comment) or isinstance(el, Doctype):\n   161\t                continue\n   162\t            elif isinstance(el, NavigableString):\n   163\t                text += self.process_text(el)\n   164\t            else:\n   165\t                text_strip = text.rstrip('\\n')\n   166\t                newlines_left = len(text) - len(text_strip)\n   167\t                next_text = self.process_tag(el, convert_children_as_inline)\n   168\t                next_text_strip = next_text.lstrip('\\n')\n   169\t                newlines_right = len(next_text) - len(next_text_strip)\n   170\t                newlines = '\\n' * max(newlines_left, newlines_right)\n   171\t                text = text_strip + newlines + next_text_strip\n   172\t\n   173\t        if not children_only:\n   174\t            convert_fn = getattr(self, 'convert_%s' % node.name, None)\n   175\t            if convert_fn and self.should_convert_tag(node.name):\n   176\t                text = convert_fn(node, text, convert_as_inline)\n   177\t\n   178\t        return text\n   179\t\n   180\t    def process_text(self, el):\n   181\t        text = six.text_type(el) or ''\n   182\t\n   183\t        # normalize whitespace if we're not inside a preformatted element\n   184\t        if not el.find_parent('pre'):\n   185\t            if self.options['wrap']:\n   186\t                text = all_whitespace_re.sub(' ', text)\n   187\t            else:\n   188\t                text = newline_whitespace_re.sub('\\n', text)\n   189\t                text = whitespace_re.sub(' ', text)\n   190\t\n   191\t        # escape special characters if we're not inside a preformatted or code element\n   192\t        if not el.find_parent(['pre', 'code', 'kbd', 'samp']):\n   193\t            text = self.escape(text)\n   194\t\n   195\t        # remove leading whitespace at the start or just after a\n   196\t        # block-level element; remove traliing whitespace at the end\n   197\t        # or just before a block-level element.\n   198\t        if (should_remove_whitespace_outside(el.previous_sibling)\n   199\t                or (should_remove_whitespace_inside(el.parent)\n   200\t                    and not el.previous_sibling)):\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-bc24c5d8-06b3-4617-8fe2-091b0aa8e10a-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '1,125p' /testbed/markdownify/__init__.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-bc24c5d8-06b3-4617-8fe2-091b0aa8e10a-5",
+            "content": "ll\nimport re\nimport six\n\n\nconvert_heading_re = re.compile(r'convert_h(\\d+)')\nline_beginning_re = re.compile(r'^', re.MULTILINE)\nwhitespace_re = re.compile(r'[\\t ]+')\nall_whitespace_re = re.compile(r'[\\t \\r\\n]+')\nnewline_whitespace_re = re.compile(r'[\\t \\r\\n]*[\\r\\n][\\t \\r\\n]*')\nhtml_heading_re = re.compile(r'h[1-6]')\n\n\n# Heading styles\nATX = 'atx'\nATX_CLOSED = 'atx_closed'\nUNDERLINED = 'underlined'\nSETEXT = UNDERLINED\n\n# Newline style\nSPACES = 'spaces'\nBACKSLASH = 'backslash'\n\n# Strong and emphasis style\nASTERISK = '*'\nUNDERSCORE = '_'\n\n\ndef chomp(text):\n    \"\"\"\n    If the text in an inline tag like b, a, or em contains a leading or trailing\n    space, strip the string and return a space as suffix of prefix, if needed.\n    This function is used to prevent conversions like\n        <b> foo</b> => ** foo**\n    \"\"\"\n    prefix = ' ' if text and text[0] == ' ' else ''\n    suffix = ' ' if text and text[-1] == ' ' else ''\n    text = text.strip()\n    return (prefix, suffix, text)\n\n\ndef abstract_inline_conversion(markup_fn):\n    \"\"\"\n    This abstracts all simple inline tags like b, em, del, ...\n    Returns a function that wraps the chomped text in a pair of the string\n    that is returned by markup_fn, with '/' inserted in the string used after\n    the text if it looks like an HTML tag. markup_fn is necessary to allow for\n    references to self.strong_em_symbol etc.\n    \"\"\"\n    def implementation(self, el, text, convert_as_inline):\n        markup_prefix = markup_fn(self)\n        if markup_prefix.startswith('<') and markup_prefix.endswith('>'):\n            markup_suffix = '</' + markup_prefix[1:]\n        else:\n            markup_suffix = markup_prefix\n        if el.find_parent(['pre', 'code', 'kbd', 'samp']):\n            return text\n        prefix, suffix, text = chomp(text)\n        if not text:\n            return ''\n        return '%s%s%s%s%s' % (prefix, markup_prefix, text, markup_suffix, suffix)\n    return implementation\n\n\ndef _todict(obj):\n    return dict((k, getattr(obj, k)) for k in dir(obj) if not k.startswith('_'))\n\n\ndef should_remove_whitespace_inside(el):\n    \"\"\"Return to remove whitespace immediately inside a block-level element.\"\"\"\n    if not el or not el.name:\n        return False\n    if html_heading_re.match(el.name) is not None:\n        return True\n    return el.name in ('p', 'blockquote',\n                       'ol', 'ul', 'li',\n                       'table', 'thead', 'tbody', 'tfoot',\n                       'tr', 'td', 'th')\n\n\ndef should_remove_whitespace_outside(el):\n    \"\"\"Return to remove whitespace immediately outside a block-level element.\"\"\"\n    return should_remove_whitespace_inside(el) or (el and el.name == 'pre')\n\n\nclass MarkdownConverter(object):\n    class DefaultOptions:\n        autolinks = True\n        bullets = '*+-'  # An iterable of bullet types.\n        code_language = ''\n        code_language_callback = None\n        convert = None\n        default_title = False\n        escape_asterisks = True\n        escape_underscores = True\n        escape_misc = False\n        heading_style = UNDERLINED\n        keep_inline_images_in = []\n        newline_style = SPACES\n        strip = None\n        strong_em_symbol = ASTERISK\n        sub_symbol = ''\n        sup_symbol = ''\n        wrap = False\n        wrap_width = 80\n\n    class Options(DefaultOptions):\n        pass\n\n    def __init__(self, **options):\n        # Create an options dictionary. Use DefaultOptions as a base so that\n        # it doesn't have to be extended.\n        self.options = _todict(self.DefaultOptions)\n        self.options.update(_todict(self.Options))\n        self.options.update(options)\n        if self.options['strip'] is not None and self.options['convert'] is not None:\n            raise ValueError('You may specify either tags to strip or tags to'\n                             ' convert, but not both.')\n\n    def convert(self, html):\n        soup = BeautifulSoup(html, 'html.parser')\n        return self.convert_soup(soup)\n\n    def convert_soup(self, soup):\n"
+          }
+        ]
+      }
+    }
+  ]
+}

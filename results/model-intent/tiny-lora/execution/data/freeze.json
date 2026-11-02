@@ -1,0 +1,111 @@
+{
+  "counts": {
+    "dev": 64,
+    "test": 128,
+    "train": 256
+  },
+  "evaluation_labels_deployable": false,
+  "families": {
+    "dev": [
+      "csv_quoting",
+      "half_rounding",
+      "sort_tie_order",
+      "url_plus"
+    ],
+    "test": [
+      "bag_difference",
+      "elapsed_span",
+      "quantile_interpolation",
+      "retry_schedule",
+      "ring_rotation",
+      "sorted_insertion",
+      "text_units",
+      "tied_rank"
+    ],
+    "train": [
+      "division_rounding",
+      "histogram_weight",
+      "inventory_debit",
+      "matrix_axis",
+      "negative_transform",
+      "numeric_radix",
+      "parallel_length",
+      "repetition_scope",
+      "reversal_unit",
+      "scale_direction",
+      "set_membership",
+      "topk_boundary",
+      "whitespace_edges",
+      "whitespace_tokens",
+      "window_aggregation",
+      "zero_denominator"
+    ]
+  },
+  "input_sha256": {
+    "dev": "fa072f17d9f7064821791ff69e7f568c1a0f4b6b825e904e4b50b97c0fe1d798",
+    "test": "8638991bd87d4b2441f164fca1a08e836affbb53414a961ea97b580fa36b1e53",
+    "train": "84767c29dfec0443ee6b00bcff63e0a99d91b6902755336963a1a61dbb5b69bc"
+  },
+  "main_run_budget": 1,
+  "operational_sanity_rerun_budget": 1,
+  "recipe": {
+    "alpha": 16,
+    "attention": "sdpa",
+    "dropout": 0.0,
+    "effective_global_batch": 16,
+    "epochs": 2,
+    "gradient_accumulation": 8,
+    "gradient_checkpointing": true,
+    "inference_backend": "transformers_peft_greedy_without_grammar",
+    "learning_rate": 0.0002,
+    "lr_schedule": "constant",
+    "max_grad_norm": 1.0,
+    "max_new_tokens": 64,
+    "max_seq_length": 1024,
+    "microbatch": 2,
+    "model": "Qwen/Qwen2.5-7B-Instruct",
+    "optimizer": "adamw_torch",
+    "precision": "bfloat16",
+    "rank": 8,
+    "response_retries": 0,
+    "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "seed": 17,
+    "selection": "final_epoch_only",
+    "supervision": "assistant_choice_tokens_only",
+    "target_modules": [
+      "q_proj",
+      "v_proj"
+    ],
+    "temperature": 0,
+    "weight_decay": 0.0,
+    "world_size": 1
+  },
+  "schema": "octopus-tiny-lora-freeze-v1",
+  "semantic_goals": {
+    "dev": 8,
+    "test": 16,
+    "train": 32
+  },
+  "thresholds": {
+    "accuracy": 0.8,
+    "flip_consistency": 0.8,
+    "gain_percentage_points": 25,
+    "recall_at_one": 0.8
+  },
+  "training_sha256": "5ce635d0a438d657e71719a2d5466a79042ffdc39d6db602e9ff359b9f7f9070",
+  "view_seeds": {
+    "dev": [
+      2201,
+      2202
+    ],
+    "test": [
+      2301,
+      2302
+    ],
+    "train": [
+      2101,
+      2102
+    ]
+  },
+  "views_per_goal": 8
+}

@@ -1,0 +1,42 @@
+{
+  "authorization": "ADMISSION_VERIFIED for worker 0634e2de-b3b6-4f53-9955-825793c0f5f3; exactly one prospective view-continuation quality episode.",
+  "before_model_outputs": true,
+  "claim": "This distinct source-backed treatment adds a factual next_view_range only to character-clipped file views. It is optional metadata, not an instruction, and does not prove that prior metadata caused recurrence or that this repair improves quality. All twelve prior episodes and their ledgers remain closed and immutable.",
+  "fixed": {
+    "agent_policy": "failure_aware_v4",
+    "decision_format": "openhands_xml_v1",
+    "dtype": "bfloat16",
+    "function_selection": "model_owned",
+    "gpu_budget_seconds": 1170,
+    "gpu_episode_timeout_seconds": 1070,
+    "max_actions": 50,
+    "max_journal_tokens": 8192,
+    "max_model_len": 16384,
+    "max_output_tokens_per_action": 512,
+    "message_policy": "codeact_continue_v1",
+    "model_revision": "97054e70501d79c27499518af5ce613be6278bcb",
+    "phase_gpu_seconds_max": 1200,
+    "seed": 17,
+    "single_method": "apc",
+    "temperature": 0,
+    "tokenizer_revision": "c03e6d358207e414f1eca0bb1891e29f1db0e242"
+  },
+  "initial_input": {
+    "compiler": "octopus.context.compile_context",
+    "includes_empty_prefix_capsule": true,
+    "must_not_reuse_previous_ids": true,
+    "required_before_inference": true
+  },
+  "quality_gate": "Only original official resolved=true plus a legitimate nonempty model product diff is QUALITY_PASS.",
+  "schema": "octopus-view-continuation-quality-protocol-v1",
+  "scope_id": "actor-view-continuation-quality-v1",
+  "source": {
+    "base_commit": "a5dbdd2eff4238213dcaad404d0e06d8d5d2489b",
+    "business_commit": "c3f31ad02c4d9d77f8a3ca6574ad4cbbdf4b26b7",
+    "remote_deployment": "/home/user/octopus-lighthouse-view-continuation-v1-20260916",
+    "source_image": "sha256:b8d51faee583632569625837d3f5b1a8a58f19c90f659597bd33234b145f7eae",
+    "task_repo_commit": "8d3ed32f37af9ceb8b5778b92a0088384ed057d4",
+    "treatment_delta": "Only when a file view is character-clipped, next_view_range overlaps the partial final emitted line or starts after the last complete emitted line, using the existing [start,-1] range. Directory views omit it. Output bytes, limits, instructions, validity, model, sampling, request count, and budgets are unchanged."
+  },
+  "stopping": "One terminal official episode or one concrete operational blocker. No quality retry."
+}

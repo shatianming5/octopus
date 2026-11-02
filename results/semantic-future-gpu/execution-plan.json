@@ -1,0 +1,65 @@
+{
+  "study_id": "semantic-future-gpu",
+  "kind": "bounded_gpu_confirmation",
+  "authorized_at_utc": "2026-09-09T05:08:56Z",
+  "policy_commit": "62de966349d41d97dae596abe64d9b4bb5575509",
+  "config_source": "results/checkpoint-admission/repair-device/real-tool-gpu6-protocol.json",
+  "config_path": "results/semantic-future-gpu/real-tool-gpu6-protocol.json",
+  "freeze_protocol": "results/semantic-future-gpu/semantic-future-gpu-protocol.json",
+  "mode": "real_tool",
+  "condition": "tight_burst",
+  "phase": "main",
+  "model_id": "Qwen/Qwen2.5-7B-Instruct",
+  "model_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+  "model_path": "/home/user/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct/snapshots/a09a35458c702b33eeacc393d103063234e8bc28",
+  "host": "7443-5x4090-68",
+  "ssh": "ssh -p 20068 user@198.51.100.10",
+  "deploy_path": "/mnt/disk2/user/octopus-semantic-future-gpu-4007b0b5",
+  "venv_python": "/mnt/disk2/user/octopus-contention/.venv/bin/python",
+  "selected_gpu": {
+    "physical_index": 6,
+    "uuid": "GPU-aa7be32a-43d1-b13e-45dd-ef46033f7631",
+    "selection_rule": "preferred UUID idle at ready-check; keep all lifecycle+traces on this GPU"
+  },
+  "lifecycle": {
+    "selector": "tests/test_gpu_admission.py::test_semantic_soft_gpu_preemption_consumer_binding_and_no_lease[semantic_future_only]",
+    "junitxml": "results/semantic-future-gpu/lifecycle-junit.xml"
+  },
+  "entry": "python -m benchmarks.semantic_future run",
+  "instrumentation": "all-policy-native-lifecycle-v1",
+  "design": "Four predeclared new traffic seeds; four-method Williams balanced order; same physical single GPU for every trace; fresh engine/process and common warmup/reset.",
+  "background_requests_per_trace": 96,
+  "foreground_tasks_per_trace": 4,
+  "blocks": [
+    {
+      "block_id": 1,
+      "seed": 1101,
+      "methods_in_order": ["apc", "queue_aware", "semantic_naive_pin", "semantic_future_only"]
+    },
+    {
+      "block_id": 2,
+      "seed": 1202,
+      "methods_in_order": ["queue_aware", "semantic_future_only", "apc", "semantic_naive_pin"]
+    },
+    {
+      "block_id": 3,
+      "seed": 1303,
+      "methods_in_order": ["semantic_future_only", "semantic_naive_pin", "queue_aware", "apc"]
+    },
+    {
+      "block_id": 4,
+      "seed": 1404,
+      "methods_in_order": ["semantic_naive_pin", "apc", "semantic_future_only", "queue_aware"]
+    }
+  ],
+  "budget": {
+    "gpu_lifecycle_cases": 1,
+    "max_measured_traces": 16,
+    "new_calibrations": 0,
+    "new_models": 0,
+    "new_sweeps": 0,
+    "new_provisioning": 0
+  },
+  "do_not_touch_gpus": [1, 2, 4, 5],
+  "do_not_overwrite": ["semantic-future-cpu", "semantic-control-repair-gpu", "checkpoint-admission"]
+}

@@ -1,0 +1,61 @@
+WARNING 09-10 22:32:00 [arg_utils.py:1719] The global random seed is set to 17. Since VLLM_ENABLE_V1_MULTIPROCESSING is set to False, this may affect the random state of the Python process that launched vLLM.
+INFO 09-10 22:32:00 [model.py:672] Resolved architecture: Qwen2ForCausalLM
+INFO 09-10 22:32:00 [model.py:1965] Using max model len 16384
+INFO 09-10 22:32:00 [scheduler.py:242] Chunked prefill is enabled with max_num_batched_tokens=8192.
+WARNING 09-10 22:32:00 [vllm.py:1285] Enforce eager set, disabling torch.compile and CUDAGraphs. This is equivalent to setting -cc.mode=none -cc.cudagraph_mode=none
+WARNING 09-10 22:32:00 [vllm.py:1354] Inductor compilation was disabled by user settings, optimizations settings that are only active during inductor compilation will be ignored.
+INFO 09-10 22:32:00 [kernel.py:308] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'])
+INFO 09-10 22:32:00 [vllm.py:1533] Cudagraph is disabled under eager mode
+INFO 09-10 22:32:00 [compilation.py:329] Enabled custom fusions: norm_quant, act_quant
+INFO 09-10 22:32:03 [core.py:122] Initializing a V1 LLM engine (v0.28.0) with config: model='/mnt/disk2/user/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct/snapshots/a09a35458c702b33eeacc393d103063234e8bc28', speculative_config=None, tokenizer='/mnt/disk2/user/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct/snapshots/a09a35458c702b33eeacc393d103063234e8bc28', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=16384, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, decode_context_parallel_size=1, dcp_comm_backend=ag_rs, disable_custom_all_reduce=False, quantization=None, quantization_config=None, enforce_eager=True, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='xgrammar', disable_any_whitespace=True, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False, jit_monitor_mode='warn', jit_monitor_verbose=False), seed=17, served_model_name=/mnt/disk2/user/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct/snapshots/a09a35458c702b33eeacc393d103063234e8bc28, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'mode': <CompilationMode.NONE: 0>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['all'], 'ir_enable_torch_wrap': False, 'splitting_ops': [], 'compile_mm_encoder': False, 'cudagraph_mm_encoder': False, 'encoder_cudagraph_token_budgets': [], 'encoder_cudagraph_max_vision_items_per_batch': 0, 'encoder_cudagraph_max_frames_per_batch': None, 'compile_sizes': [], 'compile_ranges_endpoints': [8192], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.NONE: 0>, 'cudagraph_num_of_warmups': 0, 'cudagraph_capture_sizes': [], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': True, 'fuse_act_quant': True, 'fuse_attn_quant': False, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False, 'enable_qk_norm_rope_fusion': False, 'fuse_rope_kvcache_cat_mla': False, 'fuse_act_padding': False, 'fuse_qk_norm_rope_kvcache': False}, 'max_cudagraph_capture_size': 0, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': False}, 'local_cache_dir': None, 'fast_moe_cold_start': False, 'static_all_moe_layers': []}, kernel_config=KernelConfig(ir_op_priority=IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native']), enable_flashinfer_autotune=True, enable_cutedsl_warmup=True, enable_jit_warmup=True, enable_bf16x3_router_gemm=False, moe_backend='auto', linear_backend='auto')
+INFO 09-10 22:32:03 [parallel_state.py:1638] world_size=1 rank=0 local_rank=0 distributed_init_method=file:///tmp/vllm_dist_4a7ebb5591ce4e228aeed8f77ba1c833 backend=nccl
+INFO 09-10 22:32:03 [parallel_state.py:1982] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A, EPLB rank N/A
+INFO 09-10 22:32:03 [gpu_worker.py:396] Using V2 Model Runner
+Traceback (most recent call last):
+  File "/mnt/disk2/user/octopus-b7-src-e8ad69f-af58fecc/benchmarks/b7.py", line 93, in trace_command
+    run_trace(row, str(args.model_path))
+  File "/mnt/disk2/user/octopus-b7-src-e8ad69f-af58fecc/benchmarks/b7_traffic.py", line 79, in run_trace
+    with Octopus(config) as engine_owner:
+         ^^^^^^^^^^^^^^^
+  File "/mnt/disk2/user/octopus-b7-src-e8ad69f-af58fecc/src/octopus/runtime.py", line 85, in __init__
+    self.backend = VllmBackend(config or BackendConfig())
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/disk2/user/octopus-b7-src-e8ad69f-af58fecc/src/octopus/vllm_backend.py", line 1163, in __init__
+    self.engine = LLMEngine.from_engine_args(
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/disk2/user/octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/engine/llm_engine.py", line 179, in from_engine_args
+    return cls(
+           ^^^^
+  File "/mnt/disk2/user/octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/engine/llm_engine.py", line 105, in __init__
+    self.engine_core = EngineCoreClient.make_client(
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/disk2/user/octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/engine/core_client.py", line 112, in make_client
+    return InprocClient(vllm_config, executor_class, log_stats)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/disk2/user/octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/engine/core_client.py", line 317, in __init__
+    self.engine_core = EngineCore(*args, **kwargs)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/disk2/user/octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 133, in __init__
+    self.model_executor = executor_class(vllm_config)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/disk2/user/octopus-contention/.venv/lib/python3.12/site-packages/vllm/tracing/otel.py", line 178, in sync_wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/disk2/user/octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/executor/abstract.py", line 110, in __init__
+    self._init_executor()
+  File "/mnt/disk2/user/octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/executor/uniproc_executor.py", line 69, in _init_executor
+    self.driver_worker.init_device()
+  File "/mnt/disk2/user/octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/worker/worker_base.py", line 335, in init_device
+    self.worker.init_device()  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/disk2/user/octopus-contention/.venv/lib/python3.12/site-packages/vllm/tracing/otel.py", line 178, in sync_wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/disk2/user/octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/worker/gpu_worker.py", line 407, in init_device
+    self.requested_memory = request_memory(init_snapshot, self.cache_config)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/disk2/user/octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/worker/utils.py", line 454, in request_memory
+    raise ValueError(
+ValueError: Free memory on device cuda:0 (25.98/47.38 GiB) on startup is less than desired GPU memory utilization (0.92, 43.59 GiB). Decrease GPU memory utilization or reduce GPU memory used by other processes.
+
+[rank0]:[W910 22:32:04.112657381 ProcessGroupNCCL.cpp:1624] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())

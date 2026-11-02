@@ -1,0 +1,1837 @@
+我会把它先设计成一个 Octopus Runtime v0.1。底层尽量借 vLLM 现有的 paged KV / prefix caching，而不是自己先写 attention kernel。vLLM 现在的 KV cache 本身已经是 block 化管理，并且 KVCacheManager 有 request→block 映射、block ref count、prefix reuse、allocate/free 等机制，这和我们需要的“共享 trunk + 私有 branch”非常接近。
+
+1. 最核心的数据结构
+
+我希望整个系统最终只有四种一级对象：
+
+OctopusSession
+      │
+      ├── Checkpoint
+      │       │
+      │       ├── Branch A
+      │       ├── Branch B
+      │       └── Branch C
+      │
+      └── WorldState
+
+对应 Python：
+
+@dataclass
+class OctopusSession:
+    session_id: str
+    brain_branch_id: str
+    current_checkpoint_id: str
+    world_state: "WorldState"
+    active_branches: dict[str, "Branch"]
+
+Checkpoint 不保存一份真实 KV copy，而保存 KV block references：
+
+@dataclass
+class Checkpoint:
+    checkpoint_id: str
+
+    # logical inference state
+    token_ids: list[int]
+    num_tokens: int
+
+    # physical KV state
+    block_ids: list[int]
+
+    # position / model consistency
+    next_position: int
+    model_id: str
+
+    # lifecycle
+    ref_count: int
+    sealed: bool
+
+关键是：
+
+Checkpoint ≠ KV copy
+
+Checkpoint = immutable KV view
+2. 为什么 checkpoint 必须 immutable
+
+假设 Brain 已经运行到：
+
+A B C D E F
+
+其 KV：
+
+[P0][P1][P2]
+
+创建：
+
+Checkpoint C0
+
+之后 C0 永远不改变。
+
+然后：
+
+                   C0
+            [P0][P1][P2]
+              /    |    \
+             /     |     \
+            A      B      C
+
+三个 branch 都只引用：
+
+P0 P1 P2
+
+ref count：
+
+P0.ref = 4
+P1.ref = 4
+P2.ref = 4
+
+包含 Brain 本身。
+
+Branch A 后面生成：
+
+x y z
+
+就变成：
+
+Branch A
+
+[P0][P1][P2][A0]
+
+Branch B：
+
+[P0][P1][P2][B0][B1]
+
+完全没有复制原来的 KV。
+
+这实际上就是：
+
+Copy-on-Write inference state
+
+vLLM 目前的 PagedAttention/KV block 设计本来就允许逻辑 token 序列映射到非连续的物理 KV blocks，并依靠 block pool 管理这些页，所以我们不需要重新发明 KV 内存布局。
+
+3. Branch 的状态机
+
+我建议非常严格：
+
+        CREATED
+           │
+           ▼
+        RUNNABLE
+           │
+           ▼
+        RUNNING
+        /      \
+       /        \
+   WAITING      FINISHED
+     TOOL           │
+       │            ▼
+       └──────→ COMMIT_READY
+                     │
+              ┌──────┴──────┐
+              ▼             ▼
+          COMMITTED       ABORTED
+              │             │
+              └──────┬──────┘
+                     ▼
+                    GC
+
+对应：
+
+class BranchStatus(Enum):
+    CREATED = "created"
+    RUNNABLE = "runnable"
+    RUNNING = "running"
+    WAITING_TOOL = "waiting_tool"
+    COMMIT_READY = "commit_ready"
+    COMMITTED = "committed"
+    ABORTED = "aborted"
+    GC = "gc"
+
+Branch：
+
+@dataclass
+class Branch:
+    branch_id: str
+    parent_checkpoint_id: str
+
+    shared_blocks: list[int]
+    private_blocks: list[int]
+
+    task: "Task"
+
+    generated_tokens: list[int]
+
+    status: BranchStatus
+
+    created_at: float
+    last_active_at: float
+
+这里刻意区分：
+
+shared_blocks
+private_blocks
+
+因为 GC 时非常重要。
+
+4. KV Manager 的 API
+
+我会希望最后我们的 KV Manager 对上层暴露这些接口：
+
+class OctopusKVManager:
+
+    def checkpoint(
+        self,
+        branch_id: str,
+    ) -> Checkpoint:
+        ...
+
+    def fork(
+        self,
+        checkpoint_id: str,
+        n: int = 1,
+    ) -> list[str]:
+        ...
+
+    def allocate(
+        self,
+        branch_id: str,
+        num_tokens: int,
+    ) -> list[int]:
+        ...
+
+    def seal(
+        self,
+        branch_id: str,
+    ) -> Checkpoint:
+        ...
+
+    def abort(
+        self,
+        branch_id: str,
+    ) -> None:
+        ...
+
+    def release_checkpoint(
+        self,
+        checkpoint_id: str,
+    ) -> None:
+        ...
+
+    def gc(self) -> None:
+        ...
+
+最关键的是：
+
+fork()
+
+伪代码：
+
+def fork(checkpoint_id, n):
+
+    cp = checkpoints[checkpoint_id]
+
+    branches = []
+
+    for _ in range(n):
+
+        branch = Branch(
+            branch_id=new_id(),
+            parent_checkpoint_id=checkpoint_id,
+
+            shared_blocks=cp.block_ids.copy(),
+            private_blocks=[],
+
+            generated_tokens=[],
+            status=RUNNABLE,
+        )
+
+        for block_id in cp.block_ids:
+            blocks[block_id].ref_count += 1
+
+        branches.append(branch)
+
+    return branches
+
+注意：
+
+cp.block_ids.copy()
+
+只是复制：
+
+[17, 31, 42, 99]
+
+这些整数引用。
+
+没有复制 GPU KV tensor。
+
+5. KV block 自身
+
+底层最好类似：
+
+@dataclass
+class KVBlock:
+    block_id: int
+
+    gpu_slot: int
+
+    ref_count: int
+
+    num_filled_tokens: int
+
+    immutable: bool
+
+    content_hash: bytes | None
+
+    last_access_time: float
+
+这里我想做一个重要约束：
+
+Shared block 必须 immutable。
+
+只要：
+
+ref_count > 1
+
+就不能修改。
+
+如果 branch 正好在一个没有填满的 block 上 fork，这就出现一个问题。
+
+例如 block size = 16：
+
+[P0][P1........]
+        ↑
+      只有 9 token
+
+如果直接让三个 branch 共享这个 partial block：
+
+A 想往第10格写
+B 也想往第10格写
+
+就冲突了。
+
+因此 v0.1 我建议：
+
+Checkpoint 只允许建立在 block boundary。
+
+例如：
+
+16
+32
+48
+64
+...
+
+这是一个非常务实的工程简化。
+
+vLLM 当前 prefix caching 也主要围绕完整 block 工作；相同 prefix 即使部分 token 一致，也通常只有完整匹配 block 能直接命中。
+
+6. 后面再支持 partial-block fork
+
+v0.2 可以实现：
+
+[P0][Partial P1]
+         │
+         fork
+         ↓
+
+A:
+[P0][copy(P1) → A1]
+
+B:
+[P0][copy(P1) → B1]
+
+也就是：
+
+full blocks → zero copy
+last partial block → copy
+
+于是额外成本最多：
+
+$$ 1\ KV\ block \times N_{branches} $$
+
+完全可以接受。
+
+7. Branch Scheduler
+
+这是另一个核心。
+
+我建议 Scheduler 不理解语义。
+
+只做资源调度：
+
+class BranchScheduler:
+
+    def submit(self, branch):
+        ...
+
+    def choose_next_batch(self):
+        ...
+
+    def pause(self, branch_id):
+        ...
+
+    def resume(self, branch_id):
+        ...
+
+    def cancel(self, branch_id):
+        ...
+
+它关注：
+
+GPU KV budget
+token budget
+branch priority
+deadline
+tool waiting
+dependency
+
+例如：
+
+@dataclass
+class ResourceBudget:
+    max_new_tokens: int
+    max_kv_blocks: int
+    priority: float
+    deadline: float | None
+
+Brain 可以产生：
+
+Task A:
+priority 0.9
+
+Task B:
+priority 0.4
+
+Task C:
+priority 0.7
+
+Scheduler 决定：
+
+GPU 快满
+
+保留 A
+保留 C
+pause / evict B
+8. 一个很重要的新概念：Branch value
+
+以后我会考虑给每个 branch 一个：
+
+$$ V(b) $$
+
+代表继续计算这个 branch 的预期收益。
+
+例如：
+
+$$ V(b)= P(\text{useful result}) \times Impact - ComputeCost $$
+
+这样 Brain 开了：
+
+10 条触手
+
+不代表 10 条都必须跑完。
+
+运行几秒后：
+
+Branch 1: 很有希望
+Branch 2: 找错方向
+Branch 3: 已经被 Branch 1 覆盖
+
+可以：
+
+kill Branch 2
+kill Branch 3
+
+立即释放 private KV。
+
+这才真正像章鱼，而不是传统：
+
+spawn 10 agents
+↓
+等10个都回来
+9. Commit 绝对不能等于 KV merge
+
+这里我们把语义定死。
+
+假设：
+
+          C0
+        /    \
+       A      B
+
+A KV:
+C0 + 4000 tokens
+
+B KV:
+C0 + 7000 tokens
+
+执行结束：
+
+A.commit()
+B.commit()
+
+我们不会：
+
+merge_kv(A, B)
+
+而是：
+
+commit_a = semantic_commit(A)
+commit_b = semantic_commit(B)
+
+然后得到可能：
+
+{
+  "facts": [
+    {
+      "claim": "Bug is caused by SameSite",
+      "confidence": 0.96
+    }
+  ],
+  "artifacts": [
+    "src/auth/cookie.py:42"
+  ],
+  "open_questions": []
+}
+
+Brain 只 consume 这个。
+
+10. Commit protocol
+
+我建议不要允许自由文本作为主格式。
+
+定义：
+
+@dataclass
+class Evidence:
+    source: str
+    locator: str | None
+    excerpt: str | None
+
+
+@dataclass
+class Fact:
+    id: str
+    predicate: str
+    value: Any
+    confidence: float
+    evidence: list[Evidence]
+
+
+@dataclass
+class Commit:
+    commit_id: str
+    branch_id: str
+
+    summary: str
+
+    facts: list[Fact]
+
+    artifacts: list[str]
+
+    actions_taken: list[str]
+
+    unresolved: list[str]
+
+    success: bool
+
+比如：
+
+{
+  "summary": "Found likely authentication issue.",
+
+  "facts": [
+    {
+      "predicate": "auth.cookie.samesite",
+      "value": "Lax",
+      "confidence": 0.98,
+      "evidence": [
+        {
+          "source": "repo",
+          "locator": "auth/cookie.py:42"
+        }
+      ]
+    }
+  ]
+}
+
+以后 reducer 才有可能真正做机器处理。
+
+11. Commit 后发生什么
+
+这个地方很容易设计错。
+
+Commit 并不会让 Brain 自动继承 Branch 的 KV。
+
+而是：
+
+Branch
+  │
+  │ semantic compression
+  ▼
+Commit
+  │
+  ▼
+WorldState
+  │
+  ▼
+Brain receives delta
+  │
+  ▼
+Brain KV append
+
+例如 Brain 当前：
+
+C0
+
+两个 Branch 返回：
+
+A_commit = 120 tokens
+B_commit = 160 tokens
+
+Brain append：
+
+C0
++
+[State update:
+ A found ...
+ B found ...]
+
+得到：
+
+C1
+
+于是：
+
+C1
+
+才成为下一轮所有触手的新共同祖先。
+
+12. 所以 inference tree 实际上长这样
+                         C0
+                  Brain checkpoint
+                  /      |       \
+                 /       |        \
+                A        B         C
+             4k tok    2k tok    6k tok
+                │        │         │
+                ↓        ↓         ↓
+             CommitA  CommitB   CommitC
+                 \       |        /
+                  \      |       /
+                   State Reducer
+                         │
+                    ~300 tokens
+                         │
+                         ▼
+                         C1
+                  Brain checkpoint
+                  /             \
+                 D               E
+
+注意：
+
+KV topology 是一棵树，但 semantic history 是一个不断收敛的主干。
+
+我觉得这是 Octopus 一个非常漂亮的理论描述。
+
+13. abort
+
+abort() 必须非常便宜。
+
+例如：
+
+Branch A:
+shared:
+P0 P1 P2 P3
+
+private:
+A4 A5 A6
+
+abort：
+
+for b in branch.shared_blocks:
+    blocks[b].ref_count -= 1
+
+for b in branch.private_blocks:
+    free(b)
+
+然后 branch metadata 删除。
+
+复杂度：
+
+$$ O(\#blocks) $$
+
+以后如果 block ref 做得好，可以非常轻。
+
+14. GC
+
+我建议 KV block 分三种：
+
+HOT
+ACTIVE shared/request正在使用
+
+WARM
+没有 active branch 使用
+但属于 checkpoint / prefix cache
+
+FREE
+可以立即复用
+
+生命周期：
+
+ACTIVE
+  │
+  ▼
+WARM
+  │
+memory pressure
+  ▼
+FREE
+
+Checkpoint：
+
+ref_count = 0
+
+不一定马上清 KV。
+
+可以保留：
+
+LRU
+
+这样用户突然：
+
+回到旧计划
+
+可能直接复用。
+
+这也和 vLLM 当前的 prefix-cache free/eviction 思路比较一致：block 可以不再被 active request 使用但仍留在 prefix cache，之后在内存压力下被 LRU 式复用/驱逐。
+
+15. 整个 Runtime 的 API 我最终希望是这样的
+
+用户代码甚至可以非常漂亮：
+
+octopus = Octopus(model="...")
+
+brain = await octopus.create_session()
+
+await brain.run("""
+Investigate why authentication is failing.
+""")
+
+cp = brain.checkpoint()
+
+branches = await cp.fork([
+    InspectCodeTask(),
+    InspectLogsTask(),
+    SearchDocsTask(),
+])
+
+results = await octopus.gather(branches)
+
+await brain.commit(results)
+
+answer = await brain.continue_()
+
+但底层其实：
+
+create_session
+     ↓
+allocate KV
+     ↓
+prefill
+     ↓
+checkpoint
+     ↓
+freeze shared blocks
+     ↓
+increase refs
+     ↓
+fork requests
+     ↓
+allocate private pages
+     ↓
+decode asynchronously
+     ↓
+semantic commit
+     ↓
+release private pages
+     ↓
+append delta to brain
+16. 第一版真正要写的模块
+
+我不会先写 WebArm / CodeArm。
+
+第一阶段只做：
+
+octopus/
+├── kv/
+│   ├── block.py
+│   ├── pool.py
+│   ├── checkpoint.py
+│   └── manager.py
+│
+├── runtime/
+│   ├── branch.py
+│   ├── scheduler.py
+│   └── session.py
+│
+├── state/
+│   ├── commit.py
+│   └── reducer.py
+│
+└── tests/
+    ├── test_fork.py
+    ├── test_abort.py
+    ├── test_gc.py
+    └── test_branch_isolation.py
+
+先证明 4 个 invariant：
+
+1. fork 不复制 shared KV
+
+2. branch 写入绝不会改变 parent
+
+3. abort 后所有 ref count 正确
+
+4. 任意 branch 被 kill 都不会影响 sibling
+
+这四个一旦成立，整个底层其实就站住了。
+
+我现在认为最关键的设计决定
+
+我们之前说“KV fork”，但现在可以更精确地定义：
+
+$$ \boxed{ \text{Octopus Branch} = \text{Immutable Shared KV Prefix} + \text{Mutable Private KV Suffix} } $$
+
+而：
+
+$$ \boxed{ \text{Commit} \neq \text{KV Merge} } $$
+
+而是：
+
+$$ \boxed{ \text{Commit} = \text{Private Neural State} \rightarrow \text{Semantic Delta} } $$
+
+然后：
+
+$$ \boxed{ C_{t+1} = C_t+\operatorname{Reduce} ( \Delta_1,\Delta_2,\ldots,\Delta_n ) } $$
+
+我觉得到这里，Octopus 已经从“一个想法”变成了一个比较明确的计算模型。
+
+下一步最值得继续推的不是 LoRA，而是一个更难、也更有研究味的问题：
+
+Brain 到底在什么时刻 checkpoint / fork，以及一个 branch 到底应该继承多少 Brain KV？
+
+因为如果 Arm 无脑继承 Brain 的全部 KV，它虽然省 prefill，但也会继承大量与任务无关的 latent context。这会直接引出 Octopus 里面可能最核心的研究模块：Selective Fork / Context Projection 与 KV sharing 到底如何共存。
+
+Sources
+Brain 到底在什么时刻 checkpoint / fork，以及一个 branch 到底应该继承多少 Brain KV？   你会有答案吗，并且我想要知道benchmark和baseline 以及如何体现我们的优势，应该怎么体现
+
+有，而且我觉得可以把它直接定义成你这个项目的两个核心 research questions：
+
+$$ RQ1:\quad \text{When should the Brain checkpoint/fork?} $$ $$ RQ2:\quad \text{How much of the Brain state should each branch inherit?} $$
+
+然后 benchmark 不只是测“任务成功率”，而要同时证明三件事：质量不掉、延迟下降、上下文/计算冗余下降。
+
+1. Brain 什么时候 checkpoint？
+
+我的第一版答案是：不要每个 token checkpoint，也不要固定只按时间 checkpoint，而采用“语义边界 + 周期 checkpoint”混合策略。
+
+三个天然 checkpoint：
+
+User turn end
+↓
+Brain completes reasoning/planning
+↓
+Task graph stabilized
+↓
+CHECKPOINT
+
+比如：
+
+用户：
+帮我修这个 repo 的登录问题
+
+Brain:
+1. 看代码
+2. 查日志
+3. 查文档
+
+          ← checkpoint here
+
+        /       |       \
+     Code     Logs      Docs
+
+也就是说，fork 点最好位于“决策已经完成，但外部探索尚未开始”的位置。
+
+这是很合理的，因为所有 branch 都真正共享：
+
+Problem understanding
+Global constraints
+Current belief
+Plan
+
+而不需要共享后续执行。
+
+有趣的是，vLLM 最近针对 agentic workload 的 cache retention 设计也明确认为 prompt boundary 是高价值 checkpoint；同时还允许固定 interval checkpoint，在状态过长时避免只能从头重算。
+
+所以第一版：
+
+$$ Checkpoint = SemanticBoundary \cup PeriodicBoundary $$
+
+例如：
+
+semantic checkpoint:
+task decomposition complete
+
+periodic checkpoint:
+every 8k / 16k / 32k tokens
+
+然后做 ablation：
+
+A. checkpoint every N tokens
+B. checkpoint at turn boundary
+C. checkpoint at planning boundary
+D. semantic + periodic
+
+我预测 D 最好。
+
+2. 什么时候 fork？
+
+这里不要定义成：
+
+“只要可以并行就 fork。”
+
+太粗糙。
+
+我建议 Brain 计算一个 Fork Utility：
+
+$$ U_{fork} = P_{parallel} \times V_{information} - C_{compute} - C_{merge} - C_{contention} $$
+
+简单解释就是：
+
+这个任务能不能独立做？
+↓
+不同 branch 会不会获得互补信息？
+↓
+并行节省的时间值不值得多开的 KV / decode？
+↓
+回来以后结果是否容易合并？
+
+例如：
+
+查代码
+查日志
+查官方文档
+
+非常适合 fork。
+
+但：
+
+修改代码
+↓
+运行修改后的 tests
+
+不适合 fork，因为有强 dependency。
+
+所以实际上 fork 是在 Task DAG 中识别：
+
+$$ \text{independent frontier} $$
+
+例如：
+
+                diagnose
+              /    |     \
+         code     logs    docs
+           \       |      /
+              hypothesis
+                  |
+                 patch
+                  |
+                 test
+
+同一层 frontier：
+
+code / logs / docs
+
+fork。
+
+然后更难的问题：一个 branch 应该继承多少 KV？
+
+这里我不认为答案是：
+
+所有 branch 永远继承完整 Brain KV。
+
+因为虽然 zero-copy，attention 还是要访问这些 KV。
+
+比如 Brain context：
+
+80k tokens
+
+CodeArm 实际只需要其中：
+
+15k relevant
+
+即使前 80k 的 prefill 不重算，decode 时 attention 仍可能面对巨大 KV context。
+
+所以：
+
+$$ \text{KV sharing} \neq \text{free context} $$
+
+这非常重要。
+
+我会设计三种继承模式
+Full Fork
+Brain KV:
+████████████████████████
+
+Code:
+████████████████████████ + local
+
+优点：
+
+完全不丢 context
+无需重新 prefill
+
+缺点：
+
+KV memory retained
+attention context 大
+可能产生无关上下文干扰
+
+它应该成为我们的一个 baseline。
+
+Prefix Fork
+
+只继承到某一个 checkpoint：
+
+Brain:
+
+A────B────C────D────E
+               ↑
+
+Arm:
+A────B────C────D
+
+比如 Brain 在 E 又进行了一大段与某个 arm 无关的思考，那么触手从 D fork。
+
+这个非常容易实现。
+
+而且我认为实际价值很高。
+
+Selective Context Fork
+
+这是最有研究价值的。
+
+理想情况：
+
+Brain Memory:
+
+[A][B][C][D][E][F][G][H]
+
+CodeArm needs:
+
+[A][C][F][H]
+
+但是这里马上遇到 Transformer 的问题：
+
+KV 不能任意摘块以后拼起来。
+
+因为：
+
+KV(F)
+
+是在：
+
+ABCDE
+
+历史条件下产生的。
+
+所以不能简单：
+
+A + C + F + H
+
+然后当成合法 sequence KV。
+
+因此 v1 不能真正做 arbitrary KV pruning。
+
+我建议用“Shared Trunk + Context Capsule”
+
+这是目前我认为最现实的解决方案。
+
+Branch 保留一段共同 trunk：
+
+Shared Brain KV
+██████████████
+
+然后 Brain 给这个触手生成非常短的：
+
+Context Capsule
+
+例如：
+
+{
+  "task": "inspect authentication code",
+  "relevant_facts": [
+    "refresh fails only in Safari",
+    "backend token generation succeeds"
+  ],
+  "relevant_files": [
+    "auth/cookie.py"
+  ]
+}
+
+于是：
+
+Shared checkpoint
+      +
+small task capsule
+      +
+Arm-local trajectory
+
+我们可以调一个参数：
+
+$$ r = \frac{\text{shared inherited tokens}} {\text{brain tokens}} $$
+
+比如：
+
+100%
+75%
+50%
+25%
+0%
+
+然后 benchmark。
+
+这其实会直接回答你：
+
+一个 branch 到底应该继承多少？
+
+答案不应该凭感觉写死，而应该通过：
+
+$$ Quality(r), Latency(r), Memory(r) $$
+
+得到一个 Pareto frontier。
+
+Benchmark 我会分成三层
+
+这个非常重要。
+
+不要只跑一个 SWE-bench，然后说“我们更快”。
+
+那样很难证明架构创新。
+
+第一层：Microbenchmark
+
+只测 runtime。
+
+我们人为构造：
+
+Shared prefix:
+4k
+8k
+16k
+32k
+64k
+128k
+
+branches:
+1
+2
+4
+8
+16
+32
+
+比较：
+
+Normal independent requests
+
+vs
+
+vLLM APC
+
+vs
+
+Octopus Fork
+
+测：
+
+$$ TTFT $$ $$ TPOT $$ $$ GPU\ KV\ memory $$ $$ Prefill\ FLOPs $$ $$ Throughput $$ $$ Peak\ VRAM $$ $$ Fork\ latency $$
+
+vLLM 本身现在就提供 prefix caching benchmark，包括 fixed-prefix、ShareGPT 和 prefix repetition workloads，所以这一层可以直接借它的 benchmark methodology。
+
+这里 Octopus 最该赢的是：
+
+fork latency
+prefill compute
+peak KV memory
+shared-context duplication
+第二层：Synthetic Branching Benchmark
+
+这个最好我们自己做。
+
+我甚至觉得它可能成为论文里面非常漂亮的一部分。
+
+设计一些天然需要并行探索的问题。
+
+例如提供：
+
+100 个文件
+
+其中：
+
+File 17:
+database clue
+
+File 43:
+API clue
+
+File 81:
+config clue
+
+任务要求综合三个结果。
+
+控制：
+
+branch independence
+context overlap
+branch depth
+shared prefix size
+relevant context ratio
+number of arms
+
+比如建立：
+
+OctoBench
+
+变量：
+
+$$ N = branch\ count $$ $$ L = shared\ context\ length $$ $$ R = relevant\ context\ ratio $$ $$ D = dependency\ depth $$
+
+然后生成：
+
+N = 1,2,4,8,16
+L = 4k,16k,64k
+R = .1,.25,.5,.75,1
+D = 1,2,4
+
+这样你就可以非常系统地得到：
+
+传统 multi-agent
+随着 N 增加 context cost 近似线性增长
+
+Octopus
+shared prefix cost 接近一次
+
+理论上：
+
+传统：
+
+$$ C_{MA} \approx N L_s + \sum L_i $$
+
+Octopus：
+
+$$ C_{Oct} \approx L_s + \sum L_i $$
+
+因此 shared-context saving：
+
+$$ Saving \approx (N-1)L_s $$
+
+这张图应该会非常好看。
+
+第三层：Real Agent Benchmarks
+
+这里我建议至少两个。
+
+SWE-bench Verified
+
+它现在是 500 个经过人工验证、确认可解的真实 GitHub issue，而且有 Docker 化的可复现评价 harness，非常适合测试 Code / Search / Test 多触手工作流。
+
+可以做：
+
+CodeArm
+TestArm
+RepoSearchArm
+DocsArm
+
+比较：
+
+single agent
+multi-agent
+Octopus
+
+主要指标：
+
+Resolved %
+wall-clock time
+GPU-seconds / solved issue
+input tokens / solved issue
+peak KV memory
+
+GPU-seconds / solved task 我觉得非常重要。
+
+因为别人可能成功率也是 60%。
+
+但：
+
+Baseline:
+60%
+$4.80 / task
+180 sec
+
+Octopus:
+61%
+$2.20 / task
+95 sec
+
+这就很有说服力。
+
+GAIA
+
+GAIA 专门针对 general assistant，包含 reasoning、web browsing、多模态和 tool use，很适合测试 WebArm / ResearchArm / FileArm 等异构触手。
+
+所以它可以证明：
+
+Octopus 不只是 coding-specific optimization。
+
+Baseline 要非常认真设计
+
+我至少会做 5 个 baseline：
+
+Baseline    描述
+B0 Single Agent    一个模型串行完成全部任务
+B1 Independent Multi-Agent    每个 agent 独立拿完整 context
+B2 Multi-Agent + summary    主 agent 给子 agent context summary
+B3 Shared Prefix Cache    vLLM APC，共享相同 prefix，但无 Octopus runtime
+B4 Octopus Full-Fork    我们的系统，但每个 branch 全量继承
+B5 Octopus Selective    checkpoint + capsule + adaptive fork
+
+这里最重要的是：
+
+B3 必须有。
+
+否则 reviewer 很容易一句话：
+
+“This is just prefix caching.”
+
+所以一定要证明：
+
+$$ Octopus > APC $$
+
+不是单纯 latency。
+
+区别应该体现在：
+
+APC:
+相同 prefix → opportunistic cache reuse
+
+Octopus:
+explicit cognitive checkpoint
++
+branch lifecycle
++
+shared-state semantics
++
+semantic commit
++
+adaptive context projection
++
+branch cancellation
+Ablation 也必须做
+
+这是证明每一块真的有用。
+
+例如：
+
+Octopus full
+
+- no checkpoint policy
+- no semantic commit
+- no context capsule
+- no adaptive fork
+- no branch cancellation
+- no shared KV
+
+然后比较。
+
+最后论文里一张表：
+
+Variant    Success    Latency    GPU-sec    Tokens    Peak KV
+Full Octopus    62%    81s    110    42k    19GB
+- KV sharing    62%    129s    181    42k    31GB
+- projection    59%    113s    157    81k    27GB
+- adaptive fork    60%    101s    149    61k    24GB
+Multi-agent    60%    144s    210    105k    35GB
+
+数字当然现在是假设的，但这就是你最终想得到的结果形态。
+
+最重要的优势指标
+
+不要把论文主 claim 写成：
+
+“Octopus achieves higher accuracy.”
+
+这不一定成立。
+
+我认为最强的 claim 是：
+
+At equal task quality, Octopus substantially reduces redundant context processing and coordination overhead.
+
+然后定义一个指标：
+
+$$ Efficiency = \frac{TaskSuccess} {GPUSeconds} $$
+
+甚至：
+
+$$ Agentic\ Efficiency = \frac{SuccessRate} {\text{Prefill FLOPs}+\lambda\cdot\text{Decode FLOPs}} $$
+
+以及一个我们自己的：
+
+$$ Context\ Redundancy\ Ratio = \frac{ \text{repeated context tokens processed across branches} }{ \text{total context tokens processed} } $$
+
+传统 multi-agent 很可能：
+
+70–90%
+
+Octopus 理想情况下：
+
+10–30%
+
+这会非常直观。
+
+最值得画的三张图
+
+第一张：
+
+GPU cost
+│
+│                    Multi-Agent
+│                  /
+│                /
+│              /
+│            /
+│        Octopus
+│      ───────
+│
+└────────────────────
+       # branches
+
+体现 scaling。
+
+第二张：
+
+Success
+│              •
+│          •
+│       •
+│    •
+│
+└────────────────────
+      inherited KV %
+
+再加 latency 形成 Pareto frontier。
+
+第三张：
+
+Task completion time
+
+Single Agent:
+████████████████████████████
+
+Multi-Agent:
+██████████████████
+
+Octopus:
+██████████
+
+但保证：
+
+Success rate ≈ equal
+
+这就很有杀伤力。
+
+所以我们现在已经可以形成一个相当清晰的 thesis：
+
+$$ \boxed{ \text{Octopus reduces the cost of parallel agentic reasoning by turning} } $$ $$ \boxed{ \text{context replication into shared inference state + semantic deltas.} } $$
+
+而关于你问的 “继承多少 KV”，我反而建议不要提前假定答案。
+
+把它变成论文里的一个实验发现：
+
+There exists an optimal inheritance ratio, and full-context inheritance is often unnecessary.
+
+如果实验最后发现 100% full fork 最好，那也是重要结论；如果发现比如 25–50% + capsule 达到同等质量却显著降低成本，那就更强。
+
+下一步我建议我们直接设计 OctoBench。因为有了自己的 synthetic benchmark，你才能真正控制 branch count / shared context / relevance / dependency，这是 SWE-bench 和 GAIA 都无法单独回答的核心问题。
+
+Sources
+你觉得我们这个work 咋样
+
+我觉得这个 work 是有潜力的，而且现在已经不只是“多智能体换个名字”了。但它能不能成为一个强 work，关键取决于我们最后把 novelty 压在哪一层。
+
+我现在会给它大概这样的判断：
+
+Idea：8.5/10
+Research question：8/10
+当前技术成熟度：3/10
+如果实验做漂亮，paper potential：相当不错。
+
+最有价值的不是“章鱼”这个 metaphor，而是我们实际上提出了一个不同的 agent execution abstraction：
+
+$$ \text{Multi-Agent} = \text{multiple independent contexts} + \text{message passing} $$
+
+变成：
+
+$$ \boxed{ \text{Octopus} = \text{one cognitive state} + \text{forkable inference branches} + \text{semantic commits} } $$
+
+这个区别是实质性的。
+
+我最看好三个点
+
+第一是 KV cache 从优化机制变成 agent runtime primitive。
+
+现在 KV cache 通常被看作 inference optimization：
+
+prefix caching
+paged KV
+cache eviction
+
+我们的思路是：
+
+KV checkpoint
+KV fork
+branch
+abort
+commit
+GC
+
+也就是把：
+
+cache
+
+提升成：
+
+cognitive process state
+
+这其实是很漂亮的 conceptual shift。
+
+第二是你一开始提出的那个问题非常真实：
+
+为什么多个 Agent 明明知道大量相同的信息，却还要不停复制、总结、发送 context？
+
+现有 multi-agent 很多时候：
+
+Agent A
+   ↓ message
+Agent B
+   ↓ summary
+Agent C
+   ↓ result
+Orchestrator
+
+而我们试图变成：
+
+              Shared cognitive trunk
+                    /   |   \
+                   /    |    \
+                  A     B     C
+                   \    |    /
+                    semantic
+                     deltas
+
+如果 benchmark 能证明随着 branch 数增加：
+
+$$ C_{\text{multi-agent}}\sim O(NL) $$
+
+而 Octopus 对共享部分接近：
+
+$$ C_{\text{octopus}}\sim O(L+\sum_i\Delta_i) $$
+
+这会是一个非常容易理解的结果。
+
+第三，我其实最喜欢的是：
+
+fork cheap, merge semantic
+
+因为我们没有硬搞：
+
+$$ KV_A+KV_B $$
+
+这种目前很麻烦的东西。
+
+而是承认 Transformer inference state 本身具有路径依赖，然后设计：
+
+$$ \text{Neural fork} \rightarrow \text{independent exploration} \rightarrow \text{semantic commit} $$
+
+这在工程上现实很多。
+
+但这个 work 目前有一个最大的危险。
+
+Reviewer 很可能看完摘要以后说：
+
+“Isn't this just vLLM prefix caching + an agent orchestrator?”
+
+这个问题必须正面解决。
+
+所以如果最后只是：
+
+vLLM prefix caching
++
+parallel requests
++
+JSON result
+
+我会觉得 work 从 8.5 分掉到 5 分左右。
+
+因为这更多是不错的 systems engineering。
+
+真正把它拉开的东西应该至少有一个非常明确的新 abstraction：
+
+$$ \boxed{ \text{Explicit forkable inference state} } $$
+
+也就是：
+
+cp = brain.checkpoint()
+
+a, b, c = cp.fork(3)
+
+...
+
+brain.commit(a.result)
+
+而不是：
+
+llm.generate(same_prefix + promptA)
+llm.generate(same_prefix + promptB)
+
+这两个表面性能可能接近，但 abstraction 不一样。
+
+然后我觉得我们现在发现了一个比原始 idea 更有研究价值的问题：
+
+Context inheritance
+
+我们最开始想：
+
+所有触手共享 Brain KV。
+
+现在发现其实不一定。
+
+因为：
+
+$$ \text{zero-copy KV}\neq\text{zero-cost attention} $$
+
+所以真正的问题变成：
+
+$$ \boxed{ \text{What is the minimum cognitive state required to spawn a capable branch?} } $$
+
+这个问题我觉得非常漂亮。
+
+比如最后实验发现：
+
+100% Brain KV
+accuracy 64%
+latency 1.00×
+
+50% KV + capsule
+accuracy 64%
+latency 0.73×
+
+25% KV + capsule
+accuracy 62%
+latency 0.58%
+
+0% KV + summary
+accuracy 54%
+latency 0.51%
+
+那么你会得到一个非常有意思的 Pareto frontier。
+
+这时候 work 已经不只是：
+
+“我们做了一个更快的 multi-agent。”
+
+而是在研究：
+
+一个 Agent 分裂出新的执行分支时，到底需要继承多少认知状态？
+
+这个问题明显更深。
+
+甚至可以进一步把 Octopus 看成一种 LLM operating system abstraction：
+
+OS                         Octopus
+
+Process                    Branch
+Memory pages               KV blocks
+fork()                     KV fork
+Copy-on-write              Shared KV prefix
+IPC                        Semantic events
+Process exit               Branch abort
+Return value               Commit
+Scheduler                   Branch scheduler
+Page eviction              KV GC
+
+这个类比不是为了包装，而是真的可以指导设计。
+
+尤其：
+
+fork()
+
+非常关键。
+
+传统：
+
+spawn agent
+
+意味着：
+
+创建一个新的智能体。
+
+Octopus：
+
+fork cognition
+
+意味着：
+
+从当前认知状态产生一个临时执行分支。
+
+这是两种不同的哲学。
+
+我会稍微调整我们的 paper positioning
+
+不要主打：
+
+A New Multi-Agent Framework
+
+这个赛道太拥挤，而且别人第一反应会是 AutoGen / LangGraph / CrewAI 之类。
+
+我更愿意定位成：
+
+An inference runtime for branching agentic reasoning
+
+甚至标题可以往这种方向走：
+
+Octopus: Forkable Inference State for Parallel Agentic Reasoning
+
+副标题式核心：
+
+One Brain, Many Branches.
+
+然后论文从：
+
+LLM inference
+        ↓
+long-running agent
+        ↓
+parallel exploration
+        ↓
+context replication problem
+        ↓
+Octopus
+
+来讲。
+
+这样它更像：
+
+LLM Systems × Agents
+
+而不是普通 agent framework。
+
+如果实验真的跑出来，我认为最漂亮的结果甚至不是：
+
+SWE-bench
+Baseline 48%
+Ours     53%
+
+这种 +5%。
+
+而是：
+
+             Success     GPU-sec    Context processed
+
+Multi-Agent   58.3%       100%          100%
+Octopus       58.1%        54%           37%
+
+然后 branch 数：
+
+          1      2      4      8      16
+
+MA       ───────╱────╱────╱────
+Octopus  ───────────────────
+
+如果真能得到这种 scaling curve，这个 work 的 story 会非常干净：
+
+同样的 intelligence，少很多重复 computation。
+
+而不是声称我们的 orchestration magically 让模型更聪明。
+
+这反而更可信。
+
+我现在甚至觉得应该把目标分成两个贡献层次。
+
+Contribution 1 — Systems
+
+$$ \boxed{\text{Forkable KV-backed inference runtime}} $$
+
+提供：
+
+checkpoint
+fork
+branch
+abort
+commit
+GC
+
+Contribution 2 — Agent architecture
+
+$$ \boxed{\text{Shared cognition + asynchronous semantic commits}} $$
+
+消灭 agent-to-agent context replication。
+
+如果我们再把第三个做出来：
+
+Contribution 3 — Adaptive inheritance
+
+$$ \boxed{ \text{Learn/select how much cognitive state each branch inherits} } $$
+
+那么这个 work 就明显完整很多。
+
+至于 LoRA，我现在反而越来越觉得第一篇不要碰。
+
+因为：
+
+KV runtime
++
+agent architecture
++
+adaptive inheritance
++
+LoRA training
+
+一下子变量太多。
+
+Reviewer 最后都不知道 improvement 来自哪里。
+
+第一篇最好非常干净：
+
+Same model. Same weights. Same task. Different runtime.
+
+这句话其实特别强。
+
+因为这样如果 Octopus 赢：
+
+就是架构赢，不是我们多训了模型。
+
+之后完全可以有 Octopus 2：
+
+Learning to Fork: Training LLMs for Branching Cognition
+
+那时候再研究 LoRA / RL：
+
+什么时候 fork
+fork 几个
+继承多少
+什么时候 abort
+什么时候 commit
+
+这个甚至可以单独成为下一篇。
+
+所以如果现在让我决定方向，我会继续做，而且会把目标从“做一个章鱼多智能体”进一步收紧成：

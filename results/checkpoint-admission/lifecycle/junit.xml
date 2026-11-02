@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="4" skipped="0" tests="10" time="32.954" timestamp="2026-09-08T23:28:42.803544+08:00" hostname="7443-5x4090-68"><testcase classname="tests.test_admission_native" name="test_real_native_16_8_12_counterexample_and_soft_retry" time="0.002" /><testcase classname="tests.test_admission_native" name="test_full_sequence_reserve_and_running_decode_use_same_retry" time="0.001" /><testcase classname="tests.test_admission_native" name="test_shared_leases_drop_only_retention_and_closed_bound_handle_survives" time="0.001" /><testcase classname="tests.test_admission_native" name="test_drop_never_inherits_stale_blocks_and_warm_hit_is_native" time="0.001" /><testcase classname="tests.test_vllm_lifecycle" name="test_native_lease_owner_preserves_blocks_and_adopts_them" time="0.001" /><testcase classname="tests.test_vllm_lifecycle" name="test_lease_owner_keeps_mixed_prefix_common_prefix_conservative" time="0.001" /><testcase classname="tests.test_gpu_admission" name="test_revocable_gpu_warm_cold_child_and_queued_close" time="7.896"><failure message="FileNotFoundError: [Errno 2] No such file or directory: 'ninja'">tests/test_gpu_admission.py:22: in test_revocable_gpu_warm_cold_child_and_queued_close
+    with Octopus(config) as runtime:
+         ^^^^^^^^^^^^^^^
+src/octopus/runtime.py:70: in __init__
+    self.backend = VllmBackend(config or BackendConfig())
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/octopus/vllm_backend.py:527: in __init__
+    self.engine = LLMEngine.from_engine_args(
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/engine/llm_engine.py:179: in from_engine_args
+    return cls(
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/engine/llm_engine.py:105: in __init__
+    self.engine_core = EngineCoreClient.make_client(
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/engine/core_client.py:112: in make_client
+    return InprocClient(vllm_config, executor_class, log_stats)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/engine/core_client.py:317: in __init__
+    self.engine_core = EngineCore(*args, **kwargs)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/engine/core.py:144: in __init__
+    kv_cache_config = self._initialize_kv_caches(vllm_config)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/tracing/otel.py:178: in sync_wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/engine/core.py:331: in _initialize_kv_caches
+    self.model_executor.compile_or_warm_up_model()
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/executor/abstract.py:126: in compile_or_warm_up_model
+    compilation_times: list[CompilationTimes] = self.collective_rpc(
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/executor/uniproc_executor.py:103: in collective_rpc
+    result = run_method(self.driver_worker, method, args, kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/serial_utils.py:510: in run_method
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/tracing/otel.py:178: in sync_wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/worker/gpu_worker.py:810: in compile_or_warm_up_model
+    warmup_kernels(self.model_runner, self.execute_model, self.sample_tokens)
+../octopus-contention/.venv/lib/python3.12/site-packages/torch/utils/_contextlib.py:124: in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/worker/gpu/warmup.py:337: in warmup_kernels
+    worker_sample_tokens(grammar_output)
+../octopus-contention/.venv/lib/python3.12/site-packages/torch/utils/_contextlib.py:124: in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/worker/gpu_worker.py:1049: in sample_tokens
+    return self.model_runner.sample_tokens(grammar_output)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/torch/utils/_contextlib.py:124: in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/worker/gpu/eplb_utils.py:27: in wrapper
+    result = fn(self, *args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/worker/gpu/model_runner.py:1749: in sample_tokens
+    sampler_output, num_sampled, num_rejected = self.sample(
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/worker/gpu/model_runner.py:1353: in sample
+    sampler_output = self.sampler(logits, input_batch)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/worker/gpu/sample/sampler.py:120: in __call__
+    sampled, processed_logits = self.sample(
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/worker/gpu/sample/sampler.py:284: in sample
+    sampled = flashinfer_sample(processed_logits, top_k, top_p).to(torch.int64)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/sample/ops/topk_topp_sampler.py:508: in flashinfer_sample
+    next_token_ids = flashinfer.sampling.top_k_top_p_sampling_from_logits(
+../octopus-contention/.venv/lib/python3.12/site-packages/flashinfer/api_logging.py:2333: in _auto_dump_wrapper
+    return _inner(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/flashinfer/sampling.py:1547: in top_k_top_p_sampling_from_logits
+    masked_logits = top_k_mask_logits(logits, top_k)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/flashinfer/api_logging.py:2333: in _auto_dump_wrapper
+    return _inner(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/flashinfer/sampling.py:1974: in top_k_mask_logits
+    return get_sampling_module().top_k_mask_logits(
+           ^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/flashinfer/sampling.py:68: in get_sampling_module
+    module = gen_sampling_module().build_and_load()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/flashinfer/jit/core.py:320: in build_and_load
+    self.build()
+../octopus-contention/.venv/lib/python3.12/site-packages/flashinfer/jit/core.py:427: in build
+    run_ninja(self.build_dir, self.ninja_path, verbose)
+../octopus-contention/.venv/lib/python3.12/site-packages/flashinfer/jit/cpp_ext.py:370: in run_ninja
+    subprocess.run(
+../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/subprocess.py:548: in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/subprocess.py:1026: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/subprocess.py:1955: in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+E   FileNotFoundError: [Errno 2] No such file or directory: 'ninja'</failure></testcase><testcase classname="tests.test_gpu_fork" name="test_real_gpu_checkpoint_fork_abort_release_and_tail[32]" time="5.554"><failure message="FileNotFoundError: [Errno 2] No such file or directory: 'ninja'">tests/test_gpu_fork.py:29: in test_real_gpu_checkpoint_fork_abort_release_and_tail
+    with Octopus(config) as runtime:
+         ^^^^^^^^^^^^^^^
+src/octopus/runtime.py:70: in __init__
+    self.backend = VllmBackend(config or BackendConfig())
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/octopus/vllm_backend.py:527: in __init__
+    self.engine = LLMEngine.from_engine_args(
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/engine/llm_engine.py:179: in from_engine_args
+    return cls(
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/engine/llm_engine.py:105: in __init__
+    self.engine_core = EngineCoreClient.make_client(
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/engine/core_client.py:112: in make_client
+    return InprocClient(vllm_config, executor_class, log_stats)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/engine/core_client.py:317: in __init__
+    self.engine_core = EngineCore(*args, **kwargs)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/engine/core.py:144: in __init__
+    kv_cache_config = self._initialize_kv_caches(vllm_config)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/tracing/otel.py:178: in sync_wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/engine/core.py:331: in _initialize_kv_caches
+    self.model_executor.compile_or_warm_up_model()
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/executor/abstract.py:126: in compile_or_warm_up_model
+    compilation_times: list[CompilationTimes] = self.collective_rpc(
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/executor/uniproc_executor.py:103: in collective_rpc
+    result = run_method(self.driver_worker, method, args, kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/serial_utils.py:510: in run_method
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/tracing/otel.py:178: in sync_wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/worker/gpu_worker.py:810: in compile_or_warm_up_model
+    warmup_kernels(self.model_runner, self.execute_model, self.sample_tokens)
+../octopus-contention/.venv/lib/python3.12/site-packages/torch/utils/_contextlib.py:124: in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/worker/gpu/warmup.py:337: in warmup_kernels
+    worker_sample_tokens(grammar_output)
+../octopus-contention/.venv/lib/python3.12/site-packages/torch/utils/_contextlib.py:124: in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/worker/gpu_worker.py:1049: in sample_tokens
+    return self.model_runner.sample_tokens(grammar_output)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/torch/utils/_contextlib.py:124: in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/worker/gpu/eplb_utils.py:27: in wrapper
+    result = fn(self, *args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/worker/gpu/model_runner.py:1749: in sample_tokens
+    sampler_output, num_sampled, num_rejected = self.sample(
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/worker/gpu/model_runner.py:1353: in sample
+    sampler_output = self.sampler(logits, input_batch)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/worker/gpu/sample/sampler.py:120: in __call__
+    sampled, processed_logits = self.sample(
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/worker/gpu/sample/sampler.py:284: in sample
+    sampled = flashinfer_sample(processed_logits, top_k, top_p).to(torch.int64)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/sample/ops/topk_topp_sampler.py:508: in flashinfer_sample
+    next_token_ids = flashinfer.sampling.top_k_top_p_sampling_from_logits(
+../octopus-contention/.venv/lib/python3.12/site-packages/flashinfer/api_logging.py:2333: in _auto_dump_wrapper
+    return _inner(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/flashinfer/sampling.py:1547: in top_k_top_p_sampling_from_logits
+    masked_logits = top_k_mask_logits(logits, top_k)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/flashinfer/api_logging.py:2333: in _auto_dump_wrapper
+    return _inner(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/flashinfer/sampling.py:1974: in top_k_mask_logits
+    return get_sampling_module().top_k_mask_logits(
+           ^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/flashinfer/sampling.py:68: in get_sampling_module
+    module = gen_sampling_module().build_and_load()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/flashinfer/jit/core.py:320: in build_and_load
+    self.build()
+../octopus-contention/.venv/lib/python3.12/site-packages/flashinfer/jit/core.py:427: in build
+    run_ninja(self.build_dir, self.ninja_path, verbose)
+../octopus-contention/.venv/lib/python3.12/site-packages/flashinfer/jit/cpp_ext.py:370: in run_ninja
+    subprocess.run(
+../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/subprocess.py:548: in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/subprocess.py:1026: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/subprocess.py:1955: in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+E   FileNotFoundError: [Errno 2] No such file or directory: 'ninja'</failure></testcase><testcase classname="tests.test_gpu_fork" name="test_real_gpu_checkpoint_fork_abort_release_and_tail[33]" time="5.895"><failure message="FileNotFoundError: [Errno 2] No such file or directory: 'ninja'">tests/test_gpu_fork.py:29: in test_real_gpu_checkpoint_fork_abort_release_and_tail
+    with Octopus(config) as runtime:
+         ^^^^^^^^^^^^^^^
+src/octopus/runtime.py:70: in __init__
+    self.backend = VllmBackend(config or BackendConfig())
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/octopus/vllm_backend.py:527: in __init__
+    self.engine = LLMEngine.from_engine_args(
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/engine/llm_engine.py:179: in from_engine_args
+    return cls(
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/engine/llm_engine.py:105: in __init__
+    self.engine_core = EngineCoreClient.make_client(
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/engine/core_client.py:112: in make_client
+    return InprocClient(vllm_config, executor_class, log_stats)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/engine/core_client.py:317: in __init__
+    self.engine_core = EngineCore(*args, **kwargs)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/engine/core.py:144: in __init__
+    kv_cache_config = self._initialize_kv_caches(vllm_config)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/tracing/otel.py:178: in sync_wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/engine/core.py:331: in _initialize_kv_caches
+    self.model_executor.compile_or_warm_up_model()
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/executor/abstract.py:126: in compile_or_warm_up_model
+    compilation_times: list[CompilationTimes] = self.collective_rpc(
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/executor/uniproc_executor.py:103: in collective_rpc
+    result = run_method(self.driver_worker, method, args, kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/serial_utils.py:510: in run_method
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/tracing/otel.py:178: in sync_wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/worker/gpu_worker.py:810: in compile_or_warm_up_model
+    warmup_kernels(self.model_runner, self.execute_model, self.sample_tokens)
+../octopus-contention/.venv/lib/python3.12/site-packages/torch/utils/_contextlib.py:124: in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/worker/gpu/warmup.py:337: in warmup_kernels
+    worker_sample_tokens(grammar_output)
+../octopus-contention/.venv/lib/python3.12/site-packages/torch/utils/_contextlib.py:124: in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/worker/gpu_worker.py:1049: in sample_tokens
+    return self.model_runner.sample_tokens(grammar_output)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/torch/utils/_contextlib.py:124: in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/worker/gpu/eplb_utils.py:27: in wrapper
+    result = fn(self, *args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/worker/gpu/model_runner.py:1749: in sample_tokens
+    sampler_output, num_sampled, num_rejected = self.sample(
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/worker/gpu/model_runner.py:1353: in sample
+    sampler_output = self.sampler(logits, input_batch)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/worker/gpu/sample/sampler.py:120: in __call__
+    sampled, processed_logits = self.sample(
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/worker/gpu/sample/sampler.py:284: in sample
+    sampled = flashinfer_sample(processed_logits, top_k, top_p).to(torch.int64)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/sample/ops/topk_topp_sampler.py:508: in flashinfer_sample
+    next_token_ids = flashinfer.sampling.top_k_top_p_sampling_from_logits(
+../octopus-contention/.venv/lib/python3.12/site-packages/flashinfer/api_logging.py:2333: in _auto_dump_wrapper
+    return _inner(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/flashinfer/sampling.py:1547: in top_k_top_p_sampling_from_logits
+    masked_logits = top_k_mask_logits(logits, top_k)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/flashinfer/api_logging.py:2333: in _auto_dump_wrapper
+    return _inner(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/flashinfer/sampling.py:1974: in top_k_mask_logits
+    return get_sampling_module().top_k_mask_logits(
+           ^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/flashinfer/sampling.py:68: in get_sampling_module
+    module = gen_sampling_module().build_and_load()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/flashinfer/jit/core.py:320: in build_and_load
+    self.build()
+../octopus-contention/.venv/lib/python3.12/site-packages/flashinfer/jit/core.py:427: in build
+    run_ninja(self.build_dir, self.ninja_path, verbose)
+../octopus-contention/.venv/lib/python3.12/site-packages/flashinfer/jit/cpp_ext.py:370: in run_ninja
+    subprocess.run(
+../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/subprocess.py:548: in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/subprocess.py:1026: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/subprocess.py:1955: in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+E   FileNotFoundError: [Errno 2] No such file or directory: 'ninja'</failure></testcase><testcase classname="tests.test_gpu_fork" name="test_public_semantic_demo" time="6.352"><failure message="FileNotFoundError: [Errno 2] No such file or directory: 'ninja'">tests/test_gpu_fork.py:127: in test_public_semantic_demo
+    runpy.run_path("examples/branching_demo.py", run_name="__main__")
+&lt;frozen runpy&gt;:287: in run_path
+    ???
+&lt;frozen runpy&gt;:98: in _run_module_code
+    ???
+&lt;frozen runpy&gt;:88: in _run_code
+    ???
+examples/branching_demo.py:95: in &lt;module&gt;
+    main()
+examples/branching_demo.py:27: in main
+    with Octopus(config) as runtime:
+         ^^^^^^^^^^^^^^^
+src/octopus/runtime.py:70: in __init__
+    self.backend = VllmBackend(config or BackendConfig())
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/octopus/vllm_backend.py:527: in __init__
+    self.engine = LLMEngine.from_engine_args(
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/engine/llm_engine.py:179: in from_engine_args
+    return cls(
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/engine/llm_engine.py:105: in __init__
+    self.engine_core = EngineCoreClient.make_client(
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/engine/core_client.py:112: in make_client
+    return InprocClient(vllm_config, executor_class, log_stats)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/engine/core_client.py:317: in __init__
+    self.engine_core = EngineCore(*args, **kwargs)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/engine/core.py:144: in __init__
+    kv_cache_config = self._initialize_kv_caches(vllm_config)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/tracing/otel.py:178: in sync_wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/engine/core.py:331: in _initialize_kv_caches
+    self.model_executor.compile_or_warm_up_model()
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/executor/abstract.py:126: in compile_or_warm_up_model
+    compilation_times: list[CompilationTimes] = self.collective_rpc(
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/executor/uniproc_executor.py:103: in collective_rpc
+    result = run_method(self.driver_worker, method, args, kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/serial_utils.py:510: in run_method
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/tracing/otel.py:178: in sync_wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/worker/gpu_worker.py:810: in compile_or_warm_up_model
+    warmup_kernels(self.model_runner, self.execute_model, self.sample_tokens)
+../octopus-contention/.venv/lib/python3.12/site-packages/torch/utils/_contextlib.py:124: in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/worker/gpu/warmup.py:337: in warmup_kernels
+    worker_sample_tokens(grammar_output)
+../octopus-contention/.venv/lib/python3.12/site-packages/torch/utils/_contextlib.py:124: in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/worker/gpu_worker.py:1049: in sample_tokens
+    return self.model_runner.sample_tokens(grammar_output)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/torch/utils/_contextlib.py:124: in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/worker/gpu/eplb_utils.py:27: in wrapper
+    result = fn(self, *args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/worker/gpu/model_runner.py:1749: in sample_tokens
+    sampler_output, num_sampled, num_rejected = self.sample(
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/worker/gpu/model_runner.py:1353: in sample
+    sampler_output = self.sampler(logits, input_batch)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/worker/gpu/sample/sampler.py:120: in __call__
+    sampled, processed_logits = self.sample(
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/worker/gpu/sample/sampler.py:284: in sample
+    sampled = flashinfer_sample(processed_logits, top_k, top_p).to(torch.int64)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/sample/ops/topk_topp_sampler.py:508: in flashinfer_sample
+    next_token_ids = flashinfer.sampling.top_k_top_p_sampling_from_logits(
+../octopus-contention/.venv/lib/python3.12/site-packages/flashinfer/api_logging.py:2333: in _auto_dump_wrapper
+    return _inner(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/flashinfer/sampling.py:1547: in top_k_top_p_sampling_from_logits
+    masked_logits = top_k_mask_logits(logits, top_k)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/flashinfer/api_logging.py:2333: in _auto_dump_wrapper
+    return _inner(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/flashinfer/sampling.py:1974: in top_k_mask_logits
+    return get_sampling_module().top_k_mask_logits(
+           ^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/flashinfer/sampling.py:68: in get_sampling_module
+    module = gen_sampling_module().build_and_load()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/flashinfer/jit/core.py:320: in build_and_load
+    self.build()
+../octopus-contention/.venv/lib/python3.12/site-packages/flashinfer/jit/core.py:427: in build
+    run_ninja(self.build_dir, self.ninja_path, verbose)
+../octopus-contention/.venv/lib/python3.12/site-packages/flashinfer/jit/cpp_ext.py:370: in run_ninja
+    subprocess.run(
+../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/subprocess.py:548: in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/subprocess.py:1026: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/subprocess.py:1955: in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+E   FileNotFoundError: [Errno 2] No such file or directory: 'ninja'</failure></testcase></testsuite></testsuites>

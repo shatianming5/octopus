@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "pyupio__safety.7654596b.lm_rewri__PE5Rjzg__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# Announcements not displayed correctly in Safety CLI\n\n## Description\n\nThe function `print_announcements` in the Safety CLI is not correctly displaying announcements from the Safety service. The current implementation has changed how announcements are fetched and displayed, causing a regression in functionality.\n\nThe issue appears to be in the `safety/scan/render.py` file where the `print_announcements` function has been completely rewritten. The new implementation:\n\n1. Calls `get_basic_announcements()` without any parameters\n2. Uses a different formatting style with dashes and padding\n3. Wraps everything in a try/except block that logs exceptions\n\nHowever, the original implementation was:\n1. Using `safety.get_announcements()` with proper client and telemetry parameters\n2. Applying different colors based on announcement type (red for error, yellow for warning)\n3. Using a specific format with asterisks for each announcement\n\n## Steps to reproduce\n\n1. Run any Safety CLI command that displays announcements\n2. Observe that announcements are either not displayed or displayed incorrectly\n\nExample:\n```python\nfrom safety import cli\ncli.scan()  # Or any other command that would trigger announcements\n```\n\nExpected output:\n```\nSafety Announcements:\n\n* Info message\n* Warning message (in yellow)\n* Error message (in red)\n```\n\nActual output:\n```\n-----------------------\nAnnouncements from Safety\n-----------------------\n  Info message\n  \n  Warning message\n  \n  Error message\n-----------------------\n```\n\nOr in some cases, no announcements are displayed at all with an error logged."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository and the `print_announcements` implementation to restore the original announcement display behavior.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-c20786db-ce63-46f8-9651-a2393e317c28-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -100 && echo \"====\" && ls -la /testbed/safety 2>/dev/null || ls -la /testbed"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-c20786db-ce63-46f8-9651-a2393e317c28-0",
+            "content": "\ndrwxr-xr-x 10 root root   4096 Jul 14  2025 tests\n-rw-r--r--  1 root root    222 Jul 14  2025 tox.ini\n/testbed/scripts/extract_version.py\n/testbed/scripts/generate_contributors.py\n/testbed/tests/test_models.py\n/testbed/tests/scan/test_file_finder.py\n/testbed/tests/scan/test_command.py\n/testbed/tests/scan/test_render.py\n/testbed/tests/scan/ecosystems/python/__init__.py\n/testbed/tests/scan/ecosystems/python/test_main.py\n/testbed/tests/scan/test_file_handlers.py\n/testbed/tests/alerts/test_utils.py\n/testbed/tests/__init__.py\n/testbed/tests/auth/test_cli.py\n/testbed/tests/auth/test_main.py\n/testbed/tests/test_output_utils.py\n/testbed/tests/formatters/test_screen.py\n/testbed/tests/formatters/__init__.py\n/testbed/tests/formatters/test_text.py\n/testbed/tests/formatters/test_bare.py\n/testbed/tests/formatters/test_json.py\n/testbed/tests/test_safety.py\n/testbed/tests/resources.py\n/testbed/tests/test_cli.py\n/testbed/tests/test_util.py\n/testbed/binaries.py\n/testbed/safety/errors.py\n/testbed/safety/scan/main.py\n/testbed/safety/scan/__init__.py\n/testbed/safety/scan/validators.py\n/testbed/safety/scan/constants.py\n/testbed/safety/scan/command.py\n/testbed/safety/scan/finder/file_finder.py\n/testbed/safety/scan/finder/__init__.py\n/testbed/safety/scan/finder/handlers.py\n/testbed/safety/scan/ecosystems/python/main.py\n/testbed/safety/scan/ecosystems/python/__init__.py\n/testbed/safety/scan/ecosystems/python/dependencies.py\n/testbed/safety/scan/ecosystems/__init__.py\n/testbed/safety/scan/ecosystems/base.py\n/testbed/safety/scan/ecosystems/target.py\n/testbed/safety/scan/models.py\n/testbed/safety/scan/util.py\n/testbed/safety/scan/render.py\n/testbed/safety/scan/decorators.py\n/testbed/safety/alerts/github.py\n/testbed/safety/alerts/__init__.py\n/testbed/safety/alerts/requirements.py\n/testbed/safety/alerts/utils.py\n/testbed/safety/__main__.py\n/testbed/safety/__init__.py\n/testbed/safety/auth/main.py\n/testbed/safety/auth/__init__.py\n/testbed/safety/auth/constants.py\n/testbed/safety/auth/server.py\n/testbed/safety/auth/utils.py\n/testbed/safety/auth/cli.py\n/testbed/safety/auth/models.py\n/testbed/safety/auth/cli_utils.py\n/testbed/safety/formatters/text.py\n/testbed/safety/formatters/__init__.py\n/testbed/safety/formatters/screen.py\n/testbed/safety/formatters/bare.py\n/testbed/safety/formatters/json.py\n/testbed/safety/formatters/schemas/__init__.py\n/testbed/safety/formatters/schemas/common.py\n/testbed/safety/formatters/schemas/zero_five.py\n/testbed/safety/formatters/schemas/v3_0.py\n/testbed/safety/formatters/schemas/v0_5.py\n/testbed/safety/formatters/html.py\n/testbed/safety/safety.py\n/testbed/safety/constants.py\n/testbed/safety/output_utils.py\n/testbed/safety/cli.py\n/testbed/safety/console.py\n/testbed/safety/formatter.py\n/testbed/safety/cli_util.py\n/testbed/safety/models.py\n/testbed/safety/util.py\n/testbed/safety/cli_utils.py\n====\ntotal 316\ndrwxr-xr-x 7 root root  4096 Jul 14  2025 .\ndrwxr-xr-x 1 root root  4096 Sep 22 16:47 ..\n-rw-r--r-- 1 root root     7 Jul 14  2025 VERSION\n-rw-r--r-- 1 root root   257 Jul 14  2025 __init__.py\n-rw-r--r-- 1 root root   168 Jul 14  2025 __main__.py\ndrwxr-xr-x 3 root root  4096 Jul 14  2025 alerts\ndrwxr-xr-x 2 root root  4096 Jul 14  2025 auth\n-rw-r--r-- 1 root root 38971 Jul 14  2025 cli.py\n-rw-r--r-- 1 root root 28092 Jul 14  2025 cli_util.py\n-rw-r--r-- 1 root root     0 Jul 14  2025 cli_utils.py\n-rw-r--r-- 1 root root  1131 Jul 14  2025 console.py\n-rw-r--r-- 1 root root  6297 Jul 14  2025 constants.py\n-rw-r--r-- 1 root root  8821 Jul 14  2025 errors.py\n-rw-r--r-- 1 root root  5369 Jul 14  2025 formatter.py\ndrwxr-xr-x 3 root root  4096 Jul 14  2025 formatters\n-rw-r--r-- 1 root root 14852 Jul 14  2025 models.py\n-rw-r--r-- 1 root root 48174 Jul 14  2025 output_utils.py\n-rw-r--r-- 1 root root  4850 Jul 14  2025 safety-policy-template.yml\n-rw-r--r-- 1 root root 60669 Jul 14  2025 safety.py\ndrwxr-xr-x 4 root root  4096 Jul 14  2025 scan\ndrwxr-xr-x 3 root root  4096 Jul 14  2025 templates\n-rw-r--r-- 1 root root 43320 Jul 14  2025 util.py\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-d183587b-b0de-45e7-b4a2-9506f953cff1-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/safety/scan/render.py && echo \"======== TESTS ========\" && cat /testbed/tests/scan/test_render.py && echo \"======== GIT LOG ========\" && cd /testbed && git log --oneline -20 && git status && git log --all --oneline | head -30"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-d183587b-b0de-45e7-b4a2-9506f953cff1-1",
+            "content": "ic_announcements')\n    @patch('safety.scan.render.Console')\n    def test_print_announcements(self, mock_console, mock_get_basic_announcements, mock_get_announcements):\n        \n        mock_get_announcements.return_value = [\n            {'type': 'info', 'message': 'Info message'},\n            {'type': 'warning', 'message': 'Warning message'},\n            {'type': 'error', 'message': 'Error message'},\n        ]\n        \n        mock_get_basic_announcements.return_value = mock_get_announcements.return_value\n        console = mock_console.return_value\n        \n        ctx = MagicMock()\n        ctx.obj.auth.client = MagicMock()\n        ctx.obj.config.telemetry_enabled = False\n        ctx.obj.telemetry = MagicMock()\n        \n        print_announcements(console, ctx)\n\n        # Include empty calls and correct sequence\n        console.print.assert_has_calls([\n            call(),\n            call(\"[bold]Safety Announcements:[/bold]\"),\n            call(),\n            call(\"[default]* Info message[/default]\"),\n            call(\"[yellow]* Warning message[/yellow]\"),\n            call(\"[red]* Error message[/red]\")\n        ])\n\n\n    @patch('safety.scan.render.render_to_console')\n    def test_print_summary(self, mock_render_to_console):\n        ignored_vulns_data = [\n            MagicMock(ignored_code=IgnoreCodes.manual.value, vulnerability_id='v1', package_name='p1'),\n            MagicMock(ignored_code=IgnoreCodes.cvss_severity.value, vulnerability_id='v2', package_name='p2'),\n            MagicMock(ignored_code=IgnoreCodes.unpinned_specification.value, vulnerability_id='v3', package_name='p3'),\n            MagicMock(ignored_code=IgnoreCodes.environment_dependency.value, vulnerability_id='v4', package_name='p4'),\n        ]\n\n        print_summary(\n            self.console,\n            total_issues_with_duplicates=0,\n            total_ignored_issues=0,\n            project=self.project,\n            dependencies_count=5,\n            fixes_count=0,\n            resolved_vulns_per_fix=0,\n            ignored_vulns_data=ignored_vulns_data\n        )\n\n        self.console.print.assert_has_calls([\n            call('Tested [number]5[/number] dependencies for security issues using policy fetched from Safety Platform'),\n            call('0 security issues found, 0 fixes suggested.'),\n            call('[number]0[/number] fixes suggested, resolving [number]0[/number] vulnerabilities.')\n        ])\n\n        print_summary(\n            self.console,\n            total_issues_with_duplicates=0,\n            total_ignored_issues=0,\n            project=self.project,\n            dependencies_count=5,\n            fixes_count=0,\n            resolved_vulns_per_fix=0\n        )\n\n        self.console.print.assert_has_calls([\n            call('Tested [number]5[/number] dependencies for security issues using policy fetched from Safety Platform'),\n            call('0 security issues found, 0 fixes suggested.'),\n            call('[number]0[/number] fixes suggested, resolving [number]0[/number] vulnerabilities.')\n        ])\n\nif __name__ == '__main__':\n    unittest.main()\n======== GIT LOG ========\n92bb094 Initial commit\nOn branch main\nYour branch is up to date with 'origin/main'.\n\nUntracked files:\n  (use \"git add <file>...\" to include in what will be committed)\n\t.gitkeep\n\nnothing added to commit but untracked files present (use \"git add\" to track)\n36ff436 Remove F2P Tests\n5ad0fdf Bug Patch\nfe43452 Remove F2P Tests\nd450b15 Bug Patch\n7a69726 Remove F2P Tests\nc36748e Bug Patch\na96d369 Remove F2P Tests\nf816fd2 Bug Patch\n88e94cd Remove F2P Tests\ne44a7c9 Bug Patch\nc5c9f97 Remove F2P Tests\n02a93b1 Bug Patch\n8b602b1 Remove F2P Tests\n8c0e48b Bug Patch\n94005eb Remove F2P Tests\n09bb68e Bug Patch\n2387965 Remove F2P Tests\ncd001fa Bug Patch\ne6676b3 Remove F2P Tests\nb356bc0 Bug Patch\nac4ac00 Remove F2P Tests\ne9f85be Bug Patch\nfd57bb8 Remove F2P Tests\n291a2bb Bug Patch\nb78fa17 Remove F2P Tests\n572bf00 Bug Patch\n93abb10 Remove F2P Tests\n1149a0f Bug Patch\n2a27403 Remove F2P Tests\n38003d6 Bug Patch\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-ae6370de-481c-42fd-b5cd-4993230aa508-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/safety/scan/render.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-ae6370de-481c-42fd-b5cd-4993230aa508-2",
+            "content": "nalPackageRefCategory.PACKAGE_MANAGER,\n        \"purl\",\n        f\"pkg:pypi/{package.name}{version_detail}\",\n    )\n    return pkg_ref\n\n\ndef create_packages(dependencies: List[PythonDependency]) -> List[Any]:\n    \"\"\"\n    Create a list of SPDX packages.\n\n    Args:\n        dependencies (List[PythonDependency]): List of Python dependencies.\n\n    Returns:\n        List[Any]: List of SPDX packages.\n    \"\"\"\n    from spdx_tools.spdx.model.spdx_no_assertion import SpdxNoAssertion\n\n    from spdx_tools.spdx.model import (\n        Package,\n    )\n\n    doc_pkgs = []\n    pkgs_added = set([])\n    for dependency in dependencies:\n        for spec in dependency.specifications:\n            pkg_version = next(iter(spec.specifier)).version if spec.is_pinned() else f\"{spec.specifier}\"\n            dep_name = dependency.name.replace('_', '-')\n            pkg_id = f\"SPDXRef-pip-{dep_name}-{pkg_version}\" if spec.is_pinned() else f\"SPDXRef-pip-{dep_name}\"\n            if pkg_id in pkgs_added:\n                continue\n            pkg_ref = create_pkg_ext_ref(package=dependency, version=pkg_version)\n\n            pkg = Package(\n                spdx_id=pkg_id,\n                name=f\"pip:{dep_name}\",\n                download_location=SpdxNoAssertion(),\n                version=pkg_version,\n                file_name=\"\",\n                supplier=SpdxNoAssertion(),\n                files_analyzed=False,\n                license_concluded=SpdxNoAssertion(),\n                license_declared=SpdxNoAssertion(),\n                copyright_text=SpdxNoAssertion(),\n                external_references=[pkg_ref],\n            )\n            pkgs_added.add(pkg_id)\n            doc_pkgs.append(pkg)\n    return doc_pkgs\n\n\ndef create_spdx_document(*, report: ReportModel, spdx_version: str) -> Optional[Any]:\n    \"\"\"\n    Create an SPDX document.\n\n    Args:\n        report (ReportModel): The scan report model.\n        spdx_version (str): The SPDX version.\n\n    Returns:\n        Optional[Any]: The SPDX document.\n    \"\"\"\n    from spdx_tools.spdx.model import (\n        Document,\n        Relationship,\n        RelationshipType,\n    )\n\n    project =  report.projects[0] if any(report.projects) else None\n\n    if not project:\n        return None\n\n    prj_id = project.id\n\n    if not prj_id:\n        parent_name = project.project_path.parent.name\n        prj_id = parent_name if parent_name else str(int(time.time()))\n\n    creation_info = generate_spdx_creation_info(spdx_version=spdx_version, project_identifier=prj_id)\n\n    depedencies = iter([])\n    for file in project.files:\n        depedencies = itertools.chain(depedencies, file.results.dependencies)\n\n    packages = create_packages(depedencies)\n\n    # Requirement for document to have atleast one relationship\n    relationship = Relationship(\n        \"SPDXRef-DOCUMENT\",\n        RelationshipType.DESCRIBES,\n        \"SPDXRef-DOCUMENT\"\n    )\n    spdx_doc = Document(\n        creation_info,\n        packages,\n        [],\n        [],\n        [],\n        [relationship],\n        []\n    )\n    return spdx_doc\n\n\ndef render_scan_spdx(report: ReportModel, obj: Any, spdx_version: Optional[str]) -> Optional[Any]:\n    \"\"\"\n    Render the scan report to SPDX format.\n\n    Args:\n        report (ReportModel): The scan report model.\n        obj (Any): The object containing additional settings.\n        spdx_version (Optional[str]): The SPDX version.\n\n    Returns:\n        Optional[Any]: The rendered SPDX document in JSON format.\n    \"\"\"\n    from spdx_tools.spdx.writer.write_utils import (\n        convert,\n        validate_and_deduplicate\n    )\n\n    # Set to latest supported if a version is not specified\n    if not spdx_version:\n        spdx_version = \"2.3\"\n\n    document_obj = create_spdx_document(report=report, spdx_version=spdx_version)\n    document_obj = validate_and_deduplicate(document=document_obj, validate=True, drop_duplicates=True)\n    doc = None\n\n    if document_obj:\n        doc = convert(document=document_obj, converter=None)\n\n    return json.dumps(doc) if doc else None\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-7fe3cadd-b118-449f-97c2-6306d0da63f1-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "wc -l /testbed/safety/scan/render.py && rg -n \"print_announcements|get_basic_announcements|get_announcements|Safety Announcements\" /testbed --type py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-7fe3cadd-b118-449f-97c2-6306d0da63f1-3",
+            "content": "755 /testbed/safety/scan/render.py\nbash: line 1: rg: command not found\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-5ab7c4e9-8c5a-4cd7-9719-32e0980dca07-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "grep -n \"print_announcements\\|get_basic_announcements\\|get_announcements\\|Safety Announcements\" /testbed -r --include=\"*.py\""
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-5ab7c4e9-8c5a-4cd7-9719-32e0980dca07-4",
+            "content": "/scan/test_render.py:69:            call(\"[bold]Safety Announcements:[/bold]\"),\n/testbed/tests/test_safety.py:41:    get_announcements,\n/testbed/tests/test_safety.py:458:    def test_get_announcements_catch_request_exceptions(self, get_used_options):\n/testbed/tests/test_safety.py:465:        self.assertEqual(get_announcements(session), [])\n/testbed/tests/test_safety.py:469:    def test_get_announcements_catch_unhandled_http_codes(self, get_used_options):\n/testbed/tests/test_safety.py:483:            self.assertEqual(get_announcements(session), [])\n/testbed/tests/test_safety.py:487:    def test_get_announcements_http_ok(self, get_used_options):\n/testbed/tests/test_safety.py:512:        self.assertEqual(get_announcements(session), expected)\n/testbed/tests/test_safety.py:516:    def test_get_announcements_wrong_json_response_handling(self, get_used_options):\n/testbed/tests/test_safety.py:535:        self.assertEqual(get_announcements(session), [])\n/testbed/tests/test_safety.py:548:        self.assertEqual(get_announcements(session), [])\n/testbed/tests/test_cli.py:136:    @patch(\"safety.safety.get_announcements\")\n/testbed/tests/test_cli.py:137:    def test_announcements_if_is_not_tty(self, get_announcements_func):\n/testbed/tests/test_cli.py:139:        get_announcements_func.return_value = [announcement]\n/testbed/safety/scan/render.py:24:from safety.util import get_basic_announcements, get_safety_version\n/testbed/safety/scan/render.py:62:def print_announcements(console: Console, ctx: typer.Context):\n/testbed/safety/scan/render.py:72:    announcements = safety.get_announcements(ctx.obj.auth.client,\n/testbed/safety/scan/render.py:75:    basic_announcements = get_basic_announcements(announcements, False)\n/testbed/safety/scan/render.py:79:        console.print(\"[bold]Safety Announcements:[/bold]\")\n/testbed/safety/scan/decorators.py:21:from safety.scan.render import print_announcements, print_header, print_project_info, print_wait_policy_download\n/testbed/safety/scan/decorators.py:175:        print_announcements(console=console, ctx=ctx)\n/testbed/safety/scan/decorators.py:274:        print_announcements(console=console, ctx=ctx)\n/testbed/safety/formatters/text.py:9:from safety.util import get_primary_announcement, get_basic_announcements, is_ignore_unpinned_mode, \\\n/testbed/safety/formatters/text.py:46:        basic_announcements = get_basic_announcements(announcements)\n/testbed/safety/formatters/screen.py:8:from safety.util import get_primary_announcement, get_basic_announcements, get_terminal_size, \\\n/testbed/safety/formatters/screen.py:45:        basic_announcements = get_basic_announcements(announcements)\n/testbed/safety/formatters/bare.py:5:from safety.util import get_basic_announcements\n/testbed/safety/formatters/bare.py:32:        for announcement in get_basic_announcements(announcements, include_local=False):\n/testbed/safety/formatters/bare.py:54:        for announcement in get_basic_announcements(announcements):\n/testbed/safety/formatters/json.py:11:from safety.util import get_basic_announcements, SafetyContext\n/testbed/safety/formatters/json.py:56:                          get_basic_announcements(announcements)],\n/testbed/safety/formatters/json.py:122:            \"announcements\": get_basic_announcements(announcements),\n/testbed/safety/formatters/json.py:138:        return json_parser.dumps({\"announcements\": get_basic_announcements(announcements)}, indent=4)\n/testbed/safety/formatters/html.py:8:from safety.util import get_basic_announcements\n/testbed/safety/safety.py:1499:def get_announcements(\n/testbed/safety/cli.py:385:            announcements = safety.get_announcements(ctx.obj.auth.client, telemetry=ctx.obj.config.telemetry_enabled)\n/testbed/safety/cli.py:508:        announcements = safety.get_announcements(session=ctx.obj.auth.client, telemetry=ctx.obj.config.telemetry_enabled)\n/testbed/safety/util.py:268:def get_basic_announcements(announcements: List[Dict[str, Any]], include_local: bool = True) -> List[Dict[str, Any]]:\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-cf25833e-c798-4c1d-946f-88122c841e0e-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '1,150p' /testbed/safety/scan/render.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-cf25833e-c798-4c1d-946f-88122c841e0e-5",
+            "content": "e for output.\n        targets (List[Path]): List of target paths for the scan.\n        is_system_scan (bool): Indicates if the scan is a system scan.\n    \"\"\"\n    console.print(render_header(targets, is_system_scan), markup=True)\n\ndef print_announcements(console: Console, ctx: typer.Context):\n    \"\"\"\n    Print announcements from Safety.\n\n    Args:\n        console (Console): The console for output.\n        ctx (typer.Context): The context of the Typer command.\n    \"\"\"\n    colors = {\"error\": \"red\", \"warning\": \"yellow\", \"info\": \"default\"}\n\n    announcements = safety.get_announcements(ctx.obj.auth.client,\n                                             telemetry=ctx.obj.config.telemetry_enabled,\n                                             with_telemetry=ctx.obj.telemetry)\n    basic_announcements = get_basic_announcements(announcements, False)\n\n    if any(basic_announcements):\n        console.print()\n        console.print(\"[bold]Safety Announcements:[/bold]\")\n        console.print()\n        for announcement in announcements:\n            color = colors.get(announcement.get('type', \"info\"), \"default\")\n            console.print(f\"[{color}]* {announcement.get('message')}[/{color}]\")\n\ndef print_detected_ecosystems_section(console: Console, file_paths: Dict[str, Set[Path]], include_safety_prjs: bool = True) -> None:\n    \"\"\"\n    Print detected ecosystems section.\n\n    Args:\n        console (Console): The console for output.\n        file_paths (Dict[str, Set[Path]]): Dictionary of file paths by type.\n        include_safety_prjs (bool): Whether to include safety projects.\n    \"\"\"\n    detected: Dict[Ecosystem, Dict[FileType, int]] = {}\n\n    for file_type_key, f_paths in file_paths.items():\n        file_type = FileType(file_type_key)\n        if file_type.ecosystem:\n            if file_type.ecosystem not in detected:\n                detected[file_type.ecosystem] = {}\n            detected[file_type.ecosystem][file_type] = len(f_paths)\n\n    for ecosystem, f_type_count in detected.items():\n\n        if not include_safety_prjs and ecosystem is Ecosystem.SAFETY_PROJECT:\n            continue\n\n        brief = \"Found \"\n        file_types = []\n\n        for f_type, count in f_type_count.items():\n            file_types.append(f\"{count} {f_type.human_name(plural=count>1)}\")\n\n        if len(file_types) > 1:\n            brief += \", \".join(file_types[:-1]) + \" and \" + file_types[-1]\n        else:\n            brief += file_types[0]\n\n        msg = f\"{ecosystem.name.replace('_', ' ').title()} detected. {brief}\"\n\n        console.print(msg)\n        \n\n\ndef print_fixes_section(console: Console, requirements_txt_found: bool = False, is_detailed_output: bool = False) -> None:\n    \"\"\"\n    Print the section on applying fixes.\n\n    Args:\n        console (Console): The console for output.\n        requirements_txt_found (bool): Indicates if a requirements.txt file was found.\n        is_detailed_output (bool): Indicates if detailed output is enabled.\n    \"\"\"\n    console.print(\"-\" * console.size.width)\n    console.print(\"Apply Fixes\")\n    console.print(\"-\" * console.size.width)\n\n    console.print()\n\n    if requirements_txt_found:\n        console.print(\"[green]Run `safety scan --apply-fixes`[/green] to update these packages and fix these vulnerabilities. \"\n                    \"Documentation, limitations, and configurations for applying automated fixes: [link]https://docs.safetycli.com/safety-docs/vulnerability-remediation/applying-fixes[/link]\")\n        console.print()\n        console.print(\"Alternatively, use your package manager to update packages to their secure versions. Always check for breaking changes when updating packages.\")\n    else:\n        msg = \"Use your package manager to update packages to their secure versions. Always check for breaking changes when updating packages.\"\n        console.print(msg)\n\n    if not is_detailed_output:\n        console.print(\"[tip]Tip[/tip]: For more detailed output on each vulnerability, add the `--detailed-output` flag to safety scan.\")\n"
+          }
+        ]
+      }
+    }
+  ]
+}

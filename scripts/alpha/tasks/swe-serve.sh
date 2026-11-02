@@ -1,0 +1,2 @@
+# SWE rollout servers for the trainer in 144129 (EXTRA_SERVERS), from a clean environment
+exec env -i HOME=$HOME USER=$USER PATH=/usr/local/bin:/usr/bin:/bin SLURM_JOB_ID=$SLURM_JOB_ID CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES bash -c 'export RL_ENV_FILE=/projects/cluster/octopus/octopus/code-d57c294/scripts/alpha/rl_run.env INFER_GPUS=0,1,2,3 TRAIN_GPUS= SERVE_HOST=NODE_IP; source $RL_ENV_FILE; bash $CODE/scripts/rl_env/rl_run.sh serve && exec sleep infinity'

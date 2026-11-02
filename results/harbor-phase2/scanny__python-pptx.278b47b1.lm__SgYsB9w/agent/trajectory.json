@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "scanny__python-pptx.278b47b1.lm__SgYsB9w__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# DataLabel.has_text_frame property not working correctly\n\n## Description\nWhen checking if a data label has a text frame using the `has_text_frame` property, it returns incorrect results. The property is using an attribute `has_tx_rich` that doesn't exist on the dLbl object, causing the property to fail.\n\n## Steps to Reproduce\n```python\nfrom pptx import Presentation\nfrom pptx.chart.data import CategoryChartData\n\n# Create a presentation with a chart\nprs = Presentation()\nslide = prs.slides.add_slide(prs.slide_layouts[5])\nchart_data = CategoryChartData()\nchart_data.categories = ['East', 'West', 'Midwest']\nchart_data.add_series('Series 1', (19.2, 21.4, 16.7))\nx, y, cx, cy = 2, 2, 6, 4\nchart = slide.shapes.add_chart(\n    chart_type=3, x=x, y=y, cx=cx, cy=cy, chart_data=chart_data\n).chart\n\n# Try to access data label text frame\npoint = chart.series[0].points[0]\ndata_label = point.data_label\nprint(data_label.has_text_frame)  # Should return True/False but raises AttributeError\n```\n\n## Expected Results\nThe `has_text_frame` property should correctly return True or False based on whether the data label has a text frame.\n\n## Actual Results\n```\nTraceback (most recent call last):\n  File \"example.py\", line 19, in <module>\n    print(data_label.has_text_frame)\n  File \"/path/to/pptx/chart/datalabel.py\", line 180, in has_text_frame\n    return dLbl.has_tx_rich\nAttributeError: 'CT_DLbl' object has no attribute 'has_tx_rich'\n```\n\n## Environment\n- python-pptx version: 0.6.18\n- Python version: 3.8.5\n- OS: Windows 10\n\n<END WRITING>"
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository and the `has_text_frame` implementation to find why it references a missing `has_tx_rich` attribute.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-3ab4bb4f-0b8e-4157-9425-5bc070f7b750-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -100"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-3ab4bb4f-0b8e-4157-9425-5bc070f7b750-0",
+            "content": "025 lab\n-rw-r--r--  1 root root  4354 Jul 14  2025 pyproject.toml\n-rw-r--r--  1 root root    61 Jul 14  2025 requirements-dev.txt\n-rw-r--r--  1 root root    68 Jul 14  2025 requirements-docs.txt\n-rw-r--r--  1 root root   101 Jul 14  2025 requirements-test.txt\n-rw-r--r--  1 root root   111 Jul 14  2025 requirements.txt\ndrwxr-xr-x  7 root root  4096 Jul 14  2025 spec\ndrwxr-xr-x  4 root root  4096 Jul 14  2025 src\ndrwxr-xr-x 12 root root  4096 Jul 14  2025 tests\n-rw-r--r--  1 root root   166 Jul 14  2025 tox.ini\ndrwxr-xr-x  4 root root  4096 Jul 14  2025 typings\n/testbed/src/pptx/slide.py\n/testbed/src/pptx/text/fonts.py\n/testbed/src/pptx/text/text.py\n/testbed/src/pptx/text/layout.py\n/testbed/src/pptx/text/__init__.py\n/testbed/src/pptx/api.py\n/testbed/src/pptx/enum/shapes.py\n/testbed/src/pptx/enum/text.py\n/testbed/src/pptx/enum/dml.py\n/testbed/src/pptx/enum/__init__.py\n/testbed/src/pptx/enum/chart.py\n/testbed/src/pptx/enum/base.py\n/testbed/src/pptx/enum/lang.py\n/testbed/src/pptx/enum/action.py\n/testbed/src/pptx/oxml/slide.py\n/testbed/src/pptx/oxml/text.py\n/testbed/src/pptx/oxml/simpletypes.py\n/testbed/src/pptx/oxml/coreprops.py\n/testbed/src/pptx/oxml/__init__.py\n/testbed/src/pptx/oxml/dml/fill.py\n/testbed/src/pptx/oxml/dml/line.py\n/testbed/src/pptx/oxml/dml/__init__.py\n/testbed/src/pptx/oxml/dml/color.py\n/testbed/src/pptx/oxml/chart/series.py\n/testbed/src/pptx/oxml/chart/__init__.py\n/testbed/src/pptx/oxml/chart/shared.py\n/testbed/src/pptx/oxml/chart/chart.py\n/testbed/src/pptx/oxml/chart/marker.py\n/testbed/src/pptx/oxml/chart/datalabel.py\n/testbed/src/pptx/oxml/chart/axis.py\n/testbed/src/pptx/oxml/chart/legend.py\n/testbed/src/pptx/oxml/chart/plot.py\n/testbed/src/pptx/oxml/table.py\n/testbed/src/pptx/oxml/presentation.py\n/testbed/src/pptx/oxml/xmlchemy.py\n/testbed/src/pptx/oxml/theme.py\n/testbed/src/pptx/oxml/shapes/picture.py\n/testbed/src/pptx/oxml/shapes/__init__.py\n/testbed/src/pptx/oxml/shapes/groupshape.py\n/testbed/src/pptx/oxml/shapes/shared.py\n/testbed/src/pptx/oxml/shapes/autoshape.py\n/testbed/src/pptx/oxml/shapes/connector.py\n/testbed/src/pptx/oxml/shapes/graphfrm.py\n/testbed/src/pptx/oxml/action.py\n/testbed/src/pptx/oxml/ns.py\n/testbed/src/pptx/__init__.py\n/testbed/src/pptx/dml/fill.py\n/testbed/src/pptx/dml/line.py\n/testbed/src/pptx/dml/__init__.py\n/testbed/src/pptx/dml/effect.py\n/testbed/src/pptx/dml/chtfmt.py\n/testbed/src/pptx/dml/color.py\n/testbed/src/pptx/chart/series.py\n/testbed/src/pptx/chart/category.py\n/testbed/src/pptx/chart/xmlwriter.py\n/testbed/src/pptx/chart/point.py\n/testbed/src/pptx/chart/__init__.py\n/testbed/src/pptx/chart/chart.py\n/testbed/src/pptx/chart/marker.py\n/testbed/src/pptx/chart/datalabel.py\n/testbed/src/pptx/chart/axis.py\n/testbed/src/pptx/chart/data.py\n/testbed/src/pptx/chart/legend.py\n/testbed/src/pptx/chart/plot.py\n/testbed/src/pptx/chart/xlsx.py\n/testbed/src/pptx/table.py\n/testbed/src/pptx/presentation.py\n/testbed/src/pptx/shared.py\n/testbed/src/pptx/package.py\n/testbed/src/pptx/media.py\n/testbed/src/pptx/spec.py\n/testbed/src/pptx/types.py\n/testbed/src/pptx/shapes/placeholder.py\n/testbed/src/pptx/shapes/picture.py\n/testbed/src/pptx/shapes/freeform.py\n/testbed/src/pptx/shapes/__init__.py\n/testbed/src/pptx/shapes/shapetree.py\n/testbed/src/pptx/shapes/base.py\n/testbed/src/pptx/shapes/autoshape.py\n/testbed/src/pptx/shapes/connector.py\n/testbed/src/pptx/shapes/graphfrm.py\n/testbed/src/pptx/shapes/group.py\n/testbed/src/pptx/action.py\n/testbed/src/pptx/parts/embeddedpackage.py\n/testbed/src/pptx/parts/slide.py\n/testbed/src/pptx/parts/image.py\n/testbed/src/pptx/parts/coreprops.py\n/testbed/src/pptx/parts/__init__.py\n/testbed/src/pptx/parts/presentation.py\n/testbed/src/pptx/parts/chart.py\n/testbed/src/pptx/parts/media.py\n/testbed/src/pptx/util.py\n/testbed/src/pptx/opc/oxml.py\n/testbed/src/pptx/opc/packuri.py\n/testbed/src/pptx/opc/__init__.py\n/testbed/src/pptx/opc/shared.py\n/testbed/src/pptx/opc/package.py\n/testbed/src/pptx/opc/spec.py\n/testbed/src/pptx/opc/constants.py\n/testbed/src/pptx/opc/serialized.py\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-3384d495-0ac3-4cfd-8879-27b1976c8bda-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/src/pptx/chart/datalabel.py && echo \"======= OXML =======\" && cat /testbed/src/pptx/oxml/chart/datalabel.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-3384d495-0ac3-4cfd-8879-27b1976c8bda-1",
+            "content": "ent specifying properties for a set of data labels.\"\"\"\n\n    _tag_seq = (\n        \"c:dLbl\",\n        \"c:numFmt\",\n        \"c:spPr\",\n        \"c:txPr\",\n        \"c:dLblPos\",\n        \"c:showLegendKey\",\n        \"c:showVal\",\n        \"c:showCatName\",\n        \"c:showSerName\",\n        \"c:showPercent\",\n        \"c:showBubbleSize\",\n        \"c:separator\",\n        \"c:showLeaderLines\",\n        \"c:leaderLines\",\n        \"c:extLst\",\n    )\n    dLbl = ZeroOrMore(\"c:dLbl\", successors=_tag_seq[1:])\n    numFmt = ZeroOrOne(\"c:numFmt\", successors=_tag_seq[2:])\n    txPr = ZeroOrOne(\"c:txPr\", successors=_tag_seq[4:])\n    dLblPos = ZeroOrOne(\"c:dLblPos\", successors=_tag_seq[5:])\n    showLegendKey = ZeroOrOne(\"c:showLegendKey\", successors=_tag_seq[6:])\n    showVal = ZeroOrOne(\"c:showVal\", successors=_tag_seq[7:])\n    showCatName = ZeroOrOne(\"c:showCatName\", successors=_tag_seq[8:])\n    showSerName = ZeroOrOne(\"c:showSerName\", successors=_tag_seq[9:])\n    showPercent = ZeroOrOne(\"c:showPercent\", successors=_tag_seq[10:])\n    del _tag_seq\n\n    @property\n    def defRPr(self):\n        \"\"\"\n        ``<a:defRPr>`` great-great-grandchild element, added with its\n        ancestors if not present.\n        \"\"\"\n        txPr = self.get_or_add_txPr()\n        defRPr = txPr.defRPr\n        return defRPr\n\n    def get_dLbl_for_point(self, idx):\n        \"\"\"\n        Return the `c:dLbl` child representing the label for the data point\n        at index *idx*.\n        \"\"\"\n        matches = self.xpath('c:dLbl[c:idx[@val=\"%d\"]]' % idx)\n        if matches:\n            return matches[0]\n        return None\n\n    def get_or_add_dLbl_for_point(self, idx):\n        \"\"\"\n        Return the `c:dLbl` element representing the label of the point at\n        index *idx*.\n        \"\"\"\n        matches = self.xpath('c:dLbl[c:idx[@val=\"%d\"]]' % idx)\n        if matches:\n            return matches[0]\n        return self._insert_dLbl_in_sequence(idx)\n\n    @classmethod\n    def new_dLbls(cls):\n        \"\"\"Return a newly created \"loose\" `c:dLbls` element.\"\"\"\n        return parse_xml(\n            \"<c:dLbls %s>\\n\"\n            '  <c:showLegendKey val=\"0\"/>\\n'\n            '  <c:showVal val=\"0\"/>\\n'\n            '  <c:showCatName val=\"0\"/>\\n'\n            '  <c:showSerName val=\"0\"/>\\n'\n            '  <c:showPercent val=\"0\"/>\\n'\n            '  <c:showBubbleSize val=\"0\"/>\\n'\n            '  <c:showLeaderLines val=\"1\"/>\\n'\n            \"</c:dLbls>\" % nsdecls(\"c\")\n        )\n\n    def _insert_dLbl_in_sequence(self, idx):\n        \"\"\"\n        Return a newly created `c:dLbl` element having `c:idx` child of *idx*\n        and inserted in numeric sequence among the `c:dLbl` children of this\n        element.\n        \"\"\"\n        new_dLbl = self._new_dLbl()\n        new_dLbl.idx.val = idx\n\n        dLbl = None\n        for dLbl in self.dLbl_lst:\n            if dLbl.idx_val > idx:\n                dLbl.addprevious(new_dLbl)\n                return new_dLbl\n        if dLbl is not None:\n            dLbl.addnext(new_dLbl)\n        else:\n            self.insert(0, new_dLbl)\n        return new_dLbl\n\n    def _new_dLbl(self):\n        return CT_DLbl.new_dLbl()\n\n    def _new_showCatName(self):\n        \"\"\"Return a new `c:showCatName` with value initialized.\n\n        This method is called by the metaclass-generated code whenever a new\n        `c:showCatName` element is required. In this case, it defaults to\n        `val=true`, which is not what we need so we override to make val\n        explicitly False.\n        \"\"\"\n        return parse_xml('<c:showCatName %s val=\"0\"/>' % nsdecls(\"c\"))\n\n    def _new_showLegendKey(self):\n        return parse_xml('<c:showLegendKey %s val=\"0\"/>' % nsdecls(\"c\"))\n\n    def _new_showPercent(self):\n        return parse_xml('<c:showPercent %s val=\"0\"/>' % nsdecls(\"c\"))\n\n    def _new_showSerName(self):\n        return parse_xml('<c:showSerName %s val=\"0\"/>' % nsdecls(\"c\"))\n\n    def _new_showVal(self):\n        return parse_xml('<c:showVal %s val=\"0\"/>' % nsdecls(\"c\"))\n\n    def _new_txPr(self):\n        return CT_TextBody.new_txPr()\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-5488f953-d144-4e09-8fc4-940fb3614303-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "wc -l /testbed/src/pptx/chart/datalabel.py /testbed/src/pptx/oxml/chart/datalabel.py && echo \"==== CHART DATALABEL ====\" && cat /testbed/src/pptx/chart/datalabel.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-5488f953-d144-4e09-8fc4-940fb3614303-2",
+            "content": "rame.paragraphs[0]\n        return paragraph.font\n\n    @property\n    def has_text_frame(self):\n        \"\"\"\n        Return |True| if this data label has a text frame (implying it has\n        custom data label text), and |False| otherwise. Assigning |True|\n        causes a text frame to be added if not already present. Assigning\n        |False| causes any existing text frame to be removed along with any\n        text contained in the text frame.\n        \"\"\"\n        dLbl = self._dLbl\n        if dLbl is None:\n            return False\n        if dLbl.xpath(\"c:tx/c:rich\"):\n            return True\n        return False\n\n    @has_text_frame.setter\n    def has_text_frame(self, value):\n        if bool(value) is True:\n            self._get_or_add_tx_rich()\n        else:\n            self._remove_tx_rich()\n\n    @property\n    def position(self):\n        \"\"\"\n        Read/write :ref:`XlDataLabelPosition` member specifying the position\n        of this data label with respect to its data point, or |None| if no\n        position is specified. Assigning |None| causes PowerPoint to choose\n        the default position, which varies by chart type.\n        \"\"\"\n        dLbl = self._dLbl\n        if dLbl is None:\n            return None\n        dLblPos = dLbl.dLblPos\n        if dLblPos is None:\n            return None\n        return dLblPos.val\n\n    @position.setter\n    def position(self, value):\n        if value is None:\n            dLbl = self._dLbl\n            if dLbl is None:\n                return\n            dLbl._remove_dLblPos()\n            return\n        dLbl = self._get_or_add_dLbl()\n        dLbl.get_or_add_dLblPos().val = value\n\n    @property\n    def text_frame(self):\n        \"\"\"\n        |TextFrame| instance for this data label, containing the text of the\n        data label and providing access to its text formatting properties.\n        \"\"\"\n        rich = self._get_or_add_rich()\n        return TextFrame(rich, self)\n\n    @property\n    def _dLbl(self):\n        \"\"\"\n        Return the |CT_DLbl| instance referring specifically to this\n        individual data label (having the same index value), or |None| if not\n        present.\n        \"\"\"\n        return self._ser.get_dLbl(self._idx)\n\n    def _get_or_add_dLbl(self):\n        \"\"\"\n        The ``CT_DLbl`` instance referring specifically to this individual\n        data label, newly created if not yet present in the XML.\n        \"\"\"\n        return self._ser.get_or_add_dLbl(self._idx)\n\n    def _get_or_add_rich(self):\n        \"\"\"\n        Return the `c:rich` element representing the text frame for this data\n        label, newly created with its ancestors if not present.\n        \"\"\"\n        dLbl = self._get_or_add_dLbl()\n\n        # having a c:spPr or c:txPr when a c:tx is present causes the \"can't\n        # save\" bug on bubble charts. Remove c:spPr and c:txPr when present.\n        dLbl._remove_spPr()\n        dLbl._remove_txPr()\n\n        return dLbl.get_or_add_rich()\n\n    def _get_or_add_tx_rich(self):\n        \"\"\"\n        Return the `c:tx` element for this data label, with its `c:rich`\n        child and descendants, newly created if not yet present.\n        \"\"\"\n        dLbl = self._get_or_add_dLbl()\n\n        # having a c:spPr or c:txPr when a c:tx is present causes the \"can't\n        # save\" bug on bubble charts. Remove c:spPr and c:txPr when present.\n        dLbl._remove_spPr()\n        dLbl._remove_txPr()\n\n        return dLbl.get_or_add_tx_rich()\n\n    def _get_or_add_txPr(self):\n        \"\"\"Return the `c:txPr` element for this data label.\n\n        The `c:txPr` element and its parent `c:dLbl` element are created if\n        not yet present.\n        \"\"\"\n        dLbl = self._get_or_add_dLbl()\n        return dLbl.get_or_add_txPr()\n\n    def _remove_tx_rich(self):\n        \"\"\"\n        Remove any `c:tx/c:rich` child of the `c:dLbl` element for this data\n        label. Do nothing if that element is not present.\n        \"\"\"\n        dLbl = self._dLbl\n        if dLbl is None:\n            return\n        dLbl.remove_tx_rich()\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-a15f75cd-8aff-4c62-8fe5-4068d83d0473-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "git -C /testbed log --oneline -20 && echo \"==== STATUS ====\" && git -C /testbed status && echo \"==== BRANCH ====\" && git -C /testbed branch -a | head -30 && echo \"==== GIT SHOW HEAD ====\" && git -C /testbed log -1 --format=full"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-a15f75cd-8aff-4c62-8fe5-4068d83d0473-3",
+            "content": "55cbb3d0 Initial commit\n==== STATUS ====\nOn branch main\nYour branch is up to date with 'origin/main'.\n\nUntracked files:\n  (use \"git add <file>...\" to include in what will be committed)\n\t.gitkeep\n\nnothing added to commit but untracked files present (use \"git add\" to track)\n==== BRANCH ====\n* main\n  remotes/origin/HEAD -> origin/main\n  remotes/origin/main\n  remotes/origin/scanny__python-pptx.278b47b1.combine_file__00zilcc6\n  remotes/origin/scanny__python-pptx.278b47b1.combine_file__01bz1vkj\n  remotes/origin/scanny__python-pptx.278b47b1.combine_file__04139km7\n  remotes/origin/scanny__python-pptx.278b47b1.combine_file__09kkjruy\n  remotes/origin/scanny__python-pptx.278b47b1.combine_file__0evvhc7f\n  remotes/origin/scanny__python-pptx.278b47b1.combine_file__0eywru1q\n  remotes/origin/scanny__python-pptx.278b47b1.combine_file__0kr0b9k2\n  remotes/origin/scanny__python-pptx.278b47b1.combine_file__0w8lgmen\n  remotes/origin/scanny__python-pptx.278b47b1.combine_file__1024ja80\n  remotes/origin/scanny__python-pptx.278b47b1.combine_file__12iqsb6k\n  remotes/origin/scanny__python-pptx.278b47b1.combine_file__1lfxiov0\n  remotes/origin/scanny__python-pptx.278b47b1.combine_file__1spkeg28\n  remotes/origin/scanny__python-pptx.278b47b1.combine_file__1un37hzw\n  remotes/origin/scanny__python-pptx.278b47b1.combine_file__27yv8bzk\n  remotes/origin/scanny__python-pptx.278b47b1.combine_file__2kw30nwy\n  remotes/origin/scanny__python-pptx.278b47b1.combine_file__2mdpfh4k\n  remotes/origin/scanny__python-pptx.278b47b1.combine_file__2n2m78bv\n  remotes/origin/scanny__python-pptx.278b47b1.combine_file__2o1r3641\n  remotes/origin/scanny__python-pptx.278b47b1.combine_file__2wqcl5sr\n  remotes/origin/scanny__python-pptx.278b47b1.combine_file__2y97y8y0\n  remotes/origin/scanny__python-pptx.278b47b1.combine_file__300wgyjv\n  remotes/origin/scanny__python-pptx.278b47b1.combine_file__30j70tpv\n  remotes/origin/scanny__python-pptx.278b47b1.combine_file__3ag4kgvq\n  remotes/origin/scanny__python-pptx.278b47b1.combine_file__3dzlw47x\n  remotes/origin/scanny__python-pptx.278b47b1.combine_file__3i6b72s2\n  remotes/origin/scanny__python-pptx.278b47b1.combine_file__3pn6qk10\n  remotes/origin/scanny__python-pptx.278b47b1.combine_file__42muja42\n==== GIT SHOW HEAD ====\ncommit 55cbb3d03e2776f565b3ff26032c75b3f4872ffc\nAuthor: sweft <sweft@anon.com>\nCommit: sweft <sweft@anon.com>\n\n    Initial commit\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-3b14e1ce-b3ec-4dc6-a62b-2a84940d0300-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/src/pptx/oxml/chart/datalabel.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-3b14e1ce-b3ec-4dc6-a62b-2a84940d0300-4",
+            "content": "ent specifying properties for a set of data labels.\"\"\"\n\n    _tag_seq = (\n        \"c:dLbl\",\n        \"c:numFmt\",\n        \"c:spPr\",\n        \"c:txPr\",\n        \"c:dLblPos\",\n        \"c:showLegendKey\",\n        \"c:showVal\",\n        \"c:showCatName\",\n        \"c:showSerName\",\n        \"c:showPercent\",\n        \"c:showBubbleSize\",\n        \"c:separator\",\n        \"c:showLeaderLines\",\n        \"c:leaderLines\",\n        \"c:extLst\",\n    )\n    dLbl = ZeroOrMore(\"c:dLbl\", successors=_tag_seq[1:])\n    numFmt = ZeroOrOne(\"c:numFmt\", successors=_tag_seq[2:])\n    txPr = ZeroOrOne(\"c:txPr\", successors=_tag_seq[4:])\n    dLblPos = ZeroOrOne(\"c:dLblPos\", successors=_tag_seq[5:])\n    showLegendKey = ZeroOrOne(\"c:showLegendKey\", successors=_tag_seq[6:])\n    showVal = ZeroOrOne(\"c:showVal\", successors=_tag_seq[7:])\n    showCatName = ZeroOrOne(\"c:showCatName\", successors=_tag_seq[8:])\n    showSerName = ZeroOrOne(\"c:showSerName\", successors=_tag_seq[9:])\n    showPercent = ZeroOrOne(\"c:showPercent\", successors=_tag_seq[10:])\n    del _tag_seq\n\n    @property\n    def defRPr(self):\n        \"\"\"\n        ``<a:defRPr>`` great-great-grandchild element, added with its\n        ancestors if not present.\n        \"\"\"\n        txPr = self.get_or_add_txPr()\n        defRPr = txPr.defRPr\n        return defRPr\n\n    def get_dLbl_for_point(self, idx):\n        \"\"\"\n        Return the `c:dLbl` child representing the label for the data point\n        at index *idx*.\n        \"\"\"\n        matches = self.xpath('c:dLbl[c:idx[@val=\"%d\"]]' % idx)\n        if matches:\n            return matches[0]\n        return None\n\n    def get_or_add_dLbl_for_point(self, idx):\n        \"\"\"\n        Return the `c:dLbl` element representing the label of the point at\n        index *idx*.\n        \"\"\"\n        matches = self.xpath('c:dLbl[c:idx[@val=\"%d\"]]' % idx)\n        if matches:\n            return matches[0]\n        return self._insert_dLbl_in_sequence(idx)\n\n    @classmethod\n    def new_dLbls(cls):\n        \"\"\"Return a newly created \"loose\" `c:dLbls` element.\"\"\"\n        return parse_xml(\n            \"<c:dLbls %s>\\n\"\n            '  <c:showLegendKey val=\"0\"/>\\n'\n            '  <c:showVal val=\"0\"/>\\n'\n            '  <c:showCatName val=\"0\"/>\\n'\n            '  <c:showSerName val=\"0\"/>\\n'\n            '  <c:showPercent val=\"0\"/>\\n'\n            '  <c:showBubbleSize val=\"0\"/>\\n'\n            '  <c:showLeaderLines val=\"1\"/>\\n'\n            \"</c:dLbls>\" % nsdecls(\"c\")\n        )\n\n    def _insert_dLbl_in_sequence(self, idx):\n        \"\"\"\n        Return a newly created `c:dLbl` element having `c:idx` child of *idx*\n        and inserted in numeric sequence among the `c:dLbl` children of this\n        element.\n        \"\"\"\n        new_dLbl = self._new_dLbl()\n        new_dLbl.idx.val = idx\n\n        dLbl = None\n        for dLbl in self.dLbl_lst:\n            if dLbl.idx_val > idx:\n                dLbl.addprevious(new_dLbl)\n                return new_dLbl\n        if dLbl is not None:\n            dLbl.addnext(new_dLbl)\n        else:\n            self.insert(0, new_dLbl)\n        return new_dLbl\n\n    def _new_dLbl(self):\n        return CT_DLbl.new_dLbl()\n\n    def _new_showCatName(self):\n        \"\"\"Return a new `c:showCatName` with value initialized.\n\n        This method is called by the metaclass-generated code whenever a new\n        `c:showCatName` element is required. In this case, it defaults to\n        `val=true`, which is not what we need so we override to make val\n        explicitly False.\n        \"\"\"\n        return parse_xml('<c:showCatName %s val=\"0\"/>' % nsdecls(\"c\"))\n\n    def _new_showLegendKey(self):\n        return parse_xml('<c:showLegendKey %s val=\"0\"/>' % nsdecls(\"c\"))\n\n    def _new_showPercent(self):\n        return parse_xml('<c:showPercent %s val=\"0\"/>' % nsdecls(\"c\"))\n\n    def _new_showSerName(self):\n        return parse_xml('<c:showSerName %s val=\"0\"/>' % nsdecls(\"c\"))\n\n    def _new_showVal(self):\n        return parse_xml('<c:showVal %s val=\"0\"/>' % nsdecls(\"c\"))\n\n    def _new_txPr(self):\n        return CT_TextBody.new_txPr()\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-20378d4d-d6c3-472d-ac17-da4dd920c48d-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "head -n 250 /testbed/src/pptx/chart/datalabel.py; echo \"===== FILE END =====\"; wc -l /testbed/src/pptx/chart/datalabel.py /testbed/src/pptx/oxml/chart/datalabel.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-20378d4d-d6c3-472d-ac17-da4dd920c48d-5",
+            "content": "val = bool(value)\n\n    @property\n    def show_value(self):\n        \"\"\"Read/write. True when label displays numeric value of datapoint.\"\"\"\n        return self._element.get_or_add_showVal().val\n\n    @show_value.setter\n    def show_value(self, value):\n        self._element.get_or_add_showVal().val = bool(value)\n\n\nclass DataLabel(object):\n    \"\"\"\n    The data label associated with an individual data point.\n    \"\"\"\n\n    def __init__(self, ser, idx):\n        super(DataLabel, self).__init__()\n        self._ser = self._element = ser\n        self._idx = idx\n\n    @lazyproperty\n    def font(self):\n        \"\"\"The |Font| object providing text formatting for this data label.\n\n        This font object is used to customize the appearance of automatically\n        inserted text, such as the data point value. The font applies to the\n        entire data label. More granular control of the appearance of custom\n        data label text is controlled by a font object on runs in the text\n        frame.\n        \"\"\"\n        txPr = self._get_or_add_txPr()\n        text_frame = TextFrame(txPr, self)\n        paragraph = text_frame.paragraphs[0]\n        return paragraph.font\n\n    @property\n    def has_text_frame(self):\n        \"\"\"\n        Return |True| if this data label has a text frame (implying it has\n        custom data label text), and |False| otherwise. Assigning |True|\n        causes a text frame to be added if not already present. Assigning\n        |False| causes any existing text frame to be removed along with any\n        text contained in the text frame.\n        \"\"\"\n        dLbl = self._dLbl\n        if dLbl is None:\n            return False\n        if dLbl.xpath(\"c:tx/c:rich\"):\n            return True\n        return False\n\n    @has_text_frame.setter\n    def has_text_frame(self, value):\n        if bool(value) is True:\n            self._get_or_add_tx_rich()\n        else:\n            self._remove_tx_rich()\n\n    @property\n    def position(self):\n        \"\"\"\n        Read/write :ref:`XlDataLabelPosition` member specifying the position\n        of this data label with respect to its data point, or |None| if no\n        position is specified. Assigning |None| causes PowerPoint to choose\n        the default position, which varies by chart type.\n        \"\"\"\n        dLbl = self._dLbl\n        if dLbl is None:\n            return None\n        dLblPos = dLbl.dLblPos\n        if dLblPos is None:\n            return None\n        return dLblPos.val\n\n    @position.setter\n    def position(self, value):\n        if value is None:\n            dLbl = self._dLbl\n            if dLbl is None:\n                return\n            dLbl._remove_dLblPos()\n            return\n        dLbl = self._get_or_add_dLbl()\n        dLbl.get_or_add_dLblPos().val = value\n\n    @property\n    def text_frame(self):\n        \"\"\"\n        |TextFrame| instance for this data label, containing the text of the\n        data label and providing access to its text formatting properties.\n        \"\"\"\n        rich = self._get_or_add_rich()\n        return TextFrame(rich, self)\n\n    @property\n    def _dLbl(self):\n        \"\"\"\n        Return the |CT_DLbl| instance referring specifically to this\n        individual data label (having the same index value), or |None| if not\n        present.\n        \"\"\"\n        return self._ser.get_dLbl(self._idx)\n\n    def _get_or_add_dLbl(self):\n        \"\"\"\n        The ``CT_DLbl`` instance referring specifically to this individual\n        data label, newly created if not yet present in the XML.\n        \"\"\"\n        return self._ser.get_or_add_dLbl(self._idx)\n\n    def _get_or_add_rich(self):\n        \"\"\"\n        Return the `c:rich` element representing the text frame for this data\n        label, newly created with its ancestors if not present.\n        \"\"\"\n        dLbl = self._get_or_add_dLbl()\n\n        # having a c:spPr or c:txPr when a c:tx is present causes the \"can't\n===== FILE END =====\n  288 /testbed/src/pptx/chart/datalabel.py\n  252 /testbed/src/pptx/oxml/chart/datalabel.py\n  540 total\n"
+          }
+        ]
+      }
+    }
+  ]
+}

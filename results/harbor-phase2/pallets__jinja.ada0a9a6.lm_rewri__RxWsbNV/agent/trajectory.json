@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "pallets__jinja.ada0a9a6.lm_rewri__RxWsbNV__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# Async template generation broken in Jinja2\n\n## Description\n\nI noticed an issue when using async template generation in Jinja2. When trying to use the `generate()` method with async templates, it fails with an AttributeError.\n\n## Steps to reproduce\n\nHere's a simple example that demonstrates the issue:\n\n```python\nfrom jinja2 import Template\n\n# Create an async template\nt = Template('{% for x in [1, 2, 3] %}{{ x }}{% endfor %}', enable_async=True)\n\n# This fails\nresult = list(t.generate())\n```\n\nThe code above throws an AttributeError when trying to generate the template.\n\n## Additional examples\n\nThe issue also affects async iteration in templates:\n\n```python\nfrom jinja2 import Template\n\nt = Template('{% for x in rng %}{{ x }}{% endfor %}', enable_async=True)\n\nasync def async_iterator():\n    for item in [1, 2, 3]:\n        yield item\n\n# This also fails\nresult = list(t.generate(rng=async_iterator()))\n```\n\n## Expected behavior\n\nThe `generate()` method should properly handle async templates and async iterators, returning the rendered template as expected.\n\nFor the first example, I would expect `result` to be `['1', '2', '3']`.\n\nThis worked in previous versions but is now broken."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository and reproduce the async `generate()` failure.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-832db0d5-07e6-40bc-b8e1-325af317e3f7-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" -o -name \"*.md\" -o -name \"*.rst\" -o -name \"setup.py\" -o -name \"pyproject.toml\" -o -name \"setup.cfg\" | head -100"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-832db0d5-07e6-40bc-b8e1-325af317e3f7-0",
+            "content": "total 128\ndrwxr-xr-x 1 root root  4096 Sep 22 17:04 .\ndrwxr-xr-x 1 root root  4096 Sep 22 17:04 ..\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 .devcontainer\n-rw-r--r-- 1 root root   233 Jul 13  2025 .editorconfig\ndrwxr-xr-x 8 root root  4096 Jul 13  2025 .git\ndrwxr-xr-x 3 root root  4096 Jul 13  2025 .github\n-rw-r--r-- 1 root root    89 Jul 13  2025 .gitignore\n-rw-rw-r-- 1 1005 1005     0 Sep 22 15:44 .gitkeep\n-rw-r--r-- 1 root root   372 Jul 13  2025 .pre-commit-config.yaml\n-rw-r--r-- 1 root root   209 Jul 13  2025 .readthedocs.yaml\n-rw-r--r-- 1 root root 40629 Jul 13  2025 CHANGES.rst\n-rw-r--r-- 1 root root  6469 Jul 13  2025 CONTRIBUTING.rst\n-rw-r--r-- 1 root root  1475 Jul 13  2025 LICENSE.txt\n-rw-r--r-- 1 root root  1560 Jul 13  2025 README.md\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 artwork\ndrwxr-xr-x 4 root root  4096 Jul 13  2025 docs\ndrwxr-xr-x 3 root root  4096 Jul 13  2025 examples\n-rw-r--r-- 1 root root  2238 Jul 13  2025 pyproject.toml\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 requirements\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 scripts\ndrwxr-xr-x 3 root root  4096 Jul 13  2025 src\ndrwxr-xr-x 3 root root  4096 Jul 13  2025 tests\n-rw-r--r-- 1 root root  1125 Jul 13  2025 tox.ini\n/testbed/src/jinja2/nativetypes.py\n/testbed/src/jinja2/ext.py\n/testbed/src/jinja2/exceptions.py\n/testbed/src/jinja2/compiler.py\n/testbed/src/jinja2/lexer.py\n/testbed/src/jinja2/__init__.py\n/testbed/src/jinja2/visitor.py\n/testbed/src/jinja2/environment.py\n/testbed/src/jinja2/bccache.py\n/testbed/src/jinja2/filters.py\n/testbed/src/jinja2/_identifier.py\n/testbed/src/jinja2/debug.py\n/testbed/src/jinja2/constants.py\n/testbed/src/jinja2/nodes.py\n/testbed/src/jinja2/loaders.py\n/testbed/src/jinja2/utils.py\n/testbed/src/jinja2/idtracking.py\n/testbed/src/jinja2/tests.py\n/testbed/src/jinja2/defaults.py\n/testbed/src/jinja2/parser.py\n/testbed/src/jinja2/optimizer.py\n/testbed/src/jinja2/async_utils.py\n/testbed/src/jinja2/meta.py\n/testbed/src/jinja2/runtime.py\n/testbed/src/jinja2/sandbox.py\n/testbed/pyproject.toml\n/testbed/scripts/generate_identifier_pattern.py\n/testbed/tests/test_lexnparse.py\n/testbed/tests/test_runtime.py\n/testbed/tests/res/__init__.py\n/testbed/tests/test_regression.py\n/testbed/tests/test_core_tags.py\n/testbed/tests/test_async_filters.py\n/testbed/tests/test_tests.py\n/testbed/tests/test_nodes.py\n/testbed/tests/test_loader.py\n/testbed/tests/test_filters.py\n/testbed/tests/test_debug.py\n/testbed/tests/test_ext.py\n/testbed/tests/test_pickle.py\n/testbed/tests/test_bytecode_cache.py\n/testbed/tests/test_nativetypes.py\n/testbed/tests/conftest.py\n/testbed/tests/test_api.py\n/testbed/tests/test_compile.py\n/testbed/tests/test_idtracking.py\n/testbed/tests/test_imports.py\n/testbed/tests/test_inheritance.py\n/testbed/tests/test_utils.py\n/testbed/tests/test_security.py\n/testbed/tests/test_async.py\n/testbed/CONTRIBUTING.rst\n/testbed/README.md\n/testbed/CHANGES.rst\n/testbed/examples/basic/test_filter_and_linestatements.py\n/testbed/examples/basic/translate.py\n/testbed/examples/basic/inheritance.py\n/testbed/examples/basic/cycle.py\n/testbed/examples/basic/test.py\n/testbed/examples/basic/test_loop_filter.py\n/testbed/examples/basic/debugger.py\n/testbed/docs/changes.rst\n/testbed/docs/switching.rst\n/testbed/docs/extensions.rst\n/testbed/docs/conf.py\n/testbed/docs/tricks.rst\n/testbed/docs/intro.rst\n/testbed/docs/faq.rst\n/testbed/docs/sandbox.rst\n/testbed/docs/index.rst\n/testbed/docs/nativetypes.rst\n/testbed/docs/integration.rst\n/testbed/docs/templates.rst\n/testbed/docs/license.rst\n/testbed/docs/api.rst\n/testbed/docs/examples/inline_gettext_extension.py\n/testbed/docs/examples/cache_extension.py\n/testbed/.github/ISSUE_TEMPLATE/bug-report.md\n/testbed/.github/ISSUE_TEMPLATE/feature-request.md\n/testbed/.github/pull_request_template.md\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-62874470-14e0-4c77-b637-ed6678e83d3d-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cd /testbed && git log --oneline -20 && echo \"====\" && cat src/jinja2/environment.py | head -50 && echo \"==== VERSION\" && cat pyproject.toml"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-62874470-14e0-4c77-b637-ed6678e83d3d-1",
+            "content": "83b7314 Initial commit\n====\n\"\"\"Classes for managing templates and their runtime and compile time\noptions.\n\"\"\"\n\nimport os\nimport typing\nimport typing as t\nimport weakref\nfrom collections import ChainMap\nfrom functools import lru_cache\nfrom functools import partial\nfrom functools import reduce\nfrom types import CodeType\n\nfrom markupsafe import Markup\n\nfrom . import nodes\nfrom .compiler import CodeGenerator\nfrom .compiler import generate\nfrom .defaults import BLOCK_END_STRING\nfrom .defaults import BLOCK_START_STRING\nfrom .defaults import COMMENT_END_STRING\nfrom .defaults import COMMENT_START_STRING\nfrom .defaults import DEFAULT_FILTERS  # type: ignore[attr-defined]\nfrom .defaults import DEFAULT_NAMESPACE\nfrom .defaults import DEFAULT_POLICIES\nfrom .defaults import DEFAULT_TESTS  # type: ignore[attr-defined]\nfrom .defaults import KEEP_TRAILING_NEWLINE\nfrom .defaults import LINE_COMMENT_PREFIX\nfrom .defaults import LINE_STATEMENT_PREFIX\nfrom .defaults import LSTRIP_BLOCKS\nfrom .defaults import NEWLINE_SEQUENCE\nfrom .defaults import TRIM_BLOCKS\nfrom .defaults import VARIABLE_END_STRING\nfrom .defaults import VARIABLE_START_STRING\nfrom .exceptions import TemplateNotFound\nfrom .exceptions import TemplateRuntimeError\nfrom .exceptions import TemplatesNotFound\nfrom .exceptions import TemplateSyntaxError\nfrom .exceptions import UndefinedError\nfrom .lexer import get_lexer\nfrom .lexer import Lexer\nfrom .lexer import TokenStream\nfrom .nodes import EvalContext\nfrom .parser import Parser\nfrom .runtime import Context\nfrom .runtime import new_context\nfrom .runtime import Undefined\nfrom .utils import _PassArg\nfrom .utils import concat\n==== VERSION\n[project]\nname = \"Jinja2\"\ndescription = \"A very fast and expressive template engine.\"\nreadme = \"README.md\"\nlicense = {file = \"LICENSE.txt\"}\nmaintainers = [{name = \"Pallets\", email = \"contact@palletsprojects.com\"}]\nclassifiers = [\n    \"Development Status :: 5 - Production/Stable\",\n    \"Environment :: Web Environment\",\n    \"Intended Audience :: Developers\",\n    \"License :: OSI Approved :: BSD License\",\n    \"Operating System :: OS Independent\",\n    \"Programming Language :: Python\",\n    \"Topic :: Internet :: WWW/HTTP :: Dynamic Content\",\n    \"Topic :: Text Processing :: Markup :: HTML\",\n    \"Typing :: Typed\",\n]\nrequires-python = \">=3.8\"\ndependencies = [\"MarkupSafe>=2.0\"]\ndynamic = [\"version\"]\n\n[project.urls]\nDonate = \"https://palletsprojects.com/donate\"\nDocumentation = \"https://jinja.palletsprojects.com/\"\nChanges = \"https://jinja.palletsprojects.com/changes/\"\nSource = \"https://github.com/pallets/jinja/\"\nChat = \"https://discord.gg/pallets\"\n\n[project.optional-dependencies]\ni18n = [\"Babel>=2.7\"]\n\n[project.entry-points.\"babel.extractors\"]\njinja2 = \"jinja2.ext:babel_extract[i18n]\"\n\n[build-system]\nrequires = [\"flit_core<4\"]\nbuild-backend = \"flit_core.buildapi\"\n\n[tool.flit.module]\nname = \"jinja2\"\n\n[tool.flit.sdist]\ninclude = [\n    \"docs/\",\n    \"examples/\",\n    \"requirements/\",\n    \"tests/\",\n    \"CHANGES.md\",\n    \"tox.ini\",\n]\nexclude = [\n    \"docs/_build/\",\n]\n\n[tool.pytest.ini_options]\ntestpaths = [\"tests\"]\nfilterwarnings = [\n    \"error\",\n]\n\n[tool.coverage.run]\nbranch = true\nsource = [\"jinja2\", \"tests\"]\n\n[tool.coverage.paths]\nsource = [\"src\", \"*/site-packages\"]\n\n[tool.mypy]\npython_version = \"3.8\"\nfiles = [\"src/jinja2\"]\nshow_error_codes = true\npretty = true\nstrict = true\nlocal_partial_types = true\nwarn_unreachable = true\n\n[tool.pyright]\npythonVersion = \"3.8\"\ninclude = [\"src/jinja2\"]\ntypeCheckingMode = \"basic\"\n\n[tool.ruff]\nsrc = [\"src\"]\nfix = true\nshow-fixes = true\noutput-format = \"full\"\n\n[tool.ruff.lint]\nselect = [\n    \"B\",  # flake8-bugbear\n    \"E\",  # pycodestyle error\n    \"F\",  # pyflakes\n    \"I\",  # isort\n    \"UP\",  # pyupgrade\n    \"W\",  # pycodestyle warning\n]\n\n[tool.ruff.lint.isort]\nforce-single-line = true\norder-by-type = false\n\n[tool.gha-update]\ntag-only = [\n    \"slsa-framework/slsa-github-generator\",\n]\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-1ef798dd-a073-4112-ae3a-4a99e0141740-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cd /testbed && rg -n \"def generate|generate_async|enable_async\" src/jinja2 --type py && echo \"==== TESTS ====\" && rg -n \"generate\" tests/test_async.py tests/test_api.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-1ef798dd-a073-4112-ae3a-4a99e0141740-2",
+            "content": "bash: line 1: rg: command not found\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-d5ddade4-80db-41ac-92f5-d769b8d0fb56-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cd /testbed && grep -n \"def generate\\|generate_async\\|enable_async\" src/jinja2/*.py && echo \"==== TESTS ====\" && grep -n \"generate\" tests/test_async.py tests/test_api.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-d5ddade4-80db-41ac-92f5-d769b8d0fb56-3",
+            "content": "src/jinja2/compiler.py:101:def generate(\nsrc/jinja2/environment.py:263:        `enable_async`\nsrc/jinja2/environment.py:319:        enable_async: bool = False,\nsrc/jinja2/environment.py:369:        self.is_async = enable_async\nsrc/jinja2/environment.py:411:        enable_async: bool = False,\nsrc/jinja2/environment.py:426:            and ``enable_async`` parameters to match ``__init__``.\nsrc/jinja2/environment.py:429:        del args[\"self\"], args[\"cache_size\"], args[\"extensions\"], args[\"enable_async\"]\nsrc/jinja2/environment.py:451:        if enable_async is not missing:\nsrc/jinja2/environment.py:452:            rv.is_async = enable_async\nsrc/jinja2/environment.py:1186:        enable_async: bool = False,\nsrc/jinja2/environment.py:1211:            enable_async,\nsrc/jinja2/environment.py:1325:    def generate(self, *args: t.Any, **kwargs: t.Any) -> t.Iterator[str]:\nsrc/jinja2/environment.py:1337:                return [x async for x in self.generate_async(*args, **kwargs)]\nsrc/jinja2/environment.py:1349:    async def generate_async(\nsrc/jinja2/utils.py:342:def generate_lorem_ipsum(\n==== TESTS ====\ntests/test_async.py:85:def test_async_generate():\ntests/test_async.py:87:    rv = list(t.generate())\ntests/test_async.py:98:    rv = list(t.generate(rng=async_iterator()))\ntests/test_async.py:106:    stream = t.generate(rng=auto_aiter(range(1, 4)))\ntests/test_async.py:663:def test_basic_generate_async(run_async_fn):\ntests/test_async.py:669:        agen = t.generate_async()\ntests/test_async.py:679:def test_include_generate_async(run_async_fn, test_env_async):\ntests/test_async.py:683:        agen = t.generate_async()\ntests/test_async.py:693:def test_blocks_generate_async(run_async_fn):\ntests/test_async.py:701:        agen = t.generate_async()\ntests/test_async.py:715:        agen = t.generate_async()\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-491d9c31-20ec-49bb-b0d7-c5cd6cc6397a-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '1280,1400p' /testbed/src/jinja2/environment.py && echo \"======== TEST ASYNC ========\" && sed -n '1,150p' /testbed/tests/test_async.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-491d9c31-20ec-49bb-b0d7-c5cd6cc6397a-4",
+            "content": "import Template\nfrom jinja2.async_utils import auto_aiter\nfrom jinja2.exceptions import TemplateNotFound\nfrom jinja2.exceptions import TemplatesNotFound\nfrom jinja2.exceptions import UndefinedError\nfrom jinja2.nativetypes import NativeEnvironment\n\n\ndef test_basic_async(run_async_fn):\n    t = Template(\n        \"{% for item in [1, 2, 3] %}[{{ item }}]{% endfor %}\", enable_async=True\n    )\n\n    async def func():\n        return await t.render_async()\n\n    rv = run_async_fn(func)\n    assert rv == \"[1][2][3]\"\n\n\ndef test_await_on_calls(run_async_fn):\n    t = Template(\"{{ async_func() + normal_func() }}\", enable_async=True)\n\n    async def async_func():\n        return 42\n\n    def normal_func():\n        return 23\n\n    async def func():\n        return await t.render_async(async_func=async_func, normal_func=normal_func)\n\n    rv = run_async_fn(func)\n    assert rv == \"65\"\n\n\ndef test_await_on_calls_normal_render():\n    t = Template(\"{{ async_func() + normal_func() }}\", enable_async=True)\n\n    async def async_func():\n        return 42\n\n    def normal_func():\n        return 23\n\n    rv = t.render(async_func=async_func, normal_func=normal_func)\n    assert rv == \"65\"\n\n\ndef test_await_and_macros(run_async_fn):\n    t = Template(\n        \"{% macro foo(x) %}[{{ x }}][{{ async_func() }}]{% endmacro %}{{ foo(42) }}\",\n        enable_async=True,\n    )\n\n    async def async_func():\n        return 42\n\n    async def func():\n        return await t.render_async(async_func=async_func)\n\n    rv = run_async_fn(func)\n    assert rv == \"[42][42]\"\n\n\ndef test_async_blocks(run_async_fn):\n    t = Template(\n        \"{% block foo %}<Test>{% endblock %}{{ self.foo() }}\",\n        enable_async=True,\n        autoescape=True,\n    )\n\n    async def func():\n        return await t.render_async()\n\n    rv = run_async_fn(func)\n    assert rv == \"<Test><Test>\"\n\n\ndef test_async_generate():\n    t = Template(\"{% for x in [1, 2, 3] %}{{ x }}{% endfor %}\", enable_async=True)\n    rv = list(t.generate())\n    assert rv == [\"1\", \"2\", \"3\"]\n\n\ndef test_async_iteration_in_templates():\n    t = Template(\"{% for x in rng %}{{ x }}{% endfor %}\", enable_async=True)\n\n    async def async_iterator():\n        for item in [1, 2, 3]:\n            yield item\n\n    rv = list(t.generate(rng=async_iterator()))\n    assert rv == [\"1\", \"2\", \"3\"]\n\n\ndef test_async_iteration_in_templates_extended():\n    t = Template(\n        \"{% for x in rng %}{{ loop.index0 }}/{{ x }}{% endfor %}\", enable_async=True\n    )\n    stream = t.generate(rng=auto_aiter(range(1, 4)))\n    assert next(stream) == \"0\"\n    assert \"\".join(stream) == \"/11/22/3\"\n\n\n@pytest.fixture\ndef test_env_async():\n    env = Environment(\n        loader=DictLoader(\n            dict(\n                module=\"{% macro test() %}[{{ foo }}|{{ bar }}]{% endmacro %}\",\n                header=\"[{{ foo }}|{{ 23 }}]\",\n                o_printer=\"({{ o }})\",\n            )\n        ),\n        enable_async=True,\n    )\n    env.globals[\"bar\"] = 23\n    return env\n\n\nclass TestAsyncImports:\n    def test_context_imports(self, test_env_async):\n        t = test_env_async.from_string('{% import \"module\" as m %}{{ m.test() }}')\n        assert t.render(foo=42) == \"[|23]\"\n        t = test_env_async.from_string(\n            '{% import \"module\" as m without context %}{{ m.test() }}'\n        )\n        assert t.render(foo=42) == \"[|23]\"\n        t = test_env_async.from_string(\n            '{% import \"module\" as m with context %}{{ m.test() }}'\n        )\n        assert t.render(foo=42) == \"[42|23]\"\n        t = test_env_async.from_string('{% from \"module\" import test %}{{ test() }}')\n        assert t.render(foo=42) == \"[|23]\"\n        t = test_env_async.from_string(\n            '{% from \"module\" import test without context %}{{ test() }}'\n        )\n        assert t.render(foo=42) == \"[|23]\"\n        t = test_env_async.from_string(\n            '{% from \"module\" import test with context %}{{ test() }}'\n        )\n        assert t.render(foo=42) == \"[42|23]\"\n\n    def test_trailing_comma(self, test_env_async):\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-eea54ca7-d913-4cc0-a708-d74176ca50c9-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '1290,1400p' /testbed/src/jinja2/environment.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-eea54ca7-d913-4cc0-a708-d74176ca50c9-5",
+            "content": "ny) -> str:\n        \"\"\"This works similar to :meth:`render` but returns a coroutine\n        that when awaited returns the entire rendered template string.  This\n        requires the async feature to be enabled.\n\n        Example usage::\n\n            await template.render_async(knights='that say nih; asynchronously')\n        \"\"\"\n        if not self.environment.is_async:\n            raise RuntimeError(\n                \"The environment was not created with async mode enabled.\"\n            )\n\n        ctx = self.new_context(dict(*args, **kwargs))\n\n        try:\n            return self.environment.concat(  # type: ignore\n                [n async for n in self.root_render_func(ctx)]  # type: ignore\n            )\n        except Exception:\n            return self.environment.handle_exception()\n\n    def stream(self, *args: t.Any, **kwargs: t.Any) -> \"TemplateStream\":\n        \"\"\"Works exactly like :meth:`generate` but returns a\n        :class:`TemplateStream`.\n        \"\"\"\n        return TemplateStream(self.generate(*args, **kwargs))\n\n    def generate(self, *args: t.Any, **kwargs: t.Any) -> t.Iterator[str]:\n        \"\"\"For very large templates it can be useful to not render the whole\n        template at once but evaluate each statement after another and yield\n        piece for piece.  This method basically does exactly that and returns\n        a generator that yields one item after another as strings.\n\n        It accepts the same arguments as :meth:`render`.\n        \"\"\"\n        if self.environment.is_async:\n            import asyncio\n\n            async def to_list() -> t.List[str]:\n                return [x async for x in self.generate_async(*args, **kwargs)]\n\n            yield from asyncio.run(to_list())\n            return\n\n        ctx = self.new_context(dict(*args, **kwargs))\n\n        try:\n            yield from self.root_render_func(ctx)\n        except Exception:\n            yield self.environment.handle_exception()\n\n    async def generate_async(\n        self, *args: t.Any, **kwargs: t.Any\n    ) -> t.AsyncGenerator[str, object]:\n        \"\"\"An async version of :meth:`generate`.  Works very similarly but\n        returns an async iterator instead.\n        \"\"\"\n        if not self.environment.is_async:\n            raise RuntimeError(\n                \"The environment was not created with async mode enabled.\"\n            )\n\n        ctx = self.new_context(dict(*args, **kwargs))\n\n        try:\n            agen = self.root_render_func(ctx)\n            try:\n                async for event in agen:  # type: ignore\n                    yield event\n            finally:\n                # we can't use async with aclosing(...) because that's only\n                # in 3.10+\n                await agen.aclose()  # type: ignore\n        except Exception:\n            yield self.environment.handle_exception()\n\n    def new_context(\n        self,\n        vars: t.Optional[t.Dict[str, t.Any]] = None,\n        shared: bool = False,\n        locals: t.Optional[t.Mapping[str, t.Any]] = None,\n    ) -> Context:\n        \"\"\"Create a new :class:`Context` for this template.  The vars\n        provided will be passed to the template.  Per default the globals\n        are added to the context.  If shared is set to `True` the data\n        is passed as is to the context without adding the globals.\n\n        `locals` can be a dict of local variables for internal usage.\n        \"\"\"\n        return new_context(\n            self.environment, self.name, self.blocks, vars, shared, self.globals, locals\n        )\n\n    def make_module(\n        self,\n        vars: t.Optional[t.Dict[str, t.Any]] = None,\n        shared: bool = False,\n        locals: t.Optional[t.Mapping[str, t.Any]] = None,\n    ) -> \"TemplateModule\":\n        \"\"\"This method works like the :attr:`module` attribute when called\n        without arguments but it will evaluate the template on every call\n        rather than caching it.  It's also possible to provide\n        a dict which is then used as context.  The arguments are the same\n"
+          }
+        ]
+      }
+    }
+  ]
+}

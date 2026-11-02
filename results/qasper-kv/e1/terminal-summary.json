@@ -1,0 +1,199 @@
+{
+  "schema": "octopus-qasper-e1-terminal-summary-v1",
+  "recorded_at_utc": "2026-09-11T21:08:35.473675+00:00",
+  "native_source_commit": "616ae10e3f00e250e2744ef0ebd6ce02307baac6",
+  "measured_source_bundle": "qasper-native-616ae10.bundle",
+  "bundle_prerequisite": "d2a8c6550ac73a507b03790f024a132068d16b5e",
+  "e0": "e0-native-616ae10.json",
+  "gpu": {
+    "host": ".68",
+    "index": 0,
+    "uuid": "GPU-c5792743-87d0-80a0-8a3e-876d31e854d9",
+    "observed_nvml_used_mib": 48150,
+    "observed_nvml_total_mib": 49140,
+    "observed_utilization_percent": 100,
+    "snapshot_not_busy_integral": true
+  },
+  "decision": "terminal_quality_no_go",
+  "e1_pressure_decision": "pass",
+  "selected_pressure_capacity": "normal",
+  "selection_rule": "normal if native target pressure passes, otherwise stress; no latency or quality selection",
+  "e2_executed": false,
+  "e2_allowed": false,
+  "later_stages": "not launched under the failed strict quality entry gate",
+  "points": {
+    "normal": {
+      "completed_requests": 422,
+      "native_kv_tensor_bytes": 33198047232,
+      "native_kv_blocks": 36183,
+      "actual_prefill_tokens": 2052394,
+      "actual_decode_tokens": 4402,
+      "target_eviction_events": 2118,
+      "target_recomputed_tokens": 33888,
+      "target_allocation_rejections": 0,
+      "target_preemptions": 0,
+      "pressure_pass": true,
+      "trace_body_wall_seconds": 265.10692703700624,
+      "cuda_device_used_after_trace_bytes": 50488868864,
+      "torch_peak_allocated_bytes": 49761251328,
+      "raw": {
+        "native_raw_path": "/mnt/disk2/user/qasper-kv-e0e1-20260911-180838/coordinator-e1-4edaca4/attempt-003-tokenfix/e1/e1-normal-projected_apc-1501.raw.json",
+        "native_raw_bytes": 172129636,
+        "native_raw_sha256": "a3785bc83ad4b3f2dc62301a7f8fd82db6f4bfcfe267b97b62e02155bf6787af"
+      },
+      "quality": {
+        "expected_questions": 422,
+        "correct_questions": 130,
+        "strict_all_correct": false,
+        "official_metrics": {
+          "Answer F1": 0.4649228157982938,
+          "Answer F1 by type": {
+            "extractive": 0.4243381260081578,
+            "abstractive": 0.2041471414493306,
+            "boolean": 0.676056338028169,
+            "none": 0.8461538461538461
+          },
+          "Evidence F1": 0.2156398104265403,
+          "Missing predictions": 0
+        },
+        "official_cli_wall_seconds": 0.13808668102137744,
+        "by_kind": {
+          "background": {
+            "questions": 410,
+            "correct": 129
+          },
+          "foreground": {
+            "questions": 12,
+            "correct": 1
+          }
+        }
+      }
+    },
+    "stress": {
+      "completed_requests": 422,
+      "native_kv_tensor_bytes": 28902293504,
+      "native_kv_blocks": 31501,
+      "actual_prefill_tokens": 2052394,
+      "actual_decode_tokens": 4402,
+      "target_eviction_events": 2118,
+      "target_recomputed_tokens": 33888,
+      "target_allocation_rejections": 0,
+      "target_preemptions": 0,
+      "pressure_pass": true,
+      "trace_body_wall_seconds": 267.12513268901967,
+      "cuda_device_used_after_trace_bytes": 46061780992,
+      "torch_peak_allocated_bytes": 45465497600,
+      "raw": {
+        "native_raw_path": "/mnt/disk2/user/qasper-kv-e0e1-20260911-180838/coordinator-e1-4edaca4/attempt-003-tokenfix/e1/e1-stress-projected_apc-1501.raw.json",
+        "native_raw_bytes": 172469588,
+        "native_raw_sha256": "01bf50680966473f82a62be0be74c166e95659d8e6867a6520d47cea1c105ddb"
+      },
+      "quality": {
+        "expected_questions": 422,
+        "correct_questions": 130,
+        "strict_all_correct": false,
+        "official_metrics": {
+          "Answer F1": 0.4649228157982938,
+          "Answer F1 by type": {
+            "extractive": 0.4243381260081578,
+            "abstractive": 0.2041471414493306,
+            "boolean": 0.676056338028169,
+            "none": 0.8461538461538461
+          },
+          "Evidence F1": 0.2156398104265403,
+          "Missing predictions": 0
+        },
+        "official_cli_wall_seconds": 0.14296540198847651,
+        "by_kind": {
+          "background": {
+            "questions": 410,
+            "correct": 129
+          },
+          "foreground": {
+            "questions": 12,
+            "correct": 1
+          }
+        }
+      }
+    }
+  },
+  "lost_prefix_followups": [
+    {
+      "question_id": "4a093a9af4903a59057a4372ac1b01603467ca58",
+      "paper_id": "1602.07563",
+      "full_block_frontier": 13056,
+      "native_adopted_tokens": 16,
+      "actual_recomputed_tokens": 13040
+    },
+    {
+      "question_id": "95c3907c5e8f57f239f3b031b1e41f19ff77924a",
+      "paper_id": "1601.03313",
+      "full_block_frontier": 8944,
+      "native_adopted_tokens": 16,
+      "actual_recomputed_tokens": 8928
+    },
+    {
+      "question_id": "9dcc10a4a325d4c9cb3bb8134831ee470be47e93",
+      "paper_id": "1602.03483",
+      "full_block_frontier": 4992,
+      "native_adopted_tokens": 16,
+      "actual_recomputed_tokens": 4976
+    },
+    {
+      "question_id": "cbb4eba59434d596749408be5b923efda7560890",
+      "paper_id": "1603.00957",
+      "full_block_frontier": 6960,
+      "native_adopted_tokens": 16,
+      "actual_recomputed_tokens": 6944
+    }
+  ],
+  "output_parity_between_capacities": {
+    "text_equal": 422,
+    "token_ids_equal": 422,
+    "expected": 422,
+    "not_a_quality_gate": true
+  },
+  "cost": {
+    "valid_sequence_outer_wall_seconds": 547,
+    "invalid_startup_outer_wall_seconds": [
+      19,
+      18
+    ],
+    "total_observed_outer_attempt_wall_seconds": 584,
+    "outer_clock_resolution_seconds": 1,
+    "scoring_wall_seconds": 0.5317793699214235,
+    "gpu_busy_integral_seconds": null,
+    "preparation_debugging_transfer_wall_not_fully_instrumented": true
+  },
+  "invalid_attempts": [
+    {
+      "directory": "attempt-001",
+      "reason": "ninja absent from PATH, existing runtime/bin restored",
+      "before_any_task_answer": true
+    },
+    {
+      "directory": "attempt-002",
+      "reason": "Transformers5.16 default BatchEncoding compared to token list; explicit return_dict=False fixed false mismatch",
+      "before_any_task_answer": true
+    }
+  ],
+  "retrieval": {
+    "status": "complete_local_archive",
+    "compact_predictions_and_official_scores": "local complete",
+    "full_native_raws": "/home/ubuntu/experiments/octopus/qasper-kv-20260911/attempt-003-tokenfix",
+    "verified_by": "experiment-supervisor remote/local payload SHA256 and permanent-copy validation PASS",
+    "payload_bytes": 344618357,
+    "transfer_wall_seconds": 177,
+    "received_wire_bytes_approx": 36880000,
+    "permanent_local_copy_seconds": 0.527,
+    "current_blocker": null,
+    "previous_network_failure": "Parent later observed SSH refused/internal timeout; this does not block the successfully completed supervisor archive."
+  },
+  "limitations": [
+    "Controlled real-question arrival schedule, not production traffic or measured tool waits.",
+    "No Octopus/queue-aware/budgeted comparison was run, so no KV speedup or budget benefit is claimed.",
+    "Official Answer F1 is lexical/reference-based; 130 full-credit responses does not prove all other responses are semantically wrong.",
+    "Predicted evidence was empty; nonzero official Evidence F1 does not establish evidence extraction.",
+    "Original checkpoint identity residency probes may stay at16 after a prefix is rebuilt elsewhere; use actual native adoption/recompute, not probe-only inference."
+  ]
+}

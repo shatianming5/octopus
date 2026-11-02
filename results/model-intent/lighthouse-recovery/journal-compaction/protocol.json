@@ -1,0 +1,18 @@
+{
+  "schema": "octopus-lighthouse-journal-compaction-v1",
+  "before_model_outputs": true,
+  "reference_freeze": "../deliberative14/freeze.json",
+  "claim": "Test whether repeated unchanged model/tool turn pairs reinforce the observed inspection loop. The preceding deliberative14episode acquired no new nonempty evidence after turn4 and ended with repeated reads, so merely extending its action budget is not the next falsifier.",
+  "method_delta": "Only journal_compaction:deduplicate_v1. Keep the latest complete turn for identical action+observation pairs within a read-only segment, with an explicit runtime_repetition_count. Every physically executed non-read-only tool, including failed commands, is a compaction barrier. Controller rejections have no external mutation and may be consolidated.",
+  "preserved": "Full raw actions, observations and persistent failure memory remain unchanged in the audit. Compaction itself retains every unique external observation per segment and the latest representative/explanation; ordinary existing oldest-turn budget truncation remains separate and explicit. This is not lossless preservation of all old model reasoning text.",
+  "offline_evidence": "The actual prior turn11suffix is reconstructed token-exactly. Four copies of its2326-byte source become one, suffix7437->7112tokens, ordinary budget drops4->2, four duplicate entries consolidated, all11rawauditentries retained and persistent failure visible. This CPU replay uses0modelrequests and is not a prediction of future behavior or quality.",
+  "fixed_conditions": "Same14Bcheckpoint/tokenizer, existing deliberative_v1 wording/schema, canonicalV3failure/verification policy, all tools and evaluator, sameLighthouse/image.12actions,512outputtokens,seed17,temperature0,BF16. No new hints, model, training, action-space mask or budget increase.",
+  "model_episodes_max": 1,
+  "phase_gpu_seconds_max": 1200,
+  "training_runs_added": 0,
+  "quality_gate": "Original official resolved=true. Context-size reduction, less repetition or a patch alone is not PASS and does not open multibranch/performance gates.",
+  "trace_requirements": "Record deduplicated_journal_entries separately from ordinary budget drops. Compare actual raw/effective repeats, unique external evidence, patchbytes and originalofficial outcome. Projection of a duplicate-free prefix is byte-identical; do not assume cross-run histories match without comparing generated outputs.",
+  "device_adjustment": "Reference deliberative14 usedGPU7, now occupied by an unrelated eight-GPU job. This episode uses freeGPU9 of the same RTX4090D/49140MiB type, with BF16 unchanged. The operational device identity change is explicit; no performance or numerical effect is presumed.",
+  "authorization_context": "Continue the original autonomous same-task repair using an evidence-backed context projection, not another model or arbitrary prompt wording trial. The earlier two-arm checkpoint remains closed.",
+  "stop": "One terminal episode or concrete execution/budget blocker. No automatic second episode or outcome-driven modification of this frozen projection."
+}

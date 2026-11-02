@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="8" time="6.089" timestamp="2026-09-10T06:13:27.831858+08:00" hostname="7443-5x4090-68"><testcase classname="tests.test_selective_output_contract" name="test_docs_grammar_requires_each_declared_source[missing_legacy]" time="0.004" /><testcase classname="tests.test_selective_output_contract" name="test_docs_grammar_requires_each_declared_source[duplicate_current]" time="0.001" /><testcase classname="tests.test_selective_output_contract" name="test_docs_grammar_does_not_encode_fact_values" time="0.001" /><testcase classname="tests.test_selective_output_contract" name="test_final_grammar_enforces_format_without_answer_values" time="0.001" /><testcase classname="tests.test_selective_output_contract" name="test_non_docs_branches_do_not_receive_docs_output_requirements[code]" time="4.043" /><testcase classname="tests.test_selective_output_contract" name="test_non_docs_branches_do_not_receive_docs_output_requirements[log]" time="0.002" /><testcase classname="tests.test_selective_output_contract" name="test_final_grammar_rejects_json_string_escape_breakouts[{&quot;answer&quot;:&quot;UNSEEN-KEY|9999|mode&quot;}{&quot;extra&quot;:&quot;data&quot;}]" time="0.001"><failure message="assert not (True and True)&#10; +  where True = accept_string('{&quot;answer&quot;:&quot;UNSEEN-KEY|9999|mode&quot;}{&quot;extra&quot;:&quot;data&quot;}')&#10; +    where accept_string = &lt;xgrammar.matcher.GrammarMatcher object at 0x765c924af5f0&gt;.accept_string&#10; +  and   True = accept_token(256)&#10; +    where accept_token = &lt;xgrammar.matcher.GrammarMatcher object at 0x765c924af5f0&gt;.accept_token">compiler = &lt;xgrammar.compiler.GrammarCompiler object at 0x765cfd2dbdd0&gt;
+raw = '{"answer":"UNSEEN-KEY|9999|mode"}{"extra":"data"}'
+
+    @pytest.mark.parametrize("raw", [
+        '{"answer":"UNSEEN-KEY|9999|mode"}{"extra":"data"}',
+        r'{"answer":"UNSEEN-KEY|9999|mode\q"}',
+    ])
+    def test_final_grammar_rejects_json_string_escape_breakouts(compiler, raw):
+        with pytest.raises(json.JSONDecodeError):
+            json.loads(raw)
+        grammar = compiler.compile_json_schema(
+            selective.answer_schema(), any_whitespace=False, separators=(",", ":"),
+        )
+        matcher = xgr.GrammarMatcher(grammar)
+&gt;       assert not (matcher.accept_string(raw) and matcher.accept_token(256))
+E       assert not (True and True)
+E        +  where True = accept_string('{"answer":"UNSEEN-KEY|9999|mode"}{"extra":"data"}')
+E        +    where accept_string = &lt;xgrammar.matcher.GrammarMatcher object at 0x765c924af5f0&gt;.accept_string
+E        +  and   True = accept_token(256)
+E        +    where accept_token = &lt;xgrammar.matcher.GrammarMatcher object at 0x765c924af5f0&gt;.accept_token
+
+tests/test_selective_output_contract.py:82: AssertionError</failure></testcase><testcase classname="tests.test_selective_output_contract" name="test_final_grammar_rejects_json_string_escape_breakouts[{&quot;answer&quot;:&quot;UNSEEN-KEY|9999|mode\\q&quot;}]" time="0.001"><failure message="assert not (True and True)&#10; +  where True = accept_string('{&quot;answer&quot;:&quot;UNSEEN-KEY|9999|mode\\q&quot;}')&#10; +    where accept_string = &lt;xgrammar.matcher.GrammarMatcher object at 0x765c924aef00&gt;.accept_string&#10; +  and   True = accept_token(256)&#10; +    where accept_token = &lt;xgrammar.matcher.GrammarMatcher object at 0x765c924aef00&gt;.accept_token">compiler = &lt;xgrammar.compiler.GrammarCompiler object at 0x765cfd2dbdd0&gt;
+raw = '{"answer":"UNSEEN-KEY|9999|mode\\q"}'
+
+    @pytest.mark.parametrize("raw", [
+        '{"answer":"UNSEEN-KEY|9999|mode"}{"extra":"data"}',
+        r'{"answer":"UNSEEN-KEY|9999|mode\q"}',
+    ])
+    def test_final_grammar_rejects_json_string_escape_breakouts(compiler, raw):
+        with pytest.raises(json.JSONDecodeError):
+            json.loads(raw)
+        grammar = compiler.compile_json_schema(
+            selective.answer_schema(), any_whitespace=False, separators=(",", ":"),
+        )
+        matcher = xgr.GrammarMatcher(grammar)
+&gt;       assert not (matcher.accept_string(raw) and matcher.accept_token(256))
+E       assert not (True and True)
+E        +  where True = accept_string('{"answer":"UNSEEN-KEY|9999|mode\\q"}')
+E        +    where accept_string = &lt;xgrammar.matcher.GrammarMatcher object at 0x765c924aef00&gt;.accept_string
+E        +  and   True = accept_token(256)
+E        +    where accept_token = &lt;xgrammar.matcher.GrammarMatcher object at 0x765c924aef00&gt;.accept_token
+
+tests/test_selective_output_contract.py:82: AssertionError</failure></testcase></testsuite></testsuites>

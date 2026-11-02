@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "jaraco__inflect.c079a96a.lm_rewr__seP7SCD__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# AST evaluation in inflect returns None for lists and tuples\n\nWhen using the inflect library, I've discovered that lists and tuples are not properly evaluated in the `_get_value_from_ast` method. Instead of returning the actual list or tuple values, the method returns `None`.\n\n## Reproduction\n\nHere's a simple example that demonstrates the issue:\n\n```python\nimport inflect\n\np = inflect.engine()\n\n# This works fine with strings\nresult1 = p.inflect(\"plural('cat')\")\nprint(result1)  # Outputs: cats\n\n# But fails with lists and tuples\nresult2 = p.inflect(\"plural(['a', 'b', 'c'])\")\nprint(result2)  # Should return a list of pluralized items, but doesn't\n\n# Same issue with tuples\nresult3 = p.inflect(\"plural(('cat', 'dog'))\")\nprint(result3)  # Should return a tuple of pluralized items, but doesn't\n```\n\nThe issue appears to be in the `_get_value_from_ast` method, which handles AST nodes. While it correctly processes many types of AST nodes, it's not properly handling lists and tuples - instead returning `None` for these types.\n\nExpected behavior: Lists and tuples should be properly evaluated and returned as their respective collection types with the appropriate transformation applied."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository structure and the AST evaluation path so we can fix list/tuple handling.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-31953c81-08cb-43ff-aa63-1550e200cd44-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -50 && cat /testbed/README* 2>/dev/null | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-31953c81-08cb-43ff-aa63-1550e200cd44-0",
+            "content": " 1005 1005     0 Sep 22 15:44 .gitkeep\n-rw-r--r-- 1 root root   150 Jul 13  2025 .pre-commit-config.yaml\n-rw-r--r-- 1 root root   334 Jul 13  2025 .readthedocs.yaml\n-rw-r--r-- 1 root root  1023 Jul 13  2025 LICENSE\n-rw-r--r-- 1 root root  7728 Jul 13  2025 NEWS.rst\n-rw-r--r-- 1 root root 23034 Jul 13  2025 README.rst\n-rw-r--r-- 1 root root   180 Jul 13  2025 SECURITY.md\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 docs\ndrwxr-xr-x 3 root root  4096 Jul 13  2025 inflect\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 inflect.egg-info\n-rw-r--r-- 1 root root   375 Jul 13  2025 mypy.ini\n-rw-r--r-- 1 root root  1694 Jul 13  2025 pyproject.toml\n-rw-r--r-- 1 root root   584 Jul 13  2025 pytest.ini\n-rw-r--r-- 1 root root   633 Jul 13  2025 ruff.toml\n-rw-r--r-- 1 root root   126 Jul 13  2025 tea.yaml\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 tests\n-rw-r--r-- 1 root root    44 Jul 13  2025 towncrier.toml\n-rw-r--r-- 1 root root  1324 Jul 13  2025 tox.ini\n/testbed/inflect/__init__.py\n/testbed/inflect/compat/py38.py\n/testbed/inflect/compat/__init__.py\n/testbed/tests/test_inflections.py\n/testbed/tests/test_classical_names.py\n/testbed/tests/test_classical_ancient.py\n/testbed/tests/test_classical_person.py\n/testbed/tests/test_pl_si.py\n/testbed/tests/test_an.py\n/testbed/tests/test_compounds.py\n/testbed/tests/test_join.py\n/testbed/tests/test_numwords.py\n/testbed/tests/test_classical_zero.py\n/testbed/tests/test_pwd.py\n/testbed/tests/test_unicode.py\n/testbed/tests/test_classical_all.py\n/testbed/tests/test_classical_herd.py\n/testbed/docs/conf.py\n.. image:: https://img.shields.io/pypi/v/inflect.svg\n   :target: https://pypi.org/project/inflect\n\n.. image:: https://img.shields.io/pypi/pyversions/inflect.svg\n\n.. image:: https://github.com/jaraco/inflect/actions/workflows/main.yml/badge.svg\n   :target: https://github.com/jaraco/inflect/actions?query=workflow%3A%22tests%22\n   :alt: tests\n\n.. image:: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v2.json\n    :target: https://github.com/astral-sh/ruff\n    :alt: Ruff\n\n.. image:: https://readthedocs.org/projects/inflect/badge/?version=latest\n   :target: https://inflect.readthedocs.io/en/latest/?badge=latest\n\n.. image:: https://img.shields.io/badge/skeleton-2024-informational\n   :target: https://blog.jaraco.com/skeleton\n\n.. image:: https://tidelift.com/badges/package/pypi/inflect\n   :target: https://tidelift.com/subscription/pkg/pypi-inflect?utm_source=pypi-inflect&utm_medium=readme\n\nNAME\n====\n\ninflect.py - Accurately generate plurals, singular nouns, ordinals, indefinite articles, and word-based representations of numbers. This functionality is limited to English.\n\nSYNOPSIS\n========\n\n.. code-block:: python\n    \n    >>> import inflect\n    >>> p = inflect.engine()\n\nSimple example with pluralization and word-representation of numbers:\n\n.. code-block:: python\n    \n    >>> count=1\n    >>> print('There', p.plural_verb('was', count), p.number_to_words(count), p.plural_noun('person', count), 'by the door.')\n    There was one person by the door.\n\nWhen ``count=243``, the same code will generate:\n\n.. code-block:: python\n    \n    There were two hundred and forty-three people by the door.\n\n\nMethods\n=======\n\n- ``plural``, ``plural_noun``, ``plural_verb``, ``plural_adj``, ``singular_noun``, ``no``, ``num``\n- ``compare``, ``compare_nouns``, ``compare_nouns``, ``compare_adjs``\n- ``a``, ``an``\n- ``present_participle``\n- ``ordinal``, ``number_to_words``\n- ``join``\n- ``inflect``, ``classical``, ``gender``\n- ``defnoun``, ``defverb``, ``defadj``, ``defa``, ``defan``\n\nPlurality/Singularity\n---------------------\nUnconditionally Form the Plural\n^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n.. code-block:: python\n    \n    >>> \"the plural of person is \" + p.plural(\"person\")\n    'the plural of person is people'\n\nConditionally Form the Plural\n^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n.. code-block:: python\n    \n    >>> \"the plural of 1 person is \" + p.plural(\"person\", 1)\n    'the plural of 1 person is person'\n\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-d7f3ed0b-1e6c-47c7-a408-6eac14f0b31d-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "rg -n \"_get_value_from_ast|def inflect|ast\\.\" /testbed/inflect --type py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-d7f3ed0b-1e6c-47c7-a408-6eac14f0b31d-1",
+            "content": "bash: line 1: rg: command not found\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-d1574ca4-2bc4-42cb-a601-6f486c198d97-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "grep -n \"_get_value_from_ast\\|def inflect\\|ast\\.\" /testbed/inflect/__init__.py | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-d1574ca4-2bc4-42cb-a601-6f486c198d97-2",
+            "content": "2263:    def _get_value_from_ast(self, obj):\n2267:        if isinstance(obj, ast.Constant):\n2269:        elif isinstance(obj, ast.List):\n2270:            return [self._get_value_from_ast(e) for e in obj.elts]\n2271:        elif isinstance(obj, ast.Tuple):\n2272:            return tuple([self._get_value_from_ast(e) for e in obj.elts])\n2294:        a_tree = ast.parse(matched_text)\n2298:            self._get_value_from_ast(a)\n2302:            kw.arg: self._get_value_from_ast(kw.value)\n2312:    def inflect(self, text: Word) -> str:\n2713:        if word.last.lower() in pl_sb_uninflected_complete:\n2725:        if self.classical_dict[\"herd\"] and word.last.lower() in pl_sb_uninflected_herd:\n2797:        lowered_last = word.last.lower()\n3104:            words.last.lower() in pl_v_oes_oe\n3221:        if words.last.lower() in pl_sb_uninflected_complete:\n3233:        if self.classical_dict[\"herd\"] and words.last.lower() in pl_sb_uninflected_herd:\n3236:        if words.last.lower() in pl_sb_C_us_us:\n3290:        if words.last.lower() in si_sb_irregular:\n3291:            llen = len(words.last.lower())\n3292:            return f\"{word[:-llen]}{si_sb_irregular[words.last.lower()]}\"\n3395:            or words.last.lower() in si_sb_uses_use\n3401:        if word in si_sb_ies_ie_case or words.last.lower() in si_sb_ies_ie:\n3409:            or words.last.lower() in si_sb_oes_oe\n3415:        if word in si_sb_sses_sse_case or words.last.lower() in si_sb_sses_sse:\n3418:        if words.last.lower() in si_sb_singular_s_complete:\n3428:        if words.last.lower() in si_sb_z_zes:\n3431:        if words.last.lower() in si_sb_zzes_zz:\n3437:        if word in si_sb_ches_che_case or words.last.lower() in si_sb_ches_che:\n3443:        if words.last.lower() in si_sb_xes_xe:\n3451:        if word in si_sb_ves_ve_case or words.last.lower() in si_sb_ves_ve:\n3480:            if words.last.lower() in si_sb_U_o_os_complete:\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-c8903201-a476-4bee-b83e-0d282b194795-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '2240,2350p' /testbed/inflect/__init__.py; echo \"==== GIT LOG ====\"; git -C /testbed log --oneline -20; echo \"==== NEWS ====\"; head -80 /testbed/NEWS.rst"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-c8903201-a476-4bee-b83e-0d282b194795-3",
+            "content": "enderError\n\n    def _get_value_from_ast(self, obj):\n        \"\"\"\n        Return the value of the ast object.\n        \"\"\"\n        if isinstance(obj, ast.Constant):\n            return obj.value\n        elif isinstance(obj, ast.List):\n            return [self._get_value_from_ast(e) for e in obj.elts]\n        elif isinstance(obj, ast.Tuple):\n            return tuple([self._get_value_from_ast(e) for e in obj.elts])\n\n        # Probably passed a variable name.\n        # Or passed a single word without wrapping it in quotes as an argument\n        # ex: p.inflect(\"I plural(see)\") instead of p.inflect(\"I plural('see')\")\n        raise NameError(f\"name '{obj.id}' is not defined\")\n\n    def _string_to_substitute(\n        self, mo: Match, methods_dict: Dict[str, Callable]\n    ) -> str:\n        \"\"\"\n        Return the string to be substituted for the match.\n        \"\"\"\n        matched_text, f_name = mo.groups()\n        # matched_text is the complete match string. e.g. plural_noun(cat)\n        # f_name is the function name. e.g. plural_noun\n\n        # Return matched_text if function name is not in methods_dict\n        if f_name not in methods_dict:\n            return matched_text\n\n        # Parse the matched text\n        a_tree = ast.parse(matched_text)\n\n        # get the args and kwargs from ast objects\n        args_list = [\n            self._get_value_from_ast(a)\n            for a in a_tree.body[0].value.args  # type: ignore[attr-defined]\n        ]\n        kwargs_list = {\n            kw.arg: self._get_value_from_ast(kw.value)\n            for kw in a_tree.body[0].value.keywords  # type: ignore[attr-defined]\n        }\n\n        # Call the corresponding function\n        return methods_dict[f_name](*args_list, **kwargs_list)\n\n    # 0. PERFORM GENERAL INFLECTIONS IN A STRING\n\n    @typechecked\n    def inflect(self, text: Word) -> str:\n        \"\"\"\n        Perform inflections in a string.\n\n        e.g. inflect('The plural of cat is plural(cat)') returns\n        'The plural of cat is cats'\n\n        can use plural, plural_noun, plural_verb, plural_adj,\n        singular_noun, a, an, no, ordinal, number_to_words,\n        and prespart\n\n        \"\"\"\n        save_persistent_count = self.persistent_count\n\n        # Dictionary of allowed methods\n        methods_dict: Dict[str, Callable] = {\n            \"plural\": self.plural,\n            \"plural_adj\": self.plural_adj,\n            \"plural_noun\": self.plural_noun,\n            \"plural_verb\": self.plural_verb,\n            \"singular_noun\": self.singular_noun,\n            \"a\": self.a,\n            \"an\": self.a,\n            \"no\": self.no,\n            \"ordinal\": self.ordinal,\n            \"number_to_words\": self.number_to_words,\n            \"present_participle\": self.present_participle,\n            \"num\": self.num,\n        }\n\n        # Regular expression to find Python's function call syntax\n        output = FUNCTION_CALL.sub(\n            lambda mo: self._string_to_substitute(mo, methods_dict), text\n        )\n        self.persistent_count = save_persistent_count\n        return output\n\n    # ## PLURAL SUBROUTINES\n\n==== GIT LOG ====\n91b5d26 Initial commit\n==== NEWS ====\nv7.5.0\n======\n\nFeatures\n--------\n\n- Updated `ast` classes for Python 3.14 compatibility. (#225)\n\n\nv7.4.0\n======\n\nFeatures\n--------\n\n- Handle a single apostrophe more gracefully. (#218)\n\n\nv7.3.1\n======\n\nBugfixes\n--------\n\n- Set minimum version of more-itertools to 8.5 (#215)\n\n\nv7.3.0\n======\n\nFeatures\n--------\n\n- Restricted typing_extensions to Python 3.8. (#211)\n\n\nv7.2.1\n======\n\nBugfixes\n--------\n\n- Refactored number_to_words toward reduced complexity.\n\n\nv7.2.0\n======\n\nFeatures\n--------\n\n- Replace pydantic with typeguard (#195)\n\n\nv7.1.0\n======\n\nFeatures\n--------\n\n- Now handle 'pair of x' in pl_sb_uninflected_complete (#188)\n\n\nv7.0.0\n======\n\nFeatures\n--------\n\n- Refine type hint for ``singular_noun`` to indicate a literal return type for ``False``. (#186)\n\n\nDeprecations and Removals\n-------------------------\n\n- Removed methods renamed in 0.2.0.\n\n\nv6.2.0\n======\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-750e3ba9-96d1-4b49-9459-485de3e3c93e-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed/tests /testbed/docs; grep -n \"List\\|Tuple\\|NameConstant\\|_get_value\\|inflect(\" /testbed/tests/*.py | head -80; echo \"==== plural method ====\"; grep -n \"def plural\\|def no\\|def a\\|Word\\|Sequence\" /testbed/inflect/__init__.py | head -60"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-750e3ba9-96d1-4b49-9459-485de3e3c93e-4",
+            "content": "  p.inflect(\"plural(two)\")\n/testbed/tests/test_pwd.py:107:    def test_inflect(self):\n/testbed/tests/test_pwd.py:117:            assert p.inflect(txt) == ans, f'p.inflect(\"{txt}\") != \"{ans}\"'\n/testbed/tests/test_pwd.py:135:            assert p.inflect(txt) == ans, f'p.inflect(\"{txt}\") != \"{ans}\"'\n/testbed/tests/test_pwd.py:310:            assert p.inflect(\"singular_noun('%s')\" % plur) == sing\n/testbed/tests/test_pwd.py:347:            assert p.inflect(\"singular_noun('%s')\" % plur) == sing\n/testbed/tests/test_pwd.py:360:            assert p.inflect(\"singular_noun('%s')\" % plur) == sing\n/testbed/tests/test_pwd.py:373:            assert p.inflect(\"singular_noun('%s')\" % plur) == sing\n/testbed/tests/test_pwd.py:386:            assert p.inflect(\"singular_noun('%s')\" % plur) == sing\n/testbed/tests/test_pwd.py:1190:                p.inflect(\n/testbed/tests/test_pwd.py:1209:                p.inflect(\n==== plural method ====\n74:    Sequence,\n2039:class Words(str):\n2060:    Word = Annotated[str, \"String with at least 1 character\"]\n2063:    class _WordMeta(type):  # Too dynamic to be supported by mypy...\n2067:    class Word(metaclass=_WordMeta):  # type: ignore[no-redef]\n2076:        self.pl_sb_user_defined: List[Optional[Word]] = []\n2077:        self.pl_v_user_defined: List[Optional[Word]] = []\n2078:        self.pl_adj_user_defined: List[Optional[Word]] = []\n2079:        self.si_sb_user_defined: List[Optional[Word]] = []\n2080:        self.A_a_user_defined: List[Optional[Word]] = []\n2093:    def defnoun(self, singular: Optional[Word], plural: Optional[Word]) -> int:\n2107:        s1: Optional[Word],\n2108:        p1: Optional[Word],\n2109:        s2: Optional[Word],\n2110:        p2: Optional[Word],\n2111:        s3: Optional[Word],\n2112:        p3: Optional[Word],\n2130:    def defadj(self, singular: Optional[Word], plural: Optional[Word]) -> int:\n2141:    def defa(self, pattern: Optional[Word]) -> int:\n2151:    def defan(self, pattern: Optional[Word]) -> int:\n2160:    def checkpat(self, pattern: Optional[Word]) -> None:\n2171:    def checkpatplural(self, pattern: Optional[Word]) -> None:\n2178:    def ud_match(self, word: Word, wordlist: Sequence[Optional[Word]]) -> Optional[str]:\n2185:                    r\"\\\\1\", cast(Word, wordlist[i + 1])\n2312:    def inflect(self, text: Word) -> str:\n2389:    def plural(self, text: Word, count: Optional[Union[str, int, Any]] = None) -> str:\n2413:    def plural_noun(\n2414:        self, text: Word, count: Optional[Union[str, int, Any]] = None\n2434:    def plural_verb(\n2435:        self, text: Word, count: Optional[Union[str, int, Any]] = None\n2458:    def plural_adj(\n2459:        self, text: Word, count: Optional[Union[str, int, Any]] = None\n2479:    def compare(self, word1: Word, word2: Word) -> Union[str, bool]:\n2496:        Words should not be empty.\n2501:        typeguard.TypeCheckError:...is not an instance of inflect.Word\n2508:    def compare_nouns(self, word1: Word, word2: Word) -> Union[str, bool]:\n2524:    def compare_verbs(self, word1: Word, word2: Word) -> Union[str, bool]:\n2540:    def compare_adjs(self, word1: Word, word2: Word) -> Union[str, bool]:\n2558:        text: Word,\n2643:        words = map(Words, (word1, word2))\n2711:        word = Words(word)\n3005:    def _handle_long_compounds(self, word: Words, count: int) -> Union[str, None]:\n3007:        Handles the plural and singular for compound `Words` that\n3010:        >>> engine()._handle_long_compounds(Words(\"pair of scissors\"), 2)\n3012:        >>> engine()._handle_long_compounds(Words(\"men beyond hills\"), 1)\n3058:            words = Words(word)\n3219:        words = Words(word)\n3510:    def a(self, text: Word, count: Optional[Union[int, str, Any]] = 1) -> str:\n3591:    def no(self, text: Word, count: Optional[Union[int, str]] = None) -> str:\n3629:    def present_participle(self, word: Word) -> str:\n3648:    def ordinal(self, num: Union[Number, Word]) -> str:\n3830:        num: Union[Number, Word],\n3957:        words: Optional[Sequence[Word]],\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-aada856b-f175-44fd-a4e0-ed7a192a76f3-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "python3 -c \"\nimport inflect\np = inflect.engine()\nprint('result1:', repr(p.inflect(\\\"plural('cat')\\\")))\ntry:\n    print('result2:', repr(p.inflect(\\\"plural(['a', 'b', 'c'])\\\")))\nexcept Exception as e:\n    print('result2 error:', type(e), e)\ntry:\n    print('result3:', repr(p.inflect(\\\"plural(('cat', 'dog'))\\\")))\nexcept Exception as e:\n    print('result3 error:', type(e), e)\nprint('---')\nimport ast\nprint(ast.dump(ast.parse(\\\"plural(['a', 'b', 'c'])\\\"), indent=2))\nprint('---')\nprint(ast.dump(ast.parse(\\\"plural(('cat', 'dog'))\\\"), indent=2))\n\"\necho \"==== Python version ====\"\npython3 --version\ncat /testbed/pyproject.toml"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-aada856b-f175-44fd-a4e0-ed7a192a76f3-5",
+            "content": "Traceback (most recent call last):\n  File \"<string>\", line 2, in <module>\n  File \"/testbed/inflect/__init__.py\", line 80, in <module>\n    from more_itertools import windowed_complete\nModuleNotFoundError: No module named 'more_itertools'\n==== Python version ====\nPython 3.12.1\n[build-system]\nrequires = [\"setuptools>=61.2\", \"setuptools_scm[toml]>=3.4.1\"]\nbuild-backend = \"setuptools.build_meta\"\n\n[project]\nname = \"inflect\"\nauthors = [\n\t{ name = \"Paul Dyson\", email = \"pwdyson@yahoo.com\" },\n]\nmaintainers = [\n\t{ name = \"Jason R. Coombs\", email = \"jaraco@jaraco.com\" },\n]\ndescription = \"Correctly generate plurals, singular nouns, ordinals, indefinite articles\" # convert numbers to words\nreadme = \"README.rst\"\nclassifiers = [\n\t\"Development Status :: 5 - Production/Stable\",\n\t\"Intended Audience :: Developers\",\n\t\"License :: OSI Approved :: MIT License\",\n\t\"Programming Language :: Python :: 3\",\n\t\"Programming Language :: Python :: 3 :: Only\",\n\t\"Natural Language :: English\",\n\t\"Operating System :: OS Independent\",\n\t\"Topic :: Software Development :: Libraries :: Python Modules\",\n\t\"Topic :: Text Processing :: Linguistic\",\n]\nrequires-python = \">=3.9\"\ndependencies = [\n\t\"more_itertools >= 8.5.0\",\n\t\"typeguard >= 4.0.1\",\n\t\"typing_extensions ; python_version<'3.9'\",\n]\nkeywords = [\n\t\"plural\",\n\t\"inflect\",\n\t\"participle\",\n]\ndynamic = [\"version\"]\n\n[project.urls]\nSource = \"https://github.com/jaraco/inflect\"\n\n[project.optional-dependencies]\ntest = [\n\t# upstream\n\t\"pytest >= 6, != 8.1.*\",\n\n\t# local\n\t\"pygments\",\n]\n\ndoc = [\n\t# upstream\n\t\"sphinx >= 3.5\",\n\t\"jaraco.packaging >= 9.3\",\n\t\"rst.linker >= 1.9\",\n\t\"furo\",\n\t\"sphinx-lint\",\n\n\t# tidelift\n\t\"jaraco.tidelift >= 1.4\",\n\n\t# local\n]\n\ncheck = [\n\t\"pytest-checkdocs >= 2.4\",\n\t\"pytest-ruff >= 0.2.1; sys_platform != 'cygwin'\",\n]\n\ncover = [\n\t\"pytest-cov\",\n]\n\nenabler = [\n\t\"pytest-enabler >= 2.2\",\n]\n\ntype = [\n\t# upstream\n\t\"pytest-mypy\",\n\n\t# local\n]\n\n\n[tool.setuptools_scm]\n\n\n[tool.pytest-enabler.mypy]\n# Disabled due to jaraco/skeleton#143\n"
+          }
+        ]
+      }
+    }
+  ]
+}

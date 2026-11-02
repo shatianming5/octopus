@@ -1,0 +1,19 @@
+{
+  "schema": "octopus-lighthouse-counted-feedback-counterfactual-v1",
+  "before_model_outputs": true,
+  "claim": "Test whether measured zero-versus-multiple exact-match feedback changes the observed mistaken recovery decision, without repairing or disambiguating actions.",
+  "reference_freeze": "../deliberative/freeze.json",
+  "task": "GoogleChrome__lighthouse-10176",
+  "only_protocol_delta": {"edit_feedback": "match_count"},
+  "tool_delta": "Failed exact edit reports actual match_count and includes it in the error string. Existing failure classification, evidence refresh, exact uniqueness check and no-write-on-error are preserved.",
+  "model_episodes_max": 1,
+  "phase_gpu_seconds_max": 1200,
+  "max_actions": 12,
+  "generation_seed": 17,
+  "training_runs_added": 0,
+  "prompt_and_schema_delta": "none",
+  "action_rewriting": false,
+  "quality_gate": "Original official resolved=true; evidence recognition or a patch alone is not PASS.",
+  "stop": "One terminal episode or real execution/budget blocker; no output-driven retry or retuning, task substitution or downstream gated runs.",
+  "authorization_context": "Autonomous same-task root-cause continuation: explicit generic observation detail treatment after the prior trace conflated nonunique text with absent text."
+}

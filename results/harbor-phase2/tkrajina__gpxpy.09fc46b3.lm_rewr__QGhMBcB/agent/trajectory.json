@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "tkrajina__gpxpy.09fc46b3.lm_rewr__QGhMBcB__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# GPX smooth() function doesn't remove extreme points when remove_extremes=True\n\n## Description\n\nI've found that the `smooth()` function in GPXTrackSegment doesn't actually remove any extreme points when the `remove_extremes` parameter is set to `True`. This affects both vertical and horizontal smoothing.\n\nFor example, when I try to smooth a track with extremes:\n\n```python\nwith open('track-with-extremes.gpx') as f:\n    parser = GPXParser(f)\ngpx = parser.parse()\npoints_before = gpx.get_track_points_no()\ngpx.smooth(vertical=True, horizontal=False, remove_extremes=True)\npoints_after = gpx.get_track_points_no()\nprint(points_before, points_after)\n```\n\nThe number of points before and after smoothing remains the same, even though there are clearly extreme points in the track that should be removed.\n\n## Steps to reproduce\n\n1. Load a GPX file with some extreme elevation or position points\n2. Get the number of track points\n3. Call `smooth()` with `remove_extremes=True`\n4. Get the number of track points again\n5. Notice that the number of points hasn't changed\n\nThis happens with all combinations of smoothing:\n- `vertical=True, horizontal=False, remove_extremes=True`\n- `vertical=False, horizontal=True, remove_extremes=True`\n- `vertical=True, horizontal=True, remove_extremes=True`\n\nThe function is calculating statistics about the points but not actually removing any extreme points from the track."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository and the `smooth()` implementation to find why extreme points aren't removed.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-cda80d8d-1335-415c-b107-96540a45d6aa-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -50 && cat /testbed/README* 2>/dev/null | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-cda80d8d-1335-415c-b107-96540a45d6aa-0",
+            "content": "info\n-rw-r--r-- 1 root root   1070 Jul 14  2025 makefile\n-rwxr-xr-x 1 root root   1516 Jul 14  2025 setup.py\n-rw-r--r-- 1 root root 169770 Jul 14  2025 test.py\ndrwxr-xr-x 2 root root   4096 Jul 14  2025 test_files\ndrwxr-xr-x 2 root root   4096 Jul 14  2025 xsd\n/testbed/gpxpy/geo.py\n/testbed/gpxpy/__init__.py\n/testbed/gpxpy/gpx.py\n/testbed/gpxpy/utils.py\n/testbed/gpxpy/parser.py\n/testbed/gpxpy/gpxfield.py\n/testbed/gpxpy/gpxxml.py\n/testbed/xsd/pretty_print_schemas.py\n/testbed/test.py\n/testbed/setup.py\n/testbed/examples/waypoints_example.py\n/testbed/examples/extension_write_example.py\n[![Run Tests](https://github.com/tkrajina/gpxpy/actions/workflows/test.yml/badge.svg)](https://github.com/tkrajina/gpxpy/actions/workflows/test.yml)\n\n# gpxpy -- GPX file parser\n\nThis is a simple Python library for parsing and manipulating GPX files. GPX is an XML based format for GPS tracks.\n\nYou can see it in action on [my online GPS track editor and organizer](http://www.trackprofiler.com).\n\nThere is also a Golang port of gpxpy: [gpxgo](http://github.com/tkrajina/gpxgo).\n\nSee also [srtm.py](https://github.com/tkrajina/srtm.py) if your track lacks elevation data.\n\n## Usage\n\n```python\nimport gpxpy\nimport gpxpy.gpx\n\n# Parsing an existing file:\n# -------------------------\n\ngpx_file = open('test_files/cerknicko-jezero.gpx', 'r')\n\ngpx = gpxpy.parse(gpx_file)\n\nfor track in gpx.tracks:\n    for segment in track.segments:\n        for point in segment.points:\n            print(f'Point at ({point.latitude},{point.longitude}) -> {point.elevation}')\n\nfor waypoint in gpx.waypoints:\n    print(f'waypoint {waypoint.name} -> ({waypoint.latitude},{waypoint.longitude})')\n\nfor route in gpx.routes:\n    print('Route:')\n    for point in route.points:\n        print(f'Point at ({point.latitude},{point.longitude}) -> {point.elevtion}')\n\n# There are many more utility methods and functions:\n# You can manipulate/add/remove tracks, segments, points, waypoints and routes and\n# get the GPX XML file from the resulting object:\n\nprint('GPX:', gpx.to_xml())\n\n# Creating a new file:\n# --------------------\n\ngpx = gpxpy.gpx.GPX()\n\n# Create first track in our GPX:\ngpx_track = gpxpy.gpx.GPXTrack()\ngpx.tracks.append(gpx_track)\n\n# Create first segment in our GPX track:\ngpx_segment = gpxpy.gpx.GPXTrackSegment()\ngpx_track.segments.append(gpx_segment)\n\n# Create points:\ngpx_segment.points.append(gpxpy.gpx.GPXTrackPoint(2.1234, 5.1234, elevation=1234))\ngpx_segment.points.append(gpxpy.gpx.GPXTrackPoint(2.1235, 5.1235, elevation=1235))\ngpx_segment.points.append(gpxpy.gpx.GPXTrackPoint(2.1236, 5.1236, elevation=1236))\n\n# You can add routes and waypoints, too...\n\nprint('Created GPX:', gpx.to_xml())\n```\n\n## GPX version\n\ngpx.py can parse and generate GPX 1.0 and 1.1 files. The generated file will always be a valid XML document, but it may not be (strictly speaking) a valid GPX document. For example, if you set gpx.email to \"my.email AT mail.com\" the generated GPX tag won't confirm to the regex pattern. And the file won't be valid. Most applications will ignore such errors, but... Be aware of this!\n\nBe aware that the gpxpy object model *is not 100% equivalent* with the underlying GPX XML file schema. That's because the library object model works with both GPX 1.0 and 1.1.\n\nFor example, GPX 1.0 specified a `speed` attribute for every track point, but that was removed in GPX 1.1. If you parse GPX 1.0 and serialize back with `gpx.to_xml()` everything will work fine. But if you have a GPX 1.1 object, changes in the `speed` attribute will be lost after `gpx.to_xml()`. If you want to force using 1.0, you can `gpx.to_xml(version=\"1.0\")`. Another possibility is to use `extensions` to save the speed in GPX 1.1.\n\n## GPX extensions\n\ngpx.py preserves GPX extensions. They are stored as [ElementTree](https://docs.python.org/2/library/xml.etree.elementtree.html#module-xml.etree.ElementTree) DOM objects. Extensions are part of GPX 1.1, and will be ignored when serializing a GPX object in a GPX 1.0 file.\n\n## XML parsing\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-f4b99127-1538-4cda-80d7-300fc2f0e3a4-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "rg -n \"def smooth|remove_extremes|smooth\\(\" /testbed --type py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-f4b99127-1538-4cda-80d7-300fc2f0e3a4-1",
+            "content": "bash: line 1: rg: command not found\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-9cfa3cc2-a4f0-4b60-8fe9-e905c1a4fc53-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "grep -n \"def smooth\\|remove_extremes\\|smooth(\" /testbed --include=\"*.py\" -r"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-9cfa3cc2-a4f0-4b60-8fe9-e905c1a4fc53-2",
+            "content": "/testbed/gpxpy/gpx.py:1230:    def smooth(self, vertical: bool=True, horizontal: bool=False, remove_extremes: bool=False) -> None:\n/testbed/gpxpy/gpx.py:1246:        if remove_extremes:\n/testbed/gpxpy/gpx.py:1278:                if not remove_extremes:\n/testbed/gpxpy/gpx.py:1281:                if remove_extremes:\n/testbed/gpxpy/gpx.py:1309:                if not remove_extremes:\n/testbed/gpxpy/gpx.py:1320:                #print d1, d2, d, remove_extremes\n/testbed/gpxpy/gpx.py:1322:                if d1 + d2 > dist * 1.5 and remove_extremes:\n/testbed/gpxpy/gpx.py:1874:    def smooth(self, vertical: bool=True, horizontal: bool=False, remove_extremes: bool=False) -> None:\n/testbed/gpxpy/gpx.py:1875:        \"\"\" See: GPXTrackSegment.smooth() \"\"\"\n/testbed/gpxpy/gpx.py:1877:            track_segment.smooth(vertical, horizontal, remove_extremes)\n/testbed/gpxpy/gpx.py:2188:    def smooth(self, vertical: bool=True, horizontal: bool=False, remove_extremes: bool=False) -> None:\n/testbed/gpxpy/gpx.py:2189:        \"\"\" See GPXTrackSegment.smooth(...) \"\"\"\n/testbed/gpxpy/gpx.py:2191:            track.smooth(vertical=vertical, horizontal=horizontal, remove_extremes=remove_extremes)\n/testbed/gpxpy/gpx.py:2218:        cloned_gpx.smooth(vertical=True, horizontal=True)\n/testbed/gpxpy/gpx.py:2219:        cloned_gpx.smooth(vertical=True, horizontal=False)\n/testbed/test.py:488:        gpx.smooth(vertical=True, horizontal=False)\n/testbed/test.py:494:        gpx.smooth(vertical=False, horizontal=True)\n/testbed/test.py:500:        gpx.smooth(vertical=True, horizontal=True)\n/testbed/test.py:503:    def test_clone_and_smooth(self) -> None:\n/testbed/test.py:515:        cloned_gpx.smooth(vertical=True, horizontal=True)\n/testbed/test.py:516:        cloned_gpx.smooth(vertical=True, horizontal=False)\n/testbed/test.py:571:        gpx.smooth(vertical=True, horizontal=True)\n/testbed/test.py:572:        gpx.smooth(vertical=True, horizontal=False)\n/testbed/test.py:713:    def test_horizontal_smooth_remove_extremes(self) -> None:\n/testbed/test.py:721:        gpx.smooth(vertical=False, horizontal=True, remove_extremes=True)\n/testbed/test.py:729:    def test_vertical_smooth_remove_extremes(self) -> None:\n/testbed/test.py:736:        gpx.smooth(vertical=True, horizontal=False, remove_extremes=True)\n/testbed/test.py:744:    def test_horizontal_and_vertical_smooth_remove_extremes(self) -> None:\n/testbed/test.py:751:        gpx.smooth(vertical=True, horizontal=True, remove_extremes=True)\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-00058818-cdba-49a2-b4ea-ae37a8698c8b-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '1200,1350p' /testbed/gpxpy/gpx.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-00058818-cdba-49a2-b4ea-ae37a8698c8b-3",
+            "content": "evation_delta * 5  # TODO: Param\n\n        new_track_points = [self.points[0]]\n\n        for i in range(len(self.points))[1:-1]:\n            new_point = None\n            point_removed = False\n            if vertical and elevations[i - 1] and elevations[i] and elevations[i + 1]:\n                old_elevation = self.points[i].elevation\n                new_elevation = SMOOTHING_RATIO[0] * elevations[i - 1] + \\\n                    SMOOTHING_RATIO[1] * elevations[i] + \\\n                    SMOOTHING_RATIO[2] * elevations[i + 1]\n\n                if not remove_extremes:\n                    self.points[i].elevation = new_elevation\n\n                if remove_extremes:\n                    # The point must be enough distant to *both* neighbours:\n                    d1 = abs((old_elevation or 0) - elevations[i - 1])\n                    d2 = abs((old_elevation or 0) - elevations[i + 1])\n                    #print d1, d2, remove_2d_extremes_threshold\n\n                    # TODO: Remove extremes threshold is meant only for 2D, elevation must be\n                    # computed in different way!\n                    if min(d1, d2) < remove_elevation_extremes_threshold and abs((old_elevation or 0) - (new_elevation or 0)) < remove_2d_extremes_threshold:\n                        new_point = self.points[i]\n                    else:\n                        #print 'removed elevation'\n                        point_removed = True\n                else:\n                    new_point = self.points[i]\n            else:\n                new_point = self.points[i]\n\n            if horizontal:\n                old_latitude = self.points[i].latitude\n                new_latitude = SMOOTHING_RATIO[0] * latitudes[i - 1] + \\\n                    SMOOTHING_RATIO[1] * latitudes[i] + \\\n                    SMOOTHING_RATIO[2] * latitudes[i + 1]\n                old_longitude = self.points[i].longitude\n                new_longitude = SMOOTHING_RATIO[0] * longitudes[i - 1] + \\\n                    SMOOTHING_RATIO[1] * longitudes[i] + \\\n                    SMOOTHING_RATIO[2] * longitudes[i + 1]\n\n                if not remove_extremes:\n                    self.points[i].latitude = new_latitude\n                    self.points[i].longitude = new_longitude\n\n                # TODO: This is not ideal.. Because if there are points A, B and C on the same\n                # line but B is very close to C... This would remove B (and possibly) A even though\n                # it is not an extreme. This is the reason for this algorithm:\n                d1 = mod_geo.distance(latitudes[i - 1], longitudes[i - 1], None, latitudes[i], longitudes[i], None)\n                d2 = mod_geo.distance(latitudes[i + 1], longitudes[i + 1], None, latitudes[i], longitudes[i], None)\n                dist = mod_geo.distance(latitudes[i - 1], longitudes[i - 1], None, latitudes[i + 1], longitudes[i + 1], None)\n\n                #print d1, d2, d, remove_extremes\n\n                if d1 + d2 > dist * 1.5 and remove_extremes:\n                    dist = mod_geo.distance(old_latitude, old_longitude, None, new_latitude, new_longitude, None)\n                    #print \"d, threshold = \", d, remove_2d_extremes_threshold\n                    if dist < remove_2d_extremes_threshold:\n                        new_point = self.points[i]\n                    else:\n                        #print 'removed 2d'\n                        point_removed = True\n                else:\n                    new_point = self.points[i]\n\n            if new_point and not point_removed:\n                new_track_points.append(new_point)\n\n        new_track_points.append(self.points[- 1])\n\n        #print 'len=', len(new_track_points)\n\n        self.points = new_track_points\n\n    def has_times(self) -> bool:\n        \"\"\"\n        Returns if points in this segment contains timestamps.\n\n        The first point, the last point, and 75% of the points must have times\n        for this method to return true.\n        \"\"\"\n        if not self.points:\n            return True\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-3d6bdfe4-a0f6-4500-812e-5623a3fbbeda-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '1230,1300p' /testbed/gpxpy/gpx.py && echo \"==== TESTS ====\" && sed -n '700,770p' /testbed/test.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-3d6bdfe4-a0f6-4500-812e-5623a3fbbeda-4",
+            "content": "on_delta * 5  # TODO: Param\n\n        new_track_points = [self.points[0]]\n\n        for i in range(len(self.points))[1:-1]:\n            new_point = None\n            point_removed = False\n            if vertical and elevations[i - 1] and elevations[i] and elevations[i + 1]:\n                old_elevation = self.points[i].elevation\n                new_elevation = SMOOTHING_RATIO[0] * elevations[i - 1] + \\\n                    SMOOTHING_RATIO[1] * elevations[i] + \\\n                    SMOOTHING_RATIO[2] * elevations[i + 1]\n\n                if not remove_extremes:\n                    self.points[i].elevation = new_elevation\n\n                if remove_extremes:\n                    # The point must be enough distant to *both* neighbours:\n                    d1 = abs((old_elevation or 0) - elevations[i - 1])\n                    d2 = abs((old_elevation or 0) - elevations[i + 1])\n                    #print d1, d2, remove_2d_extremes_threshold\n\n                    # TODO: Remove extremes threshold is meant only for 2D, elevation must be\n                    # computed in different way!\n                    if min(d1, d2) < remove_elevation_extremes_threshold and abs((old_elevation or 0) - (new_elevation or 0)) < remove_2d_extremes_threshold:\n                        new_point = self.points[i]\n                    else:\n                        #print 'removed elevation'\n                        point_removed = True\n                else:\n                    new_point = self.points[i]\n            else:\n                new_point = self.points[i]\n\n            if horizontal:\n                old_latitude = self.points[i].latitude\n==== TESTS ====\n\n        loc1 = mod_geo.Location(1, 2)\n        loc2 = mod_geo.Location(3.1, 4)\n\n        self.assertEqual(loc1.distance_2d(loc2),\n                         mod_geo.haversine_distance(loc1.latitude, loc1.longitude, loc2.latitude, loc2.longitude))\n\n        loc1 = mod_geo.Location(1, 2)\n        loc2 = mod_geo.Location(2, 4.1)\n\n        self.assertEqual(loc1.distance_2d(loc2),\n                         mod_geo.haversine_distance(loc1.latitude, loc1.longitude, loc2.latitude, loc2.longitude))\n\n    def test_horizontal_smooth_remove_extremes(self) -> None:\n        with open('test_files/track-with-extremes.gpx') as f:\n\n            parser = mod_parser.GPXParser(f)\n\n        gpx = parser.parse()\n\n        points_before = gpx.get_track_points_no()\n        gpx.smooth(vertical=False, horizontal=True, remove_extremes=True)\n        points_after = gpx.get_track_points_no()\n\n        print(points_before)\n        print(points_after)\n\n        self.assertTrue(points_before - 2 == points_after)\n\n    def test_vertical_smooth_remove_extremes(self) -> None:\n        with open('test_files/track-with-extremes.gpx') as f:\n            parser = mod_parser.GPXParser(f)\n\n        gpx = parser.parse()\n\n        points_before = gpx.get_track_points_no()\n        gpx.smooth(vertical=True, horizontal=False, remove_extremes=True)\n        points_after = gpx.get_track_points_no()\n\n        print(points_before)\n        print(points_after)\n\n        self.assertTrue(points_before - 1 == points_after)\n\n    def test_horizontal_and_vertical_smooth_remove_extremes(self) -> None:\n        with open('test_files/track-with-extremes.gpx') as f:\n            parser = mod_parser.GPXParser(f)\n\n        gpx = parser.parse()\n\n        points_before = gpx.get_track_points_no()\n        gpx.smooth(vertical=True, horizontal=True, remove_extremes=True)\n        points_after = gpx.get_track_points_no()\n\n        print(points_before)\n        print(points_after)\n\n        self.assertTrue(points_before - 3 == points_after)\n\n    def test_positions_on_track(self) -> None:\n        gpx = mod_gpx.GPX()\n        track = mod_gpx.GPXTrack()\n        gpx.tracks.append(track)\n        segment = mod_gpx.GPXTrackSegment()\n        track.segments.append(segment)\n\n        location_to_find_on_track = None\n\n        for i in range(1000):\n            latitude = 45 + i * 0.001\n            longitude = 45 + i * 0.001\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-fc3e712e-0a8f-49a4-9060-2ff88d6945ba-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '1180,1340p' /testbed/gpxpy/gpx.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-fc3e712e-0a8f-49a4-9060-2ff88d6945ba-5",
+            "content": "     # If The point moved more than this number * the average distance between two\n        # points -- then is a candidate for deletion:\n        # TODO: Make this a method parameter\n        remove_2d_extremes_threshold = 1.75 * avg_distance\n        remove_elevation_extremes_threshold = avg_elevation_delta * 5  # TODO: Param\n\n        new_track_points = [self.points[0]]\n\n        for i in range(len(self.points))[1:-1]:\n            new_point = None\n            point_removed = False\n            if vertical and elevations[i - 1] and elevations[i] and elevations[i + 1]:\n                old_elevation = self.points[i].elevation\n                new_elevation = SMOOTHING_RATIO[0] * elevations[i - 1] + \\\n                    SMOOTHING_RATIO[1] * elevations[i] + \\\n                    SMOOTHING_RATIO[2] * elevations[i + 1]\n\n                if not remove_extremes:\n                    self.points[i].elevation = new_elevation\n\n                if remove_extremes:\n                    # The point must be enough distant to *both* neighbours:\n                    d1 = abs((old_elevation or 0) - elevations[i - 1])\n                    d2 = abs((old_elevation or 0) - elevations[i + 1])\n                    #print d1, d2, remove_2d_extremes_threshold\n\n                    # TODO: Remove extremes threshold is meant only for 2D, elevation must be\n                    # computed in different way!\n                    if min(d1, d2) < remove_elevation_extremes_threshold and abs((old_elevation or 0) - (new_elevation or 0)) < remove_2d_extremes_threshold:\n                        new_point = self.points[i]\n                    else:\n                        #print 'removed elevation'\n                        point_removed = True\n                else:\n                    new_point = self.points[i]\n            else:\n                new_point = self.points[i]\n\n            if horizontal:\n                old_latitude = self.points[i].latitude\n                new_latitude = SMOOTHING_RATIO[0] * latitudes[i - 1] + \\\n                    SMOOTHING_RATIO[1] * latitudes[i] + \\\n                    SMOOTHING_RATIO[2] * latitudes[i + 1]\n                old_longitude = self.points[i].longitude\n                new_longitude = SMOOTHING_RATIO[0] * longitudes[i - 1] + \\\n                    SMOOTHING_RATIO[1] * longitudes[i] + \\\n                    SMOOTHING_RATIO[2] * longitudes[i + 1]\n\n                if not remove_extremes:\n                    self.points[i].latitude = new_latitude\n                    self.points[i].longitude = new_longitude\n\n                # TODO: This is not ideal.. Because if there are points A, B and C on the same\n                # line but B is very close to C... This would remove B (and possibly) A even though\n                # it is not an extreme. This is the reason for this algorithm:\n                d1 = mod_geo.distance(latitudes[i - 1], longitudes[i - 1], None, latitudes[i], longitudes[i], None)\n                d2 = mod_geo.distance(latitudes[i + 1], longitudes[i + 1], None, latitudes[i], longitudes[i], None)\n                dist = mod_geo.distance(latitudes[i - 1], longitudes[i - 1], None, latitudes[i + 1], longitudes[i + 1], None)\n\n                #print d1, d2, d, remove_extremes\n\n                if d1 + d2 > dist * 1.5 and remove_extremes:\n                    dist = mod_geo.distance(old_latitude, old_longitude, None, new_latitude, new_longitude, None)\n                    #print \"d, threshold = \", d, remove_2d_extremes_threshold\n                    if dist < remove_2d_extremes_threshold:\n                        new_point = self.points[i]\n                    else:\n                        #print 'removed 2d'\n                        point_removed = True\n                else:\n                    new_point = self.points[i]\n\n            if new_point and not point_removed:\n                new_track_points.append(new_point)\n\n        new_track_points.append(self.points[- 1])\n\n        #print 'len=', len(new_track_points)\n\n        self.points = new_track_points\n"
+          }
+        ]
+      }
+    }
+  ]
+}

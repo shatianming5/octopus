@@ -1,0 +1,56 @@
+{
+  "conditional_continuation": "STOP_QUALITY_FAIL",
+  "decision": "QUALITY_FAIL",
+  "gpu_budget": {
+    "charged_infrastructure_seconds": 29.791992219979875,
+    "final_episode_engine_seconds": 100.8631524250377,
+    "initial_authorized_seconds": 1200,
+    "remaining_seconds": 1069.3448553549824,
+    "total_charged_seconds": 130.65514464501757
+  },
+  "infrastructure_attempts": [
+    {
+      "gpu_seconds": 0,
+      "reason": "Initial JSON payload waited for EOF on the bidirectional relay."
+    },
+    {
+      "gpu_seconds_charged": 18,
+      "reason": "Dependency startup logs polluted the JSON-only protocol stdout."
+    },
+    {
+      "gpu_engine_seconds": 11.791992219979875,
+      "reason": "FlashInfer used the wrong CUDA toolkit and failed before the first model action."
+    }
+  ],
+  "model_episode": {
+    "actions": 12,
+    "distinct_actions": 1,
+    "model_patch_bytes": 0,
+    "native_decode_tokens": 540,
+    "native_prefill_tokens": 1892,
+    "repeated_action": {
+      "action": "edit",
+      "path": "lighthouse-core/lib/stack-collector.js",
+      "tool_error": "edit old text must match exactly once"
+    },
+    "solver_status": "complete",
+    "stop_reason": "action_limit"
+  },
+  "natural_contention": {
+    "cache_evictions": 0,
+    "max_simultaneous_scheduler_requests": 1,
+    "necessary_parent_reducer_action": false,
+    "observed": false
+  },
+  "official_evaluation": {
+    "eval_returncode": 0,
+    "fail_to_pass": {
+      "lighthouse-core/test/audits/dobetterweb/js-libraries-test.js": "FAILED"
+    },
+    "grading_wall_seconds": 11.355147524969652,
+    "pass_to_pass": {},
+    "resolved": false,
+    "status": "complete"
+  },
+  "schema": "octopus-lighthouse-quality-final-v1"
+}

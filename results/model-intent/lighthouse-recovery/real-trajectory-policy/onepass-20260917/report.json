@@ -1,0 +1,109 @@
+{
+  "result_id": "cc512518-a1c7-4629-9248-31eb955555f5",
+  "scope_id": "m8-single-pass-real-context-pilot-20260917",
+  "status": "completed",
+  "claim": "finite one-step SFT plumbing pilot only; no generalization, Lighthouse, B7, or quality claim",
+  "source_commit": "8654be8a69a599a531a91623aa7b2010e843151f",
+  "implementation_sha256": "cb47bd42f6c4bc807d4b42846554ef322180fb9845c62d7737e44591e27d8d6a",
+  "data": {
+    "path": "/home/user/octopus-m8-pilot-20260917-c84g1/data/encoded.json",
+    "sha256": "1b35f43ebf43c4ca9881a790d3ed2eaf6519639bd0261641f3049787e4864cff",
+    "train_states": 4,
+    "max_train_tokens": 18284,
+    "target_tokens": 1672
+  },
+  "frozen_recipe": {
+    "path": "/home/user/octopus-m8-pilot-20260917-c84g1/config/frozen-recipe.json",
+    "file_sha256": "169ec0c069dc9e9628260833a169beb014d907b85dce8b1805e1cff0e75ecf6c",
+    "semantic_digest": "428c0453834f145c83e23b21e4f9b18923cae6957e4895ace8c2286d55fc3332",
+    "only_parent_authorized_changes": {
+      "status": ["PROPOSED_NOT_FROZEN_OR_STARTED", "FROZEN_EXECUTION"],
+      "minimum_vram_gib": [48, 46]
+    },
+    "max_steps": 1,
+    "microbatch": 1,
+    "gradient_accumulation": 4,
+    "learning_rate": 0.0002,
+    "seed": 17,
+    "lora_rank": 8,
+    "lora_alpha": 16,
+    "target_modules": ["q_proj", "v_proj"],
+    "precision": "bfloat16",
+    "gradient_checkpointing": "non-reentrant",
+    "attention": "SDPA FLASH_ATTENTION or EFFICIENT_ATTENTION only"
+  },
+  "environment": {
+    "pilot_root": "/home/user/octopus-m8-pilot-20260917-c84g1",
+    "training_python": "/home/user/octopus-m8-pilot-20260917-c84g1/venv/bin/python",
+    "packages": {
+      "torch": "2.13.0",
+      "transformers": "5.12.1",
+      "tokenizers": "0.22.2",
+      "peft": "0.21.0",
+      "accelerate": "1.15.0",
+      "safetensors": "0.8.0"
+    },
+    "base_model_path": "/home/user/octopus-m8-encoding-20260917-8c8163ae/view/97054e70501d79c27499518af5ce613be6278bcb",
+    "base_view_receipt_sha256": "004839150683b8bcad945c7ed247483d284992957222ccb352c5666c20adb92d",
+    "tokenizer_path": "/home/user/octopus-sglang-hicache-138-20260917/tokenizers/snapshots/c03e6d358207e414f1eca0bb1891e29f1db0e242"
+  },
+  "preparation": {
+    "wall_to_training_start_seconds": 542.559,
+    "limit_seconds": 600,
+    "install_elapsed_seconds": 118.941,
+    "failed_full_source_archive_transfer_observed_seconds": 426,
+    "correction": "stopped the broad archive and transferred only published benchmarks/ and src/ paths",
+    "failures_counted": true
+  },
+  "launch_attempts": [
+    {
+      "attempt": 1,
+      "status": "failed_before_python",
+      "gpu_or_model_time_seconds": 0,
+      "error": "setsid permission denied because launch-m8.sh was not executable"
+    },
+    {
+      "attempt": 2,
+      "status": "completed",
+      "launcher_pid": 2230728,
+      "training_pid": 2230732,
+      "gpu_index": 0,
+      "gpu_uuid": "GPU-a4a7a4a7-1cff-3992-8333-1f4784e967e8",
+      "started_at": "2026-09-17T23:59:48.827422845Z",
+      "ended_at": "2026-09-18T00:00:35.507965219Z",
+      "elapsed_seconds": 46.679
+    }
+  ],
+  "training_result": {
+    "run_path": "/home/user/octopus-m8-pilot-20260917-c84g1/run-m8-onepass-c84g1",
+    "global_step": 1,
+    "loss": 1.0115886926651,
+    "gradient_norm": 0.2123,
+    "train_runtime_seconds": 40.0917,
+    "train_samples_per_second": 0.1,
+    "train_steps_per_second": 0.025,
+    "base_parameters_frozen": true,
+    "trainable_parameters": 2523136,
+    "max_cuda_allocated_bytes": 24361150976,
+    "max_cuda_reserved_bytes": 25451036672,
+    "selection": "one final adapter; no checkpoint sweep"
+  },
+  "adapter": {
+    "path": "/home/user/octopus-m8-pilot-20260917-c84g1/run-m8-onepass-c84g1/candidate-adapter",
+    "adapter_model_sha256": "ea0218b7a5bbdb6167dbf3e61156c841a79c7c5e7f0086c2187fa013b0d1b334",
+    "adapter_config_sha256": "ca65d0f5bf1f4af7bd06a599a8b39522b06421c665be150f3d6bbae4b0a9f57b",
+    "adapter_model_bytes": 10107280
+  },
+  "dataowner_paths": {
+    "pilot_run_directory": "/home/user/octopus-m8-pilot-20260917-c84g1/run-m8-onepass-c84g1",
+    "training_python": "/home/user/octopus-m8-pilot-20260917-c84g1/venv/bin/python",
+    "intended_distinct_cpu_merge_output": "/home/user/octopus-m8-pilot-20260917-c84g1/merged-candidate-cpu"
+  },
+  "cleanup": {
+    "owned_processes_remaining": 0,
+    "gpu0_processes_remaining": 0,
+    "adapter_retained": true,
+    "base_model_unchanged": true
+  },
+  "quality": "not evaluated; full B7 remains open"
+}

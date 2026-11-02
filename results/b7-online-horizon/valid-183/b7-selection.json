@@ -1,0 +1,392 @@
+{
+  "schema": "octopus-b7-v1",
+  "source_commit": "e8ad69f76dee9f08c571b420e5fd1ec27a11f25a",
+  "protocol": {
+    "status": "cpu_implementation_frozen_gpu_validation_pending",
+    "base_commit": "ad797ff6090d41b3f45700c90e089b4f6b6337ed",
+    "model_id": "Qwen/Qwen2.5-7B-Instruct",
+    "model_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "generation_seed": 17,
+    "dtype": "bfloat16",
+    "max_model_len": 16384,
+    "max_num_seqs": 8,
+    "max_num_batched_tokens": 8192,
+    "block_size": 16,
+    "capacity_mib": [
+      1024,
+      1536
+    ],
+    "concurrency": [
+      2,
+      4
+    ],
+    "background_rate_rps": 4.0,
+    "background_request_count": 384,
+    "background_target_window_seconds": 96,
+    "background_prompt_tokens": 2048,
+    "background_output_tokens": 32,
+    "foreground_cases": 12,
+    "foreground_intended_seconds": [
+      0,
+      8,
+      16,
+      24,
+      32,
+      40,
+      48,
+      56,
+      64,
+      72,
+      80,
+      88
+    ],
+    "discovery_traffic_seed": 2501,
+    "confirmation_traffic_seeds": [
+      2601,
+      2702,
+      2803,
+      2904
+    ],
+    "max_discovery_traces": 16,
+    "max_confirmation_traces": 16,
+    "max_total_traces": 32,
+    "trace_timeout_seconds": 300,
+    "max_gpu_host_wall_seconds": 10800,
+    "background_gate_relative": 0.05,
+    "foreground_stretch_fraction": 0.1,
+    "foreground_ci": {
+      "kind": "one_sided_paired_student_t",
+      "n": 4,
+      "df": 3,
+      "critical": 2.3533634348018264
+    },
+    "background_ci": {
+      "kind": "paired_circular_moving_block",
+      "block_size": 8,
+      "resamples": 1000,
+      "seed": 17
+    },
+    "methods": [
+      "projected_apc",
+      "b6_semantic_fixed",
+      "b6_semantic_budgeted",
+      "b7_semantic_online"
+    ],
+    "projection_mode": "PREFIX_CAPSULE",
+    "foreground_branches": 4,
+    "branch_output_tokens": 512,
+    "final_output_tokens": 64,
+    "forecast": {
+      "source": "signals-completed-within-trace-stage-ewma-preparation-queue-means-v1",
+      "stage_duration": "Signals EWMA (previous + completed_duration) / 2 by visible GPU branch role",
+      "adoption": "max observed/estimated prerequisite completion + completed preparation mean + completed queue mean * max(1, visible waiting requests)",
+      "ordering": "earliest valid estimated adoption in known-key slots; stable B6 ties; unknown/cold_start/overdue slots unmoved",
+      "selection": "only additional future FREE hash-union keys under max(0,F-native_draw-|Q|)",
+      "learning_scope": "fresh per trace, completed observations only; no arrival tape, caller hints, labels, cross-trace fit, or confirmation tuning"
+    }
+  },
+  "decision": "bounded_no_go",
+  "pairs": [
+    {
+      "capacity_mib": 1024,
+      "concurrency": 2,
+      "candidate": "b7_semantic_online",
+      "matched": true,
+      "all_four_quality": true,
+      "background_gate": {
+        "pass": true,
+        "point": -0.05769757512462226,
+        "upper": -0.04800048944866658
+      },
+      "mechanism": {
+        "real_cap_binding": true,
+        "forecast_provenance": [
+          "signals-completed-within-trace-stage-ewma-preparation-queue-means-v1"
+        ],
+        "causal_ranking_difference_exercised": true,
+        "decision_bearing_adoption_events": 7,
+        "decision_bearing_adopted_tokens": 848,
+        "adoption_counting_unit": "draw-linked block tokens; repeat links across draws are not unique savings",
+        "pass": true
+      },
+      "min_relative_gain": -0.00894276109321579,
+      "online_faster_than_all_three": false,
+      "eligible": false,
+      "stretch_met": false
+    },
+    {
+      "capacity_mib": 1024,
+      "concurrency": 4,
+      "candidate": "b7_semantic_online",
+      "matched": true,
+      "all_four_quality": true,
+      "background_gate": {
+        "pass": true,
+        "point": -0.0543456518993789,
+        "upper": -0.04482074039111641
+      },
+      "mechanism": {
+        "real_cap_binding": true,
+        "forecast_provenance": [
+          "signals-completed-within-trace-stage-ewma-preparation-queue-means-v1"
+        ],
+        "causal_ranking_difference_exercised": true,
+        "decision_bearing_adoption_events": 7,
+        "decision_bearing_adopted_tokens": 1504,
+        "adoption_counting_unit": "draw-linked block tokens; repeat links across draws are not unique savings",
+        "pass": true
+      },
+      "min_relative_gain": -0.017760511956266267,
+      "online_faster_than_all_three": false,
+      "eligible": false,
+      "stretch_met": false
+    },
+    {
+      "capacity_mib": 1536,
+      "concurrency": 2,
+      "candidate": "b7_semantic_online",
+      "matched": true,
+      "all_four_quality": true,
+      "background_gate": {
+        "pass": true,
+        "point": -0.05727403367863981,
+        "upper": -0.02674543206610495
+      },
+      "mechanism": {
+        "real_cap_binding": false,
+        "forecast_provenance": [],
+        "causal_ranking_difference_exercised": false,
+        "decision_bearing_adoption_events": 0,
+        "decision_bearing_adopted_tokens": 0,
+        "adoption_counting_unit": "draw-linked block tokens; repeat links across draws are not unique savings",
+        "pass": false
+      },
+      "min_relative_gain": -0.01295479358845597,
+      "online_faster_than_all_three": false,
+      "eligible": false,
+      "stretch_met": false
+    },
+    {
+      "capacity_mib": 1536,
+      "concurrency": 4,
+      "candidate": "b7_semantic_online",
+      "matched": true,
+      "all_four_quality": true,
+      "background_gate": {
+        "pass": true,
+        "point": -0.06513021305072952,
+        "upper": -0.05472892043570459
+      },
+      "mechanism": {
+        "real_cap_binding": false,
+        "forecast_provenance": [],
+        "causal_ranking_difference_exercised": false,
+        "decision_bearing_adoption_events": 0,
+        "decision_bearing_adopted_tokens": 0,
+        "adoption_counting_unit": "draw-linked block tokens; repeat links across draws are not unique savings",
+        "pass": false
+      },
+      "min_relative_gain": -0.030558574128393357,
+      "online_faster_than_all_three": false,
+      "eligible": false,
+      "stretch_met": false
+    }
+  ],
+  "trace_metrics": {
+    "discovery-1024-c2-2501-b6_semantic_budgeted": {
+      "quality": true,
+      "foreground_correct": 12,
+      "foreground_count": 12,
+      "foreground_mean_e2e_seconds": 50.910951558258,
+      "foreground_total_service_seconds": 276.2093859259039,
+      "background_planned": 384,
+      "background_failed_or_censored": 0,
+      "background_p95_ttft_seconds": 38.97943683630396,
+      "resource_wall_seconds": 165.12611154897604,
+      "cost_per_solved_task_seconds": 23.01744882715866
+    },
+    "discovery-1024-c2-2501-b6_semantic_fixed": {
+      "quality": true,
+      "foreground_correct": 12,
+      "foreground_count": 12,
+      "foreground_mean_e2e_seconds": 51.259273608511045,
+      "foreground_total_service_seconds": 276.83916797785787,
+      "background_planned": 384,
+      "background_failed_or_censored": 0,
+      "background_p95_ttft_seconds": 39.252671252620146,
+      "resource_wall_seconds": 165.82363905000966,
+      "cost_per_solved_task_seconds": 23.069930664821488
+    },
+    "discovery-1024-c2-2501-b7_semantic_online": {
+      "quality": true,
+      "foreground_correct": 12,
+      "foreground_count": 12,
+      "foreground_mean_e2e_seconds": 51.36623603507178,
+      "foreground_total_service_seconds": 278.31288204400335,
+      "background_planned": 384,
+      "background_failed_or_censored": 0,
+      "background_p95_ttft_seconds": 39.91213445546037,
+      "resource_wall_seconds": 171.06209802400554,
+      "cost_per_solved_task_seconds": 23.19274017033361
+    },
+    "discovery-1024-c2-2501-projected_apc": {
+      "quality": true,
+      "foreground_correct": 12,
+      "foreground_count": 12,
+      "foreground_mean_e2e_seconds": 53.76026402675294,
+      "foreground_total_service_seconds": 283.84449915902223,
+      "background_planned": 384,
+      "background_failed_or_censored": 0,
+      "background_p95_ttft_seconds": 42.355971290999136,
+      "resource_wall_seconds": 249.06613132799976,
+      "cost_per_solved_task_seconds": 23.653708263251854
+    },
+    "discovery-1024-c4-2501-b6_semantic_budgeted": {
+      "quality": true,
+      "foreground_correct": 12,
+      "foreground_count": 12,
+      "foreground_mean_e2e_seconds": 38.838647733748076,
+      "foreground_total_service_seconds": 436.7449596649967,
+      "background_planned": 384,
+      "background_failed_or_censored": 0,
+      "background_p95_ttft_seconds": 46.263162125509666,
+      "resource_wall_seconds": 162.1939326809952,
+      "cost_per_solved_task_seconds": 36.39541330541639
+    },
+    "discovery-1024-c4-2501-b6_semantic_fixed": {
+      "quality": true,
+      "foreground_correct": 12,
+      "foreground_count": 12,
+      "foreground_mean_e2e_seconds": 38.90852005498406,
+      "foreground_total_service_seconds": 436.26749529509107,
+      "background_planned": 384,
+      "background_failed_or_censored": 0,
+      "background_p95_ttft_seconds": 46.310483890897416,
+      "resource_wall_seconds": 162.35804615804227,
+      "cost_per_solved_task_seconds": 36.355624607924256
+    },
+    "discovery-1024-c4-2501-b7_semantic_online": {
+      "quality": true,
+      "foreground_correct": 12,
+      "foreground_count": 12,
+      "foreground_mean_e2e_seconds": 39.52844200118852,
+      "foreground_total_service_seconds": 443.4080464798608,
+      "background_planned": 384,
+      "background_failed_or_censored": 0,
+      "background_p95_ttft_seconds": 47.225549885676166,
+      "resource_wall_seconds": 167.71227035997435,
+      "cost_per_solved_task_seconds": 36.9506705399884
+    },
+    "discovery-1024-c4-2501-projected_apc": {
+      "quality": true,
+      "foreground_correct": 12,
+      "foreground_count": 12,
+      "foreground_mean_e2e_seconds": 41.76027595018968,
+      "foreground_total_service_seconds": 463.9076809071121,
+      "background_planned": 384,
+      "background_failed_or_censored": 0,
+      "background_p95_ttft_seconds": 49.93954713001668,
+      "resource_wall_seconds": 166.34990327397827,
+      "cost_per_solved_task_seconds": 38.65897340892601
+    },
+    "discovery-1536-c2-2501-b6_semantic_budgeted": {
+      "quality": true,
+      "foreground_correct": 12,
+      "foreground_count": 12,
+      "foreground_mean_e2e_seconds": 50.02201213108007,
+      "foreground_total_service_seconds": 276.6204565699445,
+      "background_planned": 384,
+      "background_failed_or_censored": 0,
+      "background_p95_ttft_seconds": 39.25341197475309,
+      "resource_wall_seconds": 165.73877641401486,
+      "cost_per_solved_task_seconds": 23.051704714162042
+    },
+    "discovery-1536-c2-2501-b6_semantic_fixed": {
+      "quality": true,
+      "foreground_correct": 12,
+      "foreground_count": 12,
+      "foreground_mean_e2e_seconds": 49.83912178544657,
+      "foreground_total_service_seconds": 276.6086845730315,
+      "background_planned": 384,
+      "background_failed_or_censored": 0,
+      "background_p95_ttft_seconds": 39.212689727830124,
+      "resource_wall_seconds": 165.9400555579923,
+      "cost_per_solved_task_seconds": 23.05072371441929
+    },
+    "discovery-1536-c2-2501-b7_semantic_online": {
+      "quality": true,
+      "foreground_correct": 12,
+      "foreground_count": 12,
+      "foreground_mean_e2e_seconds": 50.48477732080695,
+      "foreground_total_service_seconds": 277.38699622196145,
+      "background_planned": 384,
+      "background_failed_or_censored": 0,
+      "background_p95_ttft_seconds": 39.25749152732371,
+      "resource_wall_seconds": 170.18292241101153,
+      "cost_per_solved_task_seconds": 23.11558301849679
+    },
+    "discovery-1536-c2-2501-projected_apc": {
+      "quality": true,
+      "foreground_correct": 12,
+      "foreground_count": 12,
+      "foreground_mean_e2e_seconds": 53.806650114798686,
+      "foreground_total_service_seconds": 282.5175705400761,
+      "background_planned": 384,
+      "background_failed_or_censored": 0,
+      "background_p95_ttft_seconds": 41.642527022472464,
+      "resource_wall_seconds": 168.2162189729861,
+      "cost_per_solved_task_seconds": 23.543130878339678
+    },
+    "discovery-1536-c4-2501-b6_semantic_budgeted": {
+      "quality": true,
+      "foreground_correct": 12,
+      "foreground_count": 12,
+      "foreground_mean_e2e_seconds": 40.15782593534095,
+      "foreground_total_service_seconds": 448.109392394952,
+      "background_planned": 384,
+      "background_failed_or_censored": 0,
+      "background_p95_ttft_seconds": 47.51783175945868,
+      "resource_wall_seconds": 165.06207083002664,
+      "cost_per_solved_task_seconds": 37.342449366246
+    },
+    "discovery-1536-c4-2501-b6_semantic_fixed": {
+      "quality": true,
+      "foreground_correct": 12,
+      "foreground_count": 12,
+      "foreground_mean_e2e_seconds": 38.47961806357974,
+      "foreground_total_service_seconds": 433.0804099009256,
+      "background_planned": 384,
+      "background_failed_or_censored": 0,
+      "background_p95_ttft_seconds": 46.34307361073933,
+      "resource_wall_seconds": 162.86903784098104,
+      "cost_per_solved_task_seconds": 36.09003415841047
+    },
+    "discovery-1536-c4-2501-b7_semantic_online": {
+      "quality": true,
+      "foreground_correct": 12,
+      "foreground_count": 12,
+      "foreground_mean_e2e_seconds": 39.65550032460791,
+      "foreground_total_service_seconds": 445.19253781606676,
+      "background_planned": 384,
+      "background_failed_or_censored": 0,
+      "background_p95_ttft_seconds": 47.4983513277553,
+      "resource_wall_seconds": 168.15330845100107,
+      "cost_per_solved_task_seconds": 37.0993781513389
+    },
+    "discovery-1536-c4-2501-projected_apc": {
+      "quality": true,
+      "foreground_correct": 12,
+      "foreground_count": 12,
+      "foreground_mean_e2e_seconds": 42.44502544064502,
+      "foreground_total_service_seconds": 467.7104341890081,
+      "background_planned": 384,
+      "background_failed_or_censored": 0,
+      "background_p95_ttft_seconds": 50.80745146632142,
+      "resource_wall_seconds": 167.32644791103667,
+      "cost_per_solved_task_seconds": 38.975869515750674
+    }
+  },
+  "meaningful_valid_mechanism_observed": true,
+  "formal_confirmation": false,
+  "selection_rule": "maximize minimum relative foreground gain versus all three baselines; capacity/concurrency ascending ties; 10% is stretch only"
+}

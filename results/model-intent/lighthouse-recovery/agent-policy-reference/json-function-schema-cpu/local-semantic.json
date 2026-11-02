@@ -1,0 +1,54 @@
+{
+  "schema": "octopus-actor-json-local-semantic-v1",
+  "positive_mappings": {
+    "execute_bash_without_reasoning": {
+      "action": {
+        "action": "search",
+        "path": "stack-packs/packs/react.js",
+        "pattern": "UIStrings"
+      },
+      "reasoning": null
+    },
+    "finish_with_reasoning": {
+      "action": {
+        "action": "done"
+      },
+      "reasoning": "Developer verification passed."
+    },
+    "editor_view_typed_range": {
+      "action": {
+        "action": "view",
+        "path": "stack-packs/packs/react.js",
+        "start": 1,
+        "count": 200,
+        "view_range": [
+          1,
+          -1
+        ]
+      },
+      "reasoning": null
+    },
+    "editor_create_multiline_quotes": {
+      "action": {
+        "action": "write",
+        "path": "example.js",
+        "content": "const message = \"quoted\";\nmodule.exports = message;"
+      },
+      "reasoning": "Create the visible source file."
+    },
+    "editor_replace_multiline_quotes": {
+      "action": {
+        "action": "edit",
+        "path": "example.js",
+        "old": "const message = \"quoted\";",
+        "new": "const message = \"updated\";"
+      },
+      "reasoning": null
+    }
+  },
+  "schema_valid_semantic_invalid_pipeline": {
+    "schema_expectation": "accept",
+    "bounded_parser_expectation": "reject",
+    "bounded_parser_error": "OpenHandsProtocolError: only one supported command is allowed; no shell operators or pipelines"
+  }
+}

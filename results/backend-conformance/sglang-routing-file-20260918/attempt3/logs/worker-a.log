@@ -1,0 +1,22 @@
+
+Multi-thread loading shards:   0% Completed | 0/4 [00:00<?, ?it/s]
+Multi-thread loading shards:  25% Completed | 1/4 [00:00<00:02,  1.43it/s]
+Multi-thread loading shards:  50% Completed | 2/4 [00:01<00:01,  1.49it/s]
+Multi-thread loading shards:  75% Completed | 3/4 [00:01<00:00,  1.61it/s]
+Multi-thread loading shards: 100% Completed | 4/4 [00:02<00:00,  2.13it/s]
+Multi-thread loading shards: 100% Completed | 4/4 [00:02<00:00,  1.86it/s]
+{"worker_url": "http://127.0.0.1:30101", "worker_id": "f86434a5666a4d40be6c4436f688587d"}
+[2026-09-18 08:28:28] Subprocess detokenizer (pid=2234815) crashed with exit code -15. Triggering SIGQUIT for cleanup...
+[2026-09-18 08:28:28] SIGQUIT received. signum=None, frame=None. It usually means one child failed.
+[2026-09-18 08:28:33] No live scheduler processes found; skipping py-spy and CUDA coredump.
+Exception in thread octopus-backend-pump:
+Traceback (most recent call last):
+  File "/home/user/octopus-sglang-conformance-138-20260917/runtime-python/lib/python3.12/threading.py", line 1075, in _bootstrap_inner
+    self.run()
+  File "/home/user/octopus-sglang-conformance-138-20260917/runtime-python/lib/python3.12/threading.py", line 1012, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/user/octopus-sglang-routing-138-20260917/attempt3/source/src/octopus/routing_worker.py", line 305, in _pump
+    self.backend.close()
+  File "/home/user/octopus-sglang-routing-138-20260917/attempt3/source/src/octopus/sglang_backend.py", line 676, in close
+    raise RuntimeError(f"SGLang worker exited with status {self._process.returncode}")
+RuntimeError: SGLang worker exited with status -9

@@ -1,0 +1,20 @@
+{
+  "schema": "octopus-lighthouse-base-improved-policy-counterfactual-v1",
+  "before_model_outputs": true,
+  "claim": "Isolate the effect of the new recovery adapter on real-task reasoning under the already implemented failure-aware, deliberative, measured-feedback policy.",
+  "reference_freeze": "../counted-feedback/freeze.json",
+  "task": "GoogleChrome__lighthouse-10176",
+  "only_scientific_delta": "Unmerged original Qwen2.5-7B-Instruct weights instead of the merged recovery LoRA. All task, protocol, prompt, schema, tool and evaluator settings remain identical.",
+  "source_commit": "ef248280b6ad4c7fa854093932f02e9779dd72ae",
+  "model_episodes_max": 1,
+  "phase_gpu_seconds_max": 1200,
+  "max_actions": 12,
+  "generation_seed": 17,
+  "training_runs_added": 0,
+  "action_rewriting": false,
+  "extra_model_calls": 0,
+  "quality_gate": "Original official resolved=true; a changed action trajectory alone is not success.",
+  "interpretation": "A difference concerns the recovery adapter under this improved policy, not the already completed original-protocol base versus branch-choice adapter comparison. No broad model incapability or training-effect generalization follows from one task.",
+  "stop": "One completed episode or real execution/budget blocker. Preserve all negative outcomes; no output-driven rerun or recipe tuning in this treatment.",
+  "authorization_context": "User explicitly approved this single improved-policy base comparison on 2026-09-15 after requesting continued blocker repair and PR25 review/merge. This result is separate from the already frozen PR25 head."
+}

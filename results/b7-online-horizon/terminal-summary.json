@@ -1,0 +1,100 @@
+{
+  "schema": "octopus-b7-final-summary-v1",
+  "source_commit": "e8ad69f76dee9f08c571b420e5fd1ec27a11f25a",
+  "decision": "bounded_no_go",
+  "formal_confirmation_executed": false,
+  "attempts": {
+    "actual_process_attempts": 20,
+    "valid_scientific_selectors": 16,
+    "invalid_infrastructure_starts": 4
+  },
+  "valid_epoch": {
+    "host": "198.51.100.10:20183",
+    "gpu_index": 2,
+    "gpu_uuid": "GPU-53e85207-9c8d-91f6-ba27-992fff75dc7f",
+    "observed_active_utilization_percent": 100,
+    "observed_physical_memory_used_mib": 18150,
+    "physical_memory_total_mib": 49140,
+    "frozen_kv_cache_capacity_mib": [
+      1024,
+      1536
+    ],
+    "discovery_completed": 16,
+    "discovery_failed": 0,
+    "confirmation_completed": 0,
+    "resource_wall_seconds": 2987.8704828580376,
+    "resource_wall_definition": "Sum of parent-measured valid child subprocess wall, not outer-driver elapsed time."
+  },
+  "denominators": {
+    "foreground_correct": 192,
+    "foreground_total": 192,
+    "background_complete": 6144,
+    "background_total": 6144,
+    "background_failed_or_censored": 0
+  },
+  "mechanism": {
+    "meaningful_valid_mechanism_observed": true,
+    "binding_points": [
+      {
+        "capacity_mib": 1024,
+        "concurrency": 2,
+        "decision_bearing_adoption_events": 7,
+        "draw_linked_adopted_tokens": 848
+      },
+      {
+        "capacity_mib": 1024,
+        "concurrency": 4,
+        "decision_bearing_adoption_events": 7,
+        "draw_linked_adopted_tokens": 1504
+      }
+    ]
+  },
+  "accounting": {
+    "cap_seconds": 10800,
+    "child_ledger": {
+      "definition": "Parent-measured subprocess wall including startup/teardown; excludes enclosing driver work and gaps.",
+      "resource_collision_seconds": 12.247993414988741,
+      "instrumentation_seconds": 85.65851533302339,
+      "failed_initialization_seconds": 97.90650874801213,
+      "valid_seconds": 2987.8704828580376,
+      "total_seconds": 3085.7769916060497,
+      "all_inclusive_host_wall": false
+    },
+    "outer_driver": {
+      "definition": "Supervisor-confirmed sum of five execution-epoch intervals from whole-second UTC timestamps; excludes between-epoch setup/migration and later replay/transfer/publication.",
+      "valid_started_at": "2026-09-10T15:01:18Z",
+      "valid_finished_at": "2026-09-10T15:59:55Z",
+      "valid_interval_seconds_approx": 3517,
+      "failed_intervals_seconds_approx": [12, 39, 26, 22],
+      "failed_total_seconds_approx": 99,
+      "combined_seconds_approx": 3616,
+      "timestamp_truncation_allowance_seconds": 5,
+      "conservative_upper_seconds": 3621,
+      "remaining_at_least_seconds": 7179
+    },
+    "execute_loop": {
+      "definition": "Current-phase monotonic campaign_start covers subprocesses/startup/inter-trace validation/gaps, excluding freeze/plan before execute and reporter after execute.",
+      "exact_elapsed_seconds": null,
+      "exact_elapsed_persisted": false,
+      "child_timeout_seconds": 300
+    },
+    "actual_run_below_cap": true,
+    "further_gpu_work_authorized": false
+  },
+  "raw_evidence": {
+    "remote_path": "/mnt/ssd1/user/octopus-b7-campaign-183",
+    "ssh_host": "198.51.100.10",
+    "ssh_port": 20183,
+    "ssh_user": "user",
+    "access": "Owner-authorized SSH access required; not a public download.",
+    "valid_raw_files": 16,
+    "valid_raw_bytes": 8840254804,
+    "local_inventory": "valid-183/raw-inventory.json",
+    "local_hashes": "valid-183/RAW_SHA256SUMS"
+  },
+  "cleanup": {
+    "active_b7_processes": 0,
+    "temporary_transfer_keys": 0,
+    "unrelated_processes_signaled": 0
+  }
+}

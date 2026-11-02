@@ -1,0 +1,322 @@
+{
+  "schema": "octopus-b6-v1",
+  "source_commit": "4d00650be7143c5aa4d32045c7da6d28a261fd02",
+  "protocol": {
+    "status": "cpu_implementation_frozen_gpu_validation_pending",
+    "base_commit": "9de0ecd3a6059386ae4e0a090ceb02250211124f",
+    "model_id": "Qwen/Qwen2.5-7B-Instruct",
+    "model_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "generation_seed": 17,
+    "dtype": "bfloat16",
+    "max_model_len": 16384,
+    "max_num_seqs": 8,
+    "max_num_batched_tokens": 8192,
+    "block_size": 16,
+    "capacity_mib": [
+      1024,
+      1536,
+      2048
+    ],
+    "background_rate_rps": [
+      1.0,
+      4.0
+    ],
+    "background_target_window_seconds": 96,
+    "background_prompt_tokens": 2048,
+    "background_output_tokens": 32,
+    "foreground_cases": 12,
+    "foreground_intended_seconds": [
+      0,
+      8,
+      16,
+      24,
+      32,
+      40,
+      48,
+      56,
+      64,
+      72,
+      80,
+      88
+    ],
+    "discovery_traffic_seed": 1501,
+    "confirmation_traffic_seeds": [
+      1601,
+      1702,
+      1803,
+      1904
+    ],
+    "max_discovery_traces": 24,
+    "max_confirmation_traces": 16,
+    "max_total_traces": 40,
+    "trace_timeout_seconds": 300,
+    "max_gpu_host_wall_seconds": 10800,
+    "background_gate_relative": 0.05,
+    "foreground_stretch_fraction": 0.1,
+    "foreground_ci": {
+      "kind": "one_sided_paired_student_t",
+      "n": 4,
+      "df": 3,
+      "critical": 2.3533634348018264
+    },
+    "background_ci": {
+      "kind": "paired_circular_moving_block",
+      "block_size": 8,
+      "resamples": 1000,
+      "seed": 17
+    },
+    "methods": [
+      "projected_apc",
+      "b6_queue_aware",
+      "b6_semantic_fixed",
+      "b6_semantic_budgeted"
+    ],
+    "projection_mode": "PREFIX_CAPSULE",
+    "foreground_branches": 4,
+    "branch_output_tokens": 512,
+    "final_output_tokens": 64,
+    "b7_authorized": false
+  },
+  "discovery_selectors": [
+    {
+      "phase": "discovery",
+      "block": 0,
+      "position": 0,
+      "method": "projected_apc",
+      "capacity_mib": 1024,
+      "background_rate_rps": 1.0,
+      "traffic_seed": 1501,
+      "trace_id": "discovery-1024-1-1501-projected_apc"
+    },
+    {
+      "phase": "discovery",
+      "block": 0,
+      "position": 1,
+      "method": "b6_queue_aware",
+      "capacity_mib": 1024,
+      "background_rate_rps": 1.0,
+      "traffic_seed": 1501,
+      "trace_id": "discovery-1024-1-1501-b6_queue_aware"
+    },
+    {
+      "phase": "discovery",
+      "block": 0,
+      "position": 2,
+      "method": "b6_semantic_fixed",
+      "capacity_mib": 1024,
+      "background_rate_rps": 1.0,
+      "traffic_seed": 1501,
+      "trace_id": "discovery-1024-1-1501-b6_semantic_fixed"
+    },
+    {
+      "phase": "discovery",
+      "block": 0,
+      "position": 3,
+      "method": "b6_semantic_budgeted",
+      "capacity_mib": 1024,
+      "background_rate_rps": 1.0,
+      "traffic_seed": 1501,
+      "trace_id": "discovery-1024-1-1501-b6_semantic_budgeted"
+    },
+    {
+      "phase": "discovery",
+      "block": 1,
+      "position": 0,
+      "method": "b6_queue_aware",
+      "capacity_mib": 1024,
+      "background_rate_rps": 4.0,
+      "traffic_seed": 1501,
+      "trace_id": "discovery-1024-4-1501-b6_queue_aware"
+    },
+    {
+      "phase": "discovery",
+      "block": 1,
+      "position": 1,
+      "method": "b6_semantic_fixed",
+      "capacity_mib": 1024,
+      "background_rate_rps": 4.0,
+      "traffic_seed": 1501,
+      "trace_id": "discovery-1024-4-1501-b6_semantic_fixed"
+    },
+    {
+      "phase": "discovery",
+      "block": 1,
+      "position": 2,
+      "method": "b6_semantic_budgeted",
+      "capacity_mib": 1024,
+      "background_rate_rps": 4.0,
+      "traffic_seed": 1501,
+      "trace_id": "discovery-1024-4-1501-b6_semantic_budgeted"
+    },
+    {
+      "phase": "discovery",
+      "block": 1,
+      "position": 3,
+      "method": "projected_apc",
+      "capacity_mib": 1024,
+      "background_rate_rps": 4.0,
+      "traffic_seed": 1501,
+      "trace_id": "discovery-1024-4-1501-projected_apc"
+    },
+    {
+      "phase": "discovery",
+      "block": 2,
+      "position": 0,
+      "method": "b6_semantic_fixed",
+      "capacity_mib": 1536,
+      "background_rate_rps": 1.0,
+      "traffic_seed": 1501,
+      "trace_id": "discovery-1536-1-1501-b6_semantic_fixed"
+    },
+    {
+      "phase": "discovery",
+      "block": 2,
+      "position": 1,
+      "method": "b6_semantic_budgeted",
+      "capacity_mib": 1536,
+      "background_rate_rps": 1.0,
+      "traffic_seed": 1501,
+      "trace_id": "discovery-1536-1-1501-b6_semantic_budgeted"
+    },
+    {
+      "phase": "discovery",
+      "block": 2,
+      "position": 2,
+      "method": "projected_apc",
+      "capacity_mib": 1536,
+      "background_rate_rps": 1.0,
+      "traffic_seed": 1501,
+      "trace_id": "discovery-1536-1-1501-projected_apc"
+    },
+    {
+      "phase": "discovery",
+      "block": 2,
+      "position": 3,
+      "method": "b6_queue_aware",
+      "capacity_mib": 1536,
+      "background_rate_rps": 1.0,
+      "traffic_seed": 1501,
+      "trace_id": "discovery-1536-1-1501-b6_queue_aware"
+    },
+    {
+      "phase": "discovery",
+      "block": 3,
+      "position": 0,
+      "method": "b6_semantic_budgeted",
+      "capacity_mib": 1536,
+      "background_rate_rps": 4.0,
+      "traffic_seed": 1501,
+      "trace_id": "discovery-1536-4-1501-b6_semantic_budgeted"
+    },
+    {
+      "phase": "discovery",
+      "block": 3,
+      "position": 1,
+      "method": "projected_apc",
+      "capacity_mib": 1536,
+      "background_rate_rps": 4.0,
+      "traffic_seed": 1501,
+      "trace_id": "discovery-1536-4-1501-projected_apc"
+    },
+    {
+      "phase": "discovery",
+      "block": 3,
+      "position": 2,
+      "method": "b6_queue_aware",
+      "capacity_mib": 1536,
+      "background_rate_rps": 4.0,
+      "traffic_seed": 1501,
+      "trace_id": "discovery-1536-4-1501-b6_queue_aware"
+    },
+    {
+      "phase": "discovery",
+      "block": 3,
+      "position": 3,
+      "method": "b6_semantic_fixed",
+      "capacity_mib": 1536,
+      "background_rate_rps": 4.0,
+      "traffic_seed": 1501,
+      "trace_id": "discovery-1536-4-1501-b6_semantic_fixed"
+    },
+    {
+      "phase": "discovery",
+      "block": 4,
+      "position": 0,
+      "method": "projected_apc",
+      "capacity_mib": 2048,
+      "background_rate_rps": 1.0,
+      "traffic_seed": 1501,
+      "trace_id": "discovery-2048-1-1501-projected_apc"
+    },
+    {
+      "phase": "discovery",
+      "block": 4,
+      "position": 1,
+      "method": "b6_queue_aware",
+      "capacity_mib": 2048,
+      "background_rate_rps": 1.0,
+      "traffic_seed": 1501,
+      "trace_id": "discovery-2048-1-1501-b6_queue_aware"
+    },
+    {
+      "phase": "discovery",
+      "block": 4,
+      "position": 2,
+      "method": "b6_semantic_fixed",
+      "capacity_mib": 2048,
+      "background_rate_rps": 1.0,
+      "traffic_seed": 1501,
+      "trace_id": "discovery-2048-1-1501-b6_semantic_fixed"
+    },
+    {
+      "phase": "discovery",
+      "block": 4,
+      "position": 3,
+      "method": "b6_semantic_budgeted",
+      "capacity_mib": 2048,
+      "background_rate_rps": 1.0,
+      "traffic_seed": 1501,
+      "trace_id": "discovery-2048-1-1501-b6_semantic_budgeted"
+    },
+    {
+      "phase": "discovery",
+      "block": 5,
+      "position": 0,
+      "method": "b6_queue_aware",
+      "capacity_mib": 2048,
+      "background_rate_rps": 4.0,
+      "traffic_seed": 1501,
+      "trace_id": "discovery-2048-4-1501-b6_queue_aware"
+    },
+    {
+      "phase": "discovery",
+      "block": 5,
+      "position": 1,
+      "method": "b6_semantic_fixed",
+      "capacity_mib": 2048,
+      "background_rate_rps": 4.0,
+      "traffic_seed": 1501,
+      "trace_id": "discovery-2048-4-1501-b6_semantic_fixed"
+    },
+    {
+      "phase": "discovery",
+      "block": 5,
+      "position": 2,
+      "method": "b6_semantic_budgeted",
+      "capacity_mib": 2048,
+      "background_rate_rps": 4.0,
+      "traffic_seed": 1501,
+      "trace_id": "discovery-2048-4-1501-b6_semantic_budgeted"
+    },
+    {
+      "phase": "discovery",
+      "block": 5,
+      "position": 3,
+      "method": "projected_apc",
+      "capacity_mib": 2048,
+      "background_rate_rps": 4.0,
+      "traffic_seed": 1501,
+      "trace_id": "discovery-2048-4-1501-projected_apc"
+    }
+  ]
+}

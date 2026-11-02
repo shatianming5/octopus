@@ -1,0 +1,16 @@
+{
+  "schema": "octopus-lighthouse-serial-jest-v1",
+  "before_model_outputs": true,
+  "claim": "Bound default developer-test concurrency so the existing model receives code feedback instead of a Jest worker-spawn EAGAIN failure.",
+  "reference_freeze": "../action-only-chat/freeze.json",
+  "task": "GoogleChrome__lighthouse-10176",
+  "method_delta": "Only test tool execution changes: prepend --runInBand when the requested yarn jest argv has no explicit worker setting. Preserve requested arguments, selectors and failure-memory action identity. Expose effective_args in the observation.",
+  "model_episodes_max": 1,
+  "phase_gpu_seconds_max": 1200,
+  "training_runs_added": 0,
+  "model_action_rewriting": false,
+  "fixed_conditions": "Same C03 coding checkpoint, action_only, chat_turns_v1, failure_aware_v2, bounded_v1, raw source, counted edit feedback, 12 actions, 512 output tokens, seed17, BF16, original evaluator. No test-selection or patch hints.",
+  "quality_gate": "Original official resolved=true. Resource-safe test feedback, fewer repeats or a nonempty patch alone is not PASS.",
+  "stop": "One terminal episode or execution/budget blocker. Do not retune the frozen recovery recipe or open multibranch without official quality.",
+  "authorization_context": "Continued authorized same-task root-cause repair of the observed developer-test resource failure."
+}

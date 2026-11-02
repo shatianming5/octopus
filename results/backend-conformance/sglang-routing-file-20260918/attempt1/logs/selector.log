@@ -1,0 +1,20 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/mnt/disk5/user/octopus-sglang-routing-138-20260917/source/src/octopus/gateway_driver.py", line 322, in <module>
+    main()
+  File "/mnt/disk5/user/octopus-sglang-routing-138-20260917/source/src/octopus/gateway_driver.py", line 312, in main
+    asyncio.run(serve(connection, options))
+  File "/home/user/octopus-sglang-conformance-138-20260917/runtime-python/lib/python3.12/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-conformance-138-20260917/runtime-python/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-conformance-138-20260917/runtime-python/lib/python3.12/asyncio/base_events.py", line 691, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/mnt/disk5/user/octopus-sglang-routing-138-20260917/source/src/octopus/gateway_driver.py", line 292, in serve
+    raise RuntimeError("remote owner cleanup incomplete: " + "; ".join(errors))
+RuntimeError: remote owner cleanup incomplete: http://127.0.0.1:30101: HTTP Error 500: Internal Server Error
+/home/user/octopus-sglang-routing-138-20260917/results/routing-conformance.json: failed

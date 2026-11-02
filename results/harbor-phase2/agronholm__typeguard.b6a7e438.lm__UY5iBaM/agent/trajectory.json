@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "agronholm__typeguard.b6a7e438.lm__UY5iBaM__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "[Bug]: Unable to create local class instance with typeguard\n\n### Bug summary\n\nI'm encountering an issue when trying to create an instance of a local class in a function that's decorated with `@typechecked`. The code works fine without the decorator, but fails when the decorator is applied.\n\n### Code for reproduction\n\n```python\nfrom typeguard import typechecked\n\ndef create_local_class_instance():\n    class Inner:\n        def __init__(self):\n            self.value = \"test\"\n    \n    return Inner()\n\n# Works fine\ninstance = create_local_class_instance()\nprint(instance.value)  # Prints \"test\"\n\n# Fails\n@typechecked\ndef create_local_class_instance_with_typechecked():\n    class Inner:\n        def __init__(self):\n            self.value = \"test\"\n    \n    return Inner()\n\ninstance = create_local_class_instance_with_typechecked()  # This fails\n```\n\n### Actual outcome\n\nWhen trying to create an instance of a local class in a function decorated with `@typechecked`, the code fails. The exact error message varies depending on the context, but it seems related to the transformation of the AST by the typeguard transformer.\n\n### Expected outcome\n\nThe code should work the same way with or without the `@typechecked` decorator. I should be able to create and return an instance of a local class from a function decorated with `@typechecked`.\n\n### Additional information\n\nThis issue appears to be related to how typeguard processes annotations and transforms the AST. The problem specifically occurs when dealing with local classes defined within functions that are decorated with `@typechecked`.\n\n### Operating system\n\nLinux\n\n### Python version\n\n3.10\n\n### Installation\n\npip"
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll start by inspecting the repository structure and reproducing the local-class + `@typechecked` failure.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-c529ddef-9528-4289-bc51-b7dd373f4b8a-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && cat /testbed/README.md 2>/dev/null | head -100; cat /testbed/pyproject.toml 2>/dev/null || cat /testbed/setup.py 2>/dev/null | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-c529ddef-9528-4289-bc51-b7dd373f4b8a-0",
+            "content": "total 52\ndrwxr-xr-x 1 root root 4096 Sep 22 17:05 .\ndrwxr-xr-x 1 root root 4096 Sep 22 17:05 ..\ndrwxr-xr-x 8 root root 4096 Jul 12  2025 .git\ndrwxr-xr-x 3 root root 4096 Jul 12  2025 .github\n-rw-r--r-- 1 root root  157 Jul 12  2025 .gitignore\n-rw-rw-r-- 1 1005 1005    0 Sep 22 15:44 .gitkeep\n-rw-r--r-- 1 root root  939 Jul 12  2025 .pre-commit-config.yaml\n-rw-r--r-- 1 root root  220 Jul 12  2025 .readthedocs.yml\n-rw-r--r-- 1 root root 1130 Jul 12  2025 LICENSE\n-rw-r--r-- 1 root root 2131 Jul 12  2025 README.rst\ndrwxr-xr-x 2 root root 4096 Jul 12  2025 docs\n-rw-r--r-- 1 root root 2725 Jul 12  2025 pyproject.toml\ndrwxr-xr-x 4 root root 4096 Jul 12  2025 src\ndrwxr-xr-x 3 root root 4096 Jul 12  2025 tests\n[build-system]\nrequires = [\n    \"setuptools >= 64\",\n    \"setuptools_scm[toml] >= 6.4\"\n]\nbuild-backend = \"setuptools.build_meta\"\n\n[project]\nname = \"typeguard\"\ndescription = \"Run-time type checker for Python\"\nreadme = \"README.rst\"\nauthors = [{name = \"Alex Grönholm\", email = \"alex.gronholm@nextday.fi\"}]\nlicense = {text = \"MIT\"}\nclassifiers = [\n    \"Development Status :: 5 - Production/Stable\",\n    \"Intended Audience :: Developers\",\n    \"License :: OSI Approved :: MIT License\",\n    \"Programming Language :: Python\",\n    \"Programming Language :: Python :: 3\",\n    \"Programming Language :: Python :: 3.9\",\n    \"Programming Language :: Python :: 3.10\",\n    \"Programming Language :: Python :: 3.11\",\n    \"Programming Language :: Python :: 3.12\",\n    \"Programming Language :: Python :: 3.13\",\n]\nrequires-python = \">= 3.9\"\ndependencies = [\n    \"importlib_metadata >= 3.6; python_version < '3.10'\",\n    \"typing_extensions >= 4.10.0\",\n]\ndynamic = [\"version\"]\n\n[project.urls]\nDocumentation = \"https://typeguard.readthedocs.io/en/latest/\"\n\"Change log\" = \"https://typeguard.readthedocs.io/en/latest/versionhistory.html\"\n\"Source code\" = \"https://github.com/agronholm/typeguard\"\n\"Issue tracker\" = \"https://github.com/agronholm/typeguard/issues\"\n\n[project.optional-dependencies]\ntest = [\n    \"coverage[toml] >= 7\",\n    \"pytest >= 7\",\n    'mypy >= 1.2.0; python_implementation != \"PyPy\"',\n]\ndoc = [\n    \"packaging\",\n    \"Sphinx >= 7\",\n    \"sphinx-autodoc-typehints >= 1.2.0\",\n    \"sphinx-rtd-theme >= 1.3.0\",\n]\n\n[project.entry-points]\npytest11 = {typeguard = \"typeguard._pytest_plugin\"}\n\n[tool.setuptools.package-data]\ntypeguard = [\"py.typed\"]\n\n[tool.setuptools_scm]\nversion_scheme = \"post-release\"\nlocal_scheme = \"dirty-tag\"\n\n[tool.pytest.ini_options]\naddopts = \"--tb=short\"\ntestpaths = \"tests\"\nxfail_strict = true\nfilterwarnings = [\"error\"]\n\n[tool.coverage.run]\nsource = [\"typeguard\"]\n\n[tool.coverage.report]\nshow_missing = true\nexclude_lines = [\n    \"pragma: no cover\",\n    \"if TYPE_CHECKING:\"\n]\n\n[tool.ruff]\nsrc = [\"src\"]\n\n[tool.ruff.lint]\nextend-select = [\n    \"B0\",           # flake8-bugbear\n    \"I\",            # isort\n    \"PGH\",          # pygrep-hooks\n    \"UP\",           # pyupgrade\n    \"W\",            # pycodestyle warnings\n]\nignore = [\n    \"S307\",\n    \"B008\",\n    \"UP006\",\n    \"UP035\",\n]\n\n[tool.mypy]\npython_version = \"3.11\"\nstrict = true\npretty = true\n\n[tool.tox]\nenv_list = [\"py39\", \"py310\", \"py311\", \"py312\", \"py313\"]\nskip_missing_interpreters = true\n\n[tool.tox.env_run_base]\ncommands = [[\"coverage\", \"run\", \"-m\", \"pytest\", { replace = \"posargs\", extend = true }]]\npackage = \"editable\"\nextras = [\"test\"]\n\n[tool.tox.env.docs]\ndepends = []\nextras = [\"doc\"]\ncommands = [[\"sphinx-build\", \"-W\", \"-n\", \"docs\", \"build/sphinx\"]]\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-f98cf5dd-90a5-4b6a-88bb-6cdcd27d876d-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed/src/typeguard /testbed/tests && git -C /testbed log --oneline -20 && git -C /testbed status && cat /testbed/README.rst | head -50"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-f98cf5dd-90a5-4b6a-88bb-6cdcd27d876d-1",
+            "content": " root  9069 Jul 12  2025 _decorators.py\n-rw-r--r-- 1 root root  1121 Jul 12  2025 _exceptions.py\n-rw-r--r-- 1 root root 10221 Jul 12  2025 _functions.py\n-rw-r--r-- 1 root root  6389 Jul 12  2025 _importhook.py\n-rw-r--r-- 1 root root  1303 Jul 12  2025 _memo.py\n-rw-r--r-- 1 root root  4416 Jul 12  2025 _pytest_plugin.py\n-rw-r--r-- 1 root root  2266 Jul 12  2025 _suppression.py\n-rw-r--r-- 1 root root 44220 Jul 12  2025 _transformer.py\n-rw-r--r-- 1 root root  1072 Jul 12  2025 _union_transformer.py\n-rw-r--r-- 1 root root  5145 Jul 12  2025 _utils.py\n-rw-r--r-- 1 root root     0 Jul 12  2025 py.typed\n\n/testbed/tests:\ntotal 192\ndrwxr-xr-x 3 root root  4096 Jul 12  2025 .\ndrwxr-xr-x 1 root root  4096 Sep 22 17:05 ..\n-rw-r--r-- 1 root root   889 Jul 12  2025 __init__.py\n-rw-r--r-- 1 root root  1044 Jul 12  2025 conftest.py\n-rw-r--r-- 1 root root  6600 Jul 12  2025 dummymodule.py\ndrwxr-xr-x 2 root root  4096 Jul 12  2025 mypy\n-rw-r--r-- 1 root root 46369 Jul 12  2025 test_checkers.py\n-rw-r--r-- 1 root root  2218 Jul 12  2025 test_importhook.py\n-rw-r--r-- 1 root root 10931 Jul 12  2025 test_instrumentation.py\n-rw-r--r-- 1 root root   718 Jul 12  2025 test_plugins.py\n-rw-r--r-- 1 root root  2528 Jul 12  2025 test_pytest_plugin.py\n-rw-r--r-- 1 root root  1395 Jul 12  2025 test_suppression.py\n-rw-r--r-- 1 root root 55804 Jul 12  2025 test_transformer.py\n-rw-r--r-- 1 root root 18245 Jul 12  2025 test_typechecked.py\n-rw-r--r-- 1 root root  1534 Jul 12  2025 test_union_transformer.py\n-rw-r--r-- 1 root root   703 Jul 12  2025 test_utils.py\n-rw-r--r-- 1 root root   887 Jul 12  2025 test_warn_on_error.py\n82efa7f Initial commit\nOn branch main\nYour branch is up to date with 'origin/main'.\n\nUntracked files:\n  (use \"git add <file>...\" to include in what will be committed)\n\t.gitkeep\n\nnothing added to commit but untracked files present (use \"git add\" to track)\n.. image:: https://github.com/agronholm/typeguard/actions/workflows/test.yml/badge.svg\n  :target: https://github.com/agronholm/typeguard/actions/workflows/test.yml\n  :alt: Build Status\n.. image:: https://coveralls.io/repos/agronholm/typeguard/badge.svg?branch=master&service=github\n  :target: https://coveralls.io/github/agronholm/typeguard?branch=master\n  :alt: Code Coverage\n.. image:: https://readthedocs.org/projects/typeguard/badge/?version=latest\n  :target: https://typeguard.readthedocs.io/en/latest/?badge=latest\n  :alt: Documentation\n\nThis library provides run-time type checking for functions defined with\n`PEP 484 <https://www.python.org/dev/peps/pep-0484/>`_ argument (and return) type\nannotations, and any arbitrary objects. It can be used together with static type\ncheckers as an additional layer of type safety, to catch type violations that could only\nbe detected at run time.\n\nTwo principal ways to do type checking are provided:\n\n#. The ``check_type`` function:\n\n   * like ``isinstance()``, but supports arbitrary type annotations (within limits)\n   * can be used as a ``cast()`` replacement, but with actual checking of the value\n#. Code instrumentation:\n\n   * entire modules, or individual functions (via ``@typechecked``) are recompiled, with\n     type checking code injected into them\n   * automatically checks function arguments, return values and assignments to annotated\n     local variables\n   * for generator functions (regular and async), checks yield and send values\n   * requires the original source code of the instrumented module(s) to be accessible\n\nTwo options are provided for code instrumentation:\n\n#. the ``@typechecked`` function:\n\n   * can be applied to functions individually\n#. the import hook (``typeguard.install_import_hook()``):\n\n   * automatically instruments targeted modules on import\n   * no manual code changes required in the target modules\n   * requires the import hook to be installed before the targeted modules are imported\n   * may clash with other import hooks\n\nSee the documentation_ for further information.\n\n.. _documentation: https://typeguard.readthedocs.io/en/latest/\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-ad77d1eb-b484-4673-96cf-3865a02c212d-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cd /testbed && python -c \"\nfrom typeguard import typechecked\n\ndef create_local_class_instance():\n    class Inner:\n        def __init__(self):\n            self.value = 'test'\n    \n    return Inner()\n\ninstance = create_local_class_instance()\nprint(instance.value)\n\n@typechecked\ndef create_local_class_instance_with_typechecked():\n    class Inner:\n        def __init__(self):\n            self.value = 'test'\n    \n    return Inner()\n\ninstance = create_local_class_instance_with_typechecked()\nprint(instance.value)\n\""
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-ad77d1eb-b484-4673-96cf-3865a02c212d-2",
+            "content": "Traceback (most recent call last):\n  File \"<string>\", line 2, in <module>\nModuleNotFoundError: No module named 'typeguard'\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-f8d3e227-eabf-4841-a01b-1950d5e1cb30-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cd /testbed && pip install -e \".[test]\" -q && python -c \"\nfrom typeguard import typechecked\n\ndef create_local_class_instance():\n    class Inner:\n        def __init__(self):\n            self.value = 'test'\n    \n    return Inner()\n\ninstance = create_local_class_instance()\nprint('without decorator:', instance.value)\n\n@typechecked\ndef create_local_class_instance_with_typechecked():\n    class Inner:\n        def __init__(self):\n            self.value = 'test'\n    \n    return Inner()\n\ninstance = create_local_class_instance_with_typechecked()\nprint('with decorator:', instance.value)\n\""
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-f8d3e227-eabf-4841-a01b-1950d5e1cb30-3",
+            "content": "WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv\nTraceback (most recent call last):\n  File \"<string>\", line 14, in <module>\n  File \"/testbed/src/typeguard/_decorators.py\", line 221, in typechecked\n    retval = instrument(target)\n             ^^^^^^^^^^^^^^^^^^\n  File \"/testbed/src/typeguard/_decorators.py\", line 69, in instrument\n    module_source = inspect.getsource(sys.modules[f.__module__])\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/miniconda3/lib/python3.12/inspect.py\", line 1282, in getsource\n    lines, lnum = getsourcelines(object)\n                  ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/miniconda3/lib/python3.12/inspect.py\", line 1264, in getsourcelines\n    lines, lnum = findsource(object)\n                  ^^^^^^^^^^^^^^^^^^\n  File \"/opt/miniconda3/lib/python3.12/inspect.py\", line 1075, in findsource\n    file = getsourcefile(object)\n           ^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/miniconda3/lib/python3.12/inspect.py\", line 952, in getsourcefile\n    filename = getfile(object)\n               ^^^^^^^^^^^^^^^\n  File \"/opt/miniconda3/lib/python3.12/inspect.py\", line 913, in getfile\n    raise TypeError('{!r} is a built-in module'.format(object))\nTypeError: <module '__main__' (<class '_frozen_importlib.BuiltinImporter'>)> is a built-in module\nwithout decorator: test\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-533a5b48-6943-46c1-b901-fa77f7e131f8-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cd /tmp && cat > test_local_class.py << 'EOF'\nfrom typeguard import typechecked\n\ndef create_local_class_instance():\n    class Inner:\n        def __init__(self):\n            self.value = \"test\"\n    \n    return Inner()\n\n# Works fine\ninstance = create_local_class_instance()\nprint(\"without decorator:\", instance.value)\n\n# Fails\n@typechecked\ndef create_local_class_instance_with_typechecked():\n    class Inner:\n        def __init__(self):\n            self.value = \"test\"\n    \n    return Inner()\n\ninstance = create_local_class_instance_with_typechecked()\nprint(\"with decorator:\", instance.value)\nEOF\npython /tmp/test_local_class.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-533a5b48-6943-46c1-b901-fa77f7e131f8-4",
+            "content": "without decorator: test\nwith decorator: test\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-4fc888a2-ef31-4bf1-9ef7-e98024b9e26b-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cd /tmp && cat > test_local_class2.py << 'EOF'\nfrom typeguard import typechecked\nfrom typing import Any\n\n@typechecked\ndef create_local_class_instance_with_typechecked() -> Any:\n    class Inner:\n        def __init__(self):\n            self.value = \"test\"\n    \n    return Inner()\n\ninstance = create_local_class_instance_with_typechecked()\nprint(\"with decorator:\", instance.value)\n\n@typechecked\ndef create_local_class_with_annotations():\n    class Inner:\n        value: str\n        \n        def __init__(self, value: str) -> None:\n            self.value = value\n    \n    return Inner(\"test\")\n\ninstance = create_local_class_with_annotations()\nprint(\"with annotations:\", instance.value)\n\n@typechecked\ndef create_nested():\n    class Inner:\n        class Nested:\n            def __init__(self):\n                self.value = \"nested\"\n        def __init__(self):\n            self.n = self.Nested()\n    return Inner()\n\ninstance = create_nested()\nprint(\"nested:\", instance.n.value)\nEOF\npython /tmp/test_local_class2.py\necho \"---\"\n# Try with typechecked on the class methods\ncat > test_local_class3.py << 'EOF'\nfrom typeguard import typechecked\n\n@typechecked\ndef foo():\n    @typechecked\n    class Inner:\n        def __init__(self, x: int):\n            self.x = x\n    return Inner(1)\n\nprint(foo().x)\nEOF\npython /tmp/test_local_class3.py\necho \"---\"\ncat > test_local_class4.py << 'EOF'\nfrom typeguard import typechecked\n\n@typechecked\ndef foo() -> object:\n    class Inner:\n        def bar(self) -> int:\n            return 1\n    return Inner()\n\nprint(foo().bar())\nEOF\npython /tmp/test_local_class4.py\n"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-4fc888a2-ef31-4bf1-9ef7-e98024b9e26b-5",
+            "content": "with decorator: test\nwith annotations: test\nnested: nested\n---\n1\n---\n1\n"
+          }
+        ]
+      }
+    }
+  ]
+}

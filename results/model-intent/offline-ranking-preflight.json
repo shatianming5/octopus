@@ -1,0 +1,70 @@
+{
+  "schema": "octopus-model-intent-offline-preflight-v1",
+  "status": "blocked_pending_branch_baseline_definition",
+  "label": "sum of selected_parent_tokens for actual later foreground consumers",
+  "observed_input_fact": "the same definite-consumer parent work is available to b6_semantic_value",
+  "induced_label_equivalent_baseline": "rank checkpoints by the sum of that runtime-available work",
+  "actual_runtime_policy_branch_score": "not defined or evaluated; b6_semantic_value ranks per-block marginal ancestor bundles",
+  "required_model_gain_percentage_points": 10,
+  "source_commit": "beb50062f7bf9603f2b4ec657072c8ff763559ee",
+  "cohorts": [
+    {
+      "name": "r2",
+      "source": "/home/user/octopus-r2-runtime-final-20260913/launch-inputs/four-arm-freeze.json",
+      "sha256": "b7e991aa4d5f97ebd43a5529fb66e05186d14174ac796c5c499fbdb00021c5bb",
+      "schema": "octopus-qasper-kv-recurring-bg-424-v1",
+      "candidates": [
+        {
+          "checkpoint_id": "c5ea4da3c760ba89194ad807bc1ef60e1761429f",
+          "paper_id": "1602.07563",
+          "later_consumers": 2,
+          "label_prefill_tokens": 26131,
+          "definite_consumer_parent_work_tokens": 26131
+        },
+        {
+          "checkpoint_id": "e6204daf4efeb752fdbd5c26e179efcb8ddd2807",
+          "paper_id": "1601.03313",
+          "later_consumers": 2,
+          "label_prefill_tokens": 17889,
+          "definite_consumer_parent_work_tokens": 17889
+        },
+        {
+          "checkpoint_id": "55bafa0f7394163f4afd1d73340aac94c2d9f36c",
+          "paper_id": "1603.00957",
+          "later_consumers": 2,
+          "label_prefill_tokens": 13930,
+          "definite_consumer_parent_work_tokens": 13930
+        },
+        {
+          "checkpoint_id": "7239c02a0dcc0c3c9d9cddb5e895bcf9cfcefee6",
+          "paper_id": "1602.03483",
+          "later_consumers": 2,
+          "label_prefill_tokens": 9993,
+          "definite_consumer_parent_work_tokens": 9993
+        }
+      ],
+      "non_tied_pairs": 6,
+      "induced_label_equivalent_correct_pairs": 6,
+      "induced_label_equivalent_pairwise_accuracy": 1.0,
+      "maximum_model_gain_against_induced_baseline_percentage_points": 0.0
+    },
+    {
+      "name": "r3",
+      "source": "/home/user/octopus-r3-confirmation-beb50062/launch-inputs/r3-four-seed-freeze.json",
+      "sha256": "8c767b5fda755e5ec9976979b1b9110e2535c13c9b07c412725cff5bb832aee8",
+      "schema": "octopus-qasper-kv-recurring-bg-424-v1",
+      "same_candidates_and_labels_as": "r2",
+      "non_tied_pairs": 6,
+      "induced_label_equivalent_correct_pairs": 6,
+      "induced_label_equivalent_pairwise_accuracy": 1.0,
+      "maximum_model_gain_against_induced_baseline_percentage_points": 0.0
+    }
+  ],
+  "gates": {
+    "model_pairwise_accuracy_at_least_60_percent": "not_run",
+    "model_gain_over_runtime_at_least_10_percentage_points": "undefined_until_branch_runtime_baseline_is_frozen",
+    "later_used_prefix_recall_at_least_80_percent": "not_run"
+  },
+  "decision": "do_not_run_model_or_gpu_until_s1_baseline_is_defined",
+  "reason": "A label-equivalent baseline induced from runtime-available definite-consumer work is already 100%, while the actual per-block runtime policy has no defined branch scalar in S1. A history-only baseline would be a different ablation. The shipped Interface also does not target arbitrary background-history prefixes."
+}

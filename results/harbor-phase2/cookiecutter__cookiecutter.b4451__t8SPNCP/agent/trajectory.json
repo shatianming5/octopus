@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "cookiecutter__cookiecutter.b4451__t8SPNCP__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# Hook script error messages are not preserved\n\n## Description\n\nWhen a hook script fails in Cookiecutter, the original error message is lost and replaced with a generic message. This makes debugging hook script failures much more difficult.\n\nFor example, if I have a hook script that fails with a specific error message:\n\n```python\n#!/usr/bin/env python\n# pre_gen_project.py\nimport sys\nprint(\"Missing shebang in script\")\nsys.exit(1)\n```\n\nWhen this hook fails, instead of seeing the original error message \"Missing shebang in script\", I get a generic error:\n\n```\npre_gen_project hook script failed\n```\n\nThe same issue occurs with other types of errors. For instance, if a hook script fails with an \"Out of memory\" error, the error message is replaced with the generic \"pre_gen_project hook script failed\" instead of preserving the original error message.\n\n## Steps to reproduce\n\n1. Create a template with a failing hook script (either Python or shell)\n2. Make the hook script fail with a specific error message\n3. Try to generate a project using this template\n4. Observe that the original error message is lost and replaced with a generic message\n\nThis makes debugging hook script failures much more difficult since the actual error message that would help diagnose the issue is not shown to the user."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository structure and locate how hook script failures are handled.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-23a74725-1635-4bee-a332-87b587c62ab8-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -100 && cat /testbed/README.md 2>/dev/null | head -50"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-23a74725-1635-4bee-a332-87b587c62ab8-0",
+            "content": "s/repository/test_determine_repo_dir_clones_repo.py\n/testbed/tests/repository/test_determine_repo_dir_finds_existing_cookiecutter.py\n/testbed/tests/repository/test_determine_repo_dir_finds_subdirectories.py\n/testbed/tests/test_main.py\n/testbed/tests/test-pyhooks/hooks/post_gen_project.py\n/testbed/tests/test-pyhooks/hooks/pre_prompt.py\n/testbed/tests/test-pyhooks/hooks/pre_gen_project.py\n/testbed/tests/test_utils.py\n/testbed/tests/test_custom_extensions_in_hooks.py\n/testbed/tests/replay/test_replay.py\n/testbed/tests/replay/test_dump.py\n/testbed/tests/replay/test_load.py\n/testbed/tests/replay/conftest.py\n/testbed/tests/test_read_user_dict.py\n/testbed/tests/test_repo_not_found.py\n/testbed/tests/test_specify_output_dir.py\n/testbed/tests/test_hooks.py\n/testbed/tests/undefined-variable/dir-name/{{cookiecutter.project_slug}}/{{cookiecutter.foobar}}/helloworld.py\n/testbed/tests/test_find.py\n/testbed/setup.py\n/testbed/cookiecutter/prompt.py\n/testbed/cookiecutter/main.py\n/testbed/cookiecutter/generate.py\n/testbed/cookiecutter/exceptions.py\n/testbed/cookiecutter/extensions.py\n/testbed/cookiecutter/__main__.py\n/testbed/cookiecutter/__init__.py\n/testbed/cookiecutter/log.py\n/testbed/cookiecutter/config.py\n/testbed/cookiecutter/environment.py\n/testbed/cookiecutter/find.py\n/testbed/cookiecutter/vcs.py\n/testbed/cookiecutter/hooks.py\n/testbed/cookiecutter/repository.py\n/testbed/cookiecutter/utils.py\n/testbed/cookiecutter/cli.py\n/testbed/cookiecutter/zipfile.py\n/testbed/cookiecutter/replay.py\n/testbed/docs/conf.py\n/testbed/docs/__init__.py\n<h1 align=\"center\">\n    <img alt=\"cookiecutter Logo\" width=\"200px\" src=\"https://raw.githubusercontent.com/cookiecutter/cookiecutter/3ac078356adf5a1a72042dfe72ebfa4a9cd5ef38/logo/cookiecutter_medium.png\">\n</h1>\n\n<div align=\"center\">\n\n[![pypi](https://img.shields.io/pypi/v/cookiecutter.svg)](https://pypi.org/project/cookiecutter/)\n[![python](https://img.shields.io/pypi/pyversions/cookiecutter.svg)](https://pypi.org/project/cookiecutter/)\n[![Build Status](https://github.com/cookiecutter/cookiecutter/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/cookiecutter/cookiecutter/actions)\n[![codecov](https://codecov.io/gh/cookiecutter/cookiecutter/branch/main/graphs/badge.svg?branch=main)](https://codecov.io/github/cookiecutter/cookiecutter?branch=main)\n[![discord](https://img.shields.io/badge/Discord-cookiecutter-5865F2?style=flat&logo=discord&logoColor=white)](https://discord.gg/9BrxzPKuEW)\n[![docs](https://readthedocs.org/projects/cookiecutter/badge/?version=latest)](https://readthedocs.org/projects/cookiecutter/?badge=latest)\n[![Code Quality](https://img.shields.io/scrutinizer/g/cookiecutter/cookiecutter.svg)](https://scrutinizer-ci.com/g/cookiecutter/cookiecutter/?branch=main)\n\n</div>\n\n# Cookiecutter\n\nCreate projects swiftly from **cookiecutters** (project templates) with this command-line utility. Ideal for generating Python package projects and more.\n\n- [Documentation](https://cookiecutter.readthedocs.io)\n- [GitHub](https://github.com/cookiecutter/cookiecutter)\n- [PyPI](https://pypi.org/project/cookiecutter/)\n- [License (BSD)](https://github.com/cookiecutter/cookiecutter/blob/main/LICENSE)\n\n## Installation\n\nInstall cookiecutter using pip package manager:\n```\n# pipx is strongly recommended.\npipx install cookiecutter\n\n# If pipx is not an option,\n# you can install cookiecutter in your Python user directory.\npython -m pip install --user cookiecutter\n```\n\n## Features\n\n- **Cross-Platform:** Supports Windows, Mac, and Linux.\n- **User-Friendly:** No Python knowledge required.\n- **Versatile:** Compatible with Python 3.7 to 3.12.\n- **Multi-Language Support:** Use templates in any language or markup format.\n\n### For Users\n\n#### Quick Start\n\nThe recommended way to use Cookiecutter as a command line utility is to run it with [`pipx`](https://pypa.github.io/pipx/), which can be installed with `pip install pipx`, but if you plan to use Cookiecutter programmatically, please run `pip install cookiecutter`.\n\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-932b6f5f-a1f9-4ae5-a262-76dc2ba8f151-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/cookiecutter/hooks.py && echo \"==== EXCEPTIONS ====\" && cat /testbed/cookiecutter/exceptions.py && echo \"==== TEST HOOKS ====\" && cat /testbed/tests/test_hooks.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-932b6f5f-a1f9-4ae5-a262-76dc2ba8f151-1",
+            "content": "y before running hook.\"\"\"\n        hooks.run_script(os.path.join(self.hooks_path, self.post_hook), 'tests')\n        assert os.path.isfile('tests/shell_post.txt')\n        assert 'tests' not in os.getcwd()\n\n    def test_run_script_with_context(self) -> None:\n        \"\"\"Execute a hook script, passing a context.\"\"\"\n        hook_path = os.path.join(self.hooks_path, 'post_gen_project.sh')\n\n        if sys.platform.startswith('win'):\n            post = 'post_gen_project.bat'\n            with Path(self.hooks_path, post).open('w') as f:\n                f.write(\"@echo off\\n\")\n                f.write(\"\\n\")\n                f.write(\"echo post generation hook\\n\")\n                f.write(\"echo. >{{cookiecutter.file}}\\n\")\n        else:\n            with Path(hook_path).open('w') as fh:\n                fh.write(\"#!/bin/bash\\n\")\n                fh.write(\"\\n\")\n                fh.write(\"echo 'post generation hook';\\n\")\n                fh.write(\"touch 'shell_post.txt'\\n\")\n                fh.write(\"touch '{{cookiecutter.file}}'\\n\")\n                os.chmod(hook_path, os.stat(hook_path).st_mode | stat.S_IXUSR)\n\n        hooks.run_script_with_context(\n            os.path.join(self.hooks_path, self.post_hook),\n            'tests',\n            {'cookiecutter': {'file': 'context_post.txt'}},\n        )\n        assert os.path.isfile('tests/context_post.txt')\n        assert 'tests' not in os.getcwd()\n\n    def test_run_hook(self) -> None:\n        \"\"\"Execute hook from specified template in specified output \\\n        directory.\"\"\"\n        tests_dir = os.path.join(self.repo_path, 'input{{hooks}}')\n        with utils.work_in(self.repo_path):\n            hooks.run_hook('pre_gen_project', tests_dir, {})\n            assert os.path.isfile(os.path.join(tests_dir, 'python_pre.txt'))\n            assert os.path.isfile(os.path.join(tests_dir, 'shell_pre.txt'))\n\n            hooks.run_hook('post_gen_project', tests_dir, {})\n            assert os.path.isfile(os.path.join(tests_dir, 'shell_post.txt'))\n\n    def test_run_failing_hook(self) -> None:\n        \"\"\"Test correct exception raise if hook exit code is not zero.\"\"\"\n        hook_path = os.path.join(self.hooks_path, 'pre_gen_project.py')\n        tests_dir = os.path.join(self.repo_path, 'input{{hooks}}')\n\n        with Path(hook_path).open('w') as f:\n            f.write(\"#!/usr/bin/env python\\n\")\n            f.write(\"import sys; sys.exit(1)\\n\")\n\n        with utils.work_in(self.repo_path):\n            with pytest.raises(exceptions.FailedHookException) as excinfo:\n                hooks.run_hook('pre_gen_project', tests_dir, {})\n            assert 'Hook script failed' in str(excinfo.value)\n\n\n@pytest.fixture()\ndef dir_with_hooks(tmp_path):\n    \"\"\"Yield a directory that contains hook backup files.\"\"\"\n    hooks_dir = tmp_path.joinpath('hooks')\n    hooks_dir.mkdir()\n\n    pre_hook_content = textwrap.dedent(\n        \"\"\"\n        #!/usr/bin/env python\n        # -*- coding: utf-8 -*-\n        print('pre_gen_project.py~')\n        \"\"\"\n    )\n    pre_gen_hook_file = hooks_dir.joinpath('pre_gen_project.py~')\n    pre_gen_hook_file.write_text(pre_hook_content, encoding='utf8')\n\n    post_hook_content = textwrap.dedent(\n        \"\"\"\n        #!/usr/bin/env python\n        # -*- coding: utf-8 -*-\n        print('post_gen_project.py~')\n        \"\"\"\n    )\n\n    post_gen_hook_file = hooks_dir.joinpath('post_gen_project.py~')\n    post_gen_hook_file.write_text(post_hook_content, encoding='utf8')\n\n    # Make sure to yield the parent directory as `find_hooks()`\n    # looks into `hooks/` in the current working directory\n    yield str(tmp_path)\n\n    pre_gen_hook_file.unlink()\n    post_gen_hook_file.unlink()\n\n\ndef test_ignore_hook_backup_files(monkeypatch, dir_with_hooks) -> None:\n    \"\"\"Test `find_hook` correctly use `valid_hook` verification function.\"\"\"\n    # Change the current working directory that contains `hooks/`\n    monkeypatch.chdir(dir_with_hooks)\n    assert hooks.find_hook('pre_gen_project') is None\n    assert hooks.find_hook('post_gen_project') is None\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-6bdd680c-9f1e-4d14-84e8-525fd99e6e50-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/cookiecutter/hooks.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-6bdd680c-9f1e-4d14-84e8-525fd99e6e50-2",
+            "content": "\"\"\"\n    run_thru_shell = sys.platform.startswith('win')\n    if script_path.endswith('.py'):\n        script_command = [sys.executable, script_path]\n    else:\n        script_command = [script_path]\n\n    utils.make_executable(script_path)\n\n    try:\n        proc = subprocess.Popen(script_command, shell=run_thru_shell, cwd=cwd)  # nosec\n        exit_status = proc.wait()\n        if exit_status != EXIT_SUCCESS:\n            msg = f'Hook script failed (exit status: {exit_status})'\n            raise FailedHookException(msg)\n    except OSError as err:\n        if err.errno == errno.ENOEXEC:\n            msg = 'Hook script failed, might be an empty file or missing a shebang'\n            raise FailedHookException(msg) from err\n        msg = f'Hook script failed (error: {err})'\n        raise FailedHookException(msg) from err\n\n\ndef run_script_with_context(\n    script_path: Path | str, cwd: Path | str, context: dict[str, Any]\n) -> None:\n    \"\"\"Execute a script after rendering it with Jinja.\n\n    :param script_path: Absolute path to the script to run.\n    :param cwd: The directory to run the script from.\n    :param context: Cookiecutter project template context.\n    \"\"\"\n    _, extension = os.path.splitext(script_path)\n\n    contents = Path(script_path).read_text(encoding='utf-8')\n\n    with tempfile.NamedTemporaryFile(delete=False, mode='wb', suffix=extension) as temp:\n        env = create_env_with_context(context)\n        template = env.from_string(contents)\n        output = template.render(**context)\n        temp.write(output.encode('utf-8'))\n\n    run_script(temp.name, cwd)\n\n\ndef run_hook(hook_name: str, project_dir: Path | str, context: dict[str, Any]) -> None:\n    \"\"\"\n    Try to find and execute a hook from the specified project directory.\n\n    :param hook_name: The hook to execute.\n    :param project_dir: The directory to execute the script from.\n    :param context: Cookiecutter project context.\n    \"\"\"\n    scripts = find_hook(hook_name)\n    if not scripts:\n        logger.debug('No %s hook found', hook_name)\n        return\n    logger.debug('Running hook %s', hook_name)\n    for script in scripts:\n        run_script_with_context(script, project_dir, context)\n\n\ndef run_hook_from_repo_dir(\n    repo_dir: Path | str,\n    hook_name: str,\n    project_dir: Path | str,\n    context: dict[str, Any],\n    delete_project_on_failure: bool,\n) -> None:\n    \"\"\"Run hook from repo directory, clean project directory if hook fails.\n\n    :param repo_dir: Project template input directory.\n    :param hook_name: The hook to execute.\n    :param project_dir: The directory to execute the script from.\n    :param context: Cookiecutter project context.\n    :param delete_project_on_failure: Delete the project directory on hook\n        failure?\n    \"\"\"\n    with work_in(repo_dir):\n        try:\n            run_hook(hook_name, project_dir, context)\n        except (\n            FailedHookException,\n            UndefinedError,\n        ):\n            if delete_project_on_failure:\n                rmtree(project_dir)\n            logger.exception(\n                \"Stopping generation because %s hook \"\n                \"script didn't exit successfully\",\n                hook_name,\n            )\n            raise\n\n\ndef run_pre_prompt_hook(repo_dir: Path | str) -> Path | str:\n    \"\"\"Run pre_prompt hook from repo directory.\n\n    :param repo_dir: Project template input directory.\n    \"\"\"\n    # Check if we have a valid pre_prompt script\n    with work_in(repo_dir):\n        scripts = find_hook('pre_prompt')\n        if not scripts:\n            return repo_dir\n\n    # Create a temporary directory\n    repo_dir = create_tmp_repo_dir(repo_dir)\n    with work_in(repo_dir):\n        scripts = find_hook('pre_prompt') or []\n        for script in scripts:\n            try:\n                run_script(script, str(repo_dir))\n            except FailedHookException as e:  # noqa: PERF203\n                msg = 'Pre-Prompt Hook script failed'\n                raise FailedHookException(msg) from e\n    return repo_dir\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-64d48ed8-21c7-4d74-803e-d074fece4682-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "wc -l /testbed/cookiecutter/hooks.py && echo \"==== FULL HOOKS ====\" && cat -n /testbed/cookiecutter/hooks.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-64d48ed8-21c7-4d74-803e-d074fece4682-3",
+            "content": "e FailedHookException(msg) from err\n   104\t        msg = f'Hook script failed (error: {err})'\n   105\t        raise FailedHookException(msg) from err\n   106\t\n   107\t\n   108\tdef run_script_with_context(\n   109\t    script_path: Path | str, cwd: Path | str, context: dict[str, Any]\n   110\t) -> None:\n   111\t    \"\"\"Execute a script after rendering it with Jinja.\n   112\t\n   113\t    :param script_path: Absolute path to the script to run.\n   114\t    :param cwd: The directory to run the script from.\n   115\t    :param context: Cookiecutter project template context.\n   116\t    \"\"\"\n   117\t    _, extension = os.path.splitext(script_path)\n   118\t\n   119\t    contents = Path(script_path).read_text(encoding='utf-8')\n   120\t\n   121\t    with tempfile.NamedTemporaryFile(delete=False, mode='wb', suffix=extension) as temp:\n   122\t        env = create_env_with_context(context)\n   123\t        template = env.from_string(contents)\n   124\t        output = template.render(**context)\n   125\t        temp.write(output.encode('utf-8'))\n   126\t\n   127\t    run_script(temp.name, cwd)\n   128\t\n   129\t\n   130\tdef run_hook(hook_name: str, project_dir: Path | str, context: dict[str, Any]) -> None:\n   131\t    \"\"\"\n   132\t    Try to find and execute a hook from the specified project directory.\n   133\t\n   134\t    :param hook_name: The hook to execute.\n   135\t    :param project_dir: The directory to execute the script from.\n   136\t    :param context: Cookiecutter project context.\n   137\t    \"\"\"\n   138\t    scripts = find_hook(hook_name)\n   139\t    if not scripts:\n   140\t        logger.debug('No %s hook found', hook_name)\n   141\t        return\n   142\t    logger.debug('Running hook %s', hook_name)\n   143\t    for script in scripts:\n   144\t        run_script_with_context(script, project_dir, context)\n   145\t\n   146\t\n   147\tdef run_hook_from_repo_dir(\n   148\t    repo_dir: Path | str,\n   149\t    hook_name: str,\n   150\t    project_dir: Path | str,\n   151\t    context: dict[str, Any],\n   152\t    delete_project_on_failure: bool,\n   153\t) -> None:\n   154\t    \"\"\"Run hook from repo directory, clean project directory if hook fails.\n   155\t\n   156\t    :param repo_dir: Project template input directory.\n   157\t    :param hook_name: The hook to execute.\n   158\t    :param project_dir: The directory to execute the script from.\n   159\t    :param context: Cookiecutter project context.\n   160\t    :param delete_project_on_failure: Delete the project directory on hook\n   161\t        failure?\n   162\t    \"\"\"\n   163\t    with work_in(repo_dir):\n   164\t        try:\n   165\t            run_hook(hook_name, project_dir, context)\n   166\t        except (\n   167\t            FailedHookException,\n   168\t            UndefinedError,\n   169\t        ):\n   170\t            if delete_project_on_failure:\n   171\t                rmtree(project_dir)\n   172\t            logger.exception(\n   173\t                \"Stopping generation because %s hook \"\n   174\t                \"script didn't exit successfully\",\n   175\t                hook_name,\n   176\t            )\n   177\t            raise\n   178\t\n   179\t\n   180\tdef run_pre_prompt_hook(repo_dir: Path | str) -> Path | str:\n   181\t    \"\"\"Run pre_prompt hook from repo directory.\n   182\t\n   183\t    :param repo_dir: Project template input directory.\n   184\t    \"\"\"\n   185\t    # Check if we have a valid pre_prompt script\n   186\t    with work_in(repo_dir):\n   187\t        scripts = find_hook('pre_prompt')\n   188\t        if not scripts:\n   189\t            return repo_dir\n   190\t\n   191\t    # Create a temporary directory\n   192\t    repo_dir = create_tmp_repo_dir(repo_dir)\n   193\t    with work_in(repo_dir):\n   194\t        scripts = find_hook('pre_prompt') or []\n   195\t        for script in scripts:\n   196\t            try:\n   197\t                run_script(script, str(repo_dir))\n   198\t            except FailedHookException as e:  # noqa: PERF203\n   199\t                msg = 'Pre-Prompt Hook script failed'\n   200\t                raise FailedHookException(msg) from e\n   201\t    return repo_dir\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "The beginning of `hooks.py` was truncated. I'll pull the rest of the source and related tests next.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-863a98a0-af04-4887-ad8b-9738c8195612-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "head -n 110 /testbed/cookiecutter/hooks.py && echo \"==== GIT LOG ====\" && cd /testbed && git log --oneline -20 && echo \"==== GIT STATUS ====\" && git status && echo \"==== EXCEPTIONS ====\" && cat /testbed/cookiecutter/exceptions.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-863a98a0-af04-4887-ad8b-9738c8195612-4",
+            "content": "  \"\"\"\n    Base exception class.\n\n    All Cookiecutter-specific exceptions should subclass this class.\n    \"\"\"\n\n\nclass NonTemplatedInputDirException(CookiecutterException):\n    \"\"\"\n    Exception for when a project's input dir is not templated.\n\n    The name of the input directory should always contain a string that is\n    rendered to something else, so that input_dir != output_dir.\n    \"\"\"\n\n\nclass UnknownTemplateDirException(CookiecutterException):\n    \"\"\"\n    Exception for ambiguous project template directory.\n\n    Raised when Cookiecutter cannot determine which directory is the project\n    template, e.g. more than one dir appears to be a template dir.\n    \"\"\"\n\n    # unused locally\n\n\nclass MissingProjectDir(CookiecutterException):\n    \"\"\"\n    Exception for missing generated project directory.\n\n    Raised during cleanup when remove_repo() can't find a generated project\n    directory inside of a repo.\n    \"\"\"\n\n    # unused locally\n\n\nclass ConfigDoesNotExistException(CookiecutterException):\n    \"\"\"\n    Exception for missing config file.\n\n    Raised when get_config() is passed a path to a config file, but no file\n    is found at that path.\n    \"\"\"\n\n\nclass InvalidConfiguration(CookiecutterException):\n    \"\"\"\n    Exception for invalid configuration file.\n\n    Raised if the global configuration file is not valid YAML or is\n    badly constructed.\n    \"\"\"\n\n\nclass UnknownRepoType(CookiecutterException):\n    \"\"\"\n    Exception for unknown repo types.\n\n    Raised if a repo's type cannot be determined.\n    \"\"\"\n\n\nclass VCSNotInstalled(CookiecutterException):\n    \"\"\"\n    Exception when version control is unavailable.\n\n    Raised if the version control system (git or hg) is not installed.\n    \"\"\"\n\n\nclass ContextDecodingException(CookiecutterException):\n    \"\"\"\n    Exception for failed JSON decoding.\n\n    Raised when a project's JSON context file can not be decoded.\n    \"\"\"\n\n\nclass OutputDirExistsException(CookiecutterException):\n    \"\"\"\n    Exception for existing output directory.\n\n    Raised when the output directory of the project exists already.\n    \"\"\"\n\n\nclass EmptyDirNameException(CookiecutterException):\n    \"\"\"\n    Exception for a empty directory name.\n\n    Raised when the directory name provided is empty.\n    \"\"\"\n\n\nclass InvalidModeException(CookiecutterException):\n    \"\"\"\n    Exception for incompatible modes.\n\n    Raised when cookiecutter is called with both `no_input==True` and\n    `replay==True` at the same time.\n    \"\"\"\n\n\nclass FailedHookException(CookiecutterException):\n    \"\"\"\n    Exception for hook failures.\n\n    Raised when a hook script fails.\n    \"\"\"\n\n\nclass UndefinedVariableInTemplate(CookiecutterException):\n    \"\"\"\n    Exception for out-of-scope variables.\n\n    Raised when a template uses a variable which is not defined in the\n    context.\n    \"\"\"\n\n    def __init__(\n        self, message: str, error: TemplateError, context: dict[str, Any]\n    ) -> None:\n        \"\"\"Exception for out-of-scope variables.\"\"\"\n        self.message = message\n        self.error = error\n        self.context = context\n\n    def __str__(self) -> str:\n        \"\"\"Text representation of UndefinedVariableInTemplate.\"\"\"\n        return (\n            f\"{self.message}. \"\n            f\"Error message: {self.error.message}. \"\n            f\"Context: {self.context}\"\n        )\n\n\nclass UnknownExtension(CookiecutterException):\n    \"\"\"\n    Exception for un-importable extension.\n\n    Raised when an environment is unable to import a required extension.\n    \"\"\"\n\n\nclass RepositoryNotFound(CookiecutterException):\n    \"\"\"\n    Exception for missing repo.\n\n    Raised when the specified cookiecutter repository doesn't exist.\n    \"\"\"\n\n\nclass RepositoryCloneFailed(CookiecutterException):\n    \"\"\"\n    Exception for un-cloneable repo.\n\n    Raised when a cookiecutter template can't be cloned.\n    \"\"\"\n\n\nclass InvalidZipRepository(CookiecutterException):\n    \"\"\"\n    Exception for bad zip repo.\n\n    Raised when the specified cookiecutter repository isn't a valid\n    Zip archive.\n    \"\"\"\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-57f195ab-3b4c-4ec2-a465-bc7f470b4a63-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "python3 -c \"\nwith open('/testbed/cookiecutter/hooks.py') as f:\n    print(f.read())\n\""
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-57f195ab-3b4c-4ec2-a465-bc7f470b4a63-5",
+            "content": "\"\"\n    run_thru_shell = sys.platform.startswith('win')\n    if script_path.endswith('.py'):\n        script_command = [sys.executable, script_path]\n    else:\n        script_command = [script_path]\n\n    utils.make_executable(script_path)\n\n    try:\n        proc = subprocess.Popen(script_command, shell=run_thru_shell, cwd=cwd)  # nosec\n        exit_status = proc.wait()\n        if exit_status != EXIT_SUCCESS:\n            msg = f'Hook script failed (exit status: {exit_status})'\n            raise FailedHookException(msg)\n    except OSError as err:\n        if err.errno == errno.ENOEXEC:\n            msg = 'Hook script failed, might be an empty file or missing a shebang'\n            raise FailedHookException(msg) from err\n        msg = f'Hook script failed (error: {err})'\n        raise FailedHookException(msg) from err\n\n\ndef run_script_with_context(\n    script_path: Path | str, cwd: Path | str, context: dict[str, Any]\n) -> None:\n    \"\"\"Execute a script after rendering it with Jinja.\n\n    :param script_path: Absolute path to the script to run.\n    :param cwd: The directory to run the script from.\n    :param context: Cookiecutter project template context.\n    \"\"\"\n    _, extension = os.path.splitext(script_path)\n\n    contents = Path(script_path).read_text(encoding='utf-8')\n\n    with tempfile.NamedTemporaryFile(delete=False, mode='wb', suffix=extension) as temp:\n        env = create_env_with_context(context)\n        template = env.from_string(contents)\n        output = template.render(**context)\n        temp.write(output.encode('utf-8'))\n\n    run_script(temp.name, cwd)\n\n\ndef run_hook(hook_name: str, project_dir: Path | str, context: dict[str, Any]) -> None:\n    \"\"\"\n    Try to find and execute a hook from the specified project directory.\n\n    :param hook_name: The hook to execute.\n    :param project_dir: The directory to execute the script from.\n    :param context: Cookiecutter project context.\n    \"\"\"\n    scripts = find_hook(hook_name)\n    if not scripts:\n        logger.debug('No %s hook found', hook_name)\n        return\n    logger.debug('Running hook %s', hook_name)\n    for script in scripts:\n        run_script_with_context(script, project_dir, context)\n\n\ndef run_hook_from_repo_dir(\n    repo_dir: Path | str,\n    hook_name: str,\n    project_dir: Path | str,\n    context: dict[str, Any],\n    delete_project_on_failure: bool,\n) -> None:\n    \"\"\"Run hook from repo directory, clean project directory if hook fails.\n\n    :param repo_dir: Project template input directory.\n    :param hook_name: The hook to execute.\n    :param project_dir: The directory to execute the script from.\n    :param context: Cookiecutter project context.\n    :param delete_project_on_failure: Delete the project directory on hook\n        failure?\n    \"\"\"\n    with work_in(repo_dir):\n        try:\n            run_hook(hook_name, project_dir, context)\n        except (\n            FailedHookException,\n            UndefinedError,\n        ):\n            if delete_project_on_failure:\n                rmtree(project_dir)\n            logger.exception(\n                \"Stopping generation because %s hook \"\n                \"script didn't exit successfully\",\n                hook_name,\n            )\n            raise\n\n\ndef run_pre_prompt_hook(repo_dir: Path | str) -> Path | str:\n    \"\"\"Run pre_prompt hook from repo directory.\n\n    :param repo_dir: Project template input directory.\n    \"\"\"\n    # Check if we have a valid pre_prompt script\n    with work_in(repo_dir):\n        scripts = find_hook('pre_prompt')\n        if not scripts:\n            return repo_dir\n\n    # Create a temporary directory\n    repo_dir = create_tmp_repo_dir(repo_dir)\n    with work_in(repo_dir):\n        scripts = find_hook('pre_prompt') or []\n        for script in scripts:\n            try:\n                run_script(script, str(repo_dir))\n            except FailedHookException as e:  # noqa: PERF203\n                msg = 'Pre-Prompt Hook script failed'\n                raise FailedHookException(msg) from e\n    return repo_dir\n\n"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,101 @@
+{
+  "attribution": {
+    "executor_defect_observed": false,
+    "feedback_loss_observed": false,
+    "first_finish_boundary": "The frozen original-XML root explicitly states that after a change or failed test, finish is invalid until a test succeeds and that timeouts do not verify a fix. The first rejected finish ignored a correct available precondition.",
+    "global_correctness_verdict": false,
+    "repeated_finish_boundary": "After each rejection, the exact successful-test precondition was also present in the corresponding next compiled request. All 15 rejected finish calls are attributable to the model not acting on correct available instructions and feedback.",
+    "source_correction_target": null
+  },
+  "correction": {
+    "corrected_at": "2026-09-16T19:05:01Z",
+    "reason": "The prior attribution inspected only the non-actor branch's appended wording and missed the equivalent explicit sentence already present in the imported XML INSTRUCTIONS.",
+    "supersedes_managed_result_id": "27f363cd-ecbc-4f21-a6a1-df690487fa6f",
+    "superseded_managed_record_retained": true
+  },
+  "episode": {
+    "actual_final_action": {
+      "action": "view",
+      "action_index": 49,
+      "has_next_request": false,
+      "success": true
+    },
+    "finish_action_indices": [
+      13,
+      18,
+      20,
+      22,
+      24,
+      26,
+      28,
+      30,
+      32,
+      34,
+      36,
+      38,
+      40,
+      41,
+      45
+    ],
+    "finish_calls": 15,
+    "finish_calls_with_next_request": 15,
+    "successful_edits": 4,
+    "successful_tests": 0
+  },
+  "first_finish_rejection": {
+    "action_index": 13,
+    "action_submitted": false,
+    "error": "A changed workspace or failed test needs a successful test before done.",
+    "error_type": "verification_required",
+    "has_next_request": true,
+    "verification_required_after": true,
+    "verification_required_before": true,
+    "workspace_revision": 2
+  },
+  "next_input_evidence": {
+    "all_15_capsule_id_sequences_occur_exactly_once_contiguously_in_their_next_prompt_ids": true,
+    "all_15_next_capsules_contain_exact_error_and_type": true,
+    "capsule_tokens_per_finish_rejection": 189,
+    "evidence_path": "execution/solver/episode.json contexts[action_index + 1].capsule_json, capsule_token_ids, and prompt_token_ids",
+    "last_finish_has_next_request": true
+  },
+  "original_root_evidence": {
+    "decoded_with_pinned_tokenizer_revision": "c03e6d358207e414f1eca0bb1891e29f1db0e242",
+    "exact_text": "After a change or failed test, finish is invalid until a test succeeds. Timeouts do not verify a fix.",
+    "frozen_prompt_contains_exact_text": true,
+    "frozen_prompt_tokens": 1541,
+    "source": "benchmarks/openhands_tool_protocol.py:71 imported by benchmarks/lighthouse_quality_solver.py:240-244"
+  },
+  "producer_state": {
+    "edit_success_sets_verification_required": true,
+    "finish_is_rejected_while_verification_required": true,
+    "only_successful_test_clears_verification_required": true,
+    "state_was_consistent_across_all_15_rejections": true
+  },
+  "public_test_route": {
+    "actual_test_action_emitted": false,
+    "execute_bash_allowed_by_frozen_grammar": true,
+    "execute_bash_documents_yarn_jest": true,
+    "finish_documents_developer_verification": true,
+    "feedback_claims_test_execution_impossible": false,
+    "grammar_sha256": "5056481db1038d428e1e61fa4e334e9bb756483d4c79f4de6bcefe4398dd6717",
+    "parser_maps_root_yarn_jest_to_test_action": true
+  },
+  "schema": "octopus-finish-feedback-attribution-v1",
+  "scope_id": "actor-finish-feedback-attribution-v1",
+  "terminal_finish_rejection": {
+    "action_index": 45,
+    "action_submitted": false,
+    "error": "A changed workspace or failed test needs a successful test before done.",
+    "error_type": "verification_required",
+    "has_next_request": true,
+    "verification_required_after": true,
+    "verification_required_before": true,
+    "workspace_revision": 4
+  },
+  "token_accounting_boundary": {
+    "backend_actual_decode_tokens_for_each_length_capped_request": 511,
+    "producer_returned_output_ids_for_each_malformed_length_capped_call": 512,
+    "interpretation": "Distinct recorded accounting units; no off-by-one defect is inferred."
+  }
+}

@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "facebookresearch__fvcore.a491d5b__DJyhLBR__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# Indentation in model statistics table is inconsistent\n\nI discovered an issue with the `_model_stats_table` function in `fvcore/nn/print_model_statistics.py`. The indentation level in the generated table doesn't match what's expected by the tests.\n\n## Description\n\nWhen building rows for the model statistics table, the indentation is calculated as `indent = \" \" * (2 * indent_lvl)` which doubles the indentation level. This causes the spacing in the output table to be inconsistent with what the tests expect.\n\nThe tests are looking for specific indentation patterns like:\n- `'a1.b1.c1'` should be in the table\n- `' a1.b1 '` should not be in the table\n- `'   100'` should be in the table\n- `'    100'` should not be in the table\n\nBut with the current implementation, the indentation is doubled, causing these assertions to fail.\n\n## Reproduction\n\nHere's a simple example to reproduce the issue:\n\n```python\nfrom fvcore.nn.print_model_statistics import _model_stats_table\n\n# Sample statistics\nstats = {\n    \"a1\": {\"stat1\": \"10\"},\n    \"a1.b1\": {\"stat1\": \"20\"},\n    \"a1.b1.c1\": {\"stat1\": \"30\"},\n    \"a2\": {\"stat1\": \"40\"},\n    \"a2.b1\": {\"stat1\": \"50\"}\n}\n\n# Generate table\ntable = _model_stats_table(stats, stat_columns=[\"stat1\"])\n\n# Print the table to see the indentation\nfor row in table:\n    print(row)\n```\n\nThe output will show that the indentation is doubled from what would be expected, with modules at depth 1 having 2 spaces, depth 2 having 4 spaces, etc."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository and the `_model_stats_table` function to fix the inconsistent indentation.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-3129627d-feaa-4535-ac8c-9d1c5feedf75-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -50"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-3129627d-feaa-4535-ac8c-9d1c5feedf75-0",
+            "content": "total 80\ndrwxr-xr-x 1 root root  4096 Sep 22 17:40 .\ndrwxr-xr-x 1 root root  4096 Sep 22 17:40 ..\n-rw-r--r-- 1 root root   153 Jul 12  2025 .flake8\ndrwxr-xr-x 8 root root  4096 Jul 12  2025 .git\n-rw-r--r-- 1 root root    55 Jul 12  2025 .gitignore\n-rw-rw-r-- 1 1005 1005     0 Sep 22 15:44 .gitkeep\n-rw-r--r-- 1 root root   244 Jul 12  2025 CODE_OF_CONDUCT.md\n-rw-r--r-- 1 root root  1247 Jul 12  2025 CONTRIBUTING.md\n-rw-r--r-- 1 root root 10242 Jul 12  2025 LICENSE\n-rw-r--r-- 1 root root  2062 Jul 12  2025 README.md\ndrwxr-xr-x 2 root root  4096 Jul 12  2025 docs\ndrwxr-xr-x 5 root root  4096 Jul 12  2025 fvcore\ndrwxr-xr-x 2 root root  4096 Jul 12  2025 fvcore.egg-info\ndrwxr-xr-x 2 root root  4096 Jul 12  2025 io_tests\n-rwxr-xr-x 1 root root   526 Jul 12  2025 linter.sh\ndrwxr-xr-x 3 root root  4096 Jul 12  2025 packaging\n-rw-r--r-- 1 root root   314 Jul 12  2025 setup.cfg\n-rwxr-xr-x 1 root root  1827 Jul 12  2025 setup.py\ndrwxr-xr-x 4 root root  4096 Jul 12  2025 tests\n/testbed/tests/test_precise_bn.py\n/testbed/tests/test_param_count.py\n/testbed/tests/param_scheduler/test_scheduler_cosine.py\n/testbed/tests/param_scheduler/test_scheduler_multi_step.py\n/testbed/tests/param_scheduler/test_scheduler_step.py\n/testbed/tests/param_scheduler/test_scheduler_linear.py\n/testbed/tests/param_scheduler/test_scheduler_polynomial.py\n/testbed/tests/param_scheduler/test_scheduler_step_with_fixed_gamma.py\n/testbed/tests/param_scheduler/test_scheduler_constant.py\n/testbed/tests/param_scheduler/test_scheduler_composite.py\n/testbed/tests/param_scheduler/test_scheduler_exponential.py\n/testbed/tests/test_layers_squeeze_excitation.py\n/testbed/tests/test_checkpoint.py\n/testbed/tests/bm_common.py\n/testbed/tests/test_print_model_statistics.py\n/testbed/tests/test_flop_count.py\n/testbed/tests/test_activation_count.py\n/testbed/tests/test_giou_loss.py\n/testbed/tests/test_jit_model_analysis.py\n/testbed/tests/bm_focal_loss.py\n/testbed/tests/test_smooth_l1_loss.py\n/testbed/tests/test_weight_init.py\n/testbed/tests/test_transform.py\n/testbed/tests/bm_main.py\n/testbed/tests/test_transform_util.py\n/testbed/tests/test_common.py\n/testbed/fvcore/nn/giou_loss.py\n/testbed/fvcore/nn/print_model_statistics.py\n/testbed/fvcore/nn/squeeze_excitation.py\n/testbed/fvcore/nn/focal_loss.py\n/testbed/fvcore/nn/jit_analysis.py\n/testbed/fvcore/nn/smooth_l1_loss.py\n/testbed/fvcore/nn/__init__.py\n/testbed/fvcore/nn/activation_count.py\n/testbed/fvcore/nn/distributed.py\n/testbed/fvcore/nn/precise_bn.py\n/testbed/fvcore/nn/parameter_count.py\n/testbed/fvcore/nn/flop_count.py\n/testbed/fvcore/nn/jit_handles.py\n/testbed/fvcore/nn/weight_init.py\n/testbed/fvcore/transforms/transform_util.py\n/testbed/fvcore/transforms/__init__.py\n/testbed/fvcore/transforms/transform.py\n/testbed/fvcore/__init__.py\n/testbed/fvcore/common/history_buffer.py\n/testbed/fvcore/common/__init__.py\n/testbed/fvcore/common/config.py\n/testbed/fvcore/common/registry.py\n/testbed/fvcore/common/checkpoint.py\n/testbed/fvcore/common/benchmark.py\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-9f164a22-0811-4a8d-bd7a-2b59d546a3c3-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/fvcore/nn/print_model_statistics.py && echo \"===== TESTS =====\" && cat /testbed/tests/test_print_model_statistics.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-9f164a22-0811-4a8d-bd7a-2b59d546a3c3-1",
+            "content": "Analysis(model, inputs).ancestor_mode(\"caller\")\n        )\n\n        self.assertTrue(\"N/A indicates a possibly missing statistic\" in model_str)\n        self.assertTrue(\"#params: 0.11K, #flops: 100\" in model_str)\n        self.assertTrue(\"ReLU()\" in model_str)  # Suppress trivial statistics\n        self.assertTrue(\"#params: 0.11K, #flops: N/A\" in model_str)  # Uncalled stats\n        self.assertTrue(\"[[1, 10]]\")  # Input sizes\n\n        # Expected:\n\n        # \"Input sizes (torch.Tensor only): [[1, 10]]\\n\"\n        # \"N/A indicates a possibly missing statistic due to how the \"\n        # \"module was called. Missing values are still included in the \"\n        # \"parent's total.\\n\"\n        # \"TestNet(\\n\"\n        # \"  #params: 0.33K, #flops: 0.3K\\n\"\n        # \"  (a1): A1(\\n\"\n        # \"    #params: 0.11K, #flops: 100\\n\"\n        # \"    (b1): A1B1(\\n\"\n        # \"      #params: 0.11K, #flops: 100\\n\"\n        # \"      (c1): A1B1C1(\\n\"\n        # \"        #params: 0.11K, #flops: N/A\\n\"\n        # \"        (d1): Linear(\\n\"\n        # \"          in_features=10, out_features=10, bias=True\\n\"\n        # \"          #params: 0.11K, #flops: 100\\n\"\n        # \"        )\\n\"\n        # \"        (d2): ReLU()\\n\"\n        # \"      )\\n\"\n        # \"    )\\n\"\n        # \"  )\\n\"\n        # \"  (a2): A2(\\n\"\n        # \"    #params: 0.22K, #flops: 0.2K\\n\"\n        # \"    (b1): A2B1(\\n\"\n        # \"      #params: 0.22K, #flops: 0.2K\\n\"\n        # \"      (c1): Linear(\\n\"\n        # \"        in_features=10, out_features=10, bias=True\\n\"\n        # \"        #params: 0.11K, #flops: 100\\n\"\n        # \"      )\\n\"\n        # \"      (c2): Linear(\\n\"\n        # \"        in_features=10, out_features=10, bias=True\\n\"\n        # \"        #params: 0.11K, #flops: 100\\n\"\n        # \"      )\\n\"\n        # \"    )\\n\"\n        # \"  )\\n\"\n        # \")\"\n\n        # Test with activations\n        model_str = flop_count_str(\n            FlopCountAnalysis(model, inputs).ancestor_mode(\"caller\"),\n            activations=ActivationCountAnalysis(model, inputs).ancestor_mode(\"caller\"),\n        )\n\n        self.assertTrue(\"#params: 0.33K, #flops: 0.3K, #acts: 30\" in model_str)\n        self.assertTrue(\"#params: 0.11K, #flops: N/A, #acts: N/A\" in model_str)\n\n        # Expected:\n\n        # \"Input sizes (torch.Tensor only): [[1, 10]]\\n\"\n        # \"N/A indicates a possibly missing statistic due to how the \"\n        # \"module was called. Missing values are still included in the \"\n        # \"parent's total.\\n\"\n        # \"TestNet(\\n\"\n        # \"  #params: 0.33K, #flops: 0.3K, #acts: 30\\n\"\n        # \"  (a1): A1(\\n\"\n        # \"    #params: 0.11K, #flops: 100, #acts: 10\\n\"\n        # \"    (b1): A1B1(\\n\"\n        # \"      #params: 0.11K, #flops: 100, #acts: 10\\n\"\n        # \"      (c1): A1B1C1(\\n\"\n        # \"        #params: 0.11K, #flops: N/A, #acts: N/A\\n\"\n        # \"        (d1): Linear(\\n\"\n        # \"          in_features=10, out_features=10, bias=True\\n\"\n        # \"          #params: 0.11K, #flops: 100, #acts: 10\\n\"\n        # \"        )\\n\"\n        # \"        (d2): ReLU()\\n\"\n        # \"      )\\n\"\n        # \"    )\\n\"\n        # \"  )\\n\"\n        # \"  (a2): A2(\\n\"\n        # \"    #params: 0.22K, #flops: 0.2K, #acts: 20\\n\"\n        # \"    (b1): A2B1(\\n\"\n        # \"      #params: 0.22K, #flops: 0.2K, #acts: 20\\n\"\n        # \"      (c1): Linear(\\n\"\n        # \"        in_features=10, out_features=10, bias=True\\n\"\n        # \"        #params: 0.11K, #flops: 100, #acts: 10\\n\"\n        # \"      )\\n\"\n        # \"      (c2): Linear(\\n\"\n        # \"        in_features=10, out_features=10, bias=True\\n\"\n        # \"        #params: 0.11K, #flops: 100, #acts: 10\\n\"\n        # \"      )\\n\"\n        # \"    )\\n\"\n        # \"  )\\n\"\n        # \")\"\n\n    def test_flop_count_empty(self) -> None:\n        model = nn.ReLU()\n        inputs = (torch.randn((1, 10)),)\n        table = flop_count_table(FlopCountAnalysis(model, inputs))\n        self.assertGreater(len(table), 0)\n\n        out = flop_count_str(FlopCountAnalysis(model, inputs))\n        self.assertGreater(len(out), 0)\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-ed5cb21b-57a3-4574-9c30-c301d88c3b82-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "wc -l /testbed/fvcore/nn/print_model_statistics.py /testbed/tests/test_print_model_statistics.py; echo \"==== SOURCE ====\"; cat /testbed/fvcore/nn/print_model_statistics.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-ed5cb21b-57a3-4574-9c30-c301d88c3b82-2",
+            "content": "   2.58G   |\n        |    s2.pathway0_res0.branch1      |    20.5K               |    0.671G |\n        |    s2.pathway0_res0.branch1_bn   |    0.512K              |           |\n        |    s2.pathway0_res0.branch2      |    59.1K               |    1.91G  |\n        |   s2.pathway0_res1.branch2       |   70.4K                |   2.28G   |\n        |    s2.pathway0_res1.branch2.a    |    16.4K               |    0.537G |\n        |    s2.pathway0_res1.branch2.a_bn |    0.128K              |           |\n        |    s2.pathway0_res1.branch2.b    |    36.9K               |    1.21G  |\n        |    s2.pathway0_res1.branch2.b_bn |    0.128K              |           |\n        |    s2.pathway0_res1.branch2.c    |    16.4K               |    0.537G |\n        |    s2.pathway0_res1.branch2.c_bn |    0.512K              |           |\n        |   s2.pathway0_res2.branch2       |   70.4K                |   2.28G   |\n        |    s2.pathway0_res2.branch2.a    |    16.4K               |    0.537G |\n        |    s2.pathway0_res2.branch2.a_bn |    0.128K              |           |\n        |    s2.pathway0_res2.branch2.b    |    36.9K               |    1.21G  |\n        |    s2.pathway0_res2.branch2.b_bn |    0.128K              |           |\n        |    s2.pathway0_res2.branch2.c    |    16.4K               |    0.537G |\n        |    s2.pathway0_res2.branch2.c_bn |    0.512K              |           |\n        |    ............................. |    ......              |    ...... |\n\n    Args:\n        flops (FlopCountAnalysis): the flop counting object\n        max_depth (int) : The max depth of submodules to include in the\n            table. Defaults to 3.\n        activations (ActivationCountAnalysis or None) : If given, include\n            activation counts as an additional column in the table.\n        show_param_shapes (bool) : If true, shapes for parameters will be\n            included in the table. Defaults to True.\n\n    Returns:\n        str : The formatted table.\n\n    Examples:\n    ::\n        print(flop_count_table(FlopCountAnalysis(model, inputs)))\n    \"\"\"\n    params_header = \"#parameters\" + (\" or shape\" if show_param_shapes else \"\")\n    flops_header, acts_header = \"#flops\", \"#activations\"\n\n    model = flops._model\n    # cast to dict since pyre doesn't like the implicit defaultdict->dict\n    params = dict(parameter_count(model))\n\n    flops.unsupported_ops_warnings(False)\n    flops.uncalled_modules_warnings(False)\n    flops.tracer_warnings(\"none\")\n\n    stats = {params_header: params, flops_header: flops.by_module()}\n    stat_columns = [params_header, flops_header]\n\n    if activations is not None:\n        activations.unsupported_ops_warnings(False)\n        activations.uncalled_modules_warnings(False)\n        activations.tracer_warnings(\"none\")\n        stats[acts_header] = activations.by_module()\n        stat_columns += [acts_header]\n\n    stats = _group_by_module(stats)\n    stats = _remove_zero_statistics(stats, require_trivial_children=True)\n    stats = _pretty_statistics(stats, hide_zero=False)\n    stats = _indicate_uncalled_modules(\n        stats,\n        flops_header,\n        flops.uncalled_modules() & stats.keys(),\n        uncalled_indicator=\"\",\n    )\n    if activations:\n        stats = _indicate_uncalled_modules(\n            stats,\n            acts_header,\n            activations.uncalled_modules() & stats.keys(),\n            uncalled_indicator=\"\",\n        )\n\n    # Swap in shapes for parameters or delete shapes from dict\n    param_shapes: Dict[str, Tuple[int, ...]] = {\n        k: tuple(v.shape) for k, v in model.named_parameters()\n    }\n    to_delete = []\n    for mod in stats:\n        if mod in param_shapes:\n            if show_param_shapes:\n                stats[mod][params_header] = str(param_shapes[mod])\n            else:\n                to_delete.append(mod)\n    for mod in to_delete:\n        del stats[mod]\n\n    return _model_stats_table(\n        statistics=stats,\n        max_depth=max_depth,\n        stat_columns=stat_columns,\n    )\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-1e433805-87b4-4ee1-8d2e-217796c235a7-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "head -n 400 /testbed/fvcore/nn/print_model_statistics.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-1e433805-87b4-4ee1-8d2e-217796c235a7-3",
+            "content": " a non-torch tensor iterable, it recurses into\n    that iterable to continue calculating sizes. Any non-iterable is\n    given a size of None. The output consists of nested lists with the\n    same nesting structure as the input iterables.\n    \"\"\"\n    out_list = []\n    for i in iterable:\n        if isinstance(i, torch.Tensor):\n            out_list.append(list(i.size()))\n        elif isinstance(i, Iterable):\n            sublist_sizes = _get_input_sizes(i)\n            if all(j is None for j in sublist_sizes):\n                out_list.append(None)\n            else:\n                out_list.append(sublist_sizes)\n        else:\n            out_list.append(None)\n    return out_list\n\n\ndef flop_count_str(\n    # pyre-fixme[11]: Annotation `FlopCountAnalysis` is not defined as a type.\n    # pyre-fixme[11]: Annotation `ActivationCountAnalysis` is not defined as a type.\n    flops: FlopCountAnalysis,\n    # pyre-fixme[11]: Annotation `ActivationCountAnalysis` is not defined as a type.\n    activations: Optional[ActivationCountAnalysis] = None,\n) -> str:\n    \"\"\"\n    Calculates the parameters and flops of the model with the given inputs\n    and returns a string representation of the model that includes the\n    parameters and flops of every submodule. The string is structured\n    to be similar that given by str(model), though it is not guaranteed to\n    be identical in form if the default string representation of a module has\n    been overridden. If a module has zero parameters and flops, statistics\n    will not be reported for succinctness.\n\n    The trace can only register the scope of a module if it is called\n    directly, which means flops (and activations) arising from explicit\n    calls to .forward() or to other python functions of the module will\n    not be attributed to that module. Modules that are never called will\n    have 'N/A' listed for their flops; this means they are either unused\n    or their statistics are missing for this reason. Any such flops are still\n    counted towards the parent\n\n    Example:\n\n    >>> import torch\n    >>> import torch.nn as nn\n\n    >>> class InnerNet(nn.Module):\n    ...     def __init__(self):\n    ...         super().__init__()\n    ...         self.fc1 = nn.Linear(10,10)\n    ...         self.fc2 = nn.Linear(10,10)\n    ...     def forward(self, x):\n    ...         return self.fc1(self.fc2(x))\n\n    >>> class TestNet(nn.Module):\n    ...     def __init__(self):\n    ...         super().__init__()\n    ...         self.fc1 = nn.Linear(10,10)\n    ...         self.fc2 = nn.Linear(10,10)\n    ...         self.inner = InnerNet()\n    ...     def forward(self, x):\n    ...         return self.fc1(self.fc2(self.inner(x)))\n\n    >>> inputs = torch.randn((1,10))\n    >>> print(flop_count_str(FlopCountAnalysis(model, inputs)))\n    TestNet(\n      #params: 0.44K, #flops: 0.4K\n      (fc1): Linear(\n        in_features=10, out_features=10, bias=True\n        #params: 0.11K, #flops: 100\n      )\n      (fc2): Linear(\n        in_features=10, out_features=10, bias=True\n        #params: 0.11K, #flops: 100\n      )\n      (inner): InnerNet(\n        #params: 0.22K, #flops: 0.2K\n        (fc1): Linear(\n          in_features=10, out_features=10, bias=True\n          #params: 0.11K, #flops: 100\n        )\n        (fc2): Linear(\n          in_features=10, out_features=10, bias=True\n          #params: 0.11K, #flops: 100\n        )\n      )\n    )\n\n\n    Args:\n        flops (FlopCountAnalysis): the flop counting object\n        activations (bool) : If given, the activations of each layer will\n            also be calculated and included in the representation.\n\n    Returns:\n        str:\n            a string representation of the model with the number of\n            parameters and flops included.\n    \"\"\"\n    # cast to dict since pyre doesn't like the implicit defaultdict->dict\n    model = flops._model\n    params = dict(parameter_count(model))\n\n    flops.unsupported_ops_warnings(False)\n    flops.uncalled_modules_warnings(False)\n    flops.tracer_warnings(\"none\")\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-30818aa9-8007-4a11-97c7-a154d5b1354b-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "rg -n \"def _model_stats_table\" /testbed --type py && echo \"====\" && rg -n \"indent\" /testbed/fvcore/nn/print_model_statistics.py /testbed/tests/test_print_model_statistics.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-30818aa9-8007-4a11-97c7-a154d5b1354b-4",
+            "content": "bash: line 1: rg: command not found\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-9db6c9eb-f45d-4782-a6b7-b44fbe6929a5-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "grep -n \"def _model_stats_table\\|indent\" /testbed/fvcore/nn/print_model_statistics.py /testbed/tests/test_print_model_statistics.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-9db6c9eb-f45d-4782-a6b7-b44fbe6929a5-5",
+            "content": "/testbed/fvcore/nn/print_model_statistics.py:235:    # Copied from nn.Module._addindent\n/testbed/fvcore/nn/print_model_statistics.py:236:    def _addindent(s_: str, numSpaces: int) -> str:\n/testbed/fvcore/nn/print_model_statistics.py:271:            submod_str = _addindent(submod_str, 2)\n/testbed/fvcore/nn/print_model_statistics.py:495:def _model_stats_table(\n/testbed/fvcore/nn/print_model_statistics.py:525:    def build_row(name: str, stats: Dict[str, str], indent_lvl: int) -> List[str]:\n/testbed/fvcore/nn/print_model_statistics.py:526:        indent = \" \" * indent_lvl\n/testbed/fvcore/nn/print_model_statistics.py:527:        row = [indent + name]\n/testbed/fvcore/nn/print_model_statistics.py:529:            row_str = (indent + stats[stat_name]) if stat_name in stats else \"\"\n/testbed/fvcore/nn/print_model_statistics.py:534:    def fill(indent_lvl: int, prefix: str) -> None:\n/testbed/fvcore/nn/print_model_statistics.py:535:        if indent_lvl > max_depth:\n/testbed/fvcore/nn/print_model_statistics.py:550:                row = build_row(pretty_mod_name, curr_stats, indent_lvl)\n/testbed/fvcore/nn/print_model_statistics.py:552:                fill(indent_lvl + 1, mod_name + \".\")\n/testbed/fvcore/nn/print_model_statistics.py:555:    row = build_row(root_name or \"model\", curr_stats, indent_lvl=0)\n/testbed/fvcore/nn/print_model_statistics.py:558:    fill(indent_lvl=1, prefix=root_prefix)\n/testbed/tests/test_print_model_statistics.py:299:        self.assertTrue(\"      (c1): A1B1C1(\\n\" in model_str)  # submod with indent\n/testbed/tests/test_print_model_statistics.py:343:        self.assertTrue(\"   100\" in table)  # Correct indentation\n/testbed/tests/test_print_model_statistics.py:344:        self.assertFalse(\"    100\" in table)  # Correct indentation\n/testbed/tests/test_print_model_statistics.py:391:        self.assertTrue(\" 0.33K\" in table)  # Pretty stats, correct indentation\n/testbed/tests/test_print_model_statistics.py:392:        self.assertFalse(\"  0.33K\" in table)  # Correct indentation\n/testbed/tests/test_print_model_statistics.py:418:        self.assertTrue(\"  20\" in table)  # Activation value with correct indent\n"
+          }
+        ]
+      }
+    }
+  ]
+}

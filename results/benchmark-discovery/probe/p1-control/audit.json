@@ -1,0 +1,697 @@
+{
+  "schema": "octopus-workload-prefix-probe-v1",
+  "source": {
+    "name": "SWE-bench/SWE-bench_Verified",
+    "revision": "78f471bf655a3137b2e8a75af1501690ec009ec3",
+    "split": "test",
+    "url": "results/p1-real-agent/solver-manifest.json",
+    "license": "SWE-bench harness: MIT; Verified dataset and third-party issue-text licenses independently unverified",
+    "selection": "All four existing sanitized P1 tasks; issue only, no repository/tool trace",
+    "request_kind": "Constructed repair-role questions, not recorded requests or benchmark questions"
+  },
+  "tokenizer": {
+    "model": "Qwen/Qwen2.5-7B-Instruct",
+    "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "files": [
+      "tokenizer.json",
+      "tokenizer_config.json",
+      "config.json"
+    ],
+    "tokenizers_version": "0.23.2",
+    "jinja2_version": "3.1.6",
+    "chat_template": "pinned tokenizer_config.json; system/user; add_generation_prompt=True",
+    "add_special_tokens": false
+  },
+  "measurement": "Exact token IDs from fully rendered prompts; no inference or native cache execution",
+  "tasks": 4,
+  "requests": 12,
+  "source_contexts": [],
+  "assumptions": {
+    "block_size": 16,
+    "cache_capacity_mib": 128.0,
+    "cache_capacity_full_blocks": 146,
+    "simultaneous_tasks": 2,
+    "branches_per_task_cap": 3,
+    "reserved_output_tokens_per_request": 256,
+    "kv_dtype_bytes": 2,
+    "kv_bytes_per_token": 57344,
+    "kv_bytes_per_block": 917504,
+    "max_model_len": 16384,
+    "kv_geometry": {
+      "num_hidden_layers": 28,
+      "num_key_value_heads": 4,
+      "hidden_size": 3584,
+      "num_attention_heads": 28
+    },
+    "schedule": "Contiguous source-order task windows; first up-to-cap distinct questions per task; all live at once",
+    "sharing": "Ideal identical full-prefix-block sharing; partial blocks private; no shared output tokens",
+    "memory_scope": "KV payload only; excludes model weights, allocator/metadata/workspace overhead and parallel replication",
+    "timing": "No real arrival, service, decode, or tool timing is available; windows are assumptions, not a replay"
+  },
+  "native": {
+    "status": "unverified",
+    "evictions": null,
+    "adoptions": null,
+    "cache_hit_tokens": null,
+    "adopted_prefix_tokens": null,
+    "actual_prefill_tokens": null,
+    "scheduled_ranges": null,
+    "native_pressure": null,
+    "cached_root_opportunity": null,
+    "future_participation": null,
+    "improved_root_adoption": null,
+    "latency_seconds": null,
+    "quality": null,
+    "speedup": null,
+    "kv_memory_benefit_bytes": null
+  },
+  "orders": {
+    "context-first": {
+      "exact_prefix_metrics": {
+        "requests": 12,
+        "prompt_tokens": {
+          "min": 121,
+          "median": 436.5,
+          "max": 895
+        },
+        "total_prompt_tokens": 5669,
+        "all_request_common_prefix_tokens": 21,
+        "all_request_common_prefix_full_blocks": 1,
+        "unaligned_common_prefix_tokens": 5,
+        "suffix_tokens_after_common_full_blocks": {
+          "min": 105,
+          "median": 420.5,
+          "max": 879
+        },
+        "pairwise_common_prefix_tokens": {
+          "min": 21,
+          "median": 21.0,
+          "max": 879
+        },
+        "best_prior_prefix_tokens_in_source_order": [
+          0,
+          611,
+          611,
+          27,
+          879,
+          879,
+          21,
+          106,
+          106,
+          30,
+          231,
+          231
+        ],
+        "best_prior_full_blocks_in_source_order": [
+          0,
+          38,
+          38,
+          1,
+          54,
+          54,
+          1,
+          6,
+          6,
+          1,
+          14,
+          14
+        ],
+        "unbounded_retention_repeated_full_block_tokens": 3632
+      },
+      "per_task": [
+        {
+          "task_id": "django__django-10097",
+          "requests": 3,
+          "prompt_tokens": {
+            "min": 626,
+            "median": 627,
+            "max": 627
+          },
+          "total_prompt_tokens": 1880,
+          "all_request_common_prefix_tokens": 611,
+          "all_request_common_prefix_full_blocks": 38,
+          "unaligned_common_prefix_tokens": 3,
+          "suffix_tokens_after_common_full_blocks": {
+            "min": 18,
+            "median": 19,
+            "max": 19
+          },
+          "pairwise_common_prefix_tokens": {
+            "min": 611,
+            "median": 611,
+            "max": 611
+          },
+          "best_prior_prefix_tokens_in_source_order": [
+            0,
+            611,
+            611
+          ],
+          "best_prior_full_blocks_in_source_order": [
+            0,
+            38,
+            38
+          ],
+          "unbounded_retention_repeated_full_block_tokens": 1216,
+          "requests_detail": [
+            {
+              "request_id": "django__django-10097/0",
+              "prompt_tokens": 626,
+              "fits_assumed_model_len_with_output": true
+            },
+            {
+              "request_id": "django__django-10097/1",
+              "prompt_tokens": 627,
+              "fits_assumed_model_len_with_output": true
+            },
+            {
+              "request_id": "django__django-10097/2",
+              "prompt_tokens": 627,
+              "fits_assumed_model_len_with_output": true
+            }
+          ]
+        },
+        {
+          "task_id": "django__django-10554",
+          "requests": 3,
+          "prompt_tokens": {
+            "min": 894,
+            "median": 895,
+            "max": 895
+          },
+          "total_prompt_tokens": 2684,
+          "all_request_common_prefix_tokens": 879,
+          "all_request_common_prefix_full_blocks": 54,
+          "unaligned_common_prefix_tokens": 15,
+          "suffix_tokens_after_common_full_blocks": {
+            "min": 30,
+            "median": 31,
+            "max": 31
+          },
+          "pairwise_common_prefix_tokens": {
+            "min": 879,
+            "median": 879,
+            "max": 879
+          },
+          "best_prior_prefix_tokens_in_source_order": [
+            0,
+            879,
+            879
+          ],
+          "best_prior_full_blocks_in_source_order": [
+            0,
+            54,
+            54
+          ],
+          "unbounded_retention_repeated_full_block_tokens": 1728,
+          "requests_detail": [
+            {
+              "request_id": "django__django-10554/0",
+              "prompt_tokens": 894,
+              "fits_assumed_model_len_with_output": true
+            },
+            {
+              "request_id": "django__django-10554/1",
+              "prompt_tokens": 895,
+              "fits_assumed_model_len_with_output": true
+            },
+            {
+              "request_id": "django__django-10554/2",
+              "prompt_tokens": 895,
+              "fits_assumed_model_len_with_output": true
+            }
+          ]
+        },
+        {
+          "task_id": "sympy__sympy-11618",
+          "requests": 3,
+          "prompt_tokens": {
+            "min": 121,
+            "median": 122,
+            "max": 122
+          },
+          "total_prompt_tokens": 365,
+          "all_request_common_prefix_tokens": 106,
+          "all_request_common_prefix_full_blocks": 6,
+          "unaligned_common_prefix_tokens": 10,
+          "suffix_tokens_after_common_full_blocks": {
+            "min": 25,
+            "median": 26,
+            "max": 26
+          },
+          "pairwise_common_prefix_tokens": {
+            "min": 106,
+            "median": 106,
+            "max": 106
+          },
+          "best_prior_prefix_tokens_in_source_order": [
+            0,
+            106,
+            106
+          ],
+          "best_prior_full_blocks_in_source_order": [
+            0,
+            6,
+            6
+          ],
+          "unbounded_retention_repeated_full_block_tokens": 192,
+          "requests_detail": [
+            {
+              "request_id": "sympy__sympy-11618/0",
+              "prompt_tokens": 121,
+              "fits_assumed_model_len_with_output": true
+            },
+            {
+              "request_id": "sympy__sympy-11618/1",
+              "prompt_tokens": 122,
+              "fits_assumed_model_len_with_output": true
+            },
+            {
+              "request_id": "sympy__sympy-11618/2",
+              "prompt_tokens": 122,
+              "fits_assumed_model_len_with_output": true
+            }
+          ]
+        },
+        {
+          "task_id": "sympy__sympy-12096",
+          "requests": 3,
+          "prompt_tokens": {
+            "min": 246,
+            "median": 247,
+            "max": 247
+          },
+          "total_prompt_tokens": 740,
+          "all_request_common_prefix_tokens": 231,
+          "all_request_common_prefix_full_blocks": 14,
+          "unaligned_common_prefix_tokens": 7,
+          "suffix_tokens_after_common_full_blocks": {
+            "min": 22,
+            "median": 23,
+            "max": 23
+          },
+          "pairwise_common_prefix_tokens": {
+            "min": 231,
+            "median": 231,
+            "max": 231
+          },
+          "best_prior_prefix_tokens_in_source_order": [
+            0,
+            231,
+            231
+          ],
+          "best_prior_full_blocks_in_source_order": [
+            0,
+            14,
+            14
+          ],
+          "unbounded_retention_repeated_full_block_tokens": 448,
+          "requests_detail": [
+            {
+              "request_id": "sympy__sympy-12096/0",
+              "prompt_tokens": 246,
+              "fits_assumed_model_len_with_output": true
+            },
+            {
+              "request_id": "sympy__sympy-12096/1",
+              "prompt_tokens": 247,
+              "fits_assumed_model_len_with_output": true
+            },
+            {
+              "request_id": "sympy__sympy-12096/2",
+              "prompt_tokens": 247,
+              "fits_assumed_model_len_with_output": true
+            }
+          ]
+        }
+      ],
+      "assumed_live_windows": [
+        {
+          "task_ids": [
+            "django__django-10097",
+            "django__django-10554"
+          ],
+          "live_requests": 6,
+          "naive_unshared_prompt_blocks": 288,
+          "unique_full_prefix_blocks": 97,
+          "private_partial_prompt_blocks": 6,
+          "deduplicated_prompt_blocks": 103,
+          "assumed_additional_output_blocks": 96,
+          "estimated_live_blocks_with_output_reservation": 199,
+          "estimated_live_kv_bytes": 182583296,
+          "estimated_capacity_excess_blocks": 53,
+          "fits_assumed_capacity": false,
+          "requests_exceeding_assumed_model_len": 0
+        },
+        {
+          "task_ids": [
+            "django__django-10554",
+            "sympy__sympy-11618"
+          ],
+          "live_requests": 6,
+          "naive_unshared_prompt_blocks": 192,
+          "unique_full_prefix_blocks": 65,
+          "private_partial_prompt_blocks": 6,
+          "deduplicated_prompt_blocks": 71,
+          "assumed_additional_output_blocks": 96,
+          "estimated_live_blocks_with_output_reservation": 167,
+          "estimated_live_kv_bytes": 153223168,
+          "estimated_capacity_excess_blocks": 21,
+          "fits_assumed_capacity": false,
+          "requests_exceeding_assumed_model_len": 0
+        },
+        {
+          "task_ids": [
+            "sympy__sympy-11618",
+            "sympy__sympy-12096"
+          ],
+          "live_requests": 6,
+          "naive_unshared_prompt_blocks": 72,
+          "unique_full_prefix_blocks": 25,
+          "private_partial_prompt_blocks": 6,
+          "deduplicated_prompt_blocks": 31,
+          "assumed_additional_output_blocks": 96,
+          "estimated_live_blocks_with_output_reservation": 127,
+          "estimated_live_kv_bytes": 116523008,
+          "estimated_capacity_excess_blocks": 0,
+          "fits_assumed_capacity": true,
+          "requests_exceeding_assumed_model_len": 0
+        }
+      ],
+      "estimated_peak_live_kv_bytes": 182583296
+    },
+    "question-first": {
+      "exact_prefix_metrics": {
+        "requests": 12,
+        "prompt_tokens": {
+          "min": 121,
+          "median": 436.5,
+          "max": 895
+        },
+        "total_prompt_tokens": 5669,
+        "all_request_common_prefix_tokens": 19,
+        "all_request_common_prefix_full_blocks": 1,
+        "unaligned_common_prefix_tokens": 3,
+        "suffix_tokens_after_common_full_blocks": {
+          "min": 105,
+          "median": 420.5,
+          "max": 879
+        },
+        "pairwise_common_prefix_tokens": {
+          "min": 19,
+          "median": 19.0,
+          "max": 43
+        },
+        "best_prior_prefix_tokens_in_source_order": [
+          0,
+          19,
+          19,
+          39,
+          40,
+          40,
+          33,
+          34,
+          34,
+          42,
+          43,
+          43
+        ],
+        "best_prior_full_blocks_in_source_order": [
+          0,
+          1,
+          1,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2
+        ],
+        "unbounded_retention_repeated_full_block_tokens": 320
+      },
+      "per_task": [
+        {
+          "task_id": "django__django-10097",
+          "requests": 3,
+          "prompt_tokens": {
+            "min": 626,
+            "median": 627,
+            "max": 627
+          },
+          "total_prompt_tokens": 1880,
+          "all_request_common_prefix_tokens": 19,
+          "all_request_common_prefix_full_blocks": 1,
+          "unaligned_common_prefix_tokens": 3,
+          "suffix_tokens_after_common_full_blocks": {
+            "min": 610,
+            "median": 611,
+            "max": 611
+          },
+          "pairwise_common_prefix_tokens": {
+            "min": 19,
+            "median": 19,
+            "max": 19
+          },
+          "best_prior_prefix_tokens_in_source_order": [
+            0,
+            19,
+            19
+          ],
+          "best_prior_full_blocks_in_source_order": [
+            0,
+            1,
+            1
+          ],
+          "unbounded_retention_repeated_full_block_tokens": 32,
+          "requests_detail": [
+            {
+              "request_id": "django__django-10097/0",
+              "prompt_tokens": 626,
+              "fits_assumed_model_len_with_output": true
+            },
+            {
+              "request_id": "django__django-10097/1",
+              "prompt_tokens": 627,
+              "fits_assumed_model_len_with_output": true
+            },
+            {
+              "request_id": "django__django-10097/2",
+              "prompt_tokens": 627,
+              "fits_assumed_model_len_with_output": true
+            }
+          ]
+        },
+        {
+          "task_id": "django__django-10554",
+          "requests": 3,
+          "prompt_tokens": {
+            "min": 894,
+            "median": 895,
+            "max": 895
+          },
+          "total_prompt_tokens": 2684,
+          "all_request_common_prefix_tokens": 19,
+          "all_request_common_prefix_full_blocks": 1,
+          "unaligned_common_prefix_tokens": 3,
+          "suffix_tokens_after_common_full_blocks": {
+            "min": 878,
+            "median": 879,
+            "max": 879
+          },
+          "pairwise_common_prefix_tokens": {
+            "min": 19,
+            "median": 19,
+            "max": 19
+          },
+          "best_prior_prefix_tokens_in_source_order": [
+            0,
+            19,
+            19
+          ],
+          "best_prior_full_blocks_in_source_order": [
+            0,
+            1,
+            1
+          ],
+          "unbounded_retention_repeated_full_block_tokens": 32,
+          "requests_detail": [
+            {
+              "request_id": "django__django-10554/0",
+              "prompt_tokens": 894,
+              "fits_assumed_model_len_with_output": true
+            },
+            {
+              "request_id": "django__django-10554/1",
+              "prompt_tokens": 895,
+              "fits_assumed_model_len_with_output": true
+            },
+            {
+              "request_id": "django__django-10554/2",
+              "prompt_tokens": 895,
+              "fits_assumed_model_len_with_output": true
+            }
+          ]
+        },
+        {
+          "task_id": "sympy__sympy-11618",
+          "requests": 3,
+          "prompt_tokens": {
+            "min": 121,
+            "median": 122,
+            "max": 122
+          },
+          "total_prompt_tokens": 365,
+          "all_request_common_prefix_tokens": 19,
+          "all_request_common_prefix_full_blocks": 1,
+          "unaligned_common_prefix_tokens": 3,
+          "suffix_tokens_after_common_full_blocks": {
+            "min": 105,
+            "median": 106,
+            "max": 106
+          },
+          "pairwise_common_prefix_tokens": {
+            "min": 19,
+            "median": 19,
+            "max": 19
+          },
+          "best_prior_prefix_tokens_in_source_order": [
+            0,
+            19,
+            19
+          ],
+          "best_prior_full_blocks_in_source_order": [
+            0,
+            1,
+            1
+          ],
+          "unbounded_retention_repeated_full_block_tokens": 32,
+          "requests_detail": [
+            {
+              "request_id": "sympy__sympy-11618/0",
+              "prompt_tokens": 121,
+              "fits_assumed_model_len_with_output": true
+            },
+            {
+              "request_id": "sympy__sympy-11618/1",
+              "prompt_tokens": 122,
+              "fits_assumed_model_len_with_output": true
+            },
+            {
+              "request_id": "sympy__sympy-11618/2",
+              "prompt_tokens": 122,
+              "fits_assumed_model_len_with_output": true
+            }
+          ]
+        },
+        {
+          "task_id": "sympy__sympy-12096",
+          "requests": 3,
+          "prompt_tokens": {
+            "min": 246,
+            "median": 247,
+            "max": 247
+          },
+          "total_prompt_tokens": 740,
+          "all_request_common_prefix_tokens": 19,
+          "all_request_common_prefix_full_blocks": 1,
+          "unaligned_common_prefix_tokens": 3,
+          "suffix_tokens_after_common_full_blocks": {
+            "min": 230,
+            "median": 231,
+            "max": 231
+          },
+          "pairwise_common_prefix_tokens": {
+            "min": 19,
+            "median": 19,
+            "max": 19
+          },
+          "best_prior_prefix_tokens_in_source_order": [
+            0,
+            19,
+            19
+          ],
+          "best_prior_full_blocks_in_source_order": [
+            0,
+            1,
+            1
+          ],
+          "unbounded_retention_repeated_full_block_tokens": 32,
+          "requests_detail": [
+            {
+              "request_id": "sympy__sympy-12096/0",
+              "prompt_tokens": 246,
+              "fits_assumed_model_len_with_output": true
+            },
+            {
+              "request_id": "sympy__sympy-12096/1",
+              "prompt_tokens": 247,
+              "fits_assumed_model_len_with_output": true
+            },
+            {
+              "request_id": "sympy__sympy-12096/2",
+              "prompt_tokens": 247,
+              "fits_assumed_model_len_with_output": true
+            }
+          ]
+        }
+      ],
+      "assumed_live_windows": [
+        {
+          "task_ids": [
+            "django__django-10097",
+            "django__django-10554"
+          ],
+          "live_requests": 6,
+          "naive_unshared_prompt_blocks": 288,
+          "unique_full_prefix_blocks": 274,
+          "private_partial_prompt_blocks": 6,
+          "deduplicated_prompt_blocks": 280,
+          "assumed_additional_output_blocks": 96,
+          "estimated_live_blocks_with_output_reservation": 376,
+          "estimated_live_kv_bytes": 344981504,
+          "estimated_capacity_excess_blocks": 230,
+          "fits_assumed_capacity": false,
+          "requests_exceeding_assumed_model_len": 0
+        },
+        {
+          "task_ids": [
+            "django__django-10554",
+            "sympy__sympy-11618"
+          ],
+          "live_requests": 6,
+          "naive_unshared_prompt_blocks": 192,
+          "unique_full_prefix_blocks": 178,
+          "private_partial_prompt_blocks": 6,
+          "deduplicated_prompt_blocks": 184,
+          "assumed_additional_output_blocks": 96,
+          "estimated_live_blocks_with_output_reservation": 280,
+          "estimated_live_kv_bytes": 256901120,
+          "estimated_capacity_excess_blocks": 134,
+          "fits_assumed_capacity": false,
+          "requests_exceeding_assumed_model_len": 0
+        },
+        {
+          "task_ids": [
+            "sympy__sympy-11618",
+            "sympy__sympy-12096"
+          ],
+          "live_requests": 6,
+          "naive_unshared_prompt_blocks": 72,
+          "unique_full_prefix_blocks": 58,
+          "private_partial_prompt_blocks": 6,
+          "deduplicated_prompt_blocks": 64,
+          "assumed_additional_output_blocks": 96,
+          "estimated_live_blocks_with_output_reservation": 160,
+          "estimated_live_kv_bytes": 146800640,
+          "estimated_capacity_excess_blocks": 14,
+          "fits_assumed_capacity": false,
+          "requests_exceeding_assumed_model_len": 0
+        }
+      ],
+      "estimated_peak_live_kv_bytes": 344981504
+    }
+  },
+  "download": null
+}

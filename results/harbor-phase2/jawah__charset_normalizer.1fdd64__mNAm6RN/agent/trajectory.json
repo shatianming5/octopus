@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "jawah__charset_normalizer.1fdd64__mNAm6RN__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "merge_coherence_ratios function not averaging ratios correctly\n\nWhen using the merge_coherence_ratios function with multiple language detection results, the function is not correctly averaging the ratios for each language.\n\nSteps to reproduce:\n```python\nfrom charset_normalizer import from_path\n\n# Load a Polish text file\nresult = from_path('sample-polish.txt')\nbest_guess = result.best()\n\n# Expected: Polish language should be detected\nprint(best_guess.language)  # Outputs incorrect language instead of Polish\n```\n\nI've tested this with several Polish text files and the language detection consistently fails. The issue seems to be in the way language detection ratios are merged - instead of averaging the ratios for each language, it's taking the maximum value, which leads to incorrect language detection.\n\nThis affects other languages too, but Polish texts seem to be particularly affected by this issue."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository and locate `merge_coherence_ratios` to see how language ratios are currently merged.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-97f59f6d-36fc-40d2-b999-af50aac7889d-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -50"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-97f59f6d-36fc-40d2-b999-af50aac7889d-0",
+            "content": "total 136\ndrwxr-xr-x 1 root root  4096 Sep 22 16:50 .\ndrwxr-xr-x 1 root root  4096 Sep 22 16:50 ..\n-rw-r--r-- 1 root root   128 Jul 13  2025 .codecov.yml\n-rw-r--r-- 1 root root    32 Jul 13  2025 .coveragerc\ndrwxr-xr-x 8 root root  4096 Jul 13  2025 .git\ndrwxr-xr-x 3 root root  4096 Jul 13  2025 .github\n-rw-r--r-- 1 root root  1735 Jul 13  2025 .gitignore\n-rw-rw-r-- 1 1005 1005     0 Sep 22 15:44 .gitkeep\n-rw-r--r-- 1 root root   645 Jul 13  2025 .pre-commit-config.yaml\n-rw-r--r-- 1 root root   401 Jul 13  2025 .readthedocs.yaml\n-rw-r--r-- 1 root root 18968 Jul 13  2025 CHANGELOG.md\n-rw-r--r-- 1 root root  3360 Jul 13  2025 CODE_OF_CONDUCT.md\n-rw-r--r-- 1 root root  3730 Jul 13  2025 CONTRIBUTING.md\n-rw-r--r-- 1 root root  1070 Jul 13  2025 LICENSE\n-rw-r--r-- 1 root root   196 Jul 13  2025 MANIFEST.in\n-rw-r--r-- 1 root root 13005 Jul 13  2025 README.md\n-rw-r--r-- 1 root root   201 Jul 13  2025 SECURITY.md\n-rw-r--r-- 1 root root   768 Jul 13  2025 UPGRADE.md\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 bin\ndrwxr-xr-x 4 root root  4096 Jul 13  2025 charset_normalizer\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 charset_normalizer.egg-info\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 data\n-rw-r--r-- 1 root root   109 Jul 13  2025 dev-requirements.txt\ndrwxr-xr-x 4 root root  4096 Jul 13  2025 docs\n-rw-r--r-- 1 root root  2687 Jul 13  2025 pyproject.toml\n-rw-r--r-- 1 root root    57 Jul 13  2025 setup.cfg\n-rw-r--r-- 1 root root   573 Jul 13  2025 setup.py\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 tests\n/testbed/tests/test_logging.py\n/testbed/tests/test_preemptive_detection.py\n/testbed/tests/test_isbinary.py\n/testbed/tests/test_coherence_detection.py\n/testbed/tests/__init__.py\n/testbed/tests/test_detect_legacy.py\n/testbed/tests/test_base_detection.py\n/testbed/tests/test_cli.py\n/testbed/tests/test_full_detection.py\n/testbed/tests/test_utils.py\n/testbed/tests/test_mess_detection.py\n/testbed/tests/test_edge_case.py\n/testbed/tests/test_large_payload.py\n/testbed/bin/bc.py\n/testbed/bin/serve.py\n/testbed/bin/integration.py\n/testbed/bin/coverage.py\n/testbed/bin/performance.py\n/testbed/charset_normalizer/api.py\n/testbed/charset_normalizer/__main__.py\n/testbed/charset_normalizer/version.py\n/testbed/charset_normalizer/__init__.py\n/testbed/charset_normalizer/md.py\n/testbed/charset_normalizer/cli/__main__.py\n/testbed/charset_normalizer/cli/__init__.py\n/testbed/charset_normalizer/utils.py\n/testbed/charset_normalizer/constant.py\n/testbed/charset_normalizer/cd.py\n/testbed/charset_normalizer/legacy.py\n/testbed/charset_normalizer/models.py\n/testbed/setup.py\n/testbed/docs/conf.py\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-ed9ef026-9647-4ae6-ac75-e2fd9b8c4843-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/charset_normalizer/cd.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-ed9ef026-9647-4ae6-ac75-e2fd9b8c4843-1",
+            "content": "get_range: str | None = None\n\n        for discovered_range in layers:\n            if (\n                is_suspiciously_successive_range(discovered_range, character_range)\n                is False\n            ):\n                layer_target_range = discovered_range\n                break\n\n        if layer_target_range is None:\n            layer_target_range = character_range\n\n        if layer_target_range not in layers:\n            layers[layer_target_range] = character.lower()\n            continue\n\n        layers[layer_target_range] += character.lower()\n\n    return list(layers.values())\n\n\ndef merge_coherence_ratios(results: list[CoherenceMatches]) -> CoherenceMatches:\n    \"\"\"\n    This function merge results previously given by the function coherence_ratio.\n    The return type is the same as coherence_ratio.\n    \"\"\"\n    per_language_ratios: dict[str, list[float]] = {}\n    for result in results:\n        for sub_result in result:\n            language, ratio = sub_result\n            if language not in per_language_ratios:\n                per_language_ratios[language] = [ratio]\n                continue\n            per_language_ratios[language].append(ratio)\n\n    merge = [\n        (\n            language,\n            round(\n                sum(per_language_ratios[language]) / len(per_language_ratios[language]),\n                4,\n            ),\n        )\n        for language in per_language_ratios\n    ]\n\n    return sorted(merge, key=lambda x: x[1], reverse=True)\n\n\ndef filter_alt_coherence_matches(results: CoherenceMatches) -> CoherenceMatches:\n    \"\"\"\n    We shall NOT return \"English—\" in CoherenceMatches because it is an alternative\n    of \"English\". This function only keeps the best match and remove the em-dash in it.\n    \"\"\"\n    index_results: dict[str, list[float]] = dict()\n\n    for result in results:\n        language, ratio = result\n        no_em_name: str = language.replace(\"—\", \"\")\n\n        if no_em_name not in index_results:\n            index_results[no_em_name] = []\n\n        index_results[no_em_name].append(ratio)\n\n    if any(len(index_results[e]) > 1 for e in index_results):\n        filtered_results: CoherenceMatches = []\n\n        for language in index_results:\n            filtered_results.append((language, max(index_results[language])))\n\n        return filtered_results\n\n    return results\n\n\n@lru_cache(maxsize=2048)\ndef coherence_ratio(\n    decoded_sequence: str, threshold: float = 0.1, lg_inclusion: str | None = None\n) -> CoherenceMatches:\n    \"\"\"\n    Detect ANY language that can be identified in given sequence. The sequence will be analysed by layers.\n    A layer = Character extraction by alphabets/ranges.\n    \"\"\"\n\n    results: list[tuple[str, float]] = []\n    ignore_non_latin: bool = False\n\n    sufficient_match_count: int = 0\n\n    lg_inclusion_list = lg_inclusion.split(\",\") if lg_inclusion is not None else []\n    if \"Latin Based\" in lg_inclusion_list:\n        ignore_non_latin = True\n        lg_inclusion_list.remove(\"Latin Based\")\n\n    for layer in alpha_unicode_split(decoded_sequence):\n        sequence_frequencies: TypeCounter[str] = Counter(layer)\n        most_common = sequence_frequencies.most_common()\n\n        character_count: int = sum(o for c, o in most_common)\n\n        if character_count <= TOO_SMALL_SEQUENCE:\n            continue\n\n        popular_character_ordered: list[str] = [c for c, o in most_common]\n\n        for language in lg_inclusion_list or alphabet_languages(\n            popular_character_ordered, ignore_non_latin\n        ):\n            ratio: float = characters_popularity_compare(\n                language, popular_character_ordered\n            )\n\n            if ratio < threshold:\n                continue\n            elif ratio >= 0.8:\n                sufficient_match_count += 1\n\n            results.append((language, round(ratio, 4)))\n\n            if sufficient_match_count >= 3:\n                break\n\n    return sorted(\n        filter_alt_coherence_matches(results), key=lambda x: x[1], reverse=True\n    )\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-0aff3e63-5779-4f57-990c-823cddf412ed-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/tests/test_coherence_detection.py && echo \"==== CHANGELOG ====\" && cat /testbed/CHANGELOG.md | head -100 && echo \"==== GIT LOG ====\" && cd /testbed && git log --oneline -20 && echo \"==== GIT STATUS ====\" && git status && echo \"==== GIT DIFF ====\" && git diff && echo \"==== BLAME merge ====\" && git log -p --all -S \"merge_coherence_ratios\" -- \"*.py\" | head -200"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-0aff3e63-5779-4f57-990c-823cddf412ed-2",
+            "content": "for compatible_language in compatible_languages:\n+            ratio = characters_popularity_compare(\n+                compatible_language, ordered_characters\n             )\n-\n+            \n             if ratio < threshold:\n                 continue\n-            elif ratio >= 0.8:\n-                sufficient_match_count += 1\n-\n-            results.append((language, round(ratio, 4)))\n-\n-            if sufficient_match_count >= 3:\n-                break\n-\n-    return sorted(\n-        filter_alt_coherence_matches(results), key=lambda x: x[1], reverse=True\n-    )\n+                \n+            layer_results.append((compatible_language, round(ratio, 4)))\n+        \n+        if layer_results:\n+            # Sort by ratio in descending order\n+            layer_results = sorted(layer_results, key=lambda x: x[1], reverse=True)\n+            results.append(layer_results)\n+    \n+    if not results:\n+        return []\n+        \n+    # Merge results from different layers\n+    merged_results: CoherenceMatches = merge_coherence_ratios(results)\n+    \n+    # Filter out alternative matches (e.g., \"English—\")\n+    return filter_alt_coherence_matches(merged_results)\n\\ No newline at end of file\n\ncommit 9ca2360b323b9f512f78654df73a079c5667201c\nAuthor: sweft <sweft@anon.com>\nDate:   Sat Mar 15 04:03:32 2025 +0000\n\n    Initial commit\n\ndiff --git a/charset_normalizer/api.py b/charset_normalizer/api.py\nnew file mode 100644\nindex 0000000..9ffc049\n--- /dev/null\n+++ b/charset_normalizer/api.py\n@@ -0,0 +1,670 @@\n+from __future__ import annotations\n+\n+import logging\n+from os import PathLike\n+from typing import BinaryIO\n+\n+from .cd import (\n+    coherence_ratio,\n+    encoding_languages,\n+    mb_encoding_languages,\n+    merge_coherence_ratios,\n+)\n+from .constant import IANA_SUPPORTED, TOO_BIG_SEQUENCE, TOO_SMALL_SEQUENCE, TRACE\n+from .md import mess_ratio\n+from .models import CharsetMatch, CharsetMatches\n+from .utils import (\n+    any_specified_encoding,\n+    cut_sequence_chunks,\n+    iana_name,\n+    identify_sig_or_bom,\n+    is_cp_similar,\n+    is_multi_byte_encoding,\n+    should_strip_sig_or_bom,\n+)\n+\n+# Will most likely be controversial\n+# logging.addLevelName(TRACE, \"TRACE\")\n+logger = logging.getLogger(\"charset_normalizer\")\n+explain_handler = logging.StreamHandler()\n+explain_handler.setFormatter(\n+    logging.Formatter(\"%(asctime)s | %(levelname)s | %(message)s\")\n+)\n+\n+\n+def from_bytes(\n+    sequences: bytes | bytearray,\n+    steps: int = 5,\n+    chunk_size: int = 512,\n+    threshold: float = 0.2,\n+    cp_isolation: list[str] | None = None,\n+    cp_exclusion: list[str] | None = None,\n+    preemptive_behaviour: bool = True,\n+    explain: bool = False,\n+    language_threshold: float = 0.1,\n+    enable_fallback: bool = True,\n+) -> CharsetMatches:\n+    \"\"\"\n+    Given a raw bytes sequence, return the best possibles charset usable to render str objects.\n+    If there is no results, it is a strong indicator that the source is binary/not text.\n+    By default, the process will extract 5 blocks of 512o each to assess the mess and coherence of a given sequence.\n+    And will give up a particular code page after 20% of measured mess. Those criteria are customizable at will.\n+\n+    The preemptive behavior DOES NOT replace the traditional detection workflow, it prioritize a particular code page\n+    but never take it for granted. Can improve the performance.\n+\n+    You may want to focus your attention to some code page or/and not others, use cp_isolation and cp_exclusion for that\n+    purpose.\n+\n+    This function will strip the SIG in the payload/sequence every time except on UTF-16, UTF-32.\n+    By default the library does not setup any handler other than the NullHandler, if you choose to set the 'explain'\n+    toggle to True it will alter the logger configuration to add a StreamHandler that is suitable for debugging.\n+    Custom logging format and handler can be set manually.\n+    \"\"\"\n+\n+    if not isinstance(sequences, (bytearray, bytes)):\n+        raise TypeError(\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-81d76513-5179-4cba-851f-6b0b1f2b13e0-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cd /testbed && git log --oneline -20 && echo \"==== BRANCHES ====\" && git branch -a && echo \"==== SHOW CD.PY FROM INITIAL ====\" && git show HEAD:charset_normalizer/cd.py | tail -n +150 | head -150"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-81d76513-5179-4cba-851f-6b0b1f2b13e0-3",
+            "content": "{language} not available\")\n\n    character_approved_count: int = 0\n    FREQUENCIES_language_set = set(FREQUENCIES[language])\n\n    ordered_characters_count: int = len(ordered_characters)\n    target_language_characters_count: int = len(FREQUENCIES[language])\n\n    large_alphabet: bool = target_language_characters_count > 26\n\n    for character, character_rank in zip(\n        ordered_characters, range(0, ordered_characters_count)\n    ):\n        if character not in FREQUENCIES_language_set:\n            continue\n\n        character_rank_in_language: int = FREQUENCIES[language].index(character)\n        expected_projection_ratio: float = (\n            target_language_characters_count / ordered_characters_count\n        )\n        character_rank_projection: int = int(character_rank * expected_projection_ratio)\n\n        if (\n            large_alphabet is False\n            and abs(character_rank_projection - character_rank_in_language) > 4\n        ):\n            continue\n\n        if (\n            large_alphabet is True\n            and abs(character_rank_projection - character_rank_in_language)\n            < target_language_characters_count / 3\n        ):\n            character_approved_count += 1\n            continue\n\n        characters_before_source: list[str] = FREQUENCIES[language][\n            0:character_rank_in_language\n        ]\n        characters_after_source: list[str] = FREQUENCIES[language][\n            character_rank_in_language:\n        ]\n        characters_before: list[str] = ordered_characters[0:character_rank]\n        characters_after: list[str] = ordered_characters[character_rank:]\n\n        before_match_count: int = len(\n            set(characters_before) & set(characters_before_source)\n        )\n\n        after_match_count: int = len(\n            set(characters_after) & set(characters_after_source)\n        )\n\n        if len(characters_before_source) == 0 and before_match_count <= 4:\n            character_approved_count += 1\n            continue\n\n        if len(characters_after_source) == 0 and after_match_count <= 4:\n            character_approved_count += 1\n            continue\n\n        if (\n            before_match_count / len(characters_before_source) >= 0.4\n            or after_match_count / len(characters_after_source) >= 0.4\n        ):\n            character_approved_count += 1\n            continue\n\n    return character_approved_count / len(ordered_characters)\n\n\ndef alpha_unicode_split(decoded_sequence: str) -> list[str]:\n    \"\"\"\n    Given a decoded text sequence, return a list of str. Unicode range / alphabet separation.\n    Ex. a text containing English/Latin with a bit a Hebrew will return two items in the resulting list;\n    One containing the latin letters and the other hebrew.\n    \"\"\"\n    layers: dict[str, str] = {}\n\n    for character in decoded_sequence:\n        if character.isalpha() is False:\n            continue\n\n        character_range: str | None = unicode_range(character)\n\n        if character_range is None:\n            continue\n\n        layer_target_range: str | None = None\n\n        for discovered_range in layers:\n            if (\n                is_suspiciously_successive_range(discovered_range, character_range)\n                is False\n            ):\n                layer_target_range = discovered_range\n                break\n\n        if layer_target_range is None:\n            layer_target_range = character_range\n\n        if layer_target_range not in layers:\n            layers[layer_target_range] = character.lower()\n            continue\n\n        layers[layer_target_range] += character.lower()\n\n    return list(layers.values())\n\n\ndef merge_coherence_ratios(results: list[CoherenceMatches]) -> CoherenceMatches:\n    \"\"\"\n    This function merge results previously given by the function coherence_ratio.\n    The return type is the same as coherence_ratio.\n    \"\"\"\n    per_language_ratios: dict[str, list[float]] = {}\n    for result in results:\n        for sub_result in result:\n            language, ratio = sub_result\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-c5d6e44a-7b77-4dc0-9062-9a7b07d7f6d9-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cd /testbed && git log --oneline --all && echo \"==== FULL CD.PY ====\" && wc -l charset_normalizer/cd.py && echo \"==== TESTS ====\" && cat tests/test_coherence_detection.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-c5d6e44a-7b77-4dc0-9062-9a7b07d7f6d9-4",
+            "content": "Remove F2P Tests\n9079272 Bug Patch\n16a93ca Remove F2P Tests\ne50810a Bug Patch\n8012af1 Remove F2P Tests\na2a899a Bug Patch\n11d8a7b Remove F2P Tests\na9a4994 Bug Patch\nc2ce495 Remove F2P Tests\naf7c501 Bug Patch\nbd8080a Remove F2P Tests\n76aedf5 Bug Patch\nf609660 Remove F2P Tests\ndd8da7e Bug Patch\n1e65b68 Remove F2P Tests\n160802c Bug Patch\nc488060 Remove F2P Tests\n6aa9f04 Bug Patch\n5d9bdf7 Remove F2P Tests\n9355cbf Bug Patch\nb07a07a Remove F2P Tests\nf723627 Bug Patch\nf147f93 Remove F2P Tests\nddb8aa0 Bug Patch\n9e43caa Remove F2P Tests\nc3a36cf Bug Patch\n57d8574 Remove F2P Tests\n2b64bfe Bug Patch\n3dd5456 Remove F2P Tests\nf74006b Bug Patch\nf3da5f1 Remove F2P Tests\n2be5373 Bug Patch\ne293202 Remove F2P Tests\n755a60a Bug Patch\n175c0a8 Remove F2P Tests\n42e9e59 Bug Patch\n7c341c5 Remove F2P Tests\n1baf92d Bug Patch\na948ead Remove F2P Tests\n98ceea9 Bug Patch\n127d759 Remove F2P Tests\ncf59a75 Bug Patch\n3f25e54 Remove F2P Tests\n27d56f1 Bug Patch\nc7f5548 Update pytest requirement from <=8.3.4,>=7.4.4 to >=7.4.4,<=8.4.1\nadc6534 Bump requests from 2.31.0 to 2.32.4\nb6ffc75 Bump pytest-cov from 4.1.0 to 6.2.1\nf7fc7f6 Bump flask from 2.2.3 to 3.1.1\n53dd84a Bump chardet from 5.1.0 to 5.2.0\n9ca2360 Initial commit\n==== FULL CD.PY ====\n395 charset_normalizer/cd.py\n==== TESTS ====\nfrom __future__ import annotations\n\nimport pytest\n\nfrom charset_normalizer.cd import (\n    encoding_languages,\n    filter_alt_coherence_matches,\n    get_target_features,\n    is_multi_byte_encoding,\n    mb_encoding_languages,\n)\n\n\n@pytest.mark.parametrize(\n    \"iana_encoding, expected_languages\",\n    [\n        (\"cp864\", [\"Arabic\", \"Farsi\"]),\n        (\"cp862\", [\"Hebrew\"]),\n        (\"cp737\", [\"Greek\"]),\n        (\"cp424\", [\"Hebrew\"]),\n        (\"cp273\", [\"Latin Based\"]),\n        (\"johab\", [\"Korean\"]),\n        (\"shift_jis\", [\"Japanese\"]),\n        (\"mac_greek\", [\"Greek\"]),\n        (\"iso2022_jp\", [\"Japanese\"]),\n    ],\n)\ndef test_infer_language_from_cp(iana_encoding, expected_languages):\n    languages = (\n        mb_encoding_languages(iana_encoding)\n        if is_multi_byte_encoding(iana_encoding)\n        else encoding_languages(iana_encoding)\n    )\n\n    for expected_language in expected_languages:\n        assert (\n            expected_language in languages\n        ), \"Wrongly detected language for given code page\"\n\n\n@pytest.mark.parametrize(\n    \"language, expected_have_accents, expected_pure_latin\",\n    [\n        (\"English\", False, True),\n        (\"French\", True, True),\n        (\"Hebrew\", False, False),\n        (\"Arabic\", False, False),\n        (\"Vietnamese\", True, True),\n        (\"Turkish\", True, True),\n    ],\n)\ndef test_target_features(language, expected_have_accents, expected_pure_latin):\n    target_have_accents, target_pure_latin = get_target_features(language)\n\n    assert target_have_accents is expected_have_accents\n    assert target_pure_latin is expected_pure_latin\n\n\n@pytest.mark.parametrize(\n    \"matches, expected_return\",\n    [\n        (\n            [\n                (\n                    \"English\",\n                    0.88,\n                ),\n                (\"English—\", 0.99),\n            ],\n            [(\"English\", 0.99)],\n        ),\n        (\n            [\n                (\n                    \"English\",\n                    0.88,\n                ),\n                (\"English—\", 0.99),\n                (\"English——\", 0.999),\n            ],\n            [(\"English\", 0.999)],\n        ),\n        (\n            [\n                (\n                    \"English\",\n                    0.88,\n                ),\n                (\"English—\", 0.77),\n            ],\n            [(\"English\", 0.88)],\n        ),\n        (\n            [\n                (\n                    \"English\",\n                    0.88,\n                ),\n                (\"Italian\", 0.77),\n            ],\n            [(\"English\", 0.88), (\"Italian\", 0.77)],\n        ),\n    ],\n)\ndef test_filter_alt_coherence_matches(matches, expected_return):\n    results = filter_alt_coherence_matches(matches)\n\n    assert results == expected_return\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-133f7be6-2918-40ed-b31b-8bed4f7538df-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cd /testbed && git log -1 && git status && echo \"==== CURRENT BRANCH ====\" && git rev-parse HEAD && git branch --show-current && echo \"==== cd.py merge function and callers ====\" && cat charset_normalizer/cd.py && echo \"==== api.py merge usage ====\" && grep -n -A 30 \"merge_coherence\" charset_normalizer/api.py charset_normalizer/cd.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-133f7be6-2918-40ed-b31b-8bed4f7538df-5",
+            "content": "harset_normalizer/api.py-39-    threshold: float = 0.2,\ncharset_normalizer/api.py-40-    cp_isolation: list[str] | None = None,\ncharset_normalizer/api.py-41-    cp_exclusion: list[str] | None = None,\n--\ncharset_normalizer/api.py:428:        cd_ratios_merged = merge_coherence_ratios(cd_ratios)\ncharset_normalizer/api.py-429-\ncharset_normalizer/api.py-430-        if cd_ratios_merged:\ncharset_normalizer/api.py-431-            logger.log(\ncharset_normalizer/api.py-432-                TRACE,\ncharset_normalizer/api.py-433-                \"We detected language {} using {}\".format(\ncharset_normalizer/api.py-434-                    cd_ratios_merged, encoding_iana\ncharset_normalizer/api.py-435-                ),\ncharset_normalizer/api.py-436-            )\ncharset_normalizer/api.py-437-\ncharset_normalizer/api.py-438-        current_match = CharsetMatch(\ncharset_normalizer/api.py-439-            sequences,\ncharset_normalizer/api.py-440-            encoding_iana,\ncharset_normalizer/api.py-441-            mean_mess_ratio,\ncharset_normalizer/api.py-442-            bom_or_sig_available,\ncharset_normalizer/api.py-443-            cd_ratios_merged,\ncharset_normalizer/api.py-444-            (\ncharset_normalizer/api.py-445-                decoded_payload\ncharset_normalizer/api.py-446-                if (\ncharset_normalizer/api.py-447-                    is_too_large_sequence is False\ncharset_normalizer/api.py-448-                    or encoding_iana in [specified_encoding, \"ascii\", \"utf_8\"]\ncharset_normalizer/api.py-449-                )\ncharset_normalizer/api.py-450-                else None\ncharset_normalizer/api.py-451-            ),\ncharset_normalizer/api.py-452-            preemptive_declaration=specified_encoding,\ncharset_normalizer/api.py-453-        )\ncharset_normalizer/api.py-454-\ncharset_normalizer/api.py-455-        results.append(current_match)\ncharset_normalizer/api.py-456-\ncharset_normalizer/api.py-457-        if (\ncharset_normalizer/api.py-458-            encoding_iana in [specified_encoding, \"ascii\", \"utf_8\"]\n--\ncharset_normalizer/cd.py:291:def merge_coherence_ratios(results: list[CoherenceMatches]) -> CoherenceMatches:\ncharset_normalizer/cd.py-292-    \"\"\"\ncharset_normalizer/cd.py-293-    This function merge results previously given by the function coherence_ratio.\ncharset_normalizer/cd.py-294-    The return type is the same as coherence_ratio.\ncharset_normalizer/cd.py-295-    \"\"\"\ncharset_normalizer/cd.py-296-    per_language_ratios: dict[str, list[float]] = {}\ncharset_normalizer/cd.py-297-    for result in results:\ncharset_normalizer/cd.py-298-        for sub_result in result:\ncharset_normalizer/cd.py-299-            language, ratio = sub_result\ncharset_normalizer/cd.py-300-            if language not in per_language_ratios:\ncharset_normalizer/cd.py-301-                per_language_ratios[language] = [ratio]\ncharset_normalizer/cd.py-302-                continue\ncharset_normalizer/cd.py-303-            per_language_ratios[language].append(ratio)\ncharset_normalizer/cd.py-304-\ncharset_normalizer/cd.py-305-    merge = [\ncharset_normalizer/cd.py-306-        (\ncharset_normalizer/cd.py-307-            language,\ncharset_normalizer/cd.py-308-            round(\ncharset_normalizer/cd.py-309-                sum(per_language_ratios[language]) / len(per_language_ratios[language]),\ncharset_normalizer/cd.py-310-                4,\ncharset_normalizer/cd.py-311-            ),\ncharset_normalizer/cd.py-312-        )\ncharset_normalizer/cd.py-313-        for language in per_language_ratios\ncharset_normalizer/cd.py-314-    ]\ncharset_normalizer/cd.py-315-\ncharset_normalizer/cd.py-316-    return sorted(merge, key=lambda x: x[1], reverse=True)\ncharset_normalizer/cd.py-317-\ncharset_normalizer/cd.py-318-\ncharset_normalizer/cd.py-319-def filter_alt_coherence_matches(results: CoherenceMatches) -> CoherenceMatches:\ncharset_normalizer/cd.py-320-    \"\"\"\ncharset_normalizer/cd.py-321-    We shall NOT return \"English—\" in CoherenceMatches because it is an alternative\n"
+          }
+        ]
+      }
+    }
+  ]
+}

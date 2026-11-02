@@ -1,0 +1,37 @@
+{
+  "status": "authorized_bounded_contract_repair_revalidation",
+  "policy_commit": "39b1ed8b2936a2db869b6ee42929d1548da6ec39",
+  "protocol_file": "/home/ubuntu/.copilot/session-state/4007b0b5-c8b1-45e5-bb5b-635b5498e833/files/selective-gpu-protocol.json",
+  "model_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+  "gpu_correctness_cases": 0,
+  "workload_cases": 12,
+  "methods": 4,
+  "repetitions": 1,
+  "maximum_workflow_records": 48,
+  "retention_policy": "apc",
+  "quality_gate": "Full-correct cases must not regress; aggregate solved count must not decrease; provenance/conflicts/mandatory constraints retained; all failures and budget exhaustion counted.",
+  "cost_gate": "Measured whole task E2E and live KV/actual token costs with identical Projected+APC control; no fixed10%/5% requirement or token-to-kernel conversion.",
+  "non_goals": [
+    "new models",
+    "new calibration",
+    "ratio/seed sweeps",
+    "LLM summarizer",
+    "training",
+    "SWE-bench/GAIA"
+  ],
+  "gpu_run_authorized": true,
+  "authorization": "One bounded corrective revalidation under the active implement-and-fully-validate objective, after native CPU proof of the shared output-contract gap. Not a parameter search.",
+  "correctness_reference": {
+    "source_commit": "a9638a585a6de38900945d3d88ac03d10b3af513",
+    "junit": "results/selective-gpu/logs/junit.xml",
+    "passed": 4,
+    "runtime_and_selector_source_unchanged": true
+  },
+  "output_directory": "results/selective-gpu-output-contract",
+  "prior_epoch": "results/selective-gpu",
+  "prior_workflow_records": 48,
+  "maximum_additional_workflow_records": 48,
+  "maximum_cumulative_workflow_records": 96,
+  "repair": "Require both source-ordered DOCS slots, scope role instructions, constrain final answer syntax only. Fact values, input observations, verifier, scoring, budgets and runtime unchanged.",
+  "no_extra_runs_after_this_epoch": true
+}

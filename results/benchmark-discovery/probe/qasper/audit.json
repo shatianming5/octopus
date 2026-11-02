@@ -1,0 +1,704 @@
+{
+  "schema": "octopus-workload-prefix-probe-v1",
+  "source": {
+    "name": "allenai/qasper official test",
+    "revision": "v0.3 release (loader reference fdc9d8214fbab5dd782958601db4d678e6934a54)",
+    "split": "test",
+    "url": "https://qasper-dataset.s3.us-west-2.amazonaws.com/qasper-test-and-evaluator-v0.3.tgz",
+    "license": "CC-BY-4.0",
+    "selection": "First 4 paper IDs in lexicographic order with at least 3 questions; first 3 questions in source order; title + abstract + all full_text sections/paragraphs; no answer-based selection",
+    "request_kind": "Original distinct QASPER questions sharing the same full paper; no generated questions"
+  },
+  "tokenizer": {
+    "model": "Qwen/Qwen2.5-7B-Instruct",
+    "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "files": [
+      "tokenizer.json",
+      "tokenizer_config.json",
+      "config.json"
+    ],
+    "tokenizers_version": "0.23.2",
+    "jinja2_version": "3.1.6",
+    "chat_template": "pinned tokenizer_config.json; system/user; add_generation_prompt=True",
+    "add_special_tokens": false
+  },
+  "measurement": "Exact token IDs from fully rendered prompts; no inference or native cache execution",
+  "tasks": 4,
+  "requests": 12,
+  "source_contexts": [],
+  "assumptions": {
+    "block_size": 16,
+    "cache_capacity_mib": 1024.0,
+    "cache_capacity_full_blocks": 1170,
+    "simultaneous_tasks": 2,
+    "branches_per_task_cap": 3,
+    "reserved_output_tokens_per_request": 256,
+    "kv_dtype_bytes": 2,
+    "kv_bytes_per_token": 57344,
+    "kv_bytes_per_block": 917504,
+    "max_model_len": 16384,
+    "kv_geometry": {
+      "num_hidden_layers": 28,
+      "num_key_value_heads": 4,
+      "hidden_size": 3584,
+      "num_attention_heads": 28
+    },
+    "schedule": "Contiguous source-order task windows; first up-to-cap distinct questions per task; all live at once",
+    "sharing": "Ideal identical full-prefix-block sharing; partial blocks private; no shared output tokens",
+    "memory_scope": "KV payload only; excludes model weights, allocator/metadata/workspace overhead and parallel replication",
+    "timing": "No real arrival, service, decode, or tool timing is available; windows are assumptions, not a replay"
+  },
+  "native": {
+    "status": "unverified",
+    "evictions": null,
+    "adoptions": null,
+    "cache_hit_tokens": null,
+    "adopted_prefix_tokens": null,
+    "actual_prefill_tokens": null,
+    "scheduled_ranges": null,
+    "native_pressure": null,
+    "cached_root_opportunity": null,
+    "future_participation": null,
+    "improved_root_adoption": null,
+    "latency_seconds": null,
+    "quality": null,
+    "speedup": null,
+    "kv_memory_benefit_bytes": null
+  },
+  "orders": {
+    "context-first": {
+      "exact_prefix_metrics": {
+        "requests": 12,
+        "prompt_tokens": {
+          "min": 5008,
+          "median": 7969.0,
+          "max": 13090
+        },
+        "total_prompt_tokens": 102086,
+        "all_request_common_prefix_tokens": 19,
+        "all_request_common_prefix_full_blocks": 1,
+        "unaligned_common_prefix_tokens": 3,
+        "suffix_tokens_after_common_full_blocks": {
+          "min": 4992,
+          "median": 7953.0,
+          "max": 13074
+        },
+        "pairwise_common_prefix_tokens": {
+          "min": 19,
+          "median": 19.0,
+          "max": 13066
+        },
+        "best_prior_prefix_tokens_in_source_order": [
+          0,
+          8945,
+          8944,
+          19,
+          4997,
+          4996,
+          19,
+          13066,
+          13065,
+          19,
+          6965,
+          6966
+        ],
+        "best_prior_full_blocks_in_source_order": [
+          0,
+          559,
+          559,
+          1,
+          312,
+          312,
+          1,
+          816,
+          816,
+          1,
+          435,
+          435
+        ],
+        "unbounded_retention_repeated_full_block_tokens": 67952
+      },
+      "per_task": [
+        {
+          "task_id": "1601.03313",
+          "requests": 3,
+          "prompt_tokens": {
+            "min": 8957,
+            "median": 8957,
+            "max": 8957
+          },
+          "total_prompt_tokens": 26871,
+          "all_request_common_prefix_tokens": 8944,
+          "all_request_common_prefix_full_blocks": 559,
+          "unaligned_common_prefix_tokens": 0,
+          "suffix_tokens_after_common_full_blocks": {
+            "min": 13,
+            "median": 13,
+            "max": 13
+          },
+          "pairwise_common_prefix_tokens": {
+            "min": 8944,
+            "median": 8944,
+            "max": 8945
+          },
+          "best_prior_prefix_tokens_in_source_order": [
+            0,
+            8945,
+            8944
+          ],
+          "best_prior_full_blocks_in_source_order": [
+            0,
+            559,
+            559
+          ],
+          "unbounded_retention_repeated_full_block_tokens": 17888,
+          "requests_detail": [
+            {
+              "request_id": "e6204daf4efeb752fdbd5c26e179efcb8ddd2807",
+              "prompt_tokens": 8957,
+              "fits_assumed_model_len_with_output": true
+            },
+            {
+              "request_id": "95c3907c5e8f57f239f3b031b1e41f19ff77924a",
+              "prompt_tokens": 8957,
+              "fits_assumed_model_len_with_output": true
+            },
+            {
+              "request_id": "b900122c7d6c2d6161bfca8a95eae11952d1cb58",
+              "prompt_tokens": 8957,
+              "fits_assumed_model_len_with_output": true
+            }
+          ]
+        },
+        {
+          "task_id": "1602.03483",
+          "requests": 3,
+          "prompt_tokens": {
+            "min": 5008,
+            "median": 5009,
+            "max": 5010
+          },
+          "total_prompt_tokens": 15027,
+          "all_request_common_prefix_tokens": 4996,
+          "all_request_common_prefix_full_blocks": 312,
+          "unaligned_common_prefix_tokens": 4,
+          "suffix_tokens_after_common_full_blocks": {
+            "min": 16,
+            "median": 17,
+            "max": 18
+          },
+          "pairwise_common_prefix_tokens": {
+            "min": 4996,
+            "median": 4996,
+            "max": 4997
+          },
+          "best_prior_prefix_tokens_in_source_order": [
+            0,
+            4997,
+            4996
+          ],
+          "best_prior_full_blocks_in_source_order": [
+            0,
+            312,
+            312
+          ],
+          "unbounded_retention_repeated_full_block_tokens": 9984,
+          "requests_detail": [
+            {
+              "request_id": "7239c02a0dcc0c3c9d9cddb5e895bcf9cfcefee6",
+              "prompt_tokens": 5008,
+              "fits_assumed_model_len_with_output": true
+            },
+            {
+              "request_id": "9dcc10a4a325d4c9cb3bb8134831ee470be47e93",
+              "prompt_tokens": 5010,
+              "fits_assumed_model_len_with_output": true
+            },
+            {
+              "request_id": "31236a876277c6e1c80891a3293c105a1b1be008",
+              "prompt_tokens": 5009,
+              "fits_assumed_model_len_with_output": true
+            }
+          ]
+        },
+        {
+          "task_id": "1602.07563",
+          "requests": 3,
+          "prompt_tokens": {
+            "min": 13081,
+            "median": 13083,
+            "max": 13090
+          },
+          "total_prompt_tokens": 39254,
+          "all_request_common_prefix_tokens": 13065,
+          "all_request_common_prefix_full_blocks": 816,
+          "unaligned_common_prefix_tokens": 9,
+          "suffix_tokens_after_common_full_blocks": {
+            "min": 25,
+            "median": 27,
+            "max": 34
+          },
+          "pairwise_common_prefix_tokens": {
+            "min": 13065,
+            "median": 13065,
+            "max": 13066
+          },
+          "best_prior_prefix_tokens_in_source_order": [
+            0,
+            13066,
+            13065
+          ],
+          "best_prior_full_blocks_in_source_order": [
+            0,
+            816,
+            816
+          ],
+          "unbounded_retention_repeated_full_block_tokens": 26112,
+          "requests_detail": [
+            {
+              "request_id": "c5ea4da3c760ba89194ad807bc1ef60e1761429f",
+              "prompt_tokens": 13083,
+              "fits_assumed_model_len_with_output": true
+            },
+            {
+              "request_id": "4a093a9af4903a59057a4372ac1b01603467ca58",
+              "prompt_tokens": 13090,
+              "fits_assumed_model_len_with_output": true
+            },
+            {
+              "request_id": "f4e16b185b506713ff99acc4dbd9ec3208e4997b",
+              "prompt_tokens": 13081,
+              "fits_assumed_model_len_with_output": true
+            }
+          ]
+        },
+        {
+          "task_id": "1603.00957",
+          "requests": 3,
+          "prompt_tokens": {
+            "min": 6976,
+            "median": 6977,
+            "max": 6981
+          },
+          "total_prompt_tokens": 20934,
+          "all_request_common_prefix_tokens": 6965,
+          "all_request_common_prefix_full_blocks": 435,
+          "unaligned_common_prefix_tokens": 5,
+          "suffix_tokens_after_common_full_blocks": {
+            "min": 16,
+            "median": 17,
+            "max": 21
+          },
+          "pairwise_common_prefix_tokens": {
+            "min": 6965,
+            "median": 6965,
+            "max": 6966
+          },
+          "best_prior_prefix_tokens_in_source_order": [
+            0,
+            6965,
+            6966
+          ],
+          "best_prior_full_blocks_in_source_order": [
+            0,
+            435,
+            435
+          ],
+          "unbounded_retention_repeated_full_block_tokens": 13920,
+          "requests_detail": [
+            {
+              "request_id": "55bafa0f7394163f4afd1d73340aac94c2d9f36c",
+              "prompt_tokens": 6977,
+              "fits_assumed_model_len_with_output": true
+            },
+            {
+              "request_id": "cbb4eba59434d596749408be5b923efda7560890",
+              "prompt_tokens": 6981,
+              "fits_assumed_model_len_with_output": true
+            },
+            {
+              "request_id": "1d9d7c96c5e826ac06741eb40e89fca6b4b022bd",
+              "prompt_tokens": 6976,
+              "fits_assumed_model_len_with_output": true
+            }
+          ]
+        }
+      ],
+      "assumed_live_windows": [
+        {
+          "task_ids": [
+            "1601.03313",
+            "1602.03483"
+          ],
+          "live_requests": 6,
+          "naive_unshared_prompt_blocks": 2621,
+          "unique_full_prefix_blocks": 873,
+          "private_partial_prompt_blocks": 5,
+          "deduplicated_prompt_blocks": 878,
+          "assumed_additional_output_blocks": 96,
+          "estimated_live_blocks_with_output_reservation": 974,
+          "estimated_live_kv_bytes": 893648896,
+          "estimated_capacity_excess_blocks": 0,
+          "fits_assumed_capacity": true,
+          "requests_exceeding_assumed_model_len": 0
+        },
+        {
+          "task_ids": [
+            "1602.03483",
+            "1602.07563"
+          ],
+          "live_requests": 6,
+          "naive_unshared_prompt_blocks": 3396,
+          "unique_full_prefix_blocks": 1134,
+          "private_partial_prompt_blocks": 5,
+          "deduplicated_prompt_blocks": 1139,
+          "assumed_additional_output_blocks": 96,
+          "estimated_live_blocks_with_output_reservation": 1235,
+          "estimated_live_kv_bytes": 1133117440,
+          "estimated_capacity_excess_blocks": 65,
+          "fits_assumed_capacity": false,
+          "requests_exceeding_assumed_model_len": 0
+        },
+        {
+          "task_ids": [
+            "1602.07563",
+            "1603.00957"
+          ],
+          "live_requests": 6,
+          "naive_unshared_prompt_blocks": 3765,
+          "unique_full_prefix_blocks": 1257,
+          "private_partial_prompt_blocks": 5,
+          "deduplicated_prompt_blocks": 1262,
+          "assumed_additional_output_blocks": 96,
+          "estimated_live_blocks_with_output_reservation": 1358,
+          "estimated_live_kv_bytes": 1245970432,
+          "estimated_capacity_excess_blocks": 188,
+          "fits_assumed_capacity": false,
+          "requests_exceeding_assumed_model_len": 0
+        }
+      ],
+      "estimated_peak_live_kv_bytes": 1245970432
+    },
+    "question-first": {
+      "exact_prefix_metrics": {
+        "requests": 12,
+        "prompt_tokens": {
+          "min": 5008,
+          "median": 7969.0,
+          "max": 13090
+        },
+        "total_prompt_tokens": 102086,
+        "all_request_common_prefix_tokens": 19,
+        "all_request_common_prefix_full_blocks": 1,
+        "unaligned_common_prefix_tokens": 3,
+        "suffix_tokens_after_common_full_blocks": {
+          "min": 4992,
+          "median": 7953.0,
+          "max": 13074
+        },
+        "pairwise_common_prefix_tokens": {
+          "min": 19,
+          "median": 19.0,
+          "max": 20
+        },
+        "best_prior_prefix_tokens_in_source_order": [
+          0,
+          20,
+          19,
+          19,
+          20,
+          19,
+          19,
+          20,
+          20,
+          19,
+          20,
+          20
+        ],
+        "best_prior_full_blocks_in_source_order": [
+          0,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "unbounded_retention_repeated_full_block_tokens": 176
+      },
+      "per_task": [
+        {
+          "task_id": "1601.03313",
+          "requests": 3,
+          "prompt_tokens": {
+            "min": 8957,
+            "median": 8957,
+            "max": 8957
+          },
+          "total_prompt_tokens": 26871,
+          "all_request_common_prefix_tokens": 19,
+          "all_request_common_prefix_full_blocks": 1,
+          "unaligned_common_prefix_tokens": 3,
+          "suffix_tokens_after_common_full_blocks": {
+            "min": 8941,
+            "median": 8941,
+            "max": 8941
+          },
+          "pairwise_common_prefix_tokens": {
+            "min": 19,
+            "median": 19,
+            "max": 20
+          },
+          "best_prior_prefix_tokens_in_source_order": [
+            0,
+            20,
+            19
+          ],
+          "best_prior_full_blocks_in_source_order": [
+            0,
+            1,
+            1
+          ],
+          "unbounded_retention_repeated_full_block_tokens": 32,
+          "requests_detail": [
+            {
+              "request_id": "e6204daf4efeb752fdbd5c26e179efcb8ddd2807",
+              "prompt_tokens": 8957,
+              "fits_assumed_model_len_with_output": true
+            },
+            {
+              "request_id": "95c3907c5e8f57f239f3b031b1e41f19ff77924a",
+              "prompt_tokens": 8957,
+              "fits_assumed_model_len_with_output": true
+            },
+            {
+              "request_id": "b900122c7d6c2d6161bfca8a95eae11952d1cb58",
+              "prompt_tokens": 8957,
+              "fits_assumed_model_len_with_output": true
+            }
+          ]
+        },
+        {
+          "task_id": "1602.03483",
+          "requests": 3,
+          "prompt_tokens": {
+            "min": 5008,
+            "median": 5009,
+            "max": 5010
+          },
+          "total_prompt_tokens": 15027,
+          "all_request_common_prefix_tokens": 19,
+          "all_request_common_prefix_full_blocks": 1,
+          "unaligned_common_prefix_tokens": 3,
+          "suffix_tokens_after_common_full_blocks": {
+            "min": 4992,
+            "median": 4993,
+            "max": 4994
+          },
+          "pairwise_common_prefix_tokens": {
+            "min": 19,
+            "median": 19,
+            "max": 20
+          },
+          "best_prior_prefix_tokens_in_source_order": [
+            0,
+            20,
+            19
+          ],
+          "best_prior_full_blocks_in_source_order": [
+            0,
+            1,
+            1
+          ],
+          "unbounded_retention_repeated_full_block_tokens": 32,
+          "requests_detail": [
+            {
+              "request_id": "7239c02a0dcc0c3c9d9cddb5e895bcf9cfcefee6",
+              "prompt_tokens": 5008,
+              "fits_assumed_model_len_with_output": true
+            },
+            {
+              "request_id": "9dcc10a4a325d4c9cb3bb8134831ee470be47e93",
+              "prompt_tokens": 5010,
+              "fits_assumed_model_len_with_output": true
+            },
+            {
+              "request_id": "31236a876277c6e1c80891a3293c105a1b1be008",
+              "prompt_tokens": 5009,
+              "fits_assumed_model_len_with_output": true
+            }
+          ]
+        },
+        {
+          "task_id": "1602.07563",
+          "requests": 3,
+          "prompt_tokens": {
+            "min": 13081,
+            "median": 13083,
+            "max": 13090
+          },
+          "total_prompt_tokens": 39254,
+          "all_request_common_prefix_tokens": 19,
+          "all_request_common_prefix_full_blocks": 1,
+          "unaligned_common_prefix_tokens": 3,
+          "suffix_tokens_after_common_full_blocks": {
+            "min": 13065,
+            "median": 13067,
+            "max": 13074
+          },
+          "pairwise_common_prefix_tokens": {
+            "min": 19,
+            "median": 19,
+            "max": 20
+          },
+          "best_prior_prefix_tokens_in_source_order": [
+            0,
+            20,
+            19
+          ],
+          "best_prior_full_blocks_in_source_order": [
+            0,
+            1,
+            1
+          ],
+          "unbounded_retention_repeated_full_block_tokens": 32,
+          "requests_detail": [
+            {
+              "request_id": "c5ea4da3c760ba89194ad807bc1ef60e1761429f",
+              "prompt_tokens": 13083,
+              "fits_assumed_model_len_with_output": true
+            },
+            {
+              "request_id": "4a093a9af4903a59057a4372ac1b01603467ca58",
+              "prompt_tokens": 13090,
+              "fits_assumed_model_len_with_output": true
+            },
+            {
+              "request_id": "f4e16b185b506713ff99acc4dbd9ec3208e4997b",
+              "prompt_tokens": 13081,
+              "fits_assumed_model_len_with_output": true
+            }
+          ]
+        },
+        {
+          "task_id": "1603.00957",
+          "requests": 3,
+          "prompt_tokens": {
+            "min": 6976,
+            "median": 6977,
+            "max": 6981
+          },
+          "total_prompt_tokens": 20934,
+          "all_request_common_prefix_tokens": 19,
+          "all_request_common_prefix_full_blocks": 1,
+          "unaligned_common_prefix_tokens": 3,
+          "suffix_tokens_after_common_full_blocks": {
+            "min": 6960,
+            "median": 6961,
+            "max": 6965
+          },
+          "pairwise_common_prefix_tokens": {
+            "min": 19,
+            "median": 19,
+            "max": 20
+          },
+          "best_prior_prefix_tokens_in_source_order": [
+            0,
+            19,
+            20
+          ],
+          "best_prior_full_blocks_in_source_order": [
+            0,
+            1,
+            1
+          ],
+          "unbounded_retention_repeated_full_block_tokens": 32,
+          "requests_detail": [
+            {
+              "request_id": "55bafa0f7394163f4afd1d73340aac94c2d9f36c",
+              "prompt_tokens": 6977,
+              "fits_assumed_model_len_with_output": true
+            },
+            {
+              "request_id": "cbb4eba59434d596749408be5b923efda7560890",
+              "prompt_tokens": 6981,
+              "fits_assumed_model_len_with_output": true
+            },
+            {
+              "request_id": "1d9d7c96c5e826ac06741eb40e89fca6b4b022bd",
+              "prompt_tokens": 6976,
+              "fits_assumed_model_len_with_output": true
+            }
+          ]
+        }
+      ],
+      "assumed_live_windows": [
+        {
+          "task_ids": [
+            "1601.03313",
+            "1602.03483"
+          ],
+          "live_requests": 6,
+          "naive_unshared_prompt_blocks": 2621,
+          "unique_full_prefix_blocks": 2611,
+          "private_partial_prompt_blocks": 5,
+          "deduplicated_prompt_blocks": 2616,
+          "assumed_additional_output_blocks": 96,
+          "estimated_live_blocks_with_output_reservation": 2712,
+          "estimated_live_kv_bytes": 2488270848,
+          "estimated_capacity_excess_blocks": 1542,
+          "fits_assumed_capacity": false,
+          "requests_exceeding_assumed_model_len": 0
+        },
+        {
+          "task_ids": [
+            "1602.03483",
+            "1602.07563"
+          ],
+          "live_requests": 6,
+          "naive_unshared_prompt_blocks": 3396,
+          "unique_full_prefix_blocks": 3386,
+          "private_partial_prompt_blocks": 5,
+          "deduplicated_prompt_blocks": 3391,
+          "assumed_additional_output_blocks": 96,
+          "estimated_live_blocks_with_output_reservation": 3487,
+          "estimated_live_kv_bytes": 3199336448,
+          "estimated_capacity_excess_blocks": 2317,
+          "fits_assumed_capacity": false,
+          "requests_exceeding_assumed_model_len": 0
+        },
+        {
+          "task_ids": [
+            "1602.07563",
+            "1603.00957"
+          ],
+          "live_requests": 6,
+          "naive_unshared_prompt_blocks": 3765,
+          "unique_full_prefix_blocks": 3755,
+          "private_partial_prompt_blocks": 5,
+          "deduplicated_prompt_blocks": 3760,
+          "assumed_additional_output_blocks": 96,
+          "estimated_live_blocks_with_output_reservation": 3856,
+          "estimated_live_kv_bytes": 3537895424,
+          "estimated_capacity_excess_blocks": 2686,
+          "fits_assumed_capacity": false,
+          "requests_exceeding_assumed_model_len": 0
+        }
+      ],
+      "estimated_peak_live_kv_bytes": 3537895424
+    }
+  },
+  "download": {
+    "url": "https://qasper-dataset.s3.us-west-2.amazonaws.com/qasper-test-and-evaluator-v0.3.tgz",
+    "response_bytes": 3865061,
+    "json_bytes": 18078957,
+    "archive_member": "qasper-test-v0.3.json",
+    "raw_source_persisted": false,
+    "source_inventory": null
+  }
+}

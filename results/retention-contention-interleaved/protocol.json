@@ -1,0 +1,183 @@
+{
+  "calibration": {
+    "background_requests": 16,
+    "capacity": "2g",
+    "method": "apc",
+    "recommended_high_fraction": 0.85,
+    "recommended_low_fraction": 0.35,
+    "seed": 707
+  },
+  "capacities": {
+    "2g": 2147483648,
+    "512m": 536870912
+  },
+  "data_parallel_size": 1,
+  "dtype": "bfloat16",
+  "engine": {
+    "block_size": 16,
+    "enable_chunked_prefill": true,
+    "enable_prefix_caching": true,
+    "matched_async_scheduling": false,
+    "matched_enforce_eager": true,
+    "max_model_len": 8192,
+    "max_num_batched_tokens": 8192,
+    "max_num_seqs": 8,
+    "request_priority": 0
+  },
+  "foreground": {
+    "brain_max_output_tokens": 1,
+    "branch_max_output_tokens": 256,
+    "branches_per_round": 3,
+    "final_continuation_max_output_tokens": 96,
+    "intermediate_continuation_max_output_tokens": 1,
+    "rounds": 3,
+    "shared_prompt_tokens": 4096,
+    "tool_timeout_seconds": 30
+  },
+  "generation_seed": 17,
+  "gpu_count": 1,
+  "matrix": {
+    "group_order": [
+      {
+        "capacity": "512m",
+        "method": "apc"
+      },
+      {
+        "capacity": "512m",
+        "method": "octopus"
+      },
+      {
+        "capacity": "512m",
+        "method": "apc-native-default"
+      },
+      {
+        "capacity": "2g",
+        "method": "octopus"
+      },
+      {
+        "capacity": "2g",
+        "method": "apc"
+      },
+      {
+        "capacity": "2g",
+        "method": "apc-native-default"
+      }
+    ],
+    "matched_methods": [
+      "apc",
+      "octopus"
+    ],
+    "matched_traces": 24,
+    "native_method": "apc-native-default",
+    "native_regime": "high",
+    "native_traces": 6,
+    "total_traces": 30
+  },
+  "model": "Qwen/Qwen2.5-7B-Instruct",
+  "model_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+  "pilot": {
+    "background_requests": 8,
+    "capacity": "512m",
+    "methods": [
+      "apc",
+      "octopus"
+    ],
+    "regime": "high",
+    "seed": 909
+  },
+  "study_id": "retention-contention",
+  "tensor_parallel_size": 1,
+  "tools": [
+    {
+      "branch": "ast",
+      "kind": "ast_dataclasses",
+      "oracle": "5 dataclasses",
+      "path": "src/octopus/state.py",
+      "predicate": "repo.state_dataclasses",
+      "round": 1
+    },
+    {
+      "branch": "search",
+      "kind": "source_search",
+      "oracle": "1 match",
+      "path": "src/octopus/vllm_backend.py",
+      "pattern": "allocate_new_computed_blocks",
+      "predicate": "repo.allocate_owner_calls",
+      "round": 1
+    },
+    {
+      "branch": "tests",
+      "kind": "state_tests",
+      "oracle": "6 passed",
+      "path": "tests/test_state.py",
+      "predicate": "repo.state_test_status_round_1",
+      "round": 1
+    },
+    {
+      "branch": "ast",
+      "class": "OctopusScheduler",
+      "kind": "ast_public_methods",
+      "oracle": "12 public methods",
+      "path": "src/octopus/vllm_backend.py",
+      "predicate": "repo.scheduler_public_methods",
+      "round": 2
+    },
+    {
+      "branch": "search",
+      "kind": "source_search",
+      "oracle": "2 matches",
+      "path": "src/octopus",
+      "pattern": "release_checkpoint",
+      "predicate": "repo.release_checkpoint_occurrences",
+      "round": 2
+    },
+    {
+      "branch": "tests",
+      "kind": "state_tests",
+      "oracle": "6 passed",
+      "path": "tests/test_state.py",
+      "predicate": "repo.state_test_status_round_2",
+      "round": 2
+    },
+    {
+      "branch": "ast",
+      "class": "BranchStatus",
+      "kind": "ast_enum_values",
+      "oracle": "QUEUED,RUNNING,COMMIT_READY,COMMITTED,ABORTED,FAILED",
+      "path": "src/octopus/runtime.py",
+      "predicate": "repo.branch_status_values",
+      "round": 3
+    },
+    {
+      "branch": "search",
+      "kind": "source_search",
+      "oracle": "2 matches",
+      "path": "src/octopus",
+      "pattern": "serialize_delta",
+      "predicate": "repo.serialize_delta_occurrences",
+      "round": 3
+    },
+    {
+      "branch": "tests",
+      "kind": "state_tests",
+      "oracle": "6 passed",
+      "path": "tests/test_state.py",
+      "predicate": "repo.state_test_status_round_3",
+      "round": 3
+    }
+  ],
+  "traffic": {
+    "arrival_rates_rps": {
+      "high": 2.342843,
+      "low": 0.9647
+    },
+    "background_requests": 64,
+    "max_output_tokens": 64,
+    "prompt_tokens": 2048,
+    "seeds": [
+      101,
+      202,
+      303
+    ]
+  }
+}

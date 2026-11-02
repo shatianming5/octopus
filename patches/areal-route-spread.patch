@@ -1,0 +1,108 @@
+--- a/areal/experimental/openai/proxy/proxy_rollout_server.py
++++ b/areal/experimental/openai/proxy/proxy_rollout_server.py
+@@ -39,6 +39,7 @@
+ )
+ from areal.experimental.openai.types import InteractionWithTokenLogpReward
+ from areal.infra.processor_cache import ProcessorCacheRegistry
++from areal.infra.remote_inf_engine import ROUTE_KEY
+ from areal.infra.rpc.serialization import deserialize_value, serialize_value
+ from areal.infra.utils.http import validate_admin_api_key
+ from areal.utils import name_resolve, names, seeding, stats_tracker
+@@ -643,6 +644,9 @@
+         _api_key_to_session[session_api_key] = session_id
+         _session_to_api_key[session_id] = session_api_key
+ 
++    from octopus.serving import route  # octopus: a reused session id starts a new tree, admitted as any other
++
++    route.start(session_id)
+     return StartSessionResponse(session_id=session_id, api_key=session_api_key)
+ 
+ 
+@@ -654,6 +658,9 @@
+     gateway refresh path) can decide whether meaningful trajectory data
+     exists.
+     """
++    from octopus.serving import route  # octopus: the session's episode tree ended, its server's tree slot frees
++
++    route.end(session_id)
+     with _lock:
+         if session_id not in _session_cache:
+             raise HTTPException(
+@@ -1011,6 +1018,7 @@
+         }
+         if supports_processor_cache:
+             client_kwargs["processor_cache"] = session_data.processor_cache
++        ROUTE_KEY.set(session_id)  # octopus: this request's task context only (OCTOPUS_ROUTE_SERVERS)
+         return await create_fn(**client_kwargs)
+     except ContextLengthExceededError as e:
+         session_data.mark_context_overflow(str(e))
+--- a/areal/infra/remote_inf_engine.py
++++ b/areal/infra/remote_inf_engine.py
+@@ -3,6 +3,7 @@
+ from __future__ import annotations
+ 
+ import asyncio
++import contextvars
+ import os
+ import random
+ import shutil
+@@ -69,6 +70,13 @@
+ 
+ RID_CACHE_SIZE = 128
+ 
++# octopus: the proxy sets this to the request's session id. With OCTOPUS_ROUTE_SERVERS (comma-separated host:port, all
++# rollout servers) a session's requests go where octopus/serving/route.py puts the session (the server that admits it
++# when it starts, then always that one, until /rl/end_session), instead of this engine's own server; a request that
++# continues a reply's cursor still goes to that cursor's server, so one episode tree (a session) stays on one server,
++# as a read needs.
++ROUTE_KEY: contextvars.ContextVar[str | None] = contextvars.ContextVar("areal_route_key", default=None)
++
+ logger = logging.getLogger("RemoteInfEngine")
+ 
+ 
+@@ -566,6 +574,9 @@
+         self.rid_queue = []
+         self.addresses = []
+         self.server_idx = 0
++        from octopus.serving.route import Router
++
++        self.route = Router.from_env()
+ 
+         self._version = 0
+ 
+@@ -1052,6 +1063,19 @@
+         raise NotImplementedError("Only round-robin scheduling is implemented.")
+ 
+     async def agenerate(self, req: ModelRequest) -> ModelResponse:
++        """octopus: _agenerate on the server self.route gives the request's proxy session (OCTOPUS_ROUTE_SERVERS), in
++        its load while it runs; without route servers or a session _agenerate picks the server."""
++        if self.route is None or (key := ROUTE_KEY.get()) is None:
++            return await self._agenerate(req)
++        p = req.parent
++        known = self.rid_to_address.get(req.rid) or (p.cursor[0] if p and p.cursor else None)
++        server_addr = await self.route.enter(key, known)
++        try:
++            return await self._agenerate(req, server_addr)
++        finally:
++            self.route.leave(server_addr)
++
++    async def _agenerate(self, req: ModelRequest, server_addr: str | None = None) -> ModelResponse:
+         """Asynchronously generate a response for the given request.
+ 
+         Parameters
+@@ -1104,12 +1128,13 @@
+         saw_top_logprobs = False
+ 
+         # A single "rid" shares the same server to allow KV cache reuse; a new
+-        # one goes to the server holding its parent reply's cursor
++        # one goes to the server holding its parent reply's cursor, else to the
++        # one agenerate's route gave its session (OCTOPUS_ROUTE_SERVERS)
+         if req.rid in self.rid_to_address:
+             server_addr = self.rid_to_address[req.rid]
+         else:
+             p = req.parent
+-            server_addr = p.cursor[0] if p and p.cursor else self.choose_server()
++            server_addr = server_addr or (p.cursor[0] if p and p.cursor else self.choose_server())
+             if len(self.rid_queue) >= RID_CACHE_SIZE:
+                 # Remove the oldest entry if cache is full
+                 oldest_rid = self.rid_queue.pop(0)

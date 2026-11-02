@@ -1,0 +1,126 @@
+
+Loading safetensors checkpoint shards:   0% Completed | 0/4 [00:00<?, ?it/s]
+
+Loading safetensors checkpoint shards:  25% Completed | 1/4 [00:15<00:45, 15.22s/it]
+
+Loading safetensors checkpoint shards:  50% Completed | 2/4 [00:32<00:33, 16.67s/it]
+
+Loading safetensors checkpoint shards:  75% Completed | 3/4 [00:45<00:14, 14.98s/it]
+
+Loading safetensors checkpoint shards: 100% Completed | 4/4 [00:59<00:00, 14.49s/it]
+
+Loading safetensors checkpoint shards: 100% Completed | 4/4 [00:59<00:00, 14.90s/it]
+
+<frozen importlib._bootstrap_external>:1301: FutureWarning: The cuda.cudart module is deprecated and will be removed in a future release, please switch to use the cuda.bindings.runtime module instead.
+<frozen importlib._bootstrap_external>:1301: FutureWarning: The cuda.nvrtc module is deprecated and will be removed in a future release, please switch to use the cuda.bindings.nvrtc module instead.
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "<frozen runpy>", line 198, in _run_module_as_main
+[rank0]:   File "<frozen runpy>", line 88, in _run_code
+[rank0]:   File "/mnt/ssd1/user/octopus-semantic-s1-20260914/source/benchmarks/semantic_intent.py", line 423, in <module>
+[rank0]:     raise SystemExit(main())
+[rank0]:                      ^^^^^^
+[rank0]:   File "/mnt/ssd1/user/octopus-semantic-s1-20260914/source/benchmarks/semantic_intent.py", line 405, in main
+[rank0]:     with Octopus(config) as runtime:
+[rank0]:          ^^^^^^^^^^^^^^^
+[rank0]:   File "/mnt/ssd1/user/octopus-semantic-s1-20260914/source/src/octopus/runtime.py", line 86, in __init__
+[rank0]:     self.backend = VllmBackend(config or BackendConfig())
+[rank0]:                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/mnt/ssd1/user/octopus-semantic-s1-20260914/source/src/octopus/vllm_backend.py", line 1315, in __init__
+[rank0]:     self.engine = LLMEngine.from_engine_args(
+[rank0]:                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/user/octopus-r2-20260913/venv/lib/python3.12/site-packages/vllm/v1/engine/llm_engine.py", line 179, in from_engine_args
+[rank0]:     return cls(
+[rank0]:            ^^^^
+[rank0]:   File "/home/user/octopus-r2-20260913/venv/lib/python3.12/site-packages/vllm/v1/engine/llm_engine.py", line 105, in __init__
+[rank0]:     self.engine_core = EngineCoreClient.make_client(
+[rank0]:                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/user/octopus-r2-20260913/venv/lib/python3.12/site-packages/vllm/v1/engine/core_client.py", line 112, in make_client
+[rank0]:     return InprocClient(vllm_config, executor_class, log_stats)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/user/octopus-r2-20260913/venv/lib/python3.12/site-packages/vllm/v1/engine/core_client.py", line 317, in __init__
+[rank0]:     self.engine_core = EngineCore(*args, **kwargs)
+[rank0]:                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/user/octopus-r2-20260913/venv/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 144, in __init__
+[rank0]:     kv_cache_config = self._initialize_kv_caches(vllm_config)
+[rank0]:                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/user/octopus-r2-20260913/venv/lib/python3.12/site-packages/vllm/tracing/otel.py", line 178, in sync_wrapper
+[rank0]:     return func(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/user/octopus-r2-20260913/venv/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 331, in _initialize_kv_caches
+[rank0]:     self.model_executor.compile_or_warm_up_model()
+[rank0]:   File "/home/user/octopus-r2-20260913/venv/lib/python3.12/site-packages/vllm/v1/executor/abstract.py", line 126, in compile_or_warm_up_model
+[rank0]:     compilation_times: list[CompilationTimes] = self.collective_rpc(
+[rank0]:                                                 ^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/user/octopus-r2-20260913/venv/lib/python3.12/site-packages/vllm/v1/executor/uniproc_executor.py", line 103, in collective_rpc
+[rank0]:     result = run_method(self.driver_worker, method, args, kwargs)
+[rank0]:              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/user/octopus-r2-20260913/venv/lib/python3.12/site-packages/vllm/v1/serial_utils.py", line 510, in run_method
+[rank0]:     return func(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/user/octopus-r2-20260913/venv/lib/python3.12/site-packages/vllm/tracing/otel.py", line 178, in sync_wrapper
+[rank0]:     return func(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/user/octopus-r2-20260913/venv/lib/python3.12/site-packages/vllm/v1/worker/gpu_worker.py", line 810, in compile_or_warm_up_model
+[rank0]:     warmup_kernels(self.model_runner, self.execute_model, self.sample_tokens)
+[rank0]:   File "/home/user/octopus-r2-20260913/venv/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+[rank0]:     return func(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/user/octopus-r2-20260913/venv/lib/python3.12/site-packages/vllm/v1/worker/gpu/warmup.py", line 337, in warmup_kernels
+[rank0]:     worker_sample_tokens(grammar_output)
+[rank0]:   File "/home/user/octopus-r2-20260913/venv/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+[rank0]:     return func(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/user/octopus-r2-20260913/venv/lib/python3.12/site-packages/vllm/v1/worker/gpu_worker.py", line 1049, in sample_tokens
+[rank0]:     return self.model_runner.sample_tokens(grammar_output)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/user/octopus-r2-20260913/venv/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+[rank0]:     return func(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/user/octopus-r2-20260913/venv/lib/python3.12/site-packages/vllm/v1/worker/gpu/eplb_utils.py", line 27, in wrapper
+[rank0]:     result = fn(self, *args, **kwargs)
+[rank0]:              ^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/user/octopus-r2-20260913/venv/lib/python3.12/site-packages/vllm/v1/worker/gpu/model_runner.py", line 1749, in sample_tokens
+[rank0]:     sampler_output, num_sampled, num_rejected = self.sample(
+[rank0]:                                                 ^^^^^^^^^^^^
+[rank0]:   File "/home/user/octopus-r2-20260913/venv/lib/python3.12/site-packages/vllm/v1/worker/gpu/model_runner.py", line 1353, in sample
+[rank0]:     sampler_output = self.sampler(logits, input_batch)
+[rank0]:                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/user/octopus-r2-20260913/venv/lib/python3.12/site-packages/vllm/v1/worker/gpu/sample/sampler.py", line 120, in __call__
+[rank0]:     sampled, processed_logits = self.sample(
+[rank0]:                                 ^^^^^^^^^^^^
+[rank0]:   File "/home/user/octopus-r2-20260913/venv/lib/python3.12/site-packages/vllm/v1/worker/gpu/sample/sampler.py", line 284, in sample
+[rank0]:     sampled = flashinfer_sample(processed_logits, top_k, top_p).to(torch.int64)
+[rank0]:               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/user/octopus-r2-20260913/venv/lib/python3.12/site-packages/vllm/v1/sample/ops/topk_topp_sampler.py", line 508, in flashinfer_sample
+[rank0]:     next_token_ids = flashinfer.sampling.top_k_top_p_sampling_from_logits(
+[rank0]:                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/user/octopus-r2-20260913/venv/lib/python3.12/site-packages/flashinfer/api_logging.py", line 2333, in _auto_dump_wrapper
+[rank0]:     return _inner(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/user/octopus-r2-20260913/venv/lib/python3.12/site-packages/flashinfer/sampling.py", line 1547, in top_k_top_p_sampling_from_logits
+[rank0]:     masked_logits = top_k_mask_logits(logits, top_k)
+[rank0]:                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/user/octopus-r2-20260913/venv/lib/python3.12/site-packages/flashinfer/api_logging.py", line 2333, in _auto_dump_wrapper
+[rank0]:     return _inner(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/user/octopus-r2-20260913/venv/lib/python3.12/site-packages/flashinfer/sampling.py", line 1974, in top_k_mask_logits
+[rank0]:     return get_sampling_module().top_k_mask_logits(
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/user/octopus-r2-20260913/venv/lib/python3.12/site-packages/flashinfer/sampling.py", line 68, in get_sampling_module
+[rank0]:     module = gen_sampling_module().build_and_load()
+[rank0]:              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/user/octopus-r2-20260913/venv/lib/python3.12/site-packages/flashinfer/jit/core.py", line 320, in build_and_load
+[rank0]:     self.build()
+[rank0]:   File "/home/user/octopus-r2-20260913/venv/lib/python3.12/site-packages/flashinfer/jit/core.py", line 427, in build
+[rank0]:     run_ninja(self.build_dir, self.ninja_path, verbose)
+[rank0]:   File "/home/user/octopus-r2-20260913/venv/lib/python3.12/site-packages/flashinfer/jit/cpp_ext.py", line 370, in run_ninja
+[rank0]:     subprocess.run(
+[rank0]:   File "/home/user/octopus-r2-20260913/runtime-python/lib/python3.12/subprocess.py", line 548, in run
+[rank0]:     with Popen(*popenargs, **kwargs) as process:
+[rank0]:          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/user/octopus-r2-20260913/runtime-python/lib/python3.12/subprocess.py", line 1026, in __init__
+[rank0]:     self._execute_child(args, executable, preexec_fn, close_fds,
+[rank0]:   File "/home/user/octopus-r2-20260913/runtime-python/lib/python3.12/subprocess.py", line 1955, in _execute_child
+[rank0]:     raise child_exception_type(errno_num, err_msg, err_filename)
+[rank0]: FileNotFoundError: [Errno 2] No such file or directory: 'ninja'
+[rank0]:[W914 22:41:28.312517256 ProcessGroupNCCL.cpp:1624] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())

@@ -1,0 +1,61 @@
+groups 568  episodes 2181  steps 1-53  late = step > 35
+
+[0] new env unset vs f28550d plan.py: episodes differing 0
+
+[1] check validity advantage per check (coef 0.5)
+population validity 0.185 (n 13230); early/mid/late 0.181 / 0.197 / 0.178
+groups with checks 526: all invalid 32%, validity < 0.2 61%, all valid 0%
+  base  A valid A invalid   A all groups w/ signal invalid A in all-invalid grp per-fork sum
+ group   +0.325    -0.074  +0.000              68%                       +0.000       +0.000
+   0.1   +0.450    -0.050  +0.043             100%                       -0.050       +0.155
+   0.2   +0.400    -0.100  -0.007             100%                       -0.100       -0.027
+   0.3   +0.350    -0.150  -0.057             100%                       -0.150       -0.209
+   0.5   +0.250    -0.250  -0.157             100%                       -0.250       -0.573
+
+[2] fork-task value per delegated task (coef 1): baseline = own main-first control vs group
+  control                tasks  6643  mean +0.0076  sd 0.1203  |v| 0.0568  zero 75%
+  group                  tasks 10939  mean +0.0112  sd 0.1074  |v| 0.0658  zero 51%
+  control, shared tasks  tasks  6643  mean +0.0076  sd 0.1203  |v| 0.0568  zero 75%
+  group, shared tasks    tasks  6643  mean +0.0122  sd 0.1031  |v| 0.0641  zero 49%
+  group baseline samples per delegated task: 3.58 (control mode: 1)
+  class (landed, control solved)       n v control  v group group base
+  (True, True)                      1211   +0.0000  +0.0795      0.672
+  (True, False)                      936   +0.2285  +0.1680      0.253
+  (False, True)                      695   -0.2347  -0.1359      0.575
+  (False, False)                    3801   +0.0000  -0.0205      0.087
+  group base 0           tasks  5766  mean v +0.0296  landed 0.14
+  group base (0, 0.5)    tasks  2134  mean v +0.0301  landed 0.42
+  group base >= 0.5      tasks  3039  mean v -0.0368  landed 0.57
+  landed=True : var(v) control 0.01523 group 0.00715 (53% less)
+  landed=False: var(v) control 0.00814 group 0.00440 (46% less)
+
+[3] delegate cost mu: mean per-fork-call B sum (coef 1), group baseline; 'useless' = no delegated task landed above its baseline
+  baseline group:
+     mu      4-7     8-11    12-16      all   useful  useless     late  sum>0
+      0  +0.0234  +0.0481  +0.0471  +0.0409  +0.2020  -0.1198  +0.0192    43%
+    0.1  +0.0032  +0.0287  +0.0326  +0.0224  +0.1813  -0.1360  +0.0123    42%
+   0.15  -0.0069  +0.0190  +0.0254  +0.0132  +0.1709  -0.1441  +0.0089    41%
+    0.2  -0.0170  +0.0093  +0.0182  +0.0040  +0.1605  -0.1522  +0.0054    40%
+   0.25  -0.0271  -0.0004  +0.0110  -0.0053  +0.1502  -0.1603  +0.0020    39%
+    0.5  -0.0776  -0.0489  -0.0252  -0.0514  +0.0984  -0.2008  -0.0151    36%
+      1  -0.1786  -0.1459  -0.0975  -0.1437  -0.0052  -0.2818  -0.0495    30%
+  fork calls 3008, useful 50%
+  baseline control:
+     mu      4-7     8-11    12-16      all   useful  useless     late  sum>0
+      0  +0.0295  +0.0303  +0.0283  +0.0296  +0.2926  -0.1048  -0.0017    28%
+    0.1  -0.0031  +0.0008  +0.0075  +0.0013  +0.2561  -0.1289  -0.0101    28%
+   0.15  -0.0194  -0.0140  -0.0029  -0.0129  +0.2378  -0.1410  -0.0143    27%
+    0.2  -0.0357  -0.0287  -0.0132  -0.0270  +0.2195  -0.1530  -0.0184    27%
+   0.25  -0.0520  -0.0435  -0.0236  -0.0412  +0.2013  -0.1651  -0.0226    26%
+    0.5  -0.1336  -0.1173  -0.0755  -0.1120  +0.1099  -0.2254  -0.0435    23%
+      1  -0.2966  -0.2648  -0.1792  -0.2536  -0.0727  -0.3460  -0.0852    17%
+  fork calls 1715, useful 34%
+  'neither' tasks (group mode): 4972/10939 = 45%; their branch tokens in shares mean 0.51 median 0.29
+
+[4] plan_lambda (plan_cost_unit tokens): fork - control reward R_f - R_c per forked episode with a control
+  lambda      all     late     slow     fast fast-abort fast-good fast&loses fast&eq-y     wins loses but dR>0 A fork-ctrl
+    0.00  +0.0200  -0.0189  +0.0291  +0.0065    -0.0397   +0.2947    -0.4611   +0.0000  +0.4310           0.0%     +0.0240
+    0.25  +0.0101  -0.0225  +0.0014  +0.0230    -0.0213   +0.2776    -0.3832   +0.0135  +0.3679           0.0%     +0.0123
+    0.50  +0.0001  -0.0261  -0.0263  +0.0395    -0.0028   +0.2605    -0.3053   +0.0270  +0.3048           0.2%     +0.0005
+  pairs 1320: fast 40%, fast-abort 22%, fast-good 13%, loses 31%
+  cost_bar > 0 in 99% of episodes; C/cost_bar forked 1.05, unforked 0.94, controls 0.94

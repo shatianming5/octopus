@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "arrow-py__arrow.1d70d009.lm_rewr__j2w7pPJ__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# is_between() swaps start and end dates incorrectly\n\nI found a bug in the `is_between()` method where it automatically swaps start and end dates if start is greater than end. This causes incorrect behavior when checking if a date is between two dates.\n\n## Reproduction\n\n```python\nfrom arrow import Arrow\nfrom datetime import datetime\n\ntarget = Arrow.fromdatetime(datetime(2013, 5, 7))\nstart = Arrow.fromdatetime(datetime(2013, 5, 8))\nend = Arrow.fromdatetime(datetime(2013, 5, 5))\n\n# This should return False since target (May 7) is not between May 8 and May 5\n# But it returns True because the method swaps start and end\nresult = target.is_between(start, end)\nprint(result)  # Prints: True\n```\n\nThe method is automatically swapping start and end dates when start > end, which is not the expected behavior. The method should respect the order of arguments provided and return False in this case."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-02f3768c-08c2-47cc-b6c9-da1f56436948-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -50"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-02f3768c-08c2-47cc-b6c9-da1f56436948-0",
+            "content": "total 116\ndrwxr-xr-x 1 root root  4096 Sep 22 16:02 .\ndrwxr-xr-x 1 root root  4096 Sep 22 16:02 ..\ndrwxr-xr-x 8 root root  4096 Jul 12  2025 .git\ndrwxr-xr-x 3 root root  4096 Jul 12  2025 .github\n-rw-r--r-- 1 root root  2670 Jul 12  2025 .gitignore\n-rw-rw-r-- 1 1005 1005     0 Sep 22 15:44 .gitkeep\n-rw-r--r-- 1 root root  1651 Jul 12  2025 .pre-commit-config.yaml\n-rw-r--r-- 1 root root   863 Jul 12  2025 .readthedocs.yaml\n-rw-r--r-- 1 root root 32947 Jul 12  2025 CHANGELOG.rst\n-rw-r--r-- 1 root root 11341 Jul 12  2025 LICENSE\n-rw-r--r-- 1 root root  1112 Jul 12  2025 Makefile\n-rw-r--r-- 1 root root  5714 Jul 12  2025 README.rst\ndrwxr-xr-x 2 root root  4096 Jul 12  2025 arrow\ndrwxr-xr-x 2 root root  4096 Jul 12  2025 docs\n-rw-r--r-- 1 root root  1745 Jul 12  2025 pyproject.toml\ndrwxr-xr-x 2 root root  4096 Jul 12  2025 requirements\n-rw-r--r-- 1 root root   689 Jul 12  2025 setup.cfg\ndrwxr-xr-x 2 root root  4096 Jul 12  2025 tests\n-rw-r--r-- 1 root root  1256 Jul 12  2025 tox.ini\n/testbed/tests/test_arrow.py\n/testbed/tests/test_formatter.py\n/testbed/tests/test_parser.py\n/testbed/tests/test_factory.py\n/testbed/tests/__init__.py\n/testbed/tests/conftest.py\n/testbed/tests/test_api.py\n/testbed/tests/utils.py\n/testbed/tests/test_locales.py\n/testbed/tests/test_util.py\n/testbed/arrow/api.py\n/testbed/arrow/factory.py\n/testbed/arrow/__init__.py\n/testbed/arrow/locales.py\n/testbed/arrow/arrow.py\n/testbed/arrow/constants.py\n/testbed/arrow/parser.py\n/testbed/arrow/formatter.py\n/testbed/arrow/util.py\n/testbed/arrow/_version.py\n/testbed/docs/conf.py\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-823ca3d8-b4b4-4d36-a2e0-7f6cbce237fe-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/arrow/arrow.py | head -100; echo \"====\"; grep -n \"is_between\\|def \" /testbed/arrow/arrow.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-823ca3d8-b4b4-4d36-a2e0-7f6cbce237fe-1",
+            "content": "ional) 0 or 1, used to disambiguate repeated wall times. Defaults to 0.\n\n    .. _tz-expr:\n\n    Recognized timezone expressions:\n\n        - A ``tzinfo`` object.\n        - A ``str`` describing a timezone, similar to 'US/Pacific', or 'Europe/Berlin'.\n        - A ``str`` in ISO 8601 style, as in '+07:00'.\n====\n147:    def __init__(\n181:    def now(cls, tzinfo: Optional[dt_tzinfo] = None) -> \"Arrow\":\n212:    def utcnow(cls) -> \"Arrow\":\n238:    def fromtimestamp(\n275:    def utcfromtimestamp(cls, timestamp: Union[int, float, str]) -> \"Arrow\":\n301:    def fromdatetime(cls, dt: dt_datetime, tzinfo: Optional[TZ_EXPR] = None) -> \"Arrow\":\n337:    def fromdate(cls, date: date, tzinfo: Optional[TZ_EXPR] = None) -> \"Arrow\":\n352:    def strptime(\n387:    def fromordinal(cls, ordinal: int) -> \"Arrow\":\n417:    def range(\n503:    def span(\n597:    def floor(self, frame: _T_FRAMES) -> \"Arrow\":\n614:    def ceil(self, frame: _T_FRAMES) -> \"Arrow\":\n632:    def span_range(\n714:    def interval(\n785:    def __repr__(self) -> str:\n788:    def __str__(self) -> str:\n791:    def __format__(self, formatstr: str) -> str:\n797:    def __hash__(self) -> int:\n802:    def __getattr__(self, name: str) -> Any:\n818:    def tzinfo(self) -> dt_tzinfo:\n833:    def datetime(self) -> dt_datetime:\n847:    def naive(self) -> dt_datetime:\n863:    def timestamp(self) -> float:\n877:    def int_timestamp(self) -> int:\n891:    def float_timestamp(self) -> float:\n905:    def fold(self) -> int:\n911:    def ambiguous(self) -> bool:\n920:    def imaginary(self) -> bool:\n927:    def clone(self) -> \"Arrow\":\n939:    def replace(self, **kwargs: Any) -> \"Arrow\":\n985:    def shift(self, check_imaginary: bool = True, **kwargs: Any) -> \"Arrow\":\n1046:    def to(self, tz: TZ_EXPR) -> \"Arrow\":\n1094:    def format(\n1122:    def humanize(\n1274:                def gather_timeframes(_delta: float, _frame: TimeFrameLiteral) -> float:\n1314:    def dehumanize(self, input_string: str, locale: str = \"en_us\") -> \"Arrow\":\n1455:    def is_between(\n1475:            >>> arrow.get(datetime(2013, 5, 5, 12, 30, 27)).is_between(start, end)\n1480:            >>> arrow.get(datetime(2013, 5, 8)).is_between(start, end, '[]')\n1485:            >>> arrow.get(datetime(2013, 5, 8)).is_between(start, end, '[)')\n1515:    def date(self) -> date:\n1527:    def time(self) -> dt_time:\n1539:    def timetz(self) -> dt_time:\n1552:    def astimezone(self, tz: Optional[dt_tzinfo]) -> dt_datetime:\n1568:    def utcoffset(self) -> Optional[timedelta]:\n1581:    def dst(self) -> Optional[timedelta]:\n1593:    def timetuple(self) -> struct_time:\n1605:    def utctimetuple(self) -> struct_time:\n1617:    def toordinal(self) -> int:\n1629:    def weekday(self) -> int:\n1641:    def isoweekday(self) -> int:\n1653:    def isocalendar(self) -> Tuple[int, int, int]:\n1665:    def isoformat(self, sep: str = \"T\", timespec: str = \"auto\") -> str:\n1677:    def ctime(self) -> str:\n1689:    def strftime(self, format: str) -> str:\n1703:    def for_json(self) -> str:\n1717:    def __add__(self, other: Any) -> \"Arrow\":\n1723:    def __radd__(self, other: Union[timedelta, relativedelta]) -> \"Arrow\":\n1727:    def __sub__(self, other: Union[timedelta, relativedelta]) -> \"Arrow\":\n1731:    def __sub__(self, other: Union[dt_datetime, \"Arrow\"]) -> timedelta:\n1734:    def __sub__(self, other: Any) -> Union[timedelta, \"Arrow\"]:\n1746:    def __rsub__(self, other: Any) -> timedelta:\n1754:    def __eq__(self, other: Any) -> bool:\n1760:    def __ne__(self, other: Any) -> bool:\n1766:    def __gt__(self, other: Any) -> bool:\n1772:    def __ge__(self, other: Any) -> bool:\n1778:    def __lt__(self, other: Any) -> bool:\n1784:    def __le__(self, other: Any) -> bool:\n1792:    def _get_tzinfo(tz_expr: Optional[TZ_EXPR]) -> dt_tzinfo:\n1805:    def _get_datetime(\n1820:    def _get_frames(cls, name: _T_FRAMES) -> Tuple[str, str, int]:\n1853:    def _get_iteration_params(cls, end: Any, limit: Optional[int]) -> Tuple[Any, int]:\n1867:    def _is_last_day_of_month(date: \"Arrow\") -> bool:\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-436e056b-f390-4c56-bb7b-d899abdcc615-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '1455,1515p' /testbed/arrow/arrow.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-436e056b-f390-4c56-bb7b-d899abdcc615-2",
+            "content": "    def is_between(\n        self,\n        start: \"Arrow\",\n        end: \"Arrow\",\n        bounds: _BOUNDS = \"()\",\n    ) -> bool:\n        \"\"\"Returns a boolean denoting whether the :class:`Arrow <arrow.arrow.Arrow>` object is between\n        the start and end limits.\n\n        :param start: an :class:`Arrow <arrow.arrow.Arrow>` object.\n        :param end: an :class:`Arrow <arrow.arrow.Arrow>` object.\n        :param bounds: (optional) a ``str`` of either '()', '(]', '[)', or '[]' that specifies\n            whether to include or exclude the start and end values in the range. '(' excludes\n            the start, '[' includes the start, ')' excludes the end, and ']' includes the end.\n            If the bounds are not specified, the default bound '()' is used.\n\n        Usage::\n\n            >>> start = arrow.get(datetime(2013, 5, 5, 12, 30, 10))\n            >>> end = arrow.get(datetime(2013, 5, 5, 12, 30, 36))\n            >>> arrow.get(datetime(2013, 5, 5, 12, 30, 27)).is_between(start, end)\n            True\n\n            >>> start = arrow.get(datetime(2013, 5, 5))\n            >>> end = arrow.get(datetime(2013, 5, 8))\n            >>> arrow.get(datetime(2013, 5, 8)).is_between(start, end, '[]')\n            True\n\n            >>> start = arrow.get(datetime(2013, 5, 5))\n            >>> end = arrow.get(datetime(2013, 5, 8))\n            >>> arrow.get(datetime(2013, 5, 8)).is_between(start, end, '[)')\n            False\n\n        \"\"\"\n\n        util.validate_bounds(bounds)\n\n        if not isinstance(start, Arrow):\n            raise TypeError(\n                f\"Cannot parse start date argument type of {type(start)!r}.\"\n            )\n\n        if not isinstance(end, Arrow):\n            raise TypeError(f\"Cannot parse end date argument type of {type(start)!r}.\")\n\n        include_start = bounds[0] == \"[\"\n        include_end = bounds[1] == \"]\"\n\n        target_ts = self.float_timestamp\n        start_ts = start.float_timestamp\n        end_ts = end.float_timestamp\n\n        return (\n            (start_ts <= target_ts <= end_ts)\n            and (include_start or start_ts < target_ts)\n            and (include_end or target_ts < end_ts)\n        )\n\n    # datetime methods\n\n    def date(self) -> date:\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "The current `is_between` body doesn't swap dates. I'll check tests, git history, and actual runtime behavior next.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-4ba9a360-90ad-497a-ad20-606153e8832a-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "grep -n \"is_between\\|swap\" /testbed/tests/test_arrow.py /testbed/CHANGELOG.rst | head -80; echo \"==== GIT LOG ====\"; git -C /testbed log --oneline -20; echo \"==== GIT BLAME is_between ====\"; git -C /testbed log -p -S \"is_between\" -- arrow/arrow.py | head -200"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-4ba9a360-90ad-497a-ad20-606153e8832a-3",
+            "content": " \"days\",\n+    \"hour\",\n+    \"hours\",\n+    \"minute\",\n+    \"minutes\",\n+    \"second\",\n+    \"seconds\",\n+    \"microsecond\",\n+    \"microseconds\",\n+    \"week\",\n+    \"weeks\",\n+    \"quarter\",\n+    \"quarters\",\n+]\n+\n+_BOUNDS = Literal[\"[)\", \"()\", \"(]\", \"[]\"]\n+\n+_GRANULARITY = Literal[\n+    \"auto\",\n+    \"second\",\n+    \"minute\",\n+    \"hour\",\n+    \"day\",\n+    \"week\",\n+    \"month\",\n+    \"quarter\",\n+    \"year\",\n+]\n+\n+\n+class Arrow:\n+    \"\"\"An :class:`Arrow <arrow.arrow.Arrow>` object.\n+\n+    Implements the ``datetime`` interface, behaving as an aware ``datetime`` while implementing\n+    additional functionality.\n+\n+    :param year: the calendar year.\n+    :param month: the calendar month.\n+    :param day: the calendar day.\n+    :param hour: (optional) the hour. Defaults to 0.\n+    :param minute: (optional) the minute, Defaults to 0.\n+    :param second: (optional) the second, Defaults to 0.\n+    :param microsecond: (optional) the microsecond. Defaults to 0.\n+    :param tzinfo: (optional) A timezone expression.  Defaults to UTC.\n+    :param fold: (optional) 0 or 1, used to disambiguate repeated wall times. Defaults to 0.\n+\n+    .. _tz-expr:\n+\n+    Recognized timezone expressions:\n+\n+        - A ``tzinfo`` object.\n+        - A ``str`` describing a timezone, similar to 'US/Pacific', or 'Europe/Berlin'.\n+        - A ``str`` in ISO 8601 style, as in '+07:00'.\n+        - A ``str``, one of the following:  'local', 'utc', 'UTC'.\n+\n+    Usage::\n+\n+        >>> import arrow\n+        >>> arrow.Arrow(2013, 5, 5, 12, 30, 45)\n+        <Arrow [2013-05-05T12:30:45+00:00]>\n+\n+    \"\"\"\n+\n+    resolution: ClassVar[timedelta] = dt_datetime.resolution\n+    min: ClassVar[\"Arrow\"]\n+    max: ClassVar[\"Arrow\"]\n+\n+    _ATTRS: Final[List[str]] = [\n+        \"year\",\n+        \"month\",\n+        \"day\",\n+        \"hour\",\n+        \"minute\",\n+        \"second\",\n+        \"microsecond\",\n+    ]\n+    _ATTRS_PLURAL: Final[List[str]] = [f\"{a}s\" for a in _ATTRS]\n+    _MONTHS_PER_QUARTER: Final[int] = 3\n+    _SECS_PER_MINUTE: Final[int] = 60\n+    _SECS_PER_HOUR: Final[int] = 60 * 60\n+    _SECS_PER_DAY: Final[int] = 60 * 60 * 24\n+    _SECS_PER_WEEK: Final[int] = 60 * 60 * 24 * 7\n+    _SECS_PER_MONTH: Final[float] = 60 * 60 * 24 * 30.5\n+    _SECS_PER_QUARTER: Final[float] = 60 * 60 * 24 * 30.5 * 3\n+    _SECS_PER_YEAR: Final[int] = 60 * 60 * 24 * 365\n+\n+    _SECS_MAP: Final[Mapping[TimeFrameLiteral, float]] = {\n+        \"second\": 1.0,\n+        \"minute\": _SECS_PER_MINUTE,\n+        \"hour\": _SECS_PER_HOUR,\n+        \"day\": _SECS_PER_DAY,\n+        \"week\": _SECS_PER_WEEK,\n+        \"month\": _SECS_PER_MONTH,\n+        \"quarter\": _SECS_PER_QUARTER,\n+        \"year\": _SECS_PER_YEAR,\n+    }\n+\n+    _datetime: dt_datetime\n+\n+    def __init__(\n+        self,\n+        year: int,\n+        month: int,\n+        day: int,\n+        hour: int = 0,\n+        minute: int = 0,\n+        second: int = 0,\n+        microsecond: int = 0,\n+        tzinfo: Optional[TZ_EXPR] = None,\n+        **kwargs: Any,\n+    ) -> None:\n+        if tzinfo is None:\n+            tzinfo = dateutil_tz.tzutc()\n+        # detect that tzinfo is a pytz object (issue #626)\n+        elif (\n+            isinstance(tzinfo, dt_tzinfo)\n+            and hasattr(tzinfo, \"localize\")\n+            and hasattr(tzinfo, \"zone\")\n+            and tzinfo.zone\n+        ):\n+            tzinfo = parser.TzinfoParser.parse(tzinfo.zone)\n+        elif isinstance(tzinfo, str):\n+            tzinfo = parser.TzinfoParser.parse(tzinfo)\n+\n+        fold = kwargs.get(\"fold\", 0)\n+\n+        self._datetime = dt_datetime(\n+            year, month, day, hour, minute, second, microsecond, tzinfo, fold=fold\n+        )\n+\n+    # factories: single object, both original and from datetime.\n+\n+    @classmethod\n+    def now(cls, tzinfo: Optional[dt_tzinfo] = None) -> \"Arrow\":\n+        \"\"\"Constructs an :class:`Arrow <arrow.arrow.Arrow>` object, representing \"now\" in the given\n+        timezone.\n+\n+        :param tzinfo: (optional) a ``tzinfo`` object. Defaults to local time.\n+\n+        Usage::\n+\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-fc1f9972-c872-499c-bac2-30afe180b745-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cd /testbed && git log --oneline -20 && echo \"====\" && grep -n \"is_between\" tests/test_arrow.py && echo \"==== CHANGELOG ====\" && grep -n -i \"is_between\\|between\" CHANGELOG.rst"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-fc1f9972-c872-499c-bac2-30afe180b745-4",
+            "content": "e2ffa95 Initial commit\n====\n2844:        assert not target.is_between(start, end)\n2850:        assert target.is_between(start, end, \"()\")\n2856:        assert not target.is_between(start, end, \"()\")\n2862:        assert not target.is_between(start, end, \"[)\")\n2868:        assert target.is_between(start, end, \"(]\")\n2874:        assert target.is_between(start, end, \"[]\")\n2880:        assert not target.is_between(start, end, \"[]\")\n2887:            target.is_between(start, end)\n2893:            target.is_between(start, end)\n2896:            target.is_between(None, None)\n2903:            target.is_between(start, end, \"][\")\n2905:            target.is_between(start, end, \"\")\n2907:            target.is_between(start, end, \"]\")\n2909:            target.is_between(start, end, \"[\")\n2911:            target.is_between(start, end, \"hello\")\n==== CHANGELOG ====\n468:- [NEW] Add is_between method.\n628:- [FIX] Fixed discrepancy between specifying 'X' to arrow.get and specifying no template\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-97e071e5-16bc-4001-b748-e6631e246b39-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '2800,2920p' /testbed/tests/test_arrow.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-97e071e5-16bc-4001-b748-e6631e246b39-5",
+            "content": "rw, locale=lang, granularity=[\"minute\", \"day\"]\n                )\n                future_string = future.humanize(\n                    arw, locale=lang, granularity=[\"minute\", \"day\"]\n                )\n\n                assert arw.dehumanize(past_string, locale=lang) == past\n                assert arw.dehumanize(future_string, locale=lang) == future\n\n\nclass TestArrowIsBetween:\n    def test_start_before_end(self):\n        target = arrow.Arrow.fromdatetime(datetime(2013, 5, 7))\n        start = arrow.Arrow.fromdatetime(datetime(2013, 5, 8))\n        end = arrow.Arrow.fromdatetime(datetime(2013, 5, 5))\n        assert not target.is_between(start, end)\n\n    def test_exclusive_exclusive_bounds(self):\n        target = arrow.Arrow.fromdatetime(datetime(2013, 5, 5, 12, 30, 27))\n        start = arrow.Arrow.fromdatetime(datetime(2013, 5, 5, 12, 30, 10))\n        end = arrow.Arrow.fromdatetime(datetime(2013, 5, 5, 12, 30, 36))\n        assert target.is_between(start, end, \"()\")\n\n    def test_exclusive_exclusive_bounds_same_date(self):\n        target = arrow.Arrow.fromdatetime(datetime(2013, 5, 7))\n        start = arrow.Arrow.fromdatetime(datetime(2013, 5, 7))\n        end = arrow.Arrow.fromdatetime(datetime(2013, 5, 7))\n        assert not target.is_between(start, end, \"()\")\n\n    def test_inclusive_exclusive_bounds(self):\n        target = arrow.Arrow.fromdatetime(datetime(2013, 5, 6))\n        start = arrow.Arrow.fromdatetime(datetime(2013, 5, 4))\n        end = arrow.Arrow.fromdatetime(datetime(2013, 5, 6))\n        assert not target.is_between(start, end, \"[)\")\n\n    def test_exclusive_inclusive_bounds(self):\n        target = arrow.Arrow.fromdatetime(datetime(2013, 5, 7))\n        start = arrow.Arrow.fromdatetime(datetime(2013, 5, 5))\n        end = arrow.Arrow.fromdatetime(datetime(2013, 5, 7))\n        assert target.is_between(start, end, \"(]\")\n\n    def test_inclusive_inclusive_bounds_same_date(self):\n        target = arrow.Arrow.fromdatetime(datetime(2013, 5, 7))\n        start = arrow.Arrow.fromdatetime(datetime(2013, 5, 7))\n        end = arrow.Arrow.fromdatetime(datetime(2013, 5, 7))\n        assert target.is_between(start, end, \"[]\")\n\n    def test_inclusive_inclusive_bounds_target_before_start(self):\n        target = arrow.Arrow.fromdatetime(datetime(2020, 12, 24))\n        start = arrow.Arrow.fromdatetime(datetime(2020, 12, 25))\n        end = arrow.Arrow.fromdatetime(datetime(2020, 12, 26))\n        assert not target.is_between(start, end, \"[]\")\n\n    def test_type_error_exception(self):\n        with pytest.raises(TypeError):\n            target = arrow.Arrow.fromdatetime(datetime(2013, 5, 7))\n            start = datetime(2013, 5, 5)\n            end = arrow.Arrow.fromdatetime(datetime(2013, 5, 8))\n            target.is_between(start, end)\n\n        with pytest.raises(TypeError):\n            target = arrow.Arrow.fromdatetime(datetime(2013, 5, 7))\n            start = arrow.Arrow.fromdatetime(datetime(2013, 5, 5))\n            end = datetime(2013, 5, 8)\n            target.is_between(start, end)\n\n        with pytest.raises(TypeError):\n            target.is_between(None, None)\n\n    def test_value_error_exception(self):\n        target = arrow.Arrow.fromdatetime(datetime(2013, 5, 7))\n        start = arrow.Arrow.fromdatetime(datetime(2013, 5, 5))\n        end = arrow.Arrow.fromdatetime(datetime(2013, 5, 8))\n        with pytest.raises(ValueError):\n            target.is_between(start, end, \"][\")\n        with pytest.raises(ValueError):\n            target.is_between(start, end, \"\")\n        with pytest.raises(ValueError):\n            target.is_between(start, end, \"]\")\n        with pytest.raises(ValueError):\n            target.is_between(start, end, \"[\")\n        with pytest.raises(ValueError):\n            target.is_between(start, end, \"hello\")\n        with pytest.raises(ValueError):\n            target.span(\"week\", week_start=55)\n\n\nclass TestArrowUtil:\n    def test_get_datetime(self):\n        get_datetime = arrow.Arrow._get_datetime\n\n        arw = arrow.Arrow.utcnow()\n"
+          }
+        ]
+      }
+    }
+  ]
+}

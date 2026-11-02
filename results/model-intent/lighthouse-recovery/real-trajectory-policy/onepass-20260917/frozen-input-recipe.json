@@ -1,0 +1,65 @@
+{
+  "schema": "octopus-real-trajectory-policy-v1",
+  "status": "FROZEN_EXECUTION",
+  "purpose": "one full pass/one update to validate training plumbing; no generalization or Lighthouse success claim",
+  "data_sha256": "1b35f43ebf43c4ca9881a790d3ed2eaf6519639bd0261641f3049787e4864cff",
+  "tokenizer_revision": "c03e6d358207e414f1eca0bb1891e29f1db0e242",
+  "transformers_version": "5.12.1",
+  "base_model": {
+    "name": "SWE-Gym/OpenHands-7B-Agent",
+    "revision": "97054e70501d79c27499518af5ce613be6278bcb",
+    "treatment": "software_agent_reference",
+    "model_path": "/home/user/octopus-m8-encoding-20260917-8c8163ae/view/97054e70501d79c27499518af5ce613be6278bcb",
+    "tokenizer_name": "Qwen/Qwen2.5-Coder-7B-Instruct",
+    "tokenizer_revision": "c03e6d358207e414f1eca0bb1891e29f1db0e242",
+    "tokenizer_path": "/home/user/octopus-sglang-hicache-138-20260917/tokenizers/snapshots/c03e6d358207e414f1eca0bb1891e29f1db0e242"
+  },
+  "base_view_receipt_sha256": "004839150683b8bcad945c7ed247483d284992957222ccb352c5666c20adb92d",
+  "max_steps": 1,
+  "microbatch": 1,
+  "gradient_accumulation": 4,
+  "learning_rate": 0.0002,
+  "seed": 17,
+  "world_size": 1,
+  "rank": 8,
+  "alpha": 16,
+  "target_modules": [
+    "q_proj",
+    "v_proj"
+  ],
+  "precision": "bfloat16",
+  "optimizer": "adamw_torch",
+  "lr_scheduler": "linear",
+  "warmup_steps": 0,
+  "weight_decay": 0.0,
+  "max_grad_norm": 1.0,
+  "gradient_checkpointing": "non-reentrant",
+  "loss_projection": "all supervised causal positions, full history preserved",
+  "attention": "sdpa FLASH_ATTENTION or EFFICIENT_ATTENTION; math disabled",
+  "checkpoint_selection": "only final adapter from step1; no selection sweep",
+  "proposed_execution_budget": {
+    "wall_seconds_including_model_load": 900,
+    "termination_grace_seconds": 30,
+    "gpu_count": 1,
+    "minimum_vram_gib": 46,
+    "reason": "explicit abort ceiling for one long-context accumulation/update; not a runtime prediction"
+  },
+  "dependency_requirements": {
+    "transformers": "5.12.1 (metadata contract inspected)",
+    "torch": "2.13.0 (current metadata; CUDA SDPA needs runtime admission)",
+    "peft": "compatible version to be pinned in a NEW training environment; absent in inspected env",
+    "accelerate": "compatible version to be pinned in a NEW training environment; absent in inspected env"
+  },
+  "recipe_selection_inputs": {
+    "split": "train only",
+    "task_families": [
+      "life4/textdistance"
+    ],
+    "selected_states": 4,
+    "max_sequence_tokens": 18284,
+    "target_tokens": 1672,
+    "step_rationale": "microbatch1 x accumulation4 visits the four train states once for one optimizer update",
+    "lora_rationale": "reuse existing narrow q_proj/v_proj rank8 alpha16 ordinary LoRA pattern, not a search",
+    "heldout_used_for_parameter_selection": false
+  }
+}

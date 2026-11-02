@@ -1,0 +1,201 @@
+{
+  "scope_id": "octopus-r2-serving-opportunity-20260912",
+  "status": "measured_mixed_opportunity",
+  "full_parent_objective_complete": false,
+  "source": {
+    "native_source_commit": "a59e3177a3866cf3cf76889af31b7a687a5e3c72",
+    "implementation_commit": "cfa7dcc2db18f0bd4d5c455b6a05c68f338fd482",
+    "runtime_algorithm_base": "1ad52828d3be2aa2034f72ec84e7eb45ef2ecd62",
+    "source_clean_after_run": true
+  },
+  "matrix": {
+    "request_count": 424,
+    "methods": ["b6_queue_aware", "b6_semantic_fixed"],
+    "seeds": [1601, 1702],
+    "capacity": "normal",
+    "native_kv_bytes": 33198047232,
+    "complete_valid_traces": 4,
+    "within_seed_intended_arrival_parity": true
+  },
+  "common_actual_mechanism": {
+    "original_request": {
+      "body_adopted_tokens": 0,
+      "body_recomputed_tokens": 13376
+    },
+    "warmup_request": {
+      "body_adopted_tokens": 13376,
+      "body_recomputed_tokens": 0,
+      "interpretation": "All four traces observe actual ordinary warmup reuse after prefix readiness."
+    },
+    "last_owner_release_before_test": true,
+    "body_blocks": 836,
+    "shared_tokens_including_boilerplate": 13392,
+    "body_tokens": 13376
+  },
+  "per_seed_contrast": {
+    "1601": {
+      "offered_churn_cached_physical_evictions": {
+        "queue": 10701,
+        "fixed": 10701
+      },
+      "physical_target_prefix_evictions": {
+        "queue": 836,
+        "fixed": 1672
+      },
+      "queue_state_before_test": {
+        "body_all_cached": true,
+        "body_all_live_free": true,
+        "free_body_copies": 836
+      },
+      "fixed_state_before_test": {
+        "body_all_cached": false,
+        "body_all_live_free": false,
+        "free_body_copies": 0
+      },
+      "queue_test": {
+        "body_adopted_tokens": 13376,
+        "body_recomputed_tokens": 0
+      },
+      "fixed_test": {
+        "body_adopted_tokens": 0,
+        "body_recomputed_tokens": 13376
+      },
+      "fixed_extra_recurring_bg_recompute_tokens": 13376,
+      "foreground_parent_recomputed_tokens": {
+        "queue": 33888,
+        "fixed": 0
+      },
+      "net_total_recompute_saved_by_fixed_tokens": 20512,
+      "opportunity_contrast": true,
+      "explanation": "After the warmup's last body owner released, queue retained a logically complete FREE prefix despite physical-copy evictions. Fixed lost the logical leading body during churn, so the test recomputed it. Actual adoption/recompute, not eviction count, establishes the miss."
+    },
+    "1702": {
+      "offered_churn_cached_physical_evictions": {
+        "queue": 676,
+        "fixed": 676
+      },
+      "physical_target_prefix_evictions": {
+        "queue": 836,
+        "fixed": 836
+      },
+      "queue_state_before_test": {
+        "body_all_cached": true,
+        "body_all_live_free": true,
+        "free_body_copies": 836
+      },
+      "fixed_state_before_test": {
+        "body_all_cached": true,
+        "body_all_live_free": true,
+        "free_body_copies": 836
+      },
+      "queue_test": {
+        "body_adopted_tokens": 13376,
+        "body_recomputed_tokens": 0
+      },
+      "fixed_test": {
+        "body_adopted_tokens": 13376,
+        "body_recomputed_tokens": 0
+      },
+      "fixed_extra_recurring_bg_recompute_tokens": 0,
+      "foreground_parent_recomputed_tokens": {
+        "queue": 33888,
+        "fixed": 0
+      },
+      "net_total_recompute_saved_by_fixed_tokens": 33888,
+      "opportunity_contrast": false,
+      "explanation": "Both policies retain the logically complete FREE body and the test adopts it fully. Physical-copy evictions occur but do not constitute a logical miss."
+    }
+  },
+  "decision": {
+    "native_ownership_ambiguity_resolved": true,
+    "useful_contrast_observed": true,
+    "contrast_reproduced_in_both_seeds": false,
+    "result": "A real fixed-policy recurring-BG cost exists in seed 1601 but not seed 1702. This supports a concrete discovery opportunity while remaining insufficient for R2-A/B, policy, value, or acceptance claims."
+  },
+  "descriptive_timing": {
+    "1601": {
+      "queue": {
+        "fg_e2e_seconds": 240.7960931286798,
+        "bg_p95_response_seconds": 43.0466920214123,
+        "bg_mean_ttft_seconds": 7.998362158956368,
+        "bg_p95_ttft_seconds": 14.826452914555556
+      },
+      "fixed": {
+        "fg_e2e_seconds": 238.8731165570207,
+        "bg_p95_response_seconds": 43.986966633214614,
+        "bg_mean_ttft_seconds": 9.371289993629528,
+        "bg_p95_ttft_seconds": 16.98232070797821
+      }
+    },
+    "1702": {
+      "queue": {
+        "fg_e2e_seconds": 250.0606752372114,
+        "bg_p95_response_seconds": 49.747598746488805,
+        "bg_mean_ttft_seconds": 13.205843934061987,
+        "bg_p95_ttft_seconds": 24.27173379085725
+      },
+      "fixed": {
+        "fg_e2e_seconds": 249.34142898546997,
+        "bg_p95_response_seconds": 50.83335094375069,
+        "bg_mean_ttft_seconds": 14.645988096163757,
+        "bg_p95_ttft_seconds": 27.412088361254426
+      }
+    },
+    "claim": "Descriptive only; no quality, policy, or acceptance inference."
+  },
+  "instrumentation_accounting": {
+    "queue_1601": {
+      "added_free_capture_cpu_seconds": 0.11891984846442938,
+      "adapter_cpu_seconds": 1.250010677613318,
+      "selector_cpu_seconds": 0.15060299262404442,
+      "audit_decode_cpu_seconds": 0.1257958288770169,
+      "prefix_maintenance_cpu_seconds": 0.0,
+      "offline_read_and_reduce_cpu_seconds": 2.503144826
+    },
+    "fixed_1601": {
+      "added_free_capture_cpu_seconds": 0.10889109247364104,
+      "adapter_cpu_seconds": 1.431728303199634,
+      "selector_cpu_seconds": 0.28363690129481256,
+      "audit_decode_cpu_seconds": 1.7183574249502271,
+      "prefix_maintenance_cpu_seconds": 0.0725625166669488,
+      "offline_read_and_reduce_cpu_seconds": 8.016216744000001
+    },
+    "queue_1702": {
+      "added_free_capture_cpu_seconds": 0.11690393043681979,
+      "adapter_cpu_seconds": 1.3057639349717647,
+      "selector_cpu_seconds": 0.19023926788941026,
+      "audit_decode_cpu_seconds": 0.1273498919326812,
+      "prefix_maintenance_cpu_seconds": 0.0,
+      "offline_read_and_reduce_cpu_seconds": 2.4696351319999996
+    },
+    "fixed_1702": {
+      "added_free_capture_cpu_seconds": 0.10931986616924405,
+      "adapter_cpu_seconds": 1.4995904543902725,
+      "selector_cpu_seconds": 0.30140489526093006,
+      "audit_decode_cpu_seconds": 1.8734519339632243,
+      "prefix_maintenance_cpu_seconds": 0.07248922833241522,
+      "offline_read_and_reduce_cpu_seconds": 7.833270935
+    },
+    "scope": "Native free capture excludes native free itself; existing timers overlap. Raw-write sidecar is additional and not separately measured. Offline export CPU is reported separately."
+  },
+  "cost_and_cleanup": {
+    "gpu_process_seconds": 1150.644302049186,
+    "gpu_process_seconds_by_gpu": {
+      "0": 564.2681985769887,
+      "3": 586.3761034721974
+    },
+    "two_gpu_campaign_makespan_seconds": 594.7480118274689,
+    "paid_two_gpu_active_utilization_fraction": 0.9673376616372598,
+    "owned_processes_remaining": 0,
+    "owned_gpu_processes_remaining": 0
+  },
+  "artifacts": {
+    "raw_archive": "/home/ubuntu/experiments/octopus/r2-serving-opportunity-20260912/raw-archive/trace-data",
+    "compact_exports": "/home/ubuntu/experiments/octopus/r2-serving-opportunity-20260912/export",
+    "archive_validation": "/home/ubuntu/experiments/octopus/r2-serving-opportunity-20260912/archive-validation.json",
+    "plan": "/home/ubuntu/experiments/octopus/r2-serving-opportunity-20260912/plan-v2.json",
+    "input": "/home/ubuntu/experiments/octopus/r2-serving-opportunity-20260912/input",
+    "commands": "/home/ubuntu/experiments/octopus/r2-serving-opportunity-20260912/commands.json",
+    "preserved_export_failure": "/home/ubuntu/experiments/octopus/r2-serving-opportunity-20260912/evidence/export-attempt-001.txt"
+  }
+}

@@ -1,0 +1,498 @@
+{
+  "budget_slots": 1,
+  "decisions": [
+    {
+      "candidates": [
+        {
+          "branch_result": "def proposed(samples, spacing):\n    return spacing * sum(samples[:-1])\n",
+          "branch_summary": "Candidate implementation from a completed repair branch.",
+          "checkpoint_id": "cp-29a5fbefb976d08e",
+          "structure": {
+            "condition_outcome": null,
+            "conditional_consumers": 1,
+            "definite_consumers": 0,
+            "held": false,
+            "last_access_event": 0,
+            "observed_reuses": 0,
+            "prefix_slots": 1,
+            "queued": false,
+            "status": "complete"
+          }
+        },
+        {
+          "branch_result": "def proposed(samples, spacing):\n    return spacing * (sum(samples) - (samples[0] + samples[-1]) / 2)\n",
+          "branch_summary": "Candidate implementation from a completed repair branch.",
+          "checkpoint_id": "cp-40686f80030c312b",
+          "structure": {
+            "condition_outcome": null,
+            "conditional_consumers": 1,
+            "definite_consumers": 0,
+            "held": false,
+            "last_access_event": 0,
+            "observed_reuses": 0,
+            "prefix_slots": 1,
+            "queued": false,
+            "status": "complete"
+          }
+        }
+      ],
+      "current_goal": "Integrate equally spaced samples using left-endpoint rectangles over each interval, excluding the last sample.",
+      "decision_id": "d-616f78bfc6a7d9f6",
+      "unresolved_dependencies": [
+        "Independent contract checks have not returned. Only the verified candidate's branch will be consumed for the next continuation."
+      ]
+    },
+    {
+      "candidates": [
+        {
+          "branch_result": "def proposed(left, right):\n    x, y = sum(left) / len(left), sum(right) / len(right)\n    return sum((a - x) * (b - y) for a, b in zip(left, right)) / len(left)\n",
+          "branch_summary": "Candidate implementation from a completed repair branch.",
+          "checkpoint_id": "cp-6bd1fc69a7ec9239",
+          "structure": {
+            "condition_outcome": null,
+            "conditional_consumers": 1,
+            "definite_consumers": 0,
+            "held": false,
+            "last_access_event": 0,
+            "observed_reuses": 0,
+            "prefix_slots": 1,
+            "queued": false,
+            "status": "complete"
+          }
+        },
+        {
+          "branch_result": "def proposed(left, right):\n    x, y = sum(left) / len(left), sum(right) / len(right)\n    return sum((a - x) * (b - y) for a, b in zip(left, right)) / (len(left) - 1)\n",
+          "branch_summary": "Candidate implementation from a completed repair branch.",
+          "checkpoint_id": "cp-12d40fa090bf03dc",
+          "structure": {
+            "condition_outcome": null,
+            "conditional_consumers": 1,
+            "definite_consumers": 0,
+            "held": false,
+            "last_access_event": 0,
+            "observed_reuses": 0,
+            "prefix_slots": 1,
+            "queued": false,
+            "status": "complete"
+          }
+        }
+      ],
+      "current_goal": "Compute population covariance of paired observations, dividing centered cross-products by the population size.",
+      "decision_id": "d-54db533e1561d10b",
+      "unresolved_dependencies": [
+        "Independent contract checks have not returned. Only the verified candidate's branch will be consumed for the next continuation."
+      ]
+    },
+    {
+      "candidates": [
+        {
+          "branch_result": "def proposed(octets):\n    return int.from_bytes(bytes(octets), \"big\")\n",
+          "branch_summary": "Candidate implementation from a completed repair branch.",
+          "checkpoint_id": "cp-ba01a24089114acc",
+          "structure": {
+            "condition_outcome": null,
+            "conditional_consumers": 1,
+            "definite_consumers": 0,
+            "held": false,
+            "last_access_event": 0,
+            "observed_reuses": 0,
+            "prefix_slots": 1,
+            "queued": false,
+            "status": "complete"
+          }
+        },
+        {
+          "branch_result": "def proposed(octets):\n    return int.from_bytes(bytes(octets), \"little\")\n",
+          "branch_summary": "Candidate implementation from a completed repair branch.",
+          "checkpoint_id": "cp-5aa550104cd844bd",
+          "structure": {
+            "condition_outcome": null,
+            "conditional_consumers": 1,
+            "definite_consumers": 0,
+            "held": false,
+            "last_access_event": 0,
+            "observed_reuses": 0,
+            "prefix_slots": 1,
+            "queued": false,
+            "status": "complete"
+          }
+        }
+      ],
+      "current_goal": "Decode unsigned bytes in network byte order: the first byte is most significant.",
+      "decision_id": "d-9375428b41c3a72b",
+      "unresolved_dependencies": [
+        "Independent contract checks have not returned. Only the verified candidate's branch will be consumed for the next continuation."
+      ]
+    },
+    {
+      "candidates": [
+        {
+          "branch_result": "def proposed(octets):\n    return int.from_bytes(bytes(octets), \"big\")\n",
+          "branch_summary": "Candidate implementation from a completed repair branch.",
+          "checkpoint_id": "cp-ba01a24089114acc",
+          "structure": {
+            "condition_outcome": null,
+            "conditional_consumers": 1,
+            "definite_consumers": 0,
+            "held": false,
+            "last_access_event": 0,
+            "observed_reuses": 0,
+            "prefix_slots": 1,
+            "queued": false,
+            "status": "complete"
+          }
+        },
+        {
+          "branch_result": "def proposed(octets):\n    return int.from_bytes(bytes(octets), \"little\")\n",
+          "branch_summary": "Candidate implementation from a completed repair branch.",
+          "checkpoint_id": "cp-5aa550104cd844bd",
+          "structure": {
+            "condition_outcome": null,
+            "conditional_consumers": 1,
+            "definite_consumers": 0,
+            "held": false,
+            "last_access_event": 0,
+            "observed_reuses": 0,
+            "prefix_slots": 1,
+            "queued": false,
+            "status": "complete"
+          }
+        }
+      ],
+      "current_goal": "Decode unsigned bytes with the least significant byte first.",
+      "decision_id": "d-6fee15dbe702b509",
+      "unresolved_dependencies": [
+        "Independent contract checks have not returned. Only the verified candidate's branch will be consumed for the next continuation."
+      ]
+    },
+    {
+      "candidates": [
+        {
+          "branch_result": "def proposed(left, right):\n    x, y = sum(left) / len(left), sum(right) / len(right)\n    return sum((a - x) * (b - y) for a, b in zip(left, right)) / len(left)\n",
+          "branch_summary": "Candidate implementation from a completed repair branch.",
+          "checkpoint_id": "cp-6bd1fc69a7ec9239",
+          "structure": {
+            "condition_outcome": null,
+            "conditional_consumers": 1,
+            "definite_consumers": 0,
+            "held": false,
+            "last_access_event": 0,
+            "observed_reuses": 0,
+            "prefix_slots": 1,
+            "queued": false,
+            "status": "complete"
+          }
+        },
+        {
+          "branch_result": "def proposed(left, right):\n    x, y = sum(left) / len(left), sum(right) / len(right)\n    return sum((a - x) * (b - y) for a, b in zip(left, right)) / (len(left) - 1)\n",
+          "branch_summary": "Candidate implementation from a completed repair branch.",
+          "checkpoint_id": "cp-12d40fa090bf03dc",
+          "structure": {
+            "condition_outcome": null,
+            "conditional_consumers": 1,
+            "definite_consumers": 0,
+            "held": false,
+            "last_access_event": 0,
+            "observed_reuses": 0,
+            "prefix_slots": 1,
+            "queued": false,
+            "status": "complete"
+          }
+        }
+      ],
+      "current_goal": "Compute unbiased sample covariance of paired observations, applying Bessel's correction to the denominator.",
+      "decision_id": "d-b00174be18af4439",
+      "unresolved_dependencies": [
+        "Independent contract checks have not returned. Only the verified candidate's branch will be consumed for the next continuation."
+      ]
+    },
+    {
+      "candidates": [
+        {
+          "branch_result": "def proposed(left, right):\n    return [[a * b for a, b in zip(x, y)] for x, y in zip(left, right)]\n",
+          "branch_summary": "Candidate implementation from a completed repair branch.",
+          "checkpoint_id": "cp-fc62d37b0074e64f",
+          "structure": {
+            "condition_outcome": null,
+            "conditional_consumers": 1,
+            "definite_consumers": 0,
+            "held": false,
+            "last_access_event": 0,
+            "observed_reuses": 0,
+            "prefix_slots": 1,
+            "queued": false,
+            "status": "complete"
+          }
+        },
+        {
+          "branch_result": "def proposed(left, right):\n    return [[sum(a * b for a, b in zip(row, col)) for col in zip(*right)] for row in left]\n",
+          "branch_summary": "Candidate implementation from a completed repair branch.",
+          "checkpoint_id": "cp-5586959bd0188a91",
+          "structure": {
+            "condition_outcome": null,
+            "conditional_consumers": 1,
+            "definite_consumers": 0,
+            "held": false,
+            "last_access_event": 0,
+            "observed_reuses": 0,
+            "prefix_slots": 1,
+            "queued": false,
+            "status": "complete"
+          }
+        }
+      ],
+      "current_goal": "Compute ordinary matrix multiplication: output entries are row-by-column dot products.",
+      "decision_id": "d-d3465033bedd1901",
+      "unresolved_dependencies": [
+        "Independent contract checks have not returned. Only the verified candidate's branch will be consumed for the next continuation."
+      ]
+    },
+    {
+      "candidates": [
+        {
+          "branch_result": "def proposed(coefficients, x):\n    return sum(c * x ** i for i, c in enumerate(coefficients))\n",
+          "branch_summary": "Candidate implementation from a completed repair branch.",
+          "checkpoint_id": "cp-cbf0c585fb6458d6",
+          "structure": {
+            "condition_outcome": null,
+            "conditional_consumers": 1,
+            "definite_consumers": 0,
+            "held": false,
+            "last_access_event": 0,
+            "observed_reuses": 0,
+            "prefix_slots": 1,
+            "queued": false,
+            "status": "complete"
+          }
+        },
+        {
+          "branch_result": "def proposed(coefficients, x):\n    result = 0\n    for c in coefficients:\n        result = result * x + c\n    return result\n",
+          "branch_summary": "Candidate implementation from a completed repair branch.",
+          "checkpoint_id": "cp-bec7deb35a185474",
+          "structure": {
+            "condition_outcome": null,
+            "conditional_consumers": 1,
+            "definite_consumers": 0,
+            "held": false,
+            "last_access_event": 0,
+            "observed_reuses": 0,
+            "prefix_slots": 1,
+            "queued": false,
+            "status": "complete"
+          }
+        }
+      ],
+      "current_goal": "Evaluate a polynomial whose coefficient list begins with the highest-power term and ends with the constant.",
+      "decision_id": "d-2a58fcd52108208a",
+      "unresolved_dependencies": [
+        "Independent contract checks have not returned. Only the verified candidate's branch will be consumed for the next continuation."
+      ]
+    },
+    {
+      "candidates": [
+        {
+          "branch_result": "def proposed(samples, spacing):\n    return spacing * sum(samples[:-1])\n",
+          "branch_summary": "Candidate implementation from a completed repair branch.",
+          "checkpoint_id": "cp-29a5fbefb976d08e",
+          "structure": {
+            "condition_outcome": null,
+            "conditional_consumers": 1,
+            "definite_consumers": 0,
+            "held": false,
+            "last_access_event": 0,
+            "observed_reuses": 0,
+            "prefix_slots": 1,
+            "queued": false,
+            "status": "complete"
+          }
+        },
+        {
+          "branch_result": "def proposed(samples, spacing):\n    return spacing * (sum(samples) - (samples[0] + samples[-1]) / 2)\n",
+          "branch_summary": "Candidate implementation from a completed repair branch.",
+          "checkpoint_id": "cp-40686f80030c312b",
+          "structure": {
+            "condition_outcome": null,
+            "conditional_consumers": 1,
+            "definite_consumers": 0,
+            "held": false,
+            "last_access_event": 0,
+            "observed_reuses": 0,
+            "prefix_slots": 1,
+            "queued": false,
+            "status": "complete"
+          }
+        }
+      ],
+      "current_goal": "Integrate equally spaced samples with trapezoids, giving each endpoint half weight.",
+      "decision_id": "d-b57cee4016b2d7a5",
+      "unresolved_dependencies": [
+        "Independent contract checks have not returned. Only the verified candidate's branch will be consumed for the next continuation."
+      ]
+    },
+    {
+      "candidates": [
+        {
+          "branch_result": "def proposed(coefficients, x):\n    return sum(c * x ** i for i, c in enumerate(coefficients))\n",
+          "branch_summary": "Candidate implementation from a completed repair branch.",
+          "checkpoint_id": "cp-cbf0c585fb6458d6",
+          "structure": {
+            "condition_outcome": null,
+            "conditional_consumers": 1,
+            "definite_consumers": 0,
+            "held": false,
+            "last_access_event": 0,
+            "observed_reuses": 0,
+            "prefix_slots": 1,
+            "queued": false,
+            "status": "complete"
+          }
+        },
+        {
+          "branch_result": "def proposed(coefficients, x):\n    result = 0\n    for c in coefficients:\n        result = result * x + c\n    return result\n",
+          "branch_summary": "Candidate implementation from a completed repair branch.",
+          "checkpoint_id": "cp-bec7deb35a185474",
+          "structure": {
+            "condition_outcome": null,
+            "conditional_consumers": 1,
+            "definite_consumers": 0,
+            "held": false,
+            "last_access_event": 0,
+            "observed_reuses": 0,
+            "prefix_slots": 1,
+            "queued": false,
+            "status": "complete"
+          }
+        }
+      ],
+      "current_goal": "Evaluate a polynomial whose coefficient list begins with the constant term and proceeds in increasing powers.",
+      "decision_id": "d-3f57ac454331b5bc",
+      "unresolved_dependencies": [
+        "Independent contract checks have not returned. Only the verified candidate's branch will be consumed for the next continuation."
+      ]
+    },
+    {
+      "candidates": [
+        {
+          "branch_result": "def proposed(row, col):\n    return sorted((row + dr, col + dc) for dr in (-1, 0, 1) for dc in (-1, 0, 1) if dr or dc)\n",
+          "branch_summary": "Candidate implementation from a completed repair branch.",
+          "checkpoint_id": "cp-355b2dac71fea35f",
+          "structure": {
+            "condition_outcome": null,
+            "conditional_consumers": 1,
+            "definite_consumers": 0,
+            "held": false,
+            "last_access_event": 0,
+            "observed_reuses": 0,
+            "prefix_slots": 1,
+            "queued": false,
+            "status": "complete"
+          }
+        },
+        {
+          "branch_result": "def proposed(row, col):\n    return sorted((row + dr, col + dc) for dr, dc in ((-1, 0), (1, 0), (0, -1), (0, 1)))\n",
+          "branch_summary": "Candidate implementation from a completed repair branch.",
+          "checkpoint_id": "cp-ca7830c13ef16b2c",
+          "structure": {
+            "condition_outcome": null,
+            "conditional_consumers": 1,
+            "definite_consumers": 0,
+            "held": false,
+            "last_access_event": 0,
+            "observed_reuses": 0,
+            "prefix_slots": 1,
+            "queued": false,
+            "status": "complete"
+          }
+        }
+      ],
+      "current_goal": "List the four edge-sharing neighbors of an interior square-grid cell; do not include diagonal contacts.",
+      "decision_id": "d-74bdced5c25df120",
+      "unresolved_dependencies": [
+        "Independent contract checks have not returned. Only the verified candidate's branch will be consumed for the next continuation."
+      ]
+    },
+    {
+      "candidates": [
+        {
+          "branch_result": "def proposed(left, right):\n    return [[a * b for a, b in zip(x, y)] for x, y in zip(left, right)]\n",
+          "branch_summary": "Candidate implementation from a completed repair branch.",
+          "checkpoint_id": "cp-fc62d37b0074e64f",
+          "structure": {
+            "condition_outcome": null,
+            "conditional_consumers": 1,
+            "definite_consumers": 0,
+            "held": false,
+            "last_access_event": 0,
+            "observed_reuses": 0,
+            "prefix_slots": 1,
+            "queued": false,
+            "status": "complete"
+          }
+        },
+        {
+          "branch_result": "def proposed(left, right):\n    return [[sum(a * b for a, b in zip(row, col)) for col in zip(*right)] for row in left]\n",
+          "branch_summary": "Candidate implementation from a completed repair branch.",
+          "checkpoint_id": "cp-5586959bd0188a91",
+          "structure": {
+            "condition_outcome": null,
+            "conditional_consumers": 1,
+            "definite_consumers": 0,
+            "held": false,
+            "last_access_event": 0,
+            "observed_reuses": 0,
+            "prefix_slots": 1,
+            "queued": false,
+            "status": "complete"
+          }
+        }
+      ],
+      "current_goal": "Compute the Hadamard product of same-shaped matrices: multiply corresponding entries without summation.",
+      "decision_id": "d-4333961f527dcc31",
+      "unresolved_dependencies": [
+        "Independent contract checks have not returned. Only the verified candidate's branch will be consumed for the next continuation."
+      ]
+    },
+    {
+      "candidates": [
+        {
+          "branch_result": "def proposed(row, col):\n    return sorted((row + dr, col + dc) for dr in (-1, 0, 1) for dc in (-1, 0, 1) if dr or dc)\n",
+          "branch_summary": "Candidate implementation from a completed repair branch.",
+          "checkpoint_id": "cp-355b2dac71fea35f",
+          "structure": {
+            "condition_outcome": null,
+            "conditional_consumers": 1,
+            "definite_consumers": 0,
+            "held": false,
+            "last_access_event": 0,
+            "observed_reuses": 0,
+            "prefix_slots": 1,
+            "queued": false,
+            "status": "complete"
+          }
+        },
+        {
+          "branch_result": "def proposed(row, col):\n    return sorted((row + dr, col + dc) for dr, dc in ((-1, 0), (1, 0), (0, -1), (0, 1)))\n",
+          "branch_summary": "Candidate implementation from a completed repair branch.",
+          "checkpoint_id": "cp-ca7830c13ef16b2c",
+          "structure": {
+            "condition_outcome": null,
+            "conditional_consumers": 1,
+            "definite_consumers": 0,
+            "held": false,
+            "last_access_event": 0,
+            "observed_reuses": 0,
+            "prefix_slots": 1,
+            "queued": false,
+            "status": "complete"
+          }
+        }
+      ],
+      "current_goal": "List all eight touching neighbors of an interior square-grid cell, including corner contacts.",
+      "decision_id": "d-eddc8d0925189c57",
+      "unresolved_dependencies": [
+        "Independent contract checks have not returned. Only the verified candidate's branch will be consumed for the next continuation."
+      ]
+    }
+  ],
+  "schema": "octopus-semantic-intent-input-v1"
+}

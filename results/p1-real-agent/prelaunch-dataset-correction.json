@@ -1,0 +1,79 @@
+{
+  "schema": "octopus-p1-preparation-correction-v1",
+  "accepted_at": "2026-09-10T17:14:45.751+00:00",
+  "authority": "Coordinator acceptance of supervisor's canonical dataset correction",
+  "implementation_commit": "93c2adf45aeb23ac92a5830fb36ed919fa2f8b73",
+  "prelaunch_documentation_commit": "1f6c8add42b19f8e6bd9540a2c3be2499a13cf19",
+  "documentation_correction": "Already committed and pushed by the time the publication worker inspected the requested correction. Only the documented dataset revision differs from the accepted implementation; no task, method, limit or executable protocol changed.",
+  "canonical_input": {
+    "dataset": "SWE-bench/SWE-bench_Verified",
+    "revision": "78f471bf655a3137b2e8a75af1501690ec009ec3",
+    "parquet_sha256": "030cfd7f2a704c4c0226e7f104c725a3b41230b1d3517f9c915ad7ea5be3fa25",
+    "django__django-10097_pass_to_pass_count": 1427
+  },
+  "superseded_preparation": {
+    "source": "Legacy princeton metadata, previously misidentified as the authoritative alias",
+    "revision": "c104f840cc67f8b6eec6f759ebc8b2693d585d4a",
+    "parquet_sha256": "a45b1fe4e2f0c8390b2b2938ac83e92ed5979000856808f3679c07812e9e6dcd",
+    "django__django-10097_pass_to_pass_count": 1432,
+    "disposition": "Withdrawn; obsolete preparation artifacts must not enter the valid scientific pool."
+  },
+  "selection": {
+    "instance_ids": [
+      "django__django-10097",
+      "django__django-10554",
+      "sympy__sympy-11618",
+      "sympy__sympy-12096"
+    ],
+    "ids_base_commits_and_visible_issues_unchanged": true,
+    "selection_changed_from_model_or_scorer_outcomes": false
+  },
+  "official_evaluator_sanity": {
+    "status": "pass",
+    "reported_at": "2026-09-10T17:23:33.325+00:00",
+    "scope": "Evaluator instrument check only; not a P1 model outcome and not included in solver E2E or GPU cost.",
+    "evidence_boundary": "Publication worker relies only on the supervisor's pass result and sanitized interface; no gold content is consumed."
+  },
+  "solver_image_preparation": {
+    "reported_at": "2026-09-10T17:27:16.587+00:00",
+    "reason": "Official images include a setup commit above the issue base; solver tools require the exact clean base checkout.",
+    "method": "Supervisor derived immutable solver-only images from each official image by restoring the frozen base commit and cleaning the visible working tree.",
+    "supervisor_verified": "All four solver images have exact base HEAD, clean status, and no gold/test patch.",
+    "solver_identity": "Use the per-task derived immutable sha256 image ID in the frozen manifest for both methods.",
+    "grading_identity": "Official grading continues to use the official tags/images.",
+    "source_change_required": false
+  },
+  "device_reassignment": {
+    "authority": "Coordinator checkpoint 2026-09-10T17:29:52.871+00:00",
+    "reason": "Previously assigned GPU2 became occupied by an unrelated job.",
+    "cuda_visible_devices": "4",
+    "device_uuid": "GPU-d5474737-c9c8-0c90-902b-80fb17cdebd8",
+    "implementation_blocker_found": "The old endpoint validator hardcoded GPU2 and its UUID, so the new endpoint could not freeze.",
+    "corrective_commit": "aa20aeab47ff172a2d4c3f66c894aebf291f6266",
+    "correction": "Validate one device index and physical UUID from the frozen endpoint; runtime matching remains enforced. Transport description no longer hardcodes an administrative device.",
+    "validation": "One targeted CPU endpoint test passed in 0.16 s; unchanged 42-test suite was not rerun.",
+    "scientific_tasks_model_methods_and_limits_changed": false,
+    "prior_gpu2_output_handling": "If any valid GPU2 output exists, report it before mixing; never relabel it as GPU4."
+  },
+  "initial_execution_repair": {
+    "reported_at": "2026-09-10T17:54:13.085+00:00",
+    "current_clean_implementation": "635c3e6a17117483bcd49e6162b1123f8d72f82b",
+    "supervisor_reported_cpu_acceptance": "44 passed",
+    "failure": "First GPU episode reached the engine but was invalidated by Docker removal already in progress.",
+    "reported_invalid_epoch_wall_seconds": 53.94,
+    "clock_definition": "Await the execution owner's exact ledger/outer-wall fields; do not infer a more specific clock from this status message.",
+    "valid_episodes_at_report": 0,
+    "repair": "Docker cleanup-race fix; no reported task/model/method/threshold change.",
+    "failed_epoch_source_device_selector": null,
+    "provenance_requirement": "Retain the original failed epoch identity and charge its GPU-host execution cost; do not relabel it with the corrective source commit.",
+    "device_status_clarification": "Status mentioned occupied GPU2/3, but the latest coordinator-authorized target is GPU4 UUID GPU-d5474737-c9c8-0c90-902b-80fb17cdebd8."
+  },
+  "execution_boundary": {
+    "instruction": "Freeze canonical official identity and evaluator fields before the first episode. No implementation wait is required because the accepted source reads the manifest revision dynamically.",
+    "old_revision_gpu_episode_count": null,
+    "runtime_confirmation": "Pending execution-owner ledger confirmation; publication worker does not infer that no old-revision episode occurred.",
+    "if_old_revision_was_used": "Stop and report the exact episode/source/dataset identity. Preserve it separately; never silently relabel it.",
+    "measured_commit_policy": "Keep each actual measured source commit recorded unchanged; do not retag it for a later documentation correction."
+  },
+  "publication_status": "Prepared outside the shared source checkout to avoid disrupting freeze/launch. Integrate with the P1 preparation history and documentation at the next source-safe publication boundary."
+}

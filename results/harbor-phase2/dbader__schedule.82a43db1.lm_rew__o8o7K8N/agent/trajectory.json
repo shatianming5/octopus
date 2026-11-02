@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "dbader__schedule.82a43db1.lm_rew__o8o7K8N__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "Jobs with .until() deadline are cancelled exactly at the deadline time\n\nWhen using the `.until()` method to set a deadline for a job, the job is cancelled exactly at the deadline time, not after it. This behavior is inconsistent with the documentation and expected behavior.\n\n```python\n>>> import schedule\n>>> import datetime\n>>> \n>>> # Set up a job that runs every day until a specific time\n>>> job = schedule.every().day.until(datetime.datetime(2023, 1, 1, 12, 0, 0)).do(lambda: print(\"Hello\"))\n>>> \n>>> # Check if job is overdue at exactly the deadline time\n>>> job._is_overdue(datetime.datetime(2023, 1, 1, 12, 0, 0))\nTrue  # This should be False since it should only be overdue AFTER the deadline\n```\n\nThis causes jobs to be cancelled prematurely. For example, if you schedule a job to run every 5 seconds until a specific time, and that time happens to coincide with one of the scheduled run times, the job will be cancelled before it gets a chance to run at that exact time.\n\nExpected behavior:\n- A job with `.until(time)` should run at `time` if that's a scheduled run time\n- The job should only be considered overdue for times strictly after the deadline\n\nCurrent behavior:\n- A job with `.until(time)` will not run at `time` even if that's a scheduled run time\n- The job is considered overdue at the exact deadline time"
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository and the `.until()` deadline logic so we can fix jobs being cancelled at the exact deadline.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-3512566f-3314-4dca-8589-3ce52544d7dc-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -50 && cat /testbed/README.md 2>/dev/null | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-3512566f-3314-4dca-8589-3ce52544d7dc-0",
+            "content": "total 140\ndrwxr-xr-x 1 root root  4096 Sep 22 17:01 .\ndrwxr-xr-x 1 root root  4096 Sep 22 17:01 ..\ndrwxr-xr-x 8 root root  4096 Jul 12  2025 .git\n-rw-r--r-- 1 root root   404 Jul 12  2025 .gitignore\n-rw-rw-r-- 1 1005 1005     0 Sep 22 15:44 .gitkeep\n-rw-r--r-- 1 root root  2054 Jul 12  2025 AUTHORS.rst\n-rw-r--r-- 1 root root  6743 Jul 12  2025 HISTORY.rst\n-rw-r--r-- 1 root root  1099 Jul 12  2025 LICENSE.txt\n-rw-r--r-- 1 root root   147 Jul 12  2025 MANIFEST.in\n-rw-r--r-- 1 root root  2288 Jul 12  2025 README.rst\ndrwxr-xr-x 4 root root  4096 Jul 12  2025 docs\n-rw-r--r-- 1 root root   669 Jul 12  2025 pyproject.toml\n-rw-r--r-- 1 root root   104 Jul 12  2025 requirements-dev.txt\ndrwxr-xr-x 2 root root  4096 Jul 12  2025 schedule\ndrwxr-xr-x 2 root root  4096 Jul 12  2025 schedule.egg-info\n-rw-r--r-- 1 root root    22 Jul 12  2025 setup.cfg\n-rw-r--r-- 1 root root  1588 Jul 12  2025 setup.py\n-rw-r--r-- 1 root root 66565 Jul 12  2025 test_schedule.py\n-rw-r--r-- 1 root root   842 Jul 12  2025 tox.ini\n/testbed/test_schedule.py\n/testbed/schedule/__init__.py\n/testbed/setup.py\n/testbed/docs/conf.py\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-fd865bc0-4dbf-492d-a4e8-258dcf190b38-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/schedule/__init__.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-fd865bc0-4dbf-492d-a4e8-258dcf190b38-1",
+            "content": "            # schedule the job 1 offset later than possible.\n            # For example, if 02:23 does not exist (because DST moves from 02:00\n            # to 03:00), this will schedule the job at 03:23.\n            moment += offset_diff\n        return moment\n\n    def _is_overdue(self, when: datetime.datetime):\n        return self.cancel_after is not None and when > self.cancel_after\n\n    def _decode_datetimestr(\n        self, datetime_str: str, formats: List[str]\n    ) -> Optional[datetime.datetime]:\n        for f in formats:\n            try:\n                return datetime.datetime.strptime(datetime_str, f)\n            except ValueError:\n                pass\n        return None\n\n\n# The following methods are shortcuts for not having to\n# create a Scheduler instance:\n\n#: Default :class:`Scheduler <Scheduler>` object\ndefault_scheduler = Scheduler()\n\n#: Default :class:`Jobs <Job>` list\njobs = default_scheduler.jobs  # todo: should this be a copy, e.g. jobs()?\n\n\ndef every(interval: int = 1) -> Job:\n    \"\"\"Calls :meth:`every <Scheduler.every>` on the\n    :data:`default scheduler instance <default_scheduler>`.\n    \"\"\"\n    return default_scheduler.every(interval)\n\n\ndef run_pending() -> None:\n    \"\"\"Calls :meth:`run_pending <Scheduler.run_pending>` on the\n    :data:`default scheduler instance <default_scheduler>`.\n    \"\"\"\n    default_scheduler.run_pending()\n\n\ndef run_all(delay_seconds: int = 0) -> None:\n    \"\"\"Calls :meth:`run_all <Scheduler.run_all>` on the\n    :data:`default scheduler instance <default_scheduler>`.\n    \"\"\"\n    default_scheduler.run_all(delay_seconds=delay_seconds)\n\n\ndef get_jobs(tag: Optional[Hashable] = None) -> List[Job]:\n    \"\"\"Calls :meth:`get_jobs <Scheduler.get_jobs>` on the\n    :data:`default scheduler instance <default_scheduler>`.\n    \"\"\"\n    return default_scheduler.get_jobs(tag)\n\n\ndef clear(tag: Optional[Hashable] = None) -> None:\n    \"\"\"Calls :meth:`clear <Scheduler.clear>` on the\n    :data:`default scheduler instance <default_scheduler>`.\n    \"\"\"\n    default_scheduler.clear(tag)\n\n\ndef cancel_job(job: Job) -> None:\n    \"\"\"Calls :meth:`cancel_job <Scheduler.cancel_job>` on the\n    :data:`default scheduler instance <default_scheduler>`.\n    \"\"\"\n    default_scheduler.cancel_job(job)\n\n\ndef next_run(tag: Optional[Hashable] = None) -> Optional[datetime.datetime]:\n    \"\"\"Calls :meth:`next_run <Scheduler.next_run>` on the\n    :data:`default scheduler instance <default_scheduler>`.\n    \"\"\"\n    return default_scheduler.get_next_run(tag)\n\n\ndef idle_seconds() -> Optional[float]:\n    \"\"\"Calls :meth:`idle_seconds <Scheduler.idle_seconds>` on the\n    :data:`default scheduler instance <default_scheduler>`.\n    \"\"\"\n    return default_scheduler.idle_seconds\n\n\ndef repeat(job, *args, **kwargs):\n    \"\"\"\n    Decorator to schedule a new periodic job.\n\n    Any additional arguments are passed on to the decorated function\n    when the job runs.\n\n    :param job: a :class:`Jobs <Job>`\n    \"\"\"\n\n    def _schedule_decorator(decorated_function):\n        job.do(decorated_function, *args, **kwargs)\n        return decorated_function\n\n    return _schedule_decorator\n\n\ndef _move_to_next_weekday(moment: datetime.datetime, weekday: str):\n    \"\"\"\n    Move the given timestamp to the nearest given weekday. May be this week\n    or next week. If the timestamp is already at the given weekday, it is not\n    moved.\n    \"\"\"\n    weekday_index = _weekday_index(weekday)\n\n    days_ahead = weekday_index - moment.weekday()\n    if days_ahead < 0:\n        # Target day already happened this week, move to next week\n        days_ahead += 7\n    return moment + datetime.timedelta(days=days_ahead)\n\n\ndef _weekday_index(day: str) -> int:\n    weekdays = (\n        \"monday\",\n        \"tuesday\",\n        \"wednesday\",\n        \"thursday\",\n        \"friday\",\n        \"saturday\",\n        \"sunday\",\n    )\n    if day not in weekdays:\n        raise ScheduleValueError(\n            \"Invalid start day (valid start days are {})\".format(weekdays)\n        )\n    return weekdays.index(day)\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-795c2f52-8f8c-4c98-991b-156ad7ed631f-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "grep -n \"until\\|cancel_after\\|_is_overdue\\|overdue\" /testbed/schedule/__init__.py /testbed/test_schedule.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-795c2f52-8f8c-4c98-991b-156ad7ed631f-2",
+            "content": ":\n/testbed/schedule/__init__.py:627:                # the until_time is a time-only format. Set the date to today\n/testbed/schedule/__init__.py:629:                cancel_after = cancel_after.replace(\n/testbed/schedule/__init__.py:632:            self.cancel_after = cancel_after\n/testbed/schedule/__init__.py:635:                \"until() takes a string, datetime.datetime, datetime.timedelta, \"\n/testbed/schedule/__init__.py:638:        if self.cancel_after < datetime.datetime.now():\n/testbed/schedule/__init__.py:640:                \"Cannot schedule a job to run until a time in the past\"\n/testbed/schedule/__init__.py:677:        If the job's deadline is reached (configured using .until()), the job is not\n/testbed/schedule/__init__.py:686:        if self._is_overdue(datetime.datetime.now()):\n/testbed/schedule/__init__.py:695:        if self._is_overdue(self.next_run):\n/testbed/schedule/__init__.py:819:    def _is_overdue(self, when: datetime.datetime):\n/testbed/schedule/__init__.py:820:        return self.cancel_after is not None and when > self.cancel_after\n/testbed/test_schedule.py:312:    def test_until_time(self):\n/testbed/test_schedule.py:316:            assert every().day.until(datetime.datetime(3000, 1, 1, 20, 30)).do(\n/testbed/test_schedule.py:318:            ).cancel_after == datetime.datetime(3000, 1, 1, 20, 30, 0)\n/testbed/test_schedule.py:319:            assert every().day.until(datetime.datetime(3000, 1, 1, 20, 30, 50)).do(\n/testbed/test_schedule.py:321:            ).cancel_after == datetime.datetime(3000, 1, 1, 20, 30, 50)\n/testbed/test_schedule.py:322:            assert every().day.until(datetime.time(12, 30)).do(\n/testbed/test_schedule.py:324:            ).cancel_after == m.replace(hour=12, minute=30, second=0, microsecond=0)\n/testbed/test_schedule.py:325:            assert every().day.until(datetime.time(12, 30, 50)).do(\n/testbed/test_schedule.py:327:            ).cancel_after == m.replace(hour=12, minute=30, second=50, microsecond=0)\n/testbed/test_schedule.py:329:            assert every().day.until(\n/testbed/test_schedule.py:331:            ).do(mock_job).cancel_after == datetime.datetime(2020, 2, 10, 15, 12, 42)\n/testbed/test_schedule.py:333:            assert every().day.until(\"10:30\").do(mock_job).cancel_after == m.replace(\n/testbed/test_schedule.py:336:            assert every().day.until(\"10:30:50\").do(mock_job).cancel_after == m.replace(\n/testbed/test_schedule.py:339:            assert every().day.until(\"3000-01-01 10:30\").do(\n/testbed/test_schedule.py:341:            ).cancel_after == datetime.datetime(3000, 1, 1, 10, 30, 0)\n/testbed/test_schedule.py:342:            assert every().day.until(\"3000-01-01 10:30:50\").do(\n/testbed/test_schedule.py:344:            ).cancel_after == datetime.datetime(3000, 1, 1, 10, 30, 50)\n/testbed/test_schedule.py:345:            assert every().day.until(datetime.datetime(3000, 1, 1, 10, 30, 50)).do(\n/testbed/test_schedule.py:347:            ).cancel_after == datetime.datetime(3000, 1, 1, 10, 30, 50)\n/testbed/test_schedule.py:350:        self.assertRaises(TypeError, every().day.until, 123)\n/testbed/test_schedule.py:351:        self.assertRaises(ScheduleValueError, every().day.until, \"123\")\n/testbed/test_schedule.py:352:        self.assertRaises(ScheduleValueError, every().day.until, \"01-01-3000\")\n/testbed/test_schedule.py:354:        # Using .until() with moments in the passed\n/testbed/test_schedule.py:357:            every().day.until,\n/testbed/test_schedule.py:361:            ScheduleValueError, every().day.until, datetime.timedelta(minutes=-1)\n/testbed/test_schedule.py:364:        self.assertRaises(ScheduleValueError, every().day.until, one_hour_ago)\n/testbed/test_schedule.py:370:            every(5).seconds.until(datetime.time(11, 35, 20)).do(mock_job)\n/testbed/test_schedule.py:384:            every(5).seconds.until(datetime.time(11, 35, 20)).do(mock_job)\n/testbed/test_schedule.py:482:                every().minute.until(datetime.time(12, 17)).do(mock_job).next_run.minute\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "The overdue check is in `schedule/__init__.py`; I'll inspect that method and its tests next.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-9d423e86-79c4-420a-8abc-3beddb4af14e-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '580,720p' /testbed/schedule/__init__.py && echo \"====\" && sed -n '800,825p' /testbed/schedule/__init__.py && echo \"==== TESTS ====\" && sed -n '300,400p' /testbed/test_schedule.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-9d423e86-79c4-420a-8abc-3beddb4af14e-3",
+            "content": "RuntimeError: Command timed out after 20 seconds"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-e75bc878-9316-48ff-bf0d-e6f484a4a380-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '580,720p' /testbed/schedule/__init__.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-e75bc878-9316-48ff-bf0d-e6f484a4a380-4",
+            "content": "     elif isinstance(until_time, str):\n            cancel_after = self._decode_datetimestr(\n                until_time,\n                [\n                    \"%Y-%m-%d %H:%M:%S\",\n                    \"%Y-%m-%d %H:%M\",\n                    \"%Y-%m-%d\",\n                    \"%H:%M:%S\",\n                    \"%H:%M\",\n                ],\n            )\n            if cancel_after is None:\n                raise ScheduleValueError(\"Invalid string format for until()\")\n            if \"-\" not in until_time:\n                # the until_time is a time-only format. Set the date to today\n                now = datetime.datetime.now()\n                cancel_after = cancel_after.replace(\n                    year=now.year, month=now.month, day=now.day\n                )\n            self.cancel_after = cancel_after\n        else:\n            raise TypeError(\n                \"until() takes a string, datetime.datetime, datetime.timedelta, \"\n                \"datetime.time parameter\"\n            )\n        if self.cancel_after < datetime.datetime.now():\n            raise ScheduleValueError(\n                \"Cannot schedule a job to run until a time in the past\"\n            )\n        return self\n\n    def do(self, job_func: Callable, *args, **kwargs):\n        \"\"\"\n        Specifies the job_func that should be called every time the\n        job runs.\n\n        Any additional arguments are passed on to job_func when\n        the job runs.\n\n        :param job_func: The function to be scheduled\n        :return: The invoked job instance\n        \"\"\"\n        self.job_func = functools.partial(job_func, *args, **kwargs)\n        functools.update_wrapper(self.job_func, job_func)\n        self._schedule_next_run()\n        if self.scheduler is None:\n            raise ScheduleError(\n                \"Unable to a add job to schedule. \"\n                \"Job is not associated with an scheduler\"\n            )\n        self.scheduler.jobs.append(self)\n        return self\n\n    @property\n    def should_run(self) -> bool:\n        \"\"\"\n        :return: ``True`` if the job should be run now.\n        \"\"\"\n        assert self.next_run is not None, \"must run _schedule_next_run before\"\n        return datetime.datetime.now() >= self.next_run\n\n    def run(self):\n        \"\"\"\n        Run the job and immediately reschedule it.\n        If the job's deadline is reached (configured using .until()), the job is not\n        run and CancelJob is returned immediately. If the next scheduled run exceeds\n        the job's deadline, CancelJob is returned after the execution. In this latter\n        case CancelJob takes priority over any other returned value.\n\n        :return: The return value returned by the `job_func`, or CancelJob if the job's\n                 deadline is reached.\n\n        \"\"\"\n        if self._is_overdue(datetime.datetime.now()):\n            logger.debug(\"Cancelling job %s\", self)\n            return CancelJob\n\n        logger.debug(\"Running job %s\", self)\n        ret = self.job_func()\n        self.last_run = datetime.datetime.now()\n        self._schedule_next_run()\n\n        if self._is_overdue(self.next_run):\n            logger.debug(\"Cancelling job %s\", self)\n            return CancelJob\n        return ret\n\n    def _schedule_next_run(self) -> None:\n        \"\"\"\n        Compute the instant when this job should run next.\n        \"\"\"\n        if self.unit not in (\"seconds\", \"minutes\", \"hours\", \"days\", \"weeks\"):\n            raise ScheduleValueError(\n                \"Invalid unit (valid units are `seconds`, `minutes`, `hours`, \"\n                \"`days`, and `weeks`)\"\n            )\n        if self.latest is not None:\n            if not (self.latest >= self.interval):\n                raise ScheduleError(\"`latest` is greater than `interval`\")\n            interval = random.randint(self.interval, self.latest)\n        else:\n            interval = self.interval\n\n        # Do all computation in the context of the requested timezone\n        now = datetime.datetime.now(self.at_time_zone)\n\n        next_run = now\n\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-2b5ff68c-ce82-4062-84d5-cdcc7f5ebcfd-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cd /testbed && git log --oneline -20 && echo \"==== HISTORY ====\" && cat HISTORY.rst | head -100 && echo \"==== GIT BLAME overdue ====\" && git blame -L 815,825 schedule/__init__.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-2b5ff68c-ce82-4062-84d5-cdcc7f5ebcfd-5",
+            "content": "17. Thanks @chrimaho!\n- Get next run by tag (#463) Thanks @jweijers!\n- Add py.typed file. See #521. Thanks @Akuli!\n\n- Fix the re pattern of the 'days'. See #506 Thanks @sunpro108!\n- Fix test_until_time failure when run early. See #563. Thanks @emollier!\n- Fix crash repr on partially constructed job. See #569. Thanks @CPickens42!\n- Code cleanup and modernization. See #567, #536. Thanks @masa-08 and @SergBobrovsky!\n- Documentation improvements and fix typos. See #469, #479, #493, #519, #520. Thanks to @NaelsonDouglas, @chrimaho, @rudSarkar\n\n1.1.0 (2021-04-09)\n++++++++++++++++++\n\n- Added @repeat() decorator. See #148. Thanks @rhagenaars!\n- Added execute .until(). See #195. Thanks @fredthomsen!\n- Added job retrieval filtered by tags using get_jobs('tag'). See #419. Thanks @skenvy!\n- Added type annotations. See #427. Thanks @martinthoma!\n\n- Bugfix: str() of job when there is no __name__. See #430. Thanks @biggerfisch!\n- Improved error messages. See #280, #439. Thanks @connorskees and @sosolidkk!\n- Improved logging. See #193. Thanks @zcking!\n- Documentation improvements and fix typos. See #424, #435, #436, #453, #437, #448. Thanks @ebllg!\n\n1.0.0 (2021-01-20)\n++++++++++++++++++\n\nDepending on your configuration, the following bugfixes might change schedule's behaviour:\n\n- Fix: idle_seconds crashes when no jobs are scheduled. See #401. Thanks @yoonghm!\n- Fix: day.at('HH:MM:SS') where HMS=now+10s doesn't run today. See #331. Thanks @qmorek!\n- Fix: hour.at('MM:SS'), the seconds are set to 00. See #290. Thanks @eladbi!\n- Fix: Long-running jobs skip a day when they finish in the next day #404. Thanks @4379711!\n\nOther changes:\n\n- Dropped Python 2.7 and 3.5 support, added 3.8 and 3.9 support. See #409\n- Fix RecursionError when the job is passed to the do function as an arg. See #190. Thanks @connorskees!\n- Fix DeprecationWarning of 'collections'. See #296. Thanks @gaguirregabiria!\n- Replaced Travis with Github Actions for automated testing\n- Revamp and extend documentation. See #395\n- Improved tests. Thanks @connorskees and @Jamim!\n- Changed log messages to DEBUG level. Thanks @aisk!\n\n\n0.6.0 (2019-01-20)\n++++++++++++++++++\n\n- Make at() accept timestamps with 1 second precision (#267). Thanks @NathanWailes!\n- Introduce proper exception hierarchy (#271). Thanks @ConnorSkees!\n\n\n0.5.0 (2017-11-16)\n++++++++++++++++++\n\n- Keep partially scheduled jobs from breaking the scheduler (#125)\n- Add support for random intervals (Thanks @grampajoe and @gilbsgilbs)\n\n\n0.4.3 (2017-06-10)\n++++++++++++++++++\n\n- Improve docs & clean up docstrings\n\n\n0.4.2 (2016-11-29)\n++++++++++++++++++\n\n- Publish to PyPI as a universal (py2/py3) wheel\n\n\n0.4.0 (2016-11-28)\n++++++++++++++++++\n\n- Add proper HTML (Sphinx) docs available at https://schedule.readthedocs.io/\n- CI builds now run against Python 2.7 and 3.5 (3.3 and 3.4 should work fine but are untested)\n- Fixed an issue with ``run_all()`` and having more than one job that deletes itself in the same iteration. Thanks @alaingilbert.\n- Add ability to tag jobs and to cancel jobs by tag. Thanks @Zerrossetto.\n==== GIT BLAME overdue ====\n^9a84ffc (sweft 2025-03-14 21:49:26 +0000 815)             # to 03:00), this will schedule the job at 03:23.\n^9a84ffc (sweft 2025-03-14 21:49:26 +0000 816)             moment += offset_diff\n^9a84ffc (sweft 2025-03-14 21:49:26 +0000 817)         return moment\n^9a84ffc (sweft 2025-03-14 21:49:26 +0000 818) \n^9a84ffc (sweft 2025-03-14 21:49:26 +0000 819)     def _is_overdue(self, when: datetime.datetime):\n^9a84ffc (sweft 2025-03-14 21:49:26 +0000 820)         return self.cancel_after is not None and when > self.cancel_after\n^9a84ffc (sweft 2025-03-14 21:49:26 +0000 821) \n^9a84ffc (sweft 2025-03-14 21:49:26 +0000 822)     def _decode_datetimestr(\n^9a84ffc (sweft 2025-03-14 21:49:26 +0000 823)         self, datetime_str: str, formats: List[str]\n^9a84ffc (sweft 2025-03-14 21:49:26 +0000 824)     ) -> Optional[datetime.datetime]:\n^9a84ffc (sweft 2025-03-14 21:49:26 +0000 825)         for f in formats:\n"
+          }
+        ]
+      }
+    }
+  ]
+}

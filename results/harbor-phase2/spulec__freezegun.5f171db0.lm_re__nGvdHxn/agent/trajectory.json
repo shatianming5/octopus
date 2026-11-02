@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "spulec__freezegun.5f171db0.lm_re__nGvdHxn__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# configure() function in freezegun doesn't properly handle default_ignore_list and extend_ignore_list\n\n## Description\n\nI found an issue with the `configure()` function in freezegun. When using the `default_ignore_list` parameter, it doesn't properly override the default list. Additionally, when using `extend_ignore_list` multiple times, duplicate items aren't properly handled.\n\n## Steps to reproduce\n\nHere's a simple example to reproduce the issue with `default_ignore_list`:\n\n```python\nimport freezegun\n\n# This should completely replace the default ignore list with just ['threading', 'tensorflow']\nfreezegun.configure(default_ignore_list=['threading', 'tensorflow'])\n\n# But when we freeze time, it doesn't use our custom ignore list correctly\nfreezegun.freeze_time('2020-10-06')\n```\n\nAnd here's how to reproduce the issue with duplicate items in `extend_ignore_list`:\n\n```python\nimport freezegun\n\n# Add some items to the ignore list, including a duplicate 'tensorflow'\nfreezegun.configure(extend_ignore_list=['tensorflow', 'pymongo', 'tensorflow', 'rabbitmq'])\n\n# Add 'tensorflow' again\nfreezegun.configure(extend_ignore_list=['tensorflow'])\n\n# When we freeze time, the ignore list contains duplicates\nfreezegun.freeze_time('2020-10-06')\n```\n\nThe issue seems to be in how the `configure()` function handles the settings object. When overriding the default ignore list, it doesn't properly replace the existing list, and when extending the list, it doesn't properly handle duplicates."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository structure and the `configure()` function to identify how `default_ignore_list` and `extend_ignore_list` are handled.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-81ff5c67-da52-4bc6-8020-a55438ec187f-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -50"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-81ff5c67-da52-4bc6-8020-a55438ec187f-0",
+            "content": "total 100\ndrwxr-xr-x 1 root root  4096 Sep 22 16:29 .\ndrwxr-xr-x 1 root root  4096 Sep 22 16:29 ..\n-rw-r--r-- 1 root root    28 Jul 14  2025 .coveragerc\ndrwxr-xr-x 8 root root  4096 Jul 14  2025 .git\n-rw-r--r-- 1 root root    75 Jul 14  2025 .gitignore\n-rw-rw-r-- 1 1005 1005     0 Sep 22 15:44 .gitkeep\n-rw-r--r-- 1 root root  1082 Jul 14  2025 AUTHORS.rst\n-rw-r--r-- 1 root root  2784 Jul 14  2025 CHANGELOG\n-rw-r--r-- 1 root root 10834 Jul 14  2025 LICENSE\n-rw-r--r-- 1 root root   235 Jul 14  2025 MANIFEST.in\n-rw-r--r-- 1 root root   271 Jul 14  2025 Makefile\n-rw-r--r-- 1 root root 10110 Jul 14  2025 README.rst\n-rw-r--r-- 1 root root   193 Jul 14  2025 SECURITY.md\n-rw-r--r-- 1 root root   564 Jul 14  2025 create_tag.py\ndrwxr-xr-x 2 root root  4096 Jul 14  2025 freezegun\ndrwxr-xr-x 2 root root  4096 Jul 14  2025 freezegun.egg-info\n-rw-r--r-- 1 root root   262 Jul 14  2025 pyproject.toml\n-rw-r--r-- 1 root root    81 Jul 14  2025 requirements.txt\n-rw-r--r-- 1 root root  1174 Jul 14  2025 setup.cfg\n-rw-r--r-- 1 root root    60 Jul 14  2025 setup.py\ndrwxr-xr-x 2 root root  4096 Jul 14  2025 tests\n-rw-r--r-- 1 root root   479 Jul 14  2025 tox.ini\n/testbed/freezegun/api.py\n/testbed/freezegun/__init__.py\n/testbed/freezegun/config.py\n/testbed/freezegun/_async.py\n/testbed/create_tag.py\n/testbed/tests/test_datetimes.py\n/testbed/tests/another_module.py\n/testbed/tests/test_sqlite3.py\n/testbed/tests/test_errors.py\n/testbed/tests/test_configure.py\n/testbed/tests/test_class_import.py\n/testbed/tests/test_uuid.py\n/testbed/tests/__init__.py\n/testbed/tests/fake_module.py\n/testbed/tests/test_pickle.py\n/testbed/tests/utils.py\n/testbed/tests/test_warnings.py\n/testbed/tests/test_utils.py\n/testbed/tests/test_asyncio.py\n/testbed/tests/test_ticking.py\n/testbed/tests/test_operations.py\n/testbed/tests/test_import_alias.py\n/testbed/setup.py\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-0cb7da41-13ac-4984-a2f7-77bac028f44d-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/freezegun/config.py && echo \"==== INIT ====\" && cat /testbed/freezegun/__init__.py && echo \"==== TEST CONFIGURE ====\" && cat /testbed/tests/test_configure.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-0cb7da41-13ac-4984-a2f7-77bac028f44d-1",
+            "content": "list: Optional[List[str]]=None) -> None:\n    if default_ignore_list is not None and extend_ignore_list is not None:\n        raise ConfigurationError(\"Either default_ignore_list or extend_ignore_list might be given, not both\")\n    if default_ignore_list is not None:\n        settings.default_ignore_list = default_ignore_list\n    if extend_ignore_list:\n        settings.default_ignore_list = list(dict.fromkeys([*settings.default_ignore_list, *extend_ignore_list]))\n\n\ndef reset_config() -> None:\n    global settings\n    settings = Settings()\n==== INIT ====\n\"\"\"\nfreezegun\n~~~~~~~~\n\n:copyright: (c) 2012 by Steve Pulec.\n\n\"\"\"\nfrom .api import freeze_time\nfrom .config import configure\n\n__title__ = 'freezegun'\n__version__ = '1.5.1'\n__author__ = 'Steve Pulec'\n__license__ = 'Apache License 2.0'\n__copyright__ = 'Copyright 2012 Steve Pulec'\n\n\n__all__ = [\"freeze_time\", \"configure\"]\n==== TEST CONFIGURE ====\nfrom unittest import mock\nimport pytest\nimport freezegun\nimport freezegun.config\n\nfrom typing import List\n\n\ndef setup_function() -> None:\n    freezegun.config.reset_config()\n\n\ndef teardown_function() -> None:\n    freezegun.config.reset_config()\n\n\n@pytest.mark.parametrize('ignorelist', (['threading', 'tensorflow'], []))\ndef test_default_ignore_list_is_overridden(ignorelist: List[str]) -> None:\n    freezegun.configure(default_ignore_list=list(ignorelist))\n\n    with mock.patch(\"freezegun.api._freeze_time.__init__\", return_value=None) as _freeze_time_init_mock:\n\n        freezegun.freeze_time(\"2020-10-06\")\n\n        _freeze_time_init_mock.assert_called_once_with(\n            time_to_freeze_str=\"2020-10-06\",\n            tz_offset=0,\n            ignore=ignorelist,\n            tick=False,\n            as_arg=False,\n            as_kwarg='',\n            auto_tick_seconds=0,\n            real_asyncio=False,\n        )\n\n\n@pytest.mark.parametrize('ignorelist', (['tensorflow'], []))\ndef test_extend_default_ignore_list(ignorelist: List[str]) -> None:\n    freezegun.configure(extend_ignore_list=list(ignorelist))\n\n    with mock.patch(\"freezegun.api._freeze_time.__init__\", return_value=None) as _freeze_time_init_mock:\n\n        freezegun.freeze_time(\"2020-10-06\")\n\n        expected_ignore_list = [\n            'nose.plugins',\n            'six.moves',\n            'django.utils.six.moves',\n            'google.gax',\n            'threading',\n            'multiprocessing',\n            'queue',\n            'selenium',\n            '_pytest.terminal.',\n            '_pytest.runner.',\n            'gi',\n            'prompt_toolkit',\n        ] + ignorelist\n\n        _freeze_time_init_mock.assert_called_once_with(\n            time_to_freeze_str=\"2020-10-06\",\n            tz_offset=0,\n            ignore=expected_ignore_list,\n            tick=False,\n            as_arg=False,\n            as_kwarg='',\n            auto_tick_seconds=0,\n            real_asyncio=False,\n        )\n\ndef test_extend_default_ignore_list_duplicate_items() -> None:\n    freezegun.configure(extend_ignore_list=['tensorflow', 'pymongo', 'tensorflow','rabbitmq'])\n    freezegun.configure(extend_ignore_list=['tensorflow'])\n\n    with mock.patch(\"freezegun.api._freeze_time.__init__\", return_value=None) as _freeze_time_init_mock:\n\n        freezegun.freeze_time(\"2020-10-06\")\n\n        expected_ignore_list = [\n            'nose.plugins',\n            'six.moves',\n            'django.utils.six.moves',\n            'google.gax',\n            'threading',\n            'multiprocessing',\n            'queue',\n            'selenium',\n            '_pytest.terminal.',\n            '_pytest.runner.',\n            'gi',\n            'prompt_toolkit',\n            'tensorflow',\n            'pymongo',\n            'rabbitmq',\n        ]\n\n        _freeze_time_init_mock.assert_called_once_with(\n            time_to_freeze_str=\"2020-10-06\",\n            tz_offset=0,\n            ignore=expected_ignore_list,\n            tick=False,\n            as_arg=False,\n            as_kwarg='',\n            auto_tick_seconds=0,\n            real_asyncio=False,\n        )\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-7bc10f42-3c2c-438b-91b8-88458084ab80-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat -A /testbed/freezegun/config.py; echo \"====\"; wc -l /testbed/freezegun/config.py; echo \"==== API freeze_time relevant ====\"; grep -n \"ignore\\|configure\\|default_ignore\\|settings\" /testbed/freezegun/api.py | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-7bc10f42-3c2c-438b-91b8-88458084ab80-2",
+            "content": ": Any) -> \"FakeDate\":  # type: ignore\n332:            return result  # type: ignore\n336:            return result  # type: ignore\n366:    def __add__(self, other: Any) -> \"FakeDatetime\":  # type: ignore\n372:    def __sub__(self, other: Any) -> \"FakeDatetime\":  # type: ignore\n375:            return result  # type: ignore\n379:            return result  # type: ignore\n397:            return (self - _EPOCH - self._tz_offset()).total_seconds()  # type: ignore\n398:        return (self - _EPOCHTZ).total_seconds()  # type: ignore\n416:            return real_datetime.nanosecond  # type: ignore\n449:        time_to_freeze -= time_to_freeze.utcoffset()  # type: ignore\n491:        time_to_freeze = parser.parse(time_to_freeze_str)  # type: ignore\n518:            self.move_to(self.time_to_freeze + delta)  # type: ignore\n541:            self.time_to_freeze += delta  # type: ignore\n569:        self.time_to_freeze += delta  # type: ignore\n588:        ignore: List[str],\n597:        self.ignore = tuple(ignore)\n618:    def __call__(self, func: Union[Type[T2], \"Callable[P, Awaitable[Any]]\", \"Callable[P, T]\"]) -> Union[Type[T2], \"Callable[P, Awaitable[Any]]\", \"Callable[P, T]\"]:  # type: ignore\n623:        return self.decorate_callable(func)  # type: ignore\n636:            @classmethod  # type: ignore\n644:            @classmethod  # type: ignore\n651:            klass.setUpClass = setUpClass  # type: ignore\n652:            klass.tearDownClass = tearDownClass  # type: ignore\n667:            klass.setUp = setUp  # type: ignore[method-assign]\n668:            klass.tearDown = tearDown  # type: ignore[method-assign]\n709:        ignore_lists.append(self.ignore)\n716:        datetime.datetime = FakeDatetime  # type: ignore[misc]\n717:        datetime.date = FakeDate  # type: ignore[misc]\n722:        time.localtime = fake_localtime  # type: ignore\n723:        time.gmtime = fake_gmtime  # type: ignore\n724:        time.strftime = fake_strftime  # type: ignore\n727:        uuid._UuidCreate = None  # type: ignore[attr-defined]\n728:        uuid._last_timestamp = None  # type: ignore[attr-defined]\n759:            time.clock = fake_clock  # type: ignore[attr-defined]\n762:        self.fake_names = tuple(fake.__name__ for real_name, real, fake in to_patch)  # type: ignore\n771:            warnings.filterwarnings('ignore')\n776:                elif mod_name.startswith(self.ignore) or mod_name.endswith('.six.moves'):\n801:            add_change((EventLoopClass, \"time\", EventLoopClass.time))  # type: ignore\n802:            EventLoopClass.time = lambda self: real_monotonic()  # type: ignore[method-assign]\n808:        ignore_lists.pop()\n813:            datetime.datetime = real_datetime  # type: ignore[misc]\n814:            datetime.date = real_date  # type: ignore[misc]\n825:                warnings.simplefilter('ignore')\n830:                    elif mod_name.startswith(self.ignore) or mod_name.endswith('.six.moves'):\n854:            time.clock = real_clock  # type: ignore[attr-defined]\n867:            uuid._UuidCreate = real_uuid_create  # type: ignore[attr-defined]\n868:            uuid._last_timestamp = None  # type: ignore[attr-defined]\n880:                    result = func(time_factory, *args, **kwargs)  # type: ignore\n891:def freeze_time(time_to_freeze: Optional[_Freezable]=None, tz_offset: Union[int, datetime.timedelta]=0, ignore: Optional[List[str]]=None, tick: bool=False, as_arg: bool=False, as_kwarg: str='',\n907:        return freeze_time(time_to_freeze(), tz_offset, ignore, tick, as_arg, as_kwarg, auto_tick_seconds, real_asyncio=real_asyncio)\n910:        return freeze_time(next(time_to_freeze), tz_offset, ignore, tick, as_arg, as_kwarg, auto_tick_seconds, real_asyncio=real_asyncio)\n913:        return freeze_time(time_to_freeze.datetime(), tz_offset, ignore,\n916:    if ignore is None:\n917:        ignore = []\n918:    ignore = ignore[:]\n919:    if config.settings.default_ignore_list:\n920:        ignore.extend(config.settings.default_ignore_list)\n925:        ignore=ignore,\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-817a5570-ee93-4cae-9009-82a4615dfc75-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/freezegun/config.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-817a5570-ee93-4cae-9009-82a4615dfc75-3",
+            "content": "from typing import List, Optional\n\n\nDEFAULT_IGNORE_LIST = [\n    'nose.plugins',\n    'six.moves',\n    'django.utils.six.moves',\n    'google.gax',\n    'threading',\n    'multiprocessing',\n    'queue',\n    'selenium',\n    '_pytest.terminal.',\n    '_pytest.runner.',\n    'gi',\n    'prompt_toolkit',\n]\n\n\nclass Settings:\n    def __init__(self, default_ignore_list: Optional[List[str]]=None) -> None:\n        self.default_ignore_list = default_ignore_list or DEFAULT_IGNORE_LIST[:]\n\n\nsettings = Settings()\n\n\nclass ConfigurationError(Exception):\n    pass\n\n\ndef configure(default_ignore_list: Optional[List[str]]=None, extend_ignore_list: Optional[List[str]]=None) -> None:\n    if default_ignore_list is not None and extend_ignore_list is not None:\n        raise ConfigurationError(\"Either default_ignore_list or extend_ignore_list might be given, not both\")\n    if default_ignore_list is not None:\n        settings.default_ignore_list = default_ignore_list\n    if extend_ignore_list:\n        settings.default_ignore_list = list(dict.fromkeys([*settings.default_ignore_list, *extend_ignore_list]))\n\n\ndef reset_config() -> None:\n    global settings\n    settings = Settings()\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll run the existing tests and inspect git history to pinpoint the actual `configure()` bug.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-300af8cf-5d45-42da-8247-0363a3f18394-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cd /testbed && git log --oneline -20 && echo \"==== CHANGELOG ====\" && cat CHANGELOG && echo \"==== git show config.py history ====\" && git log --oneline -- freezegun/config.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-300af8cf-5d45-42da-8247-0363a3f18394-4",
+            "content": "66cba73 Initial commit\n==== CHANGELOG ====\nFreezegun Changelog\n===================\n\n1.5.1\n-----\n * Fix the typing of the `tick()` method, and improve it's behaviour.\n\n1.5.0\n----\n * The default ignore list now contains the `queue`-package\n * Added a missing `move_to`-function when calling `freeze_time(tick=True)`\n * Fixes a rounding error in `time.time_ns()`\n * Fixed a bug where the default ignore list could not be empty (`configure(default_ignore_list=[])`)\n * All `tick()` methods now return the new datetime (instead of None)\n * Type improvements\n\n1.4.0\n-----\n * `asyncio`-support from 1.3.x introduced quite a few  bugs, so that functionality is now hidden behind a flag:\n   `with freeze_time('1970-01-02', real_asyncio=True):`\n\n1.3.1\n-----\n * Fixed the release number in the build\n\n1.3.0\n-----\n\n* Fixed `asyncio` support to avoid `await asyncio.sleep(1)` hanging forever.\n\n* Added support for Python 3.12\n\n\n1.2.2\n-----\n\n* Removes Python 3.6 support, which reached its EOL on 2021-12-23 (https://devguide.python.org/versions/?highlight=End-of-life#unsupported-versions).\n\n* Improved static typing definitions\n\n* Don't freeze pytest timings. This avoids class-level decorator usage messing with pytest timings.\n\n* Pass through all setUp and tearDown arguments\n\n\n1.2.1\n-----\n\n* Added missing typeshed types from distribution\n\n* Pass all arguments on recursive freeze_time calls\n\n\n1.2.0\n-----\n\n* Add support for `time.perf_counter` (and `…_ns`)\n\n* Added typeshed types\n\n* Dropped support for python 3.5\n\n1.1.0\n-----\n\n* Add support for `time.monotonic` (and `…_ns`)\n\n* Allow to configure default ignore list, and also to just extend the default\n\n* Fixed when accessing from thread after stop()\n\n\n1.0.0\n------\n\n* Dropped Py2 support\n* Added as_kwarg argument in order to have the frozen time object passed with the name provided in as_kwarg argument\n\n0.3.15\n------\n\n* Fix locale timestamp bug. CC #328\n\n0.3.14\n------\n\n* Fix calendar.timegm behavior\n\n0.3.13\n------\n\n* Fix for Py3.8\n* Reset time.time_ns on stop\n\n0.3.12\n------\n\n* Refactor classes to functions\n* Ignore Selenium\n* Move to pytest\n* Conditionally patch time.clock\n* Patch time.time_ns added in Python 3.7\n\n0.3.11\n------\n\n* Performance improvements\n* Fix nesting time.time\n* Add nanosecond property\n\n0.3.10\n------\n\n* Performance improvements\n* Coroutine support\n\n0.3.9\n-----\n\n* If no time to be frozen, use current time\n* Fix uuid1 issues\n* Add support for python 3.6\n\n0.3.8\n-----\n\n* Bugfix for old-style classes\n* Ignore warnings when patching\n* Add `move_to` method to change time\n\n0.3.7\n-----\n\n* Fix CPython detection\n\n0.3.6\n-----\n\n* Catch TypeError when fetching attribute values\n* Speed improvements\n* Add manual tick increment\n\n\n0.3.5\n-----\n\n* Add `tick` argument to allow time to move forward\n* Performance improvements\n* Fix timezone example in README\n==== git show config.py history ====\n66cba73 Initial commit\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-e9ab1097-a492-4db9-bb45-23e90e08644a-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '880,940p' /testbed/freezegun/api.py && echo \"====\" && cat /testbed/README.rst | grep -A 50 -i \"ignore\\|configur\" | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-e9ab1097-a492-4db9-bb45-23e90e08644a-5",
+            "content": ", acceptable_times):\n        raise TypeError(('freeze_time() expected None, a string, date instance, datetime '\n                         'instance, MayaDT, timedelta instance, function or a generator, but got '\n                         'type {}.').format(type(time_to_freeze)))\n    if tick and not _is_cpython:\n        raise SystemError('Calling freeze_time with tick=True is only compatible with CPython')\n\n    if isinstance(time_to_freeze, types.FunctionType):\n        return freeze_time(time_to_freeze(), tz_offset, ignore, tick, as_arg, as_kwarg, auto_tick_seconds, real_asyncio=real_asyncio)\n\n    if isinstance(time_to_freeze, types.GeneratorType):\n        return freeze_time(next(time_to_freeze), tz_offset, ignore, tick, as_arg, as_kwarg, auto_tick_seconds, real_asyncio=real_asyncio)\n\n    if MayaDT is not None and isinstance(time_to_freeze, MayaDT):\n        return freeze_time(time_to_freeze.datetime(), tz_offset, ignore,\n                           tick, as_arg, as_kwarg, auto_tick_seconds, real_asyncio=real_asyncio)\n\n    if ignore is None:\n        ignore = []\n    ignore = ignore[:]\n    if config.settings.default_ignore_list:\n        ignore.extend(config.settings.default_ignore_list)\n\n    return _freeze_time(\n        time_to_freeze_str=time_to_freeze,\n        tz_offset=tz_offset,\n        ignore=ignore,\n        tick=tick,\n        as_arg=as_arg,\n        as_kwarg=as_kwarg,\n        auto_tick_seconds=auto_tick_seconds,\n        real_asyncio=real_asyncio,\n    )\n\n\n# Setup adapters for sqlite\ntry:\n    # noinspection PyUnresolvedReferences\n    import sqlite3\nexcept ImportError:\n    # Some systems have trouble with this\n    pass\n====\nparameters which will keep time stopped. Note that given ``auto_tick_seconds`` the ``tick`` parameter will be ignored.\n\n.. code-block:: python\n\n    @freeze_time(\"Jan 14th, 2020\", auto_tick_seconds=15)\n    def test_nice_datetime():\n        first_time = datetime.datetime.now()\n        auto_incremented_time = datetime.datetime.now()\n        assert first_time + datetime.timedelta(seconds=15) == auto_incremented_time\n\n\nManual ticks\n~~~~~~~~~~~~\n\nFreezeGun allows for the time to be manually forwarded as well.\n\n.. code-block:: python\n\n    def test_manual_tick():\n        initial_datetime = datetime.datetime(year=1, month=7, day=12,\n                                            hour=15, minute=6, second=3)\n        with freeze_time(initial_datetime) as frozen_datetime:\n            assert frozen_datetime() == initial_datetime\n\n            frozen_datetime.tick()\n            initial_datetime += datetime.timedelta(seconds=1)\n            assert frozen_datetime() == initial_datetime\n\n            frozen_datetime.tick(delta=datetime.timedelta(seconds=10))\n            initial_datetime += datetime.timedelta(seconds=10)\n            assert frozen_datetime() == initial_datetime\n\n.. code-block:: python\n\n    def test_monotonic_manual_tick():\n        initial_datetime = datetime.datetime(year=1, month=7, day=12,\n                                            hour=15, minute=6, second=3)\n        with freeze_time(initial_datetime) as frozen_datetime:\n            monotonic_t0 = time.monotonic()\n            frozen_datetime.tick(1.0)\n            monotonic_t1 = time.monotonic()\n            assert monotonic_t1 == monotonic_t0 + 1.0\n\n\nMoving time to specify datetime\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\nFreezeGun allows moving time to specific dates.\n\n.. code-block:: python\n\n--\nIgnore packages\n---------------\n\nSometimes it's desired to ignore FreezeGun behaviour for particular packages (i.e. libraries).\nIt's possible to ignore them for a single invocation:\n\n\n.. code-block:: python\n\n    from freezegun import freeze_time\n\n    with freeze_time('2020-10-06', ignore=['threading']):\n        # ...\n\n\nBy default FreezeGun ignores following packages:\n\n.. code-block:: python\n\n    [\n        'nose.plugins',\n        'six.moves',\n        'django.utils.six.moves',\n        'google.gax',\n        'threading',\n        'Queue',\n        'selenium',\n        '_pytest.terminal.',\n"
+          }
+        ]
+      }
+    }
+  ]
+}

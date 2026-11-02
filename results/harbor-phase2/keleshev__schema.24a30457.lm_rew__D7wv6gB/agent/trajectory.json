@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "keleshev__schema.24a30457.lm_rew__D7wv6gB__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# SchemaError.code combines auto and error messages incorrectly\n\nWhile working with the Schema library, I noticed that the `SchemaError.code` property is not correctly combining auto-generated messages and custom error messages.\n\nA simple reproduction case:\n\n```python\nfrom schema import Schema, SchemaError, Use\n\n# Try to validate with both auto and custom errors\ntry:\n    schema = Schema({\n        'key': Use(int, error='should be a number')\n    })\n    schema.validate({'key': 'not_a_number'})\nexcept SchemaError as e:\n    print(f\"Error message: {e.code}\")\n    # Expected: only \"should be a number\"\n    # Actual: auto-generated message + custom error message combined\n```\n\nThe issue appears to be in the `code` property of the `SchemaError` class. When both auto-generated messages and custom error messages are present, they should be properly combined or prioritized.\n\nCurrently, if both `unique_autos` and `unique_errors` are non-empty, they are concatenated with newlines, which results in duplicate or conflicting error messages being shown to the user.\n\nThis behavior is inconsistent with the expected behavior where custom error messages should take precedence over auto-generated ones."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-2a617f5b-918b-4be6-b5eb-18318c092401-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -50 && cat /testbed/README.md 2>/dev/null | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-2a617f5b-918b-4be6-b5eb-18318c092401-0",
+            "content": "RuntimeError: Command timed out after 20 seconds"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-da65ddfc-05fb-4e9c-bc17-f30c25e4f45d-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-da65ddfc-05fb-4e9c-bc17-f30c25e4f45d-1",
+            "content": "RuntimeError: Command timed out after 20 seconds"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-f9433e03-a72f-4b4d-9791-e0ccaa74c7a5-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "pwd"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-f9433e03-a72f-4b4d-9791-e0ccaa74c7a5-2",
+            "content": "/testbed\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-6171e6d3-9869-4c34-b8d4-9b81a6a5905f-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-6171e6d3-9869-4c34-b8d4-9b81a6a5905f-3",
+            "content": "total 176\ndrwxr-xr-x 1 root root  4096 Sep 22 16:06 .\ndrwxr-xr-x 1 root root  4096 Sep 22 16:06 ..\n-rw-r--r-- 1 root root   291 Jul 13  2025 .editorconfig\ndrwxr-xr-x 8 root root  4096 Jul 13  2025 .git\n-rw-r--r-- 1 root root  6551 Jul 13  2025 .gitchangelog.rc\n-rw-r--r-- 1 root root  2354 Jul 13  2025 .gitignore\n-rw-rw-r-- 1 1005 1005     0 Sep 22 15:44 .gitkeep\n-rw-r--r-- 1 root root   353 Jul 13  2025 .pre-commit-config.yaml\n-rw-r--r-- 1 root root   607 Jul 13  2025 .travis.yml\n-rw-r--r-- 1 root root  3056 Jul 13  2025 CHANGELOG.md\n-rw-r--r-- 1 root root  1086 Jul 13  2025 LICENSE-MIT\n-rw-r--r-- 1 root root    93 Jul 13  2025 MANIFEST.in\n-rw-r--r-- 1 root root 33192 Jul 13  2025 README.rst\n-rw-r--r-- 1 root root   128 Jul 13  2025 pyproject.toml\n-rw-r--r-- 1 root root    43 Jul 13  2025 requirements.txt\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 schema\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 schema.egg-info\n-rw-r--r-- 1 root root    22 Jul 13  2025 setup.cfg\n-rw-r--r-- 1 root root  1516 Jul 13  2025 setup.py\n-rw-r--r-- 1 root root 61652 Jul 13  2025 test_schema.py\n-rw-r--r-- 1 root root   842 Jul 13  2025 tox.ini\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-c013425b-4267-4533-b99f-6d3724a89aab-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la schema/ && cat schema/__init__.py | head -100"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-c013425b-4267-4533-b99f-6d3724a89aab-4",
+            "content": "total 44\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 .\ndrwxr-xr-x 1 root root  4096 Sep 22 16:06 ..\n-rw-r--r-- 1 root root 34916 Jul 13  2025 __init__.py\n-rw-r--r-- 1 root root     0 Jul 13  2025 py.typed\n\"\"\"schema is a library for validating Python data structures, such as those\nobtained from config-files, forms, external services or command-line\nparsing, converted from JSON/YAML (or something else) to Python data-types.\"\"\"\n\nimport inspect\nimport re\nfrom typing import (\n    TYPE_CHECKING,\n    Any,\n    Callable,\n    Dict,\n    Generic,\n    Iterable,\n    List,\n    NoReturn,\n    Sequence,\n    Set,\n    Sized,\n    Tuple,\n    Type,\n    TypeVar,\n    Union,\n    cast,\n)\n\n# Use TYPE_CHECKING to determine the correct type hint but avoid runtime import errors\nif TYPE_CHECKING:\n    # Only for type checking purposes, we import the standard ExitStack\n    from contextlib import ExitStack\nelse:\n    try:\n        from contextlib import ExitStack  # Python 3.3 and later\n    except ImportError:\n        from contextlib2 import ExitStack  # Python 2.x/3.0-3.2 fallback\n\n\n__version__ = \"0.7.7\"\n__all__ = [\n    \"Schema\",\n    \"And\",\n    \"Or\",\n    \"Regex\",\n    \"Optional\",\n    \"Use\",\n    \"Forbidden\",\n    \"Const\",\n    \"Literal\",\n    \"SchemaError\",\n    \"SchemaWrongKeyError\",\n    \"SchemaMissingKeyError\",\n    \"SchemaForbiddenKeyError\",\n    \"SchemaUnexpectedTypeError\",\n    \"SchemaOnlyOneAllowedError\",\n]\n\n\nclass SchemaError(Exception):\n    \"\"\"Error during Schema validation.\"\"\"\n\n    def __init__(\n        self,\n        autos: Union[Sequence[Union[str, None]], None],\n        errors: Union[List, str, None] = None,\n    ):\n        self.autos = autos if isinstance(autos, List) else [autos]\n        self.errors = errors if isinstance(errors, List) else [errors]\n        Exception.__init__(self, self.code)\n\n    @property\n    def code(self) -> str:\n        \"\"\"Remove duplicates in autos and errors list and combine them into a single message.\"\"\"\n\n        def uniq(seq: Iterable[Union[str, None]]) -> List[str]:\n            \"\"\"Utility function to remove duplicates while preserving the order.\"\"\"\n            seen: Set[str] = set()\n            unique_list: List[str] = []\n            for x in seq:\n                if x is not None and x not in seen:\n                    seen.add(x)\n                    unique_list.append(x)\n            return unique_list\n\n        data_set = uniq(self.autos)\n        error_list = uniq(self.errors)\n\n        return \"\\n\".join(error_list if error_list else data_set)\n\n\nclass SchemaWrongKeyError(SchemaError):\n    \"\"\"Error Should be raised when an unexpected key is detected within the\n    data set being.\"\"\"\n\n    pass\n\n\nclass SchemaMissingKeyError(SchemaError):\n    \"\"\"Error should be raised when a mandatory key is not found within the\n    data set being validated\"\"\"\n\n    pass\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "The `code` property already prefers custom errors; I'll inspect git history, tests, and the rest of the class to find the mismatch.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-48ec14c9-d1e4-404b-8843-033e6aa5d2e8-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '50,150p' schema/__init__.py && echo \"==== GIT LOG ====\" && git log --oneline -20 && echo \"==== CHANGELOG ====\" && cat CHANGELOG.md | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-48ec14c9-d1e4-404b-8843-033e6aa5d2e8-5",
+            "content": "   seen: Set[str] = set()\n            unique_list: List[str] = []\n            for x in seq:\n                if x is not None and x not in seen:\n                    seen.add(x)\n                    unique_list.append(x)\n            return unique_list\n\n        data_set = uniq(self.autos)\n        error_list = uniq(self.errors)\n\n        return \"\\n\".join(error_list if error_list else data_set)\n\n\nclass SchemaWrongKeyError(SchemaError):\n    \"\"\"Error Should be raised when an unexpected key is detected within the\n    data set being.\"\"\"\n\n    pass\n\n\nclass SchemaMissingKeyError(SchemaError):\n    \"\"\"Error should be raised when a mandatory key is not found within the\n    data set being validated\"\"\"\n\n    pass\n\n\nclass SchemaOnlyOneAllowedError(SchemaError):\n    \"\"\"Error should be raised when an only_one Or key has multiple matching candidates\"\"\"\n\n    pass\n\n\nclass SchemaForbiddenKeyError(SchemaError):\n    \"\"\"Error should be raised when a forbidden key is found within the\n    data set being validated, and its value matches the value that was specified\"\"\"\n\n    pass\n\n\nclass SchemaUnexpectedTypeError(SchemaError):\n    \"\"\"Error should be raised when a type mismatch is detected within the\n    data set being validated.\"\"\"\n\n    pass\n\n\n# Type variable to represent a Schema-like type\nTSchema = TypeVar(\"TSchema\", bound=\"Schema\")\n\n\nclass And(Generic[TSchema]):\n    \"\"\"\n    Utility function to combine validation directives in AND Boolean fashion.\n    \"\"\"\n\n    def __init__(\n        self,\n        *args: Union[TSchema, Callable[..., Any]],\n        error: Union[str, None] = None,\n        ignore_extra_keys: bool = False,\n        schema: Union[Type[TSchema], None] = None,\n    ) -> None:\n        self._args: Tuple[Union[TSchema, Callable[..., Any]], ...] = args\n        self._error: Union[str, None] = error\n        self._ignore_extra_keys: bool = ignore_extra_keys\n        self._schema_class: Type[TSchema] = schema if schema is not None else Schema\n\n    def __repr__(self) -> str:\n        return f\"{self.__class__.__name__}({', '.join(repr(a) for a in self._args)})\"\n\n    @property\n    def args(self) -> Tuple[Union[TSchema, Callable[..., Any]], ...]:\n        \"\"\"The provided parameters\"\"\"\n        return self._args\n==== GIT LOG ====\nf8d6568 Initial commit\n==== CHANGELOG ====\n# Changelog\n\n\n## Unreleased\n\n### Fixes\n\n* Include py.typed module when building package. [Stavros Korokithakis]\n\n\n## v0.7.7 (2024-05-04)\n\n### Fixes\n\n* Fix setuptools not finding the schema package (fixes #311) [Stavros Korokithakis]\n\n\n## v0.7.6 (2024-03-26)\n\n### Fixes\n\n* Trim trailing whitespace. [Stavros Korokithakis]\n\n\n## v0.7.4 (2021-02-01)\n\n### Fixes\n\n* Don't double-format errors. fixes #240 (#247) [Leif Ryge]\n\n* Fix \"Unknown format code\" in Python 3.8 (#245) [Denis Blanchette]\n\n* JSON Schema: Allow using $ref when schema is not a dict (#244) [Denis Blanchette]\n\n* JSON Schema: Set additionalProperties true when dict contains str as key (#243) [Denis Blanchette]\n\n\n## v0.7.3 (2020-07-31)\n\n### Fixes\n\n* JSON Schema: Support schemas where the root is not a dict. [Stavros Korokithakis]\n\n* Do not drop previous errors within an Or criterion. [Stavros Korokithakis]\n\n\n## v0.7.1 (2019-09-09)\n\n### Features\n\n* JSON Schema: Include default values. [Stavros Korokithakis]\n\n* JSON schema with common definitions + Update README. [Stavros Korokithakis]\n\n* Add references to JSON schema rendering. [Stavros Korokithakis]\n\n* Add the \"Literal\" type for JSONSchema. [Stavros Korokithakis]\n\n* Improve JSON schema generation (#206) [Denis Blanchette]\n\n### Fixes\n\n* JSON Schema: Fix allOf and oneOf with only one condition. [Stavros Korokithakis]\n\n* Fix readme code block typo. [Stavros Korokithakis]\n\n* JSON Schema: Don't add a description in a ref. [Stavros Korokithakis]\n\n* JSON Schema: Fix using `dict` as type. [Stavros Korokithakis]\n\n* Fix using Literal in enum in JSON Schema. [Stavros Korokithakis]\n\n\n## v0.7.0 (2019-02-25)\n\n### Features\n\n* Add Hook class. Allows to introduce custom handlers (#175) [Julien Duchesne]\n\n### Fixes\n"
+          }
+        ]
+      }
+    }
+  ]
+}

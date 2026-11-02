@@ -1,0 +1,107 @@
+{
+  "schema": "octopus-r2-physical-pressure-protocol-viability-v1",
+  "status": "resource_and_protocol_ready_source_pending",
+  "capacity_interpretation": {
+    "native_kv_block_bytes": 917504,
+    "reference_bytes": 33198047232,
+    "reference_blocks": 36183,
+    "reference_exact_division": true,
+    "lower_bytes": 8455716864,
+    "lower_blocks": 9216,
+    "lower_exact_division": true,
+    "upper_bytes": 9865003008,
+    "upper_blocks": 10752,
+    "upper_exact_division": true,
+    "engine_path": "Selector kv_cache_memory_bytes is passed unchanged to BackendConfig; native output must report both native_kv_tensor_bytes and native_kv_num_blocks for exact runtime validation.",
+    "not_a_policy_quota": true
+  },
+  "pressure_rationale": {
+    "normal_free_minus_draw_headroom_blocks": 28765,
+    "normal_capacity_blocks": 36183,
+    "estimated_working_footprint_blocks": 7418,
+    "future_copies_blocks": 2119,
+    "estimated_required_blocks": 9537,
+    "lower_delta_blocks": -321,
+    "upper_delta_blocks": 1215,
+    "interpretation": "The two real tensor capacities bracket the approximate working-plus-future requirement without introducing an algorithmic cap."
+  },
+  "request_fit": {
+    "included_requests": 424,
+    "max_request_id": "95af7aaea3ce9dab4cf64e2229ce9b98381dd050",
+    "max_prompt_tokens": 14584,
+    "max_output_tokens": 256,
+    "max_total_tokens": 14840,
+    "max_total_blocks": 928,
+    "lower_capacity_blocks": 9216,
+    "lower_single_request_margin_blocks": 8288,
+    "upper_single_request_margin_blocks": 9824,
+    "single_request_fits_both_points": true,
+    "concurrency_note": "Aggregate 64-sequence demand can exceed either tensor and may induce real preemption; this is intended pressure requiring future measurement, not a fit failure."
+  },
+  "controls": {
+    "input_freeze_sha256": "4abec74629fe66464890354665e0f5f0159bef865934f7310f685a89cae6383d",
+    "measurement_spec_sha256": "1818580a997d616e3994cf7a14d8b259cbc0dbc5cf25b245ff953ad1c14d7931",
+    "model_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "generation_seed": 17,
+    "process_hash_seed": 1601,
+    "block_size_tokens": 16,
+    "watchdog_seconds": 600,
+    "termination_grace_seconds": 10,
+    "changed_control": "physical KV tensor bytes only"
+  },
+  "predeclared_value_policy": {
+    "status": "formula_frozen_implementation_tests_pending",
+    "analytic_work": "W_D(t) = D*t + t*(t+1)/2",
+    "dimension": "D = engine.model_config.hf_config.hidden_size",
+    "units": "normalized analytic work, explicitly not FLOPs or seconds",
+    "consumer_weight": "remaining definite consumers per cached complete block",
+    "actual_draw_capacity": "max(0, free - native_draw - queued_FREE)",
+    "nonbinding_selection": "exact fixed-key selection when all eligible bundles fit",
+    "binding_selection": "greedy descending marginal-work/additional-physical-copy over leading-ancestor bundles",
+    "overlap_accounting": "shared logical and physical-copy overlap deduplicated; queued/native-held coverage contributes zero additional copy cost",
+    "candidate_universe": "original semantic future keys only; history union forbidden",
+    "compact_evidence": {
+      "policy_draws": "native_replay.policy_draws records deferred value_admission score, capacity and KEEP/DROP evidence",
+      "exposure_evidence": "actual value-admitted FREE keys"
+    }
+  },
+  "required_future_runtime_checks": [
+    "Exact 424 request IDs and complete execution with within-seed/pressure arrival parity.",
+    "Environment native_kv_tensor_bytes and native_kv_num_blocks exactly match 8455716864/9216 or 9865003008/10752.",
+    "Actual admission decisions, predecision value inputs, pressure, KEEP/DROP, and policy-protected free-block exposure.",
+    "Actual warmup adoption, owner release/FREE state, allocator/decode/eviction churn, test contiguous leading-prefix adoption and recompute.",
+    "Preemption and recompute from the real lower-capacity engine; never replay old physical IDs or free timestamps.",
+    "Original fixed candidate universe remains unchanged; no history-expanded arm.",
+    "Complete 424-request descriptive scoring after serving, with parent-only FG recompute excluding recurring BG requests.",
+    "Matched APC/queue baseline savings are positive at each new pressure; report actual denominators and retain 33888 only as historical reference.",
+    "Instrumentation CPU, deferred/offline export, raw-write costs and overlapping timer scope remain explicit.",
+    "Every invalid or incomplete attempt remains preserved."
+  ],
+  "claims_not_available_from_preparation": [
+    "No serving, admission, exposure, latency, quality, recompute, preemption, R2-A/B, R3, R4, or full-objective result.",
+    "Old normal or historical stress results are not relabeled as these discovery points.",
+    "No GPU capacity or occupancy statement has been made."
+  ],
+  "pending_source_checks": [
+    "Native value-policy tests.",
+    "EngineArgs dry-run at both exact byte limits.",
+    "Immutable source commit and runner/export readiness."
+  ],
+  "future_formal_boundary": {
+    "discovery_vs_formal": "This two-pressure preparation is discovery only.",
+    "required_before_formal_run": {
+      "acceptance_kv_bytes": "One explicitly selected physical KV byte value.",
+      "frozen_policy": [
+        "native_source_commit",
+        "candidate_method",
+        "parameters"
+      ],
+      "quality_report": "Exact trace_id -> official per-question score mapping from the independent parent evaluator."
+    },
+    "currently_frozen": false
+  },
+  "interpretation_limits": {
+    "max_request_fit": "928-block single-request fit only; not runtime, preemption, binding, or admission proof.",
+    "analytic_work": "W_D is an accepted policy hypothesis in normalized analytic units, not measured FLOPs, seconds, or a passed gate."
+  }
+}

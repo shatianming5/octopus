@@ -1,0 +1,53 @@
+{
+  "schema": "octopus-agent7-json134-readiness-transfer-v1",
+  "scope_id": "actor-json-134-readiness-v1",
+  "frozen_at": "2026-09-16T16:49:00Z",
+  "before_bulk_transfer": true,
+  "authorization": "The user explicitly authorized genuinely idle remote GPUs and requested the upcoming run on .134; this scope authorizes endpoint preparation and CPU validation only.",
+  "source": {
+    "public_endpoint": "user@198.51.100.10:20183",
+    "private_endpoint": "user@10.0.2.83:22",
+    "host": "7352-10x4090-183",
+    "actor_path": "/home/user/octopus-swe-gym-agent7-reference-v1-20260916/model/snapshots/97054e70501d79c27499518af5ce613be6278bcb",
+    "tokenizer_path": "/home/user/octopus-qwen-coder-reference-v1-20260915/model/snapshots/c03e6d358207e414f1eca0bb1891e29f1db0e242",
+    "note": "The tokenizer source directory also contains unrelated actor shards. Only the six verified tokenizer/config files listed below are in scope."
+  },
+  "target": {
+    "public_endpoint": "user@198.51.100.10:20134",
+    "private_address": "10.0.2.34",
+    "host": "73F3-8x4090-134",
+    "actor_path": "/home/user/octopus-swe-gym-agent7-reference-v1-20260916/model/snapshots/97054e70501d79c27499518af5ce613be6278bcb",
+    "tokenizer_path": "/home/user/octopus-qwen-coder-reference-v1-20260915/model/snapshots/c03e6d358207e414f1eca0bb1891e29f1db0e242",
+    "runtime_python": "/home/user/octopus-r2-20260913/venv/bin/python"
+  },
+  "route": {
+    "method": "ephemeral forwarded local SSH agent plus target-side rsync --append-verify",
+    "private_peer_verified": true,
+    "target_to_source_ssh_verified": true,
+    "public_relay": false,
+    "internet_download": false
+  },
+  "budget": {
+    "received_asset_bytes_max": 16000000000,
+    "wall_seconds_max": 3600,
+    "exact_complete_file_payload_bytes": 15242760997,
+    "existing_target_payload_bytes": 0,
+    "planned_received_bytes": 15242760997
+  },
+  "actor_files": [
+    {"path": "config.json", "size": 606, "digest_kind": "git_blob_sha1", "digest": "1bb26c94d1ba4e049ecc1a828df6bd7e77be1e5d"},
+    {"path": "model-00001-of-00004_4.safetensors", "size": 4877660776, "digest_kind": "sha256", "digest": "50483370092b6bf2a33e83150f6915a74cb12df870324b59acc5b87f62b726ca"},
+    {"path": "model-00002-of-00004_4.safetensors", "size": 4932751008, "digest_kind": "sha256", "digest": "782cca0cd9e57c25c7a4d62dc406e638c840053b7ec9bcb965c826f04b12e349"},
+    {"path": "model-00003-of-00004_4.safetensors", "size": 4330865200, "digest_kind": "sha256", "digest": "dd0ca030d6a4664d9f083b17d44439be5d79568101751c247e2eb70303dcb283"},
+    {"path": "model-00004-of-00004_4.safetensors", "size": 1089994880, "digest_kind": "sha256", "digest": "25380006a9b9e2aec6d14b7ae7a7cf718a9830bf5deb4d0f469350774432ad5d"}
+  ],
+  "tokenizer_files": [
+    {"path": "config.json", "size": 663, "sha256": "c0242402ad6a13b331ea320feea8c7e3776ffb7a4eff0757b9cd667e116d9a28"},
+    {"path": "generation_config.json", "size": 242, "sha256": "1a628a5775bc69cde01c6749a531150ca4d3189652c618a174f7077923acf3b1"},
+    {"path": "merges.txt", "size": 1671839, "sha256": "599bab54075088774b1733fde865d5bd747cbcc7a547c5bc12610e874e26f5e3"},
+    {"path": "tokenizer.json", "size": 7031645, "sha256": "c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539"},
+    {"path": "tokenizer_config.json", "size": 7305, "sha256": "959e7f1d9a1b7641a6d6ce05ca97b75c7894fcb66cbe5a040406458fb1128ee4"},
+    {"path": "vocab.json", "size": 2776833, "sha256": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910"}
+  ],
+  "stopping": "One transfer through exact digest verification or one concrete route/runtime/disk/budget blocker. No blind repeat or additional allowance."
+}

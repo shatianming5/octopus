@@ -1,0 +1,58 @@
+--- a/areal/engine/fsdp_engine.py
++++ b/areal/engine/fsdp_engine.py
+@@ -783,7 +783,11 @@
+         for mb_index in range(n_micro_batches):
+             is_dummy = mb_index >= len(mb_items)
+             mb_item = mb_items[dummy_index if is_dummy else mb_index]
+-            inputs, ctx = self._prepare_mb_inputs(mb_item)
++            # A batch staged on the host (cpu_staged_rpc_methods, octopus/rl/actor.py)
++            # stays there: only the running micro-batch goes to the device.
++            inputs, ctx = self._prepare_mb_inputs(
++                mb_item.to(self.device, non_blocking=True)
++            )
+ 
+             # Lazily create tree attention metadata just before forward.
+             # The returned dict keys are prefixed with "tree_" to avoid collisions
+@@ -832,13 +836,11 @@
+         input_batched, _ = self._normalize_batch_input(input_)
+ 
+         # Step 1: Prepare micro-batches
+-        mb_list = self._prepare_mb_list(input_batched, allow_transport_padding=True).to(
+-            self.device
+-        )
++        mb_list = self._prepare_mb_list(input_batched, allow_transport_padding=True)
+ 
+         # Step 2: Compute total loss weight
+         total_loss_weight = compute_total_loss_weight(
+-            mb_list, loss_weight_fn, self.dp_group
++            mb_list, loss_weight_fn, self.dp_group, device=self.device
+         )
+ 
+         # Step 3: Forward-backward using process_output_fn callback
+@@ -874,13 +876,11 @@
+         input_batched, _ = self._normalize_batch_input(input_)
+ 
+         # Step 1: Prepare micro-batches
+-        mb_list = self._prepare_mb_list(input_batched, allow_transport_padding=True).to(
+-            self.device
+-        )
++        mb_list = self._prepare_mb_list(input_batched, allow_transport_padding=True)
+ 
+         # Step 2: Compute total loss weight
+         total_loss_weight = compute_total_loss_weight(
+-            mb_list, loss_weight_fn, self.dp_group
++            mb_list, loss_weight_fn, self.dp_group, device=self.device
+         )
+ 
+         # Step 3: Forward using process_output_fn callback, collecting losses
+@@ -934,9 +934,7 @@
+         batch_size = len(output_seqlens)
+ 
+         # Step 2: Prepare micro-batches
+-        mb_list = self._prepare_mb_list(input_batched, allow_transport_padding=True).to(
+-            self.device
+-        )
++        mb_list = self._prepare_mb_list(input_batched, allow_transport_padding=True)
+ 
+         # Step 3: Forward using process_output_fn callback, collecting results
+         outputs: list[torch.Tensor] = []

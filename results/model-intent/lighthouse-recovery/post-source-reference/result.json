@@ -1,0 +1,75 @@
+{
+  "scope_id": "lighthouse-post-source-reference-709b6e11",
+  "worker_id": "a19747b4-14a1-4816-af14-19910a354b84",
+  "status": "completed",
+  "terminal_outcome": "same_canonical_redundant_edit",
+  "started_at": "2026-09-16T03:55:33Z",
+  "completed_at": "2026-09-16T03:56:01Z",
+  "remote_host": "7352-10x4090-183",
+  "remote_cwd": "/home/user/octopus-lighthouse-post-source-reference-v1-20260916",
+  "device_only_amendment": {
+    "original_gpu_index": 7,
+    "original_gpu_uuid": "GPU-4cd604ce-20c4-9bb7-bed7-acc3cf542887",
+    "original_blocker_pid": 1817920,
+    "original_blocker_memory_mib": 44232,
+    "original_model_requests": 0,
+    "executed_gpu_index": 9,
+    "executed_gpu_uuid": "GPU-3e940a5a-a24d-b615-dc69-df141ced7af0",
+    "input_model_schema_sampling_changed": false
+  },
+  "frozen_input": {
+    "local_path": "results/model-intent/lighthouse-recovery/post-source-reference/reference.json",
+    "local_sha256": "55da46d8431b29e41bae41608d209ed9ff93907a538135be9d97e6cee3fb5f44",
+    "bytes": 43760,
+    "prompt_token_count": 3829,
+    "source_window_bytes_expected": 190
+  },
+  "execution": {
+    "capacity_checks": 1,
+    "model_requests": 1,
+    "owned_job_started": true,
+    "owned_job_start_verified": true,
+    "owned_job_pid": 1828249,
+    "owned_job_start_ticks": 77402097,
+    "owned_job_sid": 1828249,
+    "owned_job_return_code": 0,
+    "owned_job_process_exited": true,
+    "selected_gpu_released": true,
+    "docker_containers_created": 0,
+    "helper_input_schema_checks_executed": true,
+    "reference_output_created": true,
+    "engine_scope_seconds": 24.915556106949225,
+    "generation_seconds": 2.844606947968714
+  },
+  "validation": {
+    "status": "complete",
+    "prompt_tokens": 3829,
+    "prompt_token_count_match": true,
+    "source_window_bytes": 190,
+    "source_window_bytes_match": true,
+    "source_window_visible": true,
+    "schema_json_exact_match": true,
+    "enable_prefix_caching": false,
+    "output_tokens": 63,
+    "output_token_count_match": true,
+    "finish_reason": "stop",
+    "same_canonical_action": true,
+    "same_raw_text": true,
+    "gpu_active_snapshot": "GPU-3e940a5a-a24d-b615-dc69-df141ced7af0, 43624 MiB, 77%"
+  },
+  "observed_action": {
+    "action": "edit",
+    "path": "lighthouse-core/lib/stack-collector.js",
+    "old": "detector: /** @type {'js'} */ ('js'),",
+    "new": "detector: /** @type {'js'} */ ('js'),\n    id: lib.id,"
+  },
+  "interpretation": "The fresh stock-vLLM call on the exact source-fed input reproduced the same canonical redundant edit and raw text. For this decision only, physical reuse is not the sole explanation. This is not a task-quality result and does not prove global KV correctness. The device-only amendment also means a hypothetical output difference would not have isolated physical reuse from numerical or device effects.",
+  "evidence": {
+    "gpu7_prelaunch_log": "results/model-intent/lighthouse-recovery/post-source-reference/actual-terminal.log",
+    "gpu9_terminal_log": "results/model-intent/lighthouse-recovery/post-source-reference/actual-terminal-gpu9.log",
+    "process_identity": "results/model-intent/lighthouse-recovery/post-source-reference/run-process.json",
+    "reference_result": "results/model-intent/lighthouse-recovery/post-source-reference/reference-result.json",
+    "reference_result_sha256": "4e0da37c864fd0b5ce35bc7cd786ef1c6ef3364963056d2121ac8d40c8d4105b",
+    "remote_gpu9_terminal_log": "/home/user/octopus-lighthouse-post-source-reference-v1-20260916/run-gpu9-terminal.log"
+  }
+}

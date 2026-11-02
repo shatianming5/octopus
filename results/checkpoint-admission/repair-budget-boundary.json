@@ -1,0 +1,72 @@
+{
+  "status": "budget_exhausted",
+  "completion_gate_met": false,
+  "source_parent_commit": "3681d70",
+  "initial_main_trace_attempts_complete": 81,
+  "real_tool_repairs_complete": 9,
+  "controlled_repair_traces_complete": 21,
+  "controlled_repair_triples_complete": 7,
+  "controlled_repair_partial_triples": 0,
+  "all_main_and_repair_attempts_complete": 111,
+  "primary_controlled_traces": 70,
+  "primary_real_tool_traces": 9,
+  "primary_total": 79,
+  "primary_tasks_correct": 316,
+  "primary_tasks_total": 316,
+  "superseded_real_tool_traces": 9,
+  "superseded_controlled_queue_lease_traces": 9,
+  "completed_additional_fresh_paired_controls": 14,
+  "remaining_real_tool_selector_repairs": 0,
+  "remaining_primary_replacements": 2,
+  "remaining_paired_trace_attempts": 6,
+  "remaining_blocks": [
+    "controlled/tight_burst/101: fresh APC, queue_aware, cost_greedy",
+    "controlled/tight_burst/303: fresh APC, queue_aware, cost_greedy"
+  ],
+  "gpu_lifecycle_status": "complete: both real GPU preemption variants passed, exit 0",
+  "gpu_lifecycle_artifact": "repair-device/gpu6-stress-junit.xml",
+  "replacement_device_cost_calibration": {
+    "new_independent_measurements": 12,
+    "tight_512_mib_measurements": 6,
+    "roomy_2g_measurements": 6,
+    "held_out_outcomes_used": false
+  },
+  "budget": {
+    "frozen_seconds": 10800,
+    "initial_main_seconds": 7812.835415124893,
+    "real_tool_repair_seconds": 623.1152446269989,
+    "controlled_repair_seconds": 2400.208206176758,
+    "cumulative_seconds": 10836.15886592865,
+    "trace_boundary_overrun_seconds": 36.15886592865,
+    "rule": "Budget checked before each trace. The last already-started trace completed its triple, then no next block was launched; the configured budget was not increased."
+  },
+  "resource": {
+    "host": "7443-5x4090-68",
+    "original_controlled_gpu_uuid": "GPU-7879fd32-ec29-b6a1-6cf4-725d454a8170",
+    "replacement_gpu_uuid": "GPU-aa7be32a-43d1-b13e-45dd-ef46033f7631",
+    "replacement_physical_index": 6,
+    "final_memory_mib": 3,
+    "final_gpu_utilization_percent": 0,
+    "final_compute_apps": 0
+  },
+  "owned_running_processes": 0,
+  "supervisors": {
+    "real_tool": {
+      "agent_id": "d3696aeb-577a-4da2-8f42-7317cfc09a9d",
+      "agent_status": "idle",
+      "experiment_status": "complete",
+      "artifact": "paired-repair-real_tool-execution.json"
+    },
+    "controlled": {
+      "agent_id": "a6616536-7d8c-43e7-b0fd-c1d42c2cdc0c",
+      "agent_status": "idle",
+      "experiment_status": "budget_exhausted",
+      "artifact": "paired-repair-controlled-execution.json"
+    }
+  },
+  "process_cleanup": "GPU6 stress and calibration exited 0. Nine real-tool repairs completed. Controlled repair exited at budget_exhausted with seven whole triples and no partial triple. GPU6 is idle with no owned process. GPU3's unrelated occupant was not killed or waited on during replacement-device execution.",
+  "queue_implementation": "local-ready-waiting-free-lru-no-reservation",
+  "blocker": "The frozen cumulative study budget is exhausted; two already-specified controlled tight-burst triples (six traces) were not launched.",
+  "next_action": "A further explicit budget decision is required for those six traces. Do not rerun completed real-tool cases, change selectors, pool cross-device strata or silently increase the budget. After authorization, resume benchmarks.admission_repair --mode controlled with repair-device/controlled-gpu6-protocol.json, then regenerate the report and complete final acceptance.",
+  "parent_plan_update_needed": "Real-tool repair 9/9, GPU preemption 2/2 and seven controlled repair triples are complete. Primary evidence is 79/81, not 81/81; gpu-decision-study and round-two-delivery remain open only for the final two controlled triples and acceptance."
+}

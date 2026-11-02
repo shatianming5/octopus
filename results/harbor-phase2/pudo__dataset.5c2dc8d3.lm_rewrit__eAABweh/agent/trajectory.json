@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "pudo__dataset.5c2dc8d3.lm_rewrit__eAABweh__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# Table.delete() returns row count instead of boolean\n\n## Description\n\nWhen using the `delete()` method on a Table object, it now returns the number of rows deleted instead of a boolean value indicating whether any rows were deleted. This breaks backward compatibility with existing code that expects a boolean return value.\n\n## Steps to reproduce\n\n```python\nimport dataset\n\n# Create a database and table\ndb = dataset.connect('sqlite:///:memory:')\ntable = db.create_table('test')\n\n# Insert some data\ntable.insert({'name': 'John', 'age': 30})\n\n# Delete the data\nresult = table.delete(name='John')\nprint(f\"Delete result: {result}, type: {type(result)}\")  # Returns 1 (int) instead of True (bool)\n\n# Try to delete non-existent data\nresult = table.delete(name='Unknown')\nprint(f\"Delete result: {result}, type: {type(result)}\")  # Returns 0 (int) instead of False (bool)\n```\n\n## Expected behavior\n\nThe `delete()` method should return `True` if any rows were deleted and `False` otherwise, as it did in previous versions.\n\n## Actual behavior\n\nThe `delete()` method now returns the number of rows deleted (an integer) instead of a boolean. This breaks code that expects a boolean return value, such as:\n\n```python\nif table.delete(name='John'):\n    print(\"Successfully deleted John's record\")\nelse:\n    print(\"Failed to delete John's record\")\n```\n\nWhile the integer can still be used in boolean contexts (non-zero integers evaluate to True), this is a breaking change in the API that could cause subtle bugs in existing code."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository structure and locate the `Table.delete()` implementation.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-562ba88b-0d08-4d3e-9ec0-24b2430e8b53-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -50 && cat /testbed/README.md 2>/dev/null | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-562ba88b-0d08-4d3e-9ec0-24b2430e8b53-0",
+            "content": "total 72\ndrwxr-xr-x 1 root root 4096 Sep 22 16:17 .\ndrwxr-xr-x 1 root root 4096 Sep 22 16:17 ..\n-rw-r--r-- 1 root root  261 Jul 13  2025 .bumpversion.cfg\ndrwxr-xr-x 8 root root 4096 Jul 13  2025 .git\ndrwxr-xr-x 2 root root 4096 Jul 13  2025 .github\n-rw-r--r-- 1 root root  154 Jul 13  2025 .gitignore\n-rw-rw-r-- 1 1005 1005    0 Sep 22 15:44 .gitkeep\n-rw-r--r-- 1 root root 2053 Jul 13  2025 CHANGELOG.md\n-rw-r--r-- 1 root root 1108 Jul 13  2025 LICENSE.txt\n-rw-r--r-- 1 root root  379 Jul 13  2025 Makefile\n-rw-r--r-- 1 root root  610 Jul 13  2025 README.md\ndrwxr-xr-x 4 root root 4096 Jul 13  2025 build\ndrwxr-xr-x 2 root root 4096 Jul 13  2025 dataset\ndrwxr-xr-x 2 root root 4096 Jul 13  2025 dataset.egg-info\ndrwxr-xr-x 2 root root 4096 Jul 13  2025 dist\ndrwxr-xr-x 3 root root 4096 Jul 13  2025 docs\n-rw-r--r-- 1 root root  128 Jul 13  2025 setup.cfg\n-rw-r--r-- 1 root root 1582 Jul 13  2025 setup.py\ndrwxr-xr-x 2 root root 4096 Jul 13  2025 test\n/testbed/test/test_dataset.py\n/testbed/test/__init__.py\n/testbed/test/sample_data.py\n/testbed/dataset/chunked.py\n/testbed/dataset/__init__.py\n/testbed/dataset/table.py\n/testbed/dataset/database.py\n/testbed/dataset/types.py\n/testbed/dataset/util.py\n/testbed/build/lib/dataset/chunked.py\n/testbed/build/lib/dataset/__init__.py\n/testbed/build/lib/dataset/table.py\n/testbed/build/lib/dataset/database.py\n/testbed/build/lib/dataset/types.py\n/testbed/build/lib/dataset/util.py\n/testbed/setup.py\n/testbed/docs/conf.py\ndataset: databases for lazy people\n==================================\n\n![build](https://github.com/pudo/dataset/workflows/build/badge.svg)\n\nIn short, **dataset** makes reading and writing data in databases as simple as reading and writing JSON files.\n\n[Read the docs](https://dataset.readthedocs.io/)\n\nTo install dataset, fetch it with ``pip``:\n\n```bash\n$ pip install dataset\n```\n\n**Note:** as of version 1.0, **dataset** is split into two packages, with the\ndata export features now extracted into a stand-alone package, **datafreeze**.\nSee the relevant repository [here](https://github.com/pudo/datafreeze).\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-6f71113a-711a-44b1-ae9d-3152350ac8ea-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/dataset/table.py && echo \"===== CHANGELOG =====\" && cat /testbed/CHANGELOG.md && echo \"===== TESTS =====\" && cat /testbed/test/test_dataset.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-6f71113a-711a-44b1-ae9d-3152350ac8ea-1",
+            "content": "sert c == len(self.tbl)\n\n    def test_update(self):\n        date = datetime(2011, 1, 2)\n        res = self.tbl.update(\n            {\"date\": date, \"temperature\": -10, \"place\": TEST_CITY_1}, [\"place\", \"date\"]\n        )\n        assert res, \"update should return True\"\n        m = self.tbl.find_one(place=TEST_CITY_1, date=date)\n        assert m[\"temperature\"] == -10, (\n            \"new temp. should be -10 but is %d\" % m[\"temperature\"]\n        )\n\n    def test_create_column(self):\n        tbl = self.tbl\n        flt = self.db.types.float\n        tbl.create_column(\"foo\", flt)\n        assert \"foo\" in tbl.table.c, tbl.table.c\n        assert isinstance(tbl.table.c[\"foo\"].type, flt), tbl.table.c[\"foo\"].type\n        assert \"foo\" in tbl.columns, tbl.columns\n\n    def test_ensure_column(self):\n        tbl = self.tbl\n        flt = self.db.types.float\n        tbl.create_column_by_example(\"foo\", 0.1)\n        assert \"foo\" in tbl.table.c, tbl.table.c\n        assert isinstance(tbl.table.c[\"foo\"].type, flt), tbl.table.c[\"bar\"].type\n        tbl.create_column_by_example(\"bar\", 1)\n        assert \"bar\" in tbl.table.c, tbl.table.c\n        assert isinstance(tbl.table.c[\"bar\"].type, BIGINT), tbl.table.c[\"bar\"].type\n        tbl.create_column_by_example(\"pippo\", \"test\")\n        assert \"pippo\" in tbl.table.c, tbl.table.c\n        assert isinstance(tbl.table.c[\"pippo\"].type, TEXT), tbl.table.c[\"pippo\"].type\n        tbl.create_column_by_example(\"bigbar\", 11111111111)\n        assert \"bigbar\" in tbl.table.c, tbl.table.c\n        assert isinstance(tbl.table.c[\"bigbar\"].type, BIGINT), tbl.table.c[\n            \"bigbar\"\n        ].type\n        tbl.create_column_by_example(\"littlebar\", -11111111111)\n        assert \"littlebar\" in tbl.table.c, tbl.table.c\n        assert isinstance(tbl.table.c[\"littlebar\"].type, BIGINT), tbl.table.c[\n            \"littlebar\"\n        ].type\n\n    def test_key_order(self):\n        res = self.db.query(\"SELECT temperature, place FROM weather LIMIT 1\")\n        keys = list(res.next().keys())\n        assert keys[0] == \"temperature\"\n        assert keys[1] == \"place\"\n\n    def test_empty_query(self):\n        empty = list(self.tbl.find(place=\"not in data\"))\n        assert len(empty) == 0, empty\n\n\nclass Constructor(dict):\n    \"\"\"Very simple low-functionality extension to ``dict`` to\n    provide attribute access to dictionary contents\"\"\"\n\n    def __getattr__(self, name):\n        return self[name]\n\n\nclass RowTypeTestCase(unittest.TestCase):\n    def setUp(self):\n        self.db = connect(row_type=Constructor)\n        self.tbl = self.db[\"weather\"]\n        for row in TEST_DATA:\n            self.tbl.insert(row)\n\n    def tearDown(self):\n        for table in self.db.tables:\n            self.db[table].drop()\n\n    def test_find_one(self):\n        self.tbl.insert(\n            {\"date\": datetime(2011, 1, 2), \"temperature\": -10, \"place\": \"Berlin\"}\n        )\n        d = self.tbl.find_one(place=\"Berlin\")\n        assert d[\"temperature\"] == -10, d\n        assert d.temperature == -10, d\n        d = self.tbl.find_one(place=\"Atlantis\")\n        assert d is None, d\n\n    def test_find(self):\n        ds = list(self.tbl.find(place=TEST_CITY_1))\n        assert len(ds) == 3, ds\n        for item in ds:\n            assert isinstance(item, Constructor), item\n        ds = list(self.tbl.find(place=TEST_CITY_1, _limit=2))\n        assert len(ds) == 2, ds\n        for item in ds:\n            assert isinstance(item, Constructor), item\n\n    def test_distinct(self):\n        x = list(self.tbl.distinct(\"place\"))\n        assert len(x) == 2, x\n        for item in x:\n            assert isinstance(item, Constructor), item\n        x = list(self.tbl.distinct(\"place\", \"date\"))\n        assert len(x) == 6, x\n        for item in x:\n            assert isinstance(item, Constructor), item\n\n    def test_iter(self):\n        c = 0\n        for row in self.tbl:\n            c += 1\n            assert isinstance(row, Constructor), row\n        assert c == len(self.tbl)\n\n\nif __name__ == \"__main__\":\n    unittest.main()\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-a999766f-2297-463d-a8a8-a6cb3428c6d0-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/dataset/table.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-a999766f-2297-463d-a8a8-a6cb3428c6d0-2",
+            "content": "rform GROUP BY-style\n        aggregation, you can also use :py:meth:`db.query() <dataset.Database.query>`\n        to run raw SQL queries instead.\n        \"\"\"\n        if not self.exists:\n            return iter([])\n\n        _limit = kwargs.pop(\"_limit\", None)\n        _offset = kwargs.pop(\"_offset\", 0)\n        order_by = kwargs.pop(\"order_by\", None)\n        _streamed = kwargs.pop(\"_streamed\", False)\n        _step = kwargs.pop(\"_step\", QUERY_STEP)\n        if _step is False or _step == 0:\n            _step = None\n\n        order_by = self._args_to_order_by(order_by)\n        args = self._args_to_clause(kwargs, clauses=_clauses)\n        query = self.table.select(whereclause=args, limit=_limit, offset=_offset)\n        if len(order_by):\n            query = query.order_by(*order_by)\n\n        conn = self.db.executable\n        if _streamed:\n            conn = self.db.engine.connect()\n            conn = conn.execution_options(stream_results=True)\n\n        return ResultIter(conn.execute(query), row_type=self.db.row_type, step=_step)\n\n    def find_one(self, *args, **kwargs):\n        \"\"\"Get a single result from the table.\n\n        Works just like :py:meth:`find() <dataset.Table.find>` but returns one\n        result, or ``None``.\n        ::\n\n            row = table.find_one(country='United States')\n        \"\"\"\n        if not self.exists:\n            return None\n\n        kwargs[\"_limit\"] = 1\n        kwargs[\"_step\"] = None\n        resiter = self.find(*args, **kwargs)\n        try:\n            for row in resiter:\n                return row\n        finally:\n            resiter.close()\n\n    def count(self, *_clauses, **kwargs):\n        \"\"\"Return the count of results for the given filter set.\"\"\"\n        # NOTE: this does not have support for limit and offset since I can't\n        # see how this is useful. Still, there might be compatibility issues\n        # with people using these flags. Let's see how it goes.\n        if not self.exists:\n            return 0\n\n        args = self._args_to_clause(kwargs, clauses=_clauses)\n        query = select([func.count()], whereclause=args)\n        query = query.select_from(self.table)\n        rp = self.db.executable.execute(query)\n        return rp.fetchone()[0]\n\n    def __len__(self):\n        \"\"\"Return the number of rows in the table.\"\"\"\n        return self.count()\n\n    def distinct(self, *args, **_filter):\n        \"\"\"Return all the unique (distinct) values for the given ``columns``.\n        ::\n\n            # returns only one row per year, ignoring the rest\n            table.distinct('year')\n            # works with multiple columns, too\n            table.distinct('year', 'country')\n            # you can also combine this with a filter\n            table.distinct('year', country='China')\n        \"\"\"\n        if not self.exists:\n            return iter([])\n\n        columns = []\n        clauses = []\n        for column in args:\n            if isinstance(column, ClauseElement):\n                clauses.append(column)\n            else:\n                if not self.has_column(column):\n                    raise DatasetException(\"No such column: %s\" % column)\n                columns.append(self.table.c[column])\n\n        clause = self._args_to_clause(_filter, clauses=clauses)\n        if not len(columns):\n            return iter([])\n\n        q = expression.select(\n            columns,\n            distinct=True,\n            whereclause=clause,\n            order_by=[c.asc() for c in columns],\n        )\n        return self.db.query(q)\n\n    # Legacy methods for running find queries.\n    all = find\n\n    def __iter__(self):\n        \"\"\"Return all rows of the table as simple dictionaries.\n\n        Allows for iterating over all rows in the table without explicitly\n        calling :py:meth:`find() <dataset.Table.find>`.\n        ::\n\n            for row in table:\n                print(row)\n        \"\"\"\n        return self.find()\n\n    def __repr__(self):\n        \"\"\"Get table representation.\"\"\"\n        return \"<Table(%s)>\" % self.table.name\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-32d5a4c5-6c9f-4c13-9051-022c0e89cb7d-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "grep -n \"def delete\\|def update\\|def insert\\|return\" /testbed/dataset/table.py | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-32d5a4c5-6c9f-4c13-9051-022c0e89cb7d-3",
+            "content": "56:            return True\n57:        return self.name in self.db\n64:        return self._table\n70:            return {}\n82:            return self._columns\n87:        return list(self._column_keys.values())\n92:        return key in self._column_keys\n98:        return self._column_keys.get(key, name)\n100:    def insert(self, row, ensure=None, types=None):\n121:            return res.inserted_primary_key[0]\n122:        return True\n124:    def insert_ignore(self, row, keys, ensure=None, types=None):\n147:            return self.insert(row, ensure=False)\n148:        return False\n150:    def insert_many(self, rows, chunk_size=1000, ensure=None, types=None):\n187:    def update(self, row, keys, ensure=None, types=None, return_count=False):\n208:            return self.count(clause)\n212:            return rp.rowcount\n213:        if return_count:\n214:            return self.count(clause)\n216:    def update_many(self, rows, keys, chunk_size=1000, ensure=None, types=None):\n264:        row_count = self.update(row, keys, ensure=False, return_count=True)\n266:            return self.insert(row, ensure=False)\n267:        return True\n282:    def delete(self, *clauses, **filters):\n294:            return False\n298:        return rp.rowcount > 0\n382:        return out\n386:            return self.db.ensure_schema\n387:        return ensure\n391:            return self.table.c[column].like(value)\n393:            return self.table.c[column].ilike(value)\n395:            return self.table.c[column].notlike(value)\n397:            return self.table.c[column].notilike(value)\n399:            return self.table.c[column] > value\n401:            return self.table.c[column] < value\n403:            return self.table.c[column] >= value\n405:            return self.table.c[column] <= value\n407:            return self.table.c[column] == value\n409:            return self.table.c[column] != value\n411:            return self.table.c[column].in_(value)\n413:            return self.table.c[column].notin_(value)\n416:            return self.table.c[column].between(start, end)\n418:            return self.table.c[column].like(value + \"%\")\n420:            return self.table.c[column].like(\"%\" + value)\n421:        return false()\n436:        return and_(True, *clauses)\n451:        return orderings\n457:        return args, row\n477:            return\n509:                return\n531:            return False\n534:            return True\n537:                return False\n543:                return True\n548:                return True\n549:        return False\n566:                    return\n597:            # just return the first 10 rows\n605:            # return all rows sorted by multiple columns (descending by year)\n616:            return iter([])\n637:        return ResultIter(conn.execute(query), row_type=self.db.row_type, step=_step)\n642:        Works just like :py:meth:`find() <dataset.Table.find>` but returns one\n649:            return None\n656:                return row\n666:            return 0\n672:        return rp.fetchone()[0]\n676:        return self.count()\n682:            # returns only one row per year, ignoring the rest\n690:            return iter([])\n704:            return iter([])\n712:        return self.db.query(q)\n727:        return self.find()\n731:        return \"<Table(%s)>\" % self.table.name\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "The current `delete()` already returns a boolean. I'll inspect git history, docs, and the full method to pinpoint the mismatch.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-6a82ffcb-0c89-403b-8922-71c654dc0e57-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '180,320p' /testbed/dataset/table.py && echo \"===== GIT LOG =====\" && git -C /testbed log --oneline -20 && echo \"===== GIT BLAME DELETE =====\" && git -C /testbed log -p --all -S \"rowcount\" -- dataset/table.py | head -200"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-6a82ffcb-0c89-403b-8922-71c654dc0e57-4",
+            "content": "et.util import DatasetException, ResultIter, QUERY_STEP\n+from dataset.util import normalize_table_name, pad_chunk_columns\n+from dataset.util import normalize_column_name, normalize_column_key\n+\n+\n+log = logging.getLogger(__name__)\n+\n+\n+class Table(object):\n+    \"\"\"Represents a table in a database and exposes common operations.\"\"\"\n+\n+    PRIMARY_DEFAULT = \"id\"\n+\n+    def __init__(\n+        self,\n+        database,\n+        table_name,\n+        primary_id=None,\n+        primary_type=None,\n+        primary_increment=None,\n+        auto_create=False,\n+    ):\n+        \"\"\"Initialise the table from database schema.\"\"\"\n+        self.db = database\n+        self.name = normalize_table_name(table_name)\n+        self._table = None\n+        self._columns = None\n+        self._indexes = []\n+        self._primary_id = (\n+            primary_id if primary_id is not None else self.PRIMARY_DEFAULT\n+        )\n+        self._primary_type = primary_type if primary_type is not None else Types.integer\n+        if primary_increment is None:\n+            primary_increment = self._primary_type in (Types.integer, Types.bigint)\n+        self._primary_increment = primary_increment\n+        self._auto_create = auto_create\n+\n+    @property\n+    def exists(self):\n+        \"\"\"Check to see if the table currently exists in the database.\"\"\"\n+        if self._table is not None:\n+            return True\n+        return self.name in self.db\n+\n+    @property\n+    def table(self):\n+        \"\"\"Get a reference to the table, which may be reflected or created.\"\"\"\n+        if self._table is None:\n+            self._sync_table(())\n+        return self._table\n+\n+    @property\n+    def _column_keys(self):\n+        \"\"\"Get a dictionary of all columns and their case mapping.\"\"\"\n+        if not self.exists:\n+            return {}\n+        with self.db.lock:\n+            if self._columns is None:\n+                # Initialise the table if it doesn't exist\n+                table = self.table\n+                self._columns = {}\n+                for column in table.columns:\n+                    name = normalize_column_name(column.name)\n+                    key = normalize_column_key(name)\n+                    if key in self._columns:\n+                        log.warning(\"Duplicate column: %s\", name)\n+                    self._columns[key] = name\n+            return self._columns\n+\n+    @property\n+    def columns(self):\n+        \"\"\"Get a listing of all columns that exist in the table.\"\"\"\n+        return list(self._column_keys.values())\n+\n+    def has_column(self, column):\n+        \"\"\"Check if a column with the given name exists on this table.\"\"\"\n+        key = normalize_column_key(normalize_column_name(column))\n+        return key in self._column_keys\n+\n+    def _get_column_name(self, name):\n+        \"\"\"Find the best column name with case-insensitive matching.\"\"\"\n+        name = normalize_column_name(name)\n+        key = normalize_column_key(name)\n+        return self._column_keys.get(key, name)\n+\n+    def insert(self, row, ensure=None, types=None):\n+        \"\"\"Add a ``row`` dict by inserting it into the table.\n+\n+        If ``ensure`` is set, any of the keys of the row are not\n+        table columns, they will be created automatically.\n+\n+        During column creation, ``types`` will be checked for a key\n+        matching the name of a column to be created, and the given\n+        SQLAlchemy column type will be used. Otherwise, the type is\n+        guessed from the row value, defaulting to a simple unicode\n+        field.\n+        ::\n+\n+            data = dict(title='I am a banana!')\n+            table.insert(data)\n+\n+        Returns the inserted row's primary key.\n+        \"\"\"\n+        row = self._sync_columns(row, ensure, types=types)\n+        res = self.db.executable.execute(self.table.insert(row))\n+        if len(res.inserted_primary_key) > 0:\n+            return res.inserted_primary_key[0]\n+        return True\n+\n+    def insert_ignore(self, row, keys, ensure=None, types=None):\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-4a8a9d57-ad52-492b-82d9-e1fed3bbcc78-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '270,310p' /testbed/dataset/table.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-4a8a9d57-ad52-492b-82d9-e1fed3bbcc78-5",
+            "content": "        \"\"\"\n        Sorts multiple input rows into upserts and inserts. Inserts are passed\n        to insert and upserts are updated.\n\n        See :py:meth:`upsert() <dataset.Table.upsert>` and\n        :py:meth:`insert_many() <dataset.Table.insert_many>`.\n        \"\"\"\n        # Removing a bulk implementation in 5e09aba401. Doing this one by one\n        # is incredibly slow, but doesn't run into issues with column creation.\n        for row in rows:\n            self.upsert(row, keys, ensure=ensure, types=types)\n\n    def delete(self, *clauses, **filters):\n        \"\"\"Delete rows from the table.\n\n        Keyword arguments can be used to add column-based filters. The filter\n        criterion will always be equality:\n        ::\n\n            table.delete(place='Berlin')\n\n        If no arguments are given, all records are deleted.\n        \"\"\"\n        if not self.exists:\n            return False\n        clause = self._args_to_clause(filters, clauses=clauses)\n        stmt = self.table.delete(whereclause=clause)\n        rp = self.db.executable.execute(stmt)\n        return rp.rowcount > 0\n\n    def _reflect_table(self):\n        \"\"\"Load the tables definition from the database.\"\"\"\n        with self.db.lock:\n            self._columns = None\n            try:\n                self._table = SQLATable(\n                    self.name, self.db.metadata, schema=self.db.schema, autoload=True\n                )\n            except NoSuchTableError:\n                self._table = None\n\n"
+          }
+        ]
+      }
+    }
+  ]
+}

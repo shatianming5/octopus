@@ -1,0 +1,81 @@
+{
+  "cases": [
+    {
+      "accepted": true,
+      "action": {
+        "action": "done"
+      },
+      "expected": true,
+      "schema": "verified"
+    },
+    {
+      "accepted": false,
+      "action": {
+        "action": "done"
+      },
+      "expected": false,
+      "schema": "unverified"
+    },
+    {
+      "accepted": true,
+      "action": {
+        "action": "read",
+        "count": 3,
+        "path": "module.py",
+        "start": 1
+      },
+      "expected": true,
+      "schema": "unverified"
+    },
+    {
+      "accepted": true,
+      "action": {
+        "action": "edit",
+        "new": "b",
+        "old": "a",
+        "path": "module.py"
+      },
+      "expected": true,
+      "schema": "unverified"
+    },
+    {
+      "accepted": true,
+      "action": {
+        "action": "test",
+        "args": [
+          "yarn",
+          "jest",
+          "module.test.js"
+        ]
+      },
+      "expected": true,
+      "schema": "unverified"
+    },
+    {
+      "accepted": false,
+      "action": {
+        "action": "test",
+        "args": [
+          "yarn",
+          "jest"
+        ]
+      },
+      "expected": false,
+      "schema": "refresh"
+    },
+    {
+      "accepted": true,
+      "action": {
+        "action": "read",
+        "count": 3,
+        "path": "module.py",
+        "start": 1
+      },
+      "expected": true,
+      "schema": "refresh"
+    }
+  ],
+  "gpu_inference_requests": 0,
+  "passed": true,
+  "xgrammar_version": "0.2.3"
+}

@@ -1,0 +1,31 @@
+{
+  "schema": "octopus-actor-reproduction-implementation-validation-v1",
+  "scope": "Accepted implementation owner's actual focused CPU and production Docker/stdio results; not real-model or official-quality evidence.",
+  "status": "passed",
+  "distinct_selected_checks_passed": 246,
+  "affected_consumer_gate": {
+    "passed": 244,
+    "opt_in_docker_skipped_then_run_separately": 1,
+    "wall_seconds": 96.59
+  },
+  "separate_legacy_docker_consumer": {"passed": 1, "wall_seconds": 19.69},
+  "final_reproduction_scope": {"passed": 5, "wall_seconds": 66.94},
+  "red_witnesses_corrected": [
+    "Real Docker worker initially rejected the new action.",
+    "Freeze CLI initially rejected --workflow.",
+    "Assertion identity initially confused numeric 1 and boolean true.",
+    "Failed comparisons initially returned process exit 0 rather than exit 1."
+  ],
+  "production_seam_evidence": [
+    "Scripted CPU episode rejects initial finish and echo-only finish, observes original assertion failure, makes actual product edit, passes the same frozen assertions, then permits mechanical finish.",
+    "Red exits 1 and green exits 0; reproduction artifacts stay separate from model.patch and prediction.json.",
+    "Real inline Docker and stdio cover timeout, runtime-error, identity, fresh-scratch, failed-mutation invalidation and interrupted evidence preservation.",
+    "Exact owned containers and descendants are cleaned."
+  ],
+  "final_reproduction_command": "PYTHONPATH=src:.:tests /home/ubuntu/repos/octopus/.venv/bin/python -m pytest -q tests/test_lighthouse_actor_reproduction.py",
+  "model_requests": 0,
+  "official_evaluator_runs": 0,
+  "scripted_fixture_given_to_actor": false,
+  "semantic_repair_certified": false,
+  "unresolved_skips_or_failures": 0
+}

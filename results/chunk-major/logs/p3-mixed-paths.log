@@ -1,0 +1,196 @@
+# Ranks on different paths (README "Ranks on different paths"), node-134 G4 + G7, 2026-10-30 (host clock).
+# actor_ab.py through nan_check.py, 2 FSDP ranks, Qwen3.5-4B-text bf16, LoRA r64 from nosync-134's adapter, the groups
+# 000041~search-6806~3e9e76fc, ~5ca61d05, 000041~search-7854~85d76f47, 000042~search-2981~27ffb875 (rank 0 the 1st
+# and 3rd), actor.mb_spec.max_tokens_per_mb=131072 (5 micro-batches per rank), --steps 1 --gpu-cap 0.84.
+# main = f6e72ca, fix = this branch (prefix_tree.tree_inputs builds every tree with_tree). Runs before 02:00 used an
+# earlier nan_check (the same checks, lines "[dbg]"). chunk_major: the micro-batch's chunk count, false = flat HF
+# layers. main-detail and fix-detail ran with TORCH_DISTRIBUTED_DEBUG=DETAIL. Micro-batches 1-4 ran chunk-major on
+# both ranks with every shard finite in all runs with the flag on (not repeated here). Selected lines; the full logs
+# stay on node-134 under /mnt/disk4/user/debug-nan/logs.
+
+### nc-main.log
+# start nc-main 01:55:50 OCTOPUS_CHUNK_MAJOR=1 
+Microbatch #tokens (rank 1): [198316, 182467, 153685, 180565, 20420]
+Microbatch #tokens (rank 0): [412858, 166262, 145785, 149534, 99961]
+[nan_check] {"rank": 1, "call": "compute_logp", "mb": 5, "event": "last_mb", "chunk_major": false}
+[nan_check] {"rank": 0, "call": "compute_logp", "mb": 5, "event": "last_mb", "chunk_major": 4}
+[nan_check] {"rank": 1, "call": "ppo_update", "mb": 5, "event": "after_last_mb", "chunk_major": false, "grads": 400, "nonfinite": 24, "names": [...]}
+[nan_check] {"rank": 0, "call": "ppo_update", "mb": 5, "event": "after_last_mb", "chunk_major": 4, "grads": 400, "nonfinite": 26, "names": [...]}
+[nan_check] {"rank": 0, "call": "ppo_update", "mb": 5, "event": "before_step", "chunk_major": 4, "grads": 400, "nonfinite": 26, "names": [...]}
+[nan_check] {"rank": 1, "call": "ppo_update", "mb": 5, "event": "before_step", "chunk_major": false, "grads": 400, "nonfinite": 24, "names": [...]}
+
+### main-detail.log
+# start main-detail 01:16:10 OCTOPUS_CHUNK_MAJOR=1 
+Microbatch #tokens (rank 1): [198316, 182467, 153685, 180565, 20420]
+Microbatch #tokens (rank 0): [412858, 166262, 145785, 149534, 99961]
+[dbg] {"rank": 1, "call": "compute_logp", "mb": 5, "event": "last_mb", "chunk_major": false}
+[dbg] {"rank": 0, "call": "compute_logp", "mb": 5, "event": "last_mb", "chunk_major": 4}
+Detected mismatch between collectives on ranks. Rank 0 is running collective: CollectiveFingerPrint(SequenceNumber=1522, OpType=_ALLGATHER_BASE, TensorShape=[58362464]
+Detected mismatch between collectives on ranks. Rank 1 is running collective: CollectiveFingerPrint(SequenceNumber=1522, OpType=_REDUCE_SCATTER_BASE, TensorShape=[3833856]
+
+### fix-detail.log
+# start fix-detail 01:31:59 OCTOPUS_CHUNK_MAJOR=1 
+Microbatch #tokens (rank 1): [198316, 182467, 153685, 180565, 20420]
+Microbatch #tokens (rank 0): [412858, 166262, 145785, 149534, 99961]
+[dbg] {"rank": 1, "call": "compute_logp", "mb": 5, "event": "last_mb", "chunk_major": 1}
+[dbg] {"rank": 0, "call": "compute_logp", "mb": 5, "event": "last_mb", "chunk_major": 4}
+[dbg] {"rank": 1, "call": "ppo_update", "mb": 5, "event": "sharded_after_last_mb", "of": 400, "bad": {"n": 0, "first": []}, "chunk_major": 1}
+[dbg] {"rank": 0, "call": "ppo_update", "mb": 5, "event": "sharded_after_last_mb", "of": 400, "bad": {"n": 0, "first": []}, "chunk_major": 4}
+RuntimeError: Backend nccl does not support allgather_into_tensor_coalesced
+
+### nc-fix.log
+# start nc-fix 02:03:49 OCTOPUS_CHUNK_MAJOR=1 
+Microbatch #tokens (rank 1): [198316, 182467, 153685, 180565, 20420]
+Microbatch #tokens (rank 0): [412858, 166262, 145785, 149534, 99961]
+[nan_check] {"rank": 1, "call": "compute_logp", "mb": 5, "event": "last_mb", "chunk_major": 1}
+[nan_check] {"rank": 0, "call": "compute_logp", "mb": 5, "event": "last_mb", "chunk_major": 4}
+[nan_check] {"rank": 0, "call": "ppo_update", "mb": 5, "event": "after_last_mb", "chunk_major": 4, "grads": 400, "nonfinite": 0, "names": [...]}
+[nan_check] {"rank": 1, "call": "ppo_update", "mb": 5, "event": "after_last_mb", "chunk_major": 1, "grads": 400, "nonfinite": 0, "names": [...]}
+[nan_check] {"rank": 1, "call": "ppo_update", "mb": 5, "event": "before_step", "chunk_major": 1, "grads": 400, "nonfinite": 0, "names": [...]}
+[nan_check] {"rank": 0, "call": "ppo_update", "mb": 5, "event": "before_step", "chunk_major": 4, "grads": 400, "nonfinite": 0, "names": [...]}
+[actor_ab] rank 1 {'OCTOPUS_CHUNK_MAJOR': '1', 'OCTOPUS_CHUNK_TOKENS': None, 'OCTOPUS_BLOCK_CHECKPOINT': '1'} seg 32768 ['000041~search-6806~5ca61d05.pt', '000042~search-2981~27ffb875.pt'] loss 0.04950737953186035 grad_norm 0.08459675312042236
+[actor_ab] rank 0 {'OCTOPUS_CHUNK_MAJOR': '1', 'OCTOPUS_CHUNK_TOKENS': None, 'OCTOPUS_BLOCK_CHECKPOINT': '1'} seg 32768 ['000041~search-6806~3e9e76fc.pt', '000041~search-7854~85d76f47.pt'] loss 0.04950737953186035 grad_norm 0.08459675312042236
+
+### k1-mb.log
+# start k1-mb 01:48:18 OCTOPUS_CHUNK_MAJOR=0 
+Microbatch #tokens (rank 1): [198316, 182467, 153685, 180565, 20420]
+Microbatch #tokens (rank 0): [412858, 166262, 145785, 149534, 99961]
+[dbg] {"rank": 1, "call": "compute_logp", "mb": 5, "event": "last_mb", "chunk_major": false}
+[dbg] {"rank": 0, "call": "compute_logp", "mb": 5, "event": "last_mb", "chunk_major": false}
+[dbg] {"rank": 1, "call": "ppo_update", "mb": 5, "event": "sharded_after_last_mb", "of": 400, "bad": {"n": 0, "first": []}, "chunk_major": false}[dbg] {"rank": 0, "call": "ppo_update", "mb": 5, "event": "sharded_after_last_mb", "of": 400, "bad": {"n": 0, "firs
+[dbg] {"rank": 1, "call": "ppo_update", "mb": 5, "event": "sharded_before_step", "of": 400, "bad": {"n": 0, "first": []}, }
+[dbg] {"rank": 0, "call": "ppo_update", "mb": 5, "event": "sharded_before_step", "of": 400, "bad": {"n": 0, "first": []}, }
+[actor_ab] rank 1 {'OCTOPUS_CHUNK_MAJOR': '0', 'OCTOPUS_CHUNK_TOKENS': None, 'OCTOPUS_BLOCK_CHECKPOINT': '1'} seg 32768 ['000041~search-6806~5ca61d05.pt', '000042~search-2981~27ffb875.pt'] loss 0.04964989423751831 grad_norm 0.089772067964077
+[actor_ab] rank 0 {'OCTOPUS_CHUNK_MAJOR': '0', 'OCTOPUS_CHUNK_TOKENS': None, 'OCTOPUS_BLOCK_CHECKPOINT': '1'} seg 32768 ['000041~search-6806~3e9e76fc.pt', '000041~search-7854~85d76f47.pt'] loss 0.04964989423751831 grad_norm 0.089772067964077
+
+### k1s16-mb.log
+# start k1s16-mb 02:11:44 OCTOPUS_CHUNK_MAJOR=0 
+Microbatch #tokens (rank 1): [198316, 182467, 153685, 180565, 20420]
+Microbatch #tokens (rank 0): [412858, 166262, 145785, 149534, 99961]
+[nan_check] {"rank": 1, "call": "compute_logp", "mb": 5, "event": "last_mb", "chunk_major": false}
+[nan_check] {"rank": 0, "call": "compute_logp", "mb": 5, "event": "last_mb", "chunk_major": false}
+[nan_check] {"rank": 0, "call": "ppo_update", "mb": 5, "event": "after_last_mb", "chunk_major": false, "grads": 400, "nonfinite": 0, "names": [...]}
+[nan_check] {"rank": 1, "call": "ppo_update", "mb": 5, "event": "after_last_mb", "chunk_major": false, "grads": 400, "nonfinite": 0, "names": [...]}
+[nan_check] {"rank": 1, "call": "ppo_update", "mb": 5, "event": "before_step", "chunk_major": false, "grads": 400, "nonfinite": 0, "names": [...]}
+[nan_check] {"rank": 0, "call": "ppo_update", "mb": 5, "event": "before_step", "chunk_major": false, "grads": 400, "nonfinite": 0, "names": [...]}
+[actor_ab] rank 0 {'OCTOPUS_CHUNK_MAJOR': '0', 'OCTOPUS_CHUNK_TOKENS': None, 'OCTOPUS_BLOCK_CHECKPOINT': '1'} seg 16384 ['000041~search-6806~3e9e76fc.pt', '000041~search-7854~85d76f47.pt'] loss 0.049545273184776306 grad_norm 0.08562899380922318
+[actor_ab] rank 1 {'OCTOPUS_CHUNK_MAJOR': '0', 'OCTOPUS_CHUNK_TOKENS': None, 'OCTOPUS_BLOCK_CHECKPOINT': '1'} seg 16384 ['000041~search-6806~5ca61d05.pt', '000042~search-2981~27ffb875.pt'] loss 0.049545273184776306 grad_norm 0.08562899380922318
+
+# nc-main.log stats (two JSON lines interleaved there): loss 0.049514833837747574 grad_norm NaN on both ranks.
+# nonfinite shards (main, both runs): rank 0 = all 26 LoRA tensors of layers 30-31, rank 1 = all 24 of layers 0-1, each
+# the rank's whole half (rows 32-63 of lora_A, the upper half of lora_B in the merged gradient), the other half finite.
+# fix-detail: no collective mismatch through the whole ppo_update backward; the harness then stopped in actor_ab's
+# lora_grads (DTensor.full_tensor), whose coalesced all-gather TORCH_DISTRIBUTED_DEBUG=DETAIL's wrapper lacks.
+# fix-mb (same code as nc-fix, earlier nan_check): loss 0.04950737953186035 grad_norm 0.08442219346761703.
+
+# actor_ab.py --compare A B (step 1: logp, rank 0's merged LoRA gradients)
+== compare k1-mb k1s16-mb
+rank 0: logp max |diff| 0.427, mean 0.000251
+rank 1: logp max |diff| 0.801, mean 0.000208
+LoRA grads: cosine 0.80732 (smallest per tensor 0.5345), norm 0.08975 / 0.08562 (rel diff 4.60e-02)
+== compare k1-mb nc-fix
+rank 0: logp max |diff| 0.506, mean 0.000263
+rank 1: logp max |diff| 0.562, mean 0.000206
+LoRA grads: cosine 0.76626 (smallest per tensor 0.4786), norm 0.08975 / 0.08445 (rel diff 5.91e-02)
+== compare k1-mb fix-mb
+rank 0: logp max |diff| 0.506, mean 0.000263
+rank 1: logp max |diff| 0.562, mean 0.000206
+LoRA grads: cosine 0.76705 (smallest per tensor 0.4783), norm 0.08975 / 0.08443 (rel diff 5.93e-02)
+== compare fix-mb nc-fix
+rank 0: logp max |diff| 0, mean 0
+rank 1: logp max |diff| 0, mean 0
+LoRA grads: cosine 0.99989 (smallest per tensor 0.9998), norm 0.08443 / 0.08445 (rel diff 2.21e-04)
+== compare k1-mb nc-main
+rank 0: logp max |diff| 0.506, mean 0.000263
+rank 1: logp max |diff| 0.562, mean 0.000206
+LoRA grads: cosine nan (smallest per tensor nan), norm 0.08975 / nan (rel diff nan)
+
+# Later runs (10-30, --gpu-cap 0.80 for k1-detail / fix-detail2 / t-fix: another user's processes grew to 3.6 GB per card).
+# k1b-mb: k1-mb again. k1-detail, fix-detail2: TORCH_DISTRIBUTED_DEBUG=DETAIL without --save (no lora_grads), the whole
+# step. t-main, t-fix: one card (G6), rank 1's two groups alone (the same 5 micro-batches), --steps 2, actor_ab with
+# per-micro-batch seconds (mb_s; impl-nosync's actor_ab.py).
+### k1b-mb.log
+# start k1b-mb 02:22:12 OCTOPUS_CHUNK_MAJOR=0 
+[nan_check] {"rank": 1, "call": "compute_logp", "mb": 5, "event": "last_mb", "chunk_major": false}
+[nan_check] {"rank": 0, "call": "compute_logp", "mb": 5, "event": "last_mb", "chunk_major": false}
+[nan_check] {"rank": 1, "call": "ppo_update", "mb": 5, "event": "after_last_mb", "chunk_major": false, "grads": 400, "nonfinite": 0, "names": [...]}
+[nan_check] {"rank": 0, "call": "ppo_update", "mb": 5, "event": "after_last_mb", "chunk_major": false, "grads": 400, "nonfinite": 0, "names": [...]}
+Detected mismatch lines: 0
+### k1-detail.log
+# start k1-detail 02:38:08 OCTOPUS_CHUNK_MAJOR=0 
+[nan_check] {"rank": 1, "call": "compute_logp", "mb": 5, "event": "last_mb", "chunk_major": false}
+[nan_check] {"rank": 0, "call": "compute_logp", "mb": 5, "event": "last_mb", "chunk_major": false}
+[nan_check] {"rank": 1, "call": "ppo_update", "mb": 5, "event": "after_last_mb", "chunk_major": false, "grads": 400, "nonfinite": 0, "names": [...]}
+[nan_check] {"rank": 0, "call": "ppo_update", "mb": 5, "event": "after_last_mb", "chunk_major": false, "grads": 400, "nonfinite": 0, "names": [...]}
+Detected mismatch lines: 0
+### fix-detail2.log
+# start fix-detail2 02:45:46 OCTOPUS_CHUNK_MAJOR=1 
+[nan_check] {"rank": 1, "call": "compute_logp", "mb": 5, "event": "last_mb", "chunk_major": 1}
+[nan_check] {"rank": 0, "call": "compute_logp", "mb": 5, "event": "last_mb", "chunk_major": 4}
+[nan_check] {"rank": 0, "call": "ppo_update", "mb": 5, "event": "after_last_mb", "chunk_major": 4, "grads": 400, "nonfinite": 0, "names": [...]}
+[nan_check] {"rank": 1, "call": "ppo_update", "mb": 5, "event": "after_last_mb", "chunk_major": 1, "grads": 400, "nonfinite": 0, "names": [...]}
+Detected mismatch lines: 0
+### t-main.log
+# start t-main 02:23:11 OCTOPUS_CHUNK_MAJOR=1 
+[nan_check] {"rank": 0, "call": "compute_logp", "mb": 5, "event": "last_mb", "chunk_major": false}
+[nan_check] {"rank": 0, "call": "ppo_update", "mb": 5, "event": "after_last_mb", "chunk_major": false, "grads": 400, "nonfinite": 0, "names": [...]}
+[nan_check] {"rank": 0, "call": "compute_logp", "mb": 5, "event": "last_mb", "chunk_major": false}
+[nan_check] {"rank": 0, "call": "ppo_update", "mb": 5, "event": "after_last_mb", "chunk_major": false, "grads": 400, "nonfinite": 0, "names": [...]}
+Detected mismatch lines: 0
+### t-fix.log
+# start t-fix 02:38:08 OCTOPUS_CHUNK_MAJOR=1 
+[nan_check] {"rank": 0, "call": "compute_logp", "mb": 5, "event": "last_mb", "chunk_major": 1}
+[nan_check] {"rank": 0, "call": "ppo_update", "mb": 5, "event": "after_last_mb", "chunk_major": 1, "grads": 400, "nonfinite": 0, "names": [...]}
+[nan_check] {"rank": 0, "call": "compute_logp", "mb": 5, "event": "last_mb", "chunk_major": 1}
+[nan_check] {"rank": 0, "call": "ppo_update", "mb": 5, "event": "after_last_mb", "chunk_major": 1, "grads": 400, "nonfinite": 0, "names": [...]}
+Detected mismatch lines: 0
+k1b-mb actor_loss/avg": 0.04964989423751831 grad_norm": 0.089772067964077 
+k1-detail actor_loss/avg": 0.04964989423751831 grad_norm": 0.089772067964077 
+fix-detail2 actor_loss/avg": 0.04950737953186035 grad_norm": 0.08442219346761703 
+t-main.log rank 0 compute_logp [[13.6, 12.6, 10.8, 10.2, 1.8]] ppo_update [[70.0, 67.9, 62.1, 59.3, 9.2]] logp s 52.8 ppo s 272.2
+t-main.log rank 0 compute_logp [[13.7, 11.4, 11.0, 10.7, 1.8]] ppo_update [[67.4, 65.2, 62.6, 58.8, 9.4]] logp s 52.7 ppo s 266.3
+t-fix.log rank 0 compute_logp [[14.0, 12.8, 11.0, 10.4, 1.8]] ppo_update [[71.5, 69.3, 63.0, 59.3, 9.2]] logp s 54.2 ppo s 275.2
+t-fix.log rank 0 compute_logp [[14.0, 11.5, 11.1, 10.3, 1.8]] ppo_update [[67.7, 65.9, 62.7, 59.0, 10.0]] logp s 52.6 ppo s 267.8
+
+# tests/test_actor_chunk_major.py::test_ranks_with_a_tree_and_a_short_micro_batch_both_run_chunk_major on f6e72ca
+# (unfixed), 2 gloo ranks on CPU: rank 0 aborted
+  what():  [enforce fail at /pytorch/third_party/gloo/gloo/transport/tcp/pair.cc:456] op.preamble.length <= op.nbytes. 1893712 vs 524288. Received data size doesn't match expected size. Is there a distributed collective 
+
+# actor_ab.py --compare save/k1-mb save/k1b-mb (same configuration twice)
+LoRA grads: cosine 0.99988 (smallest per tensor 0.9998), norm 0.08975 / 0.08966 (rel diff 1.01e-03)
+
+# Per decoder layer, rank 0's merged LoRA gradients: norm and cosine to k1-mb (grad_layers.py). across: impl-nosync's
+# cross-micro-batch no_sync run on the same batch (nosync-134/save/across), for its attention layers.
+layer                k1       k1s16         fix      across  cos(k1s16,k1)  cos(fix,k1)  cos(across,k1)
+    0 gdn        0.0363     0.03232     0.03167     0.02419         0.663         0.538         0.350
+    1 gdn       0.02075     0.01859      0.0189     0.01369         0.630         0.536         0.369
+    2 gdn       0.02418      0.0217     0.02084     0.01448         0.653         0.555         0.351
+    3 attn      0.02922     0.02595     0.02545       2.299         0.635         0.595         0.003
+    4 gdn       0.02146     0.01958     0.01914     0.01421         0.648         0.630         0.439
+    5 gdn       0.02119     0.02215     0.02047     0.01439         0.745         0.703         0.484
+    6 gdn       0.02136     0.02069     0.02034     0.01457         0.792         0.774         0.503
+    7 attn      0.02042     0.01969     0.01965       2.299         0.862         0.840         0.003
+    8 gdn       0.01306     0.01301     0.01292      0.0104         0.933         0.917         0.562
+    9 gdn       0.01396     0.01395      0.0139      0.0108         0.951         0.935         0.605
+   10 gdn       0.01527     0.01524     0.01518      0.0117         0.962         0.954         0.626
+   11 attn      0.01932     0.01938     0.01936       2.299         0.980         0.973         0.004
+   12 gdn       0.01392     0.01401     0.01398     0.01312         0.985         0.982         0.515
+   13 gdn       0.01314     0.01322      0.0132      0.0123         0.988         0.986         0.530
+   14 gdn       0.01552     0.01566     0.01566     0.01354         0.990         0.989         0.579
+   15 attn      0.02005     0.02024     0.02028       2.299         0.991         0.991         0.004
+   16 gdn       0.01246     0.01251     0.01252     0.01646         0.992         0.991         0.369
+   17 gdn       0.01103     0.01106     0.01107     0.01338         0.992         0.992         0.409
+   18 gdn       0.01156     0.01162      0.0116     0.01245         0.992         0.992         0.475
+   19 attn       0.0126     0.01263     0.01261       2.299         0.991         0.991         0.002
+   20 gdn      0.007542    0.007553    0.007562     0.01469         0.991         0.990         0.255
+   21 gdn      0.006866    0.006873    0.006874     0.01156         0.992         0.991         0.298
+   22 gdn      0.007029    0.007041     0.00703     0.01075         0.992         0.992         0.331
+   23 attn     0.007205    0.007217    0.007181       2.299         0.992         0.991         0.002
+   24 gdn      0.004957    0.004952    0.004956     0.01387         0.993         0.992         0.180
+   25 gdn      0.004321    0.004318    0.004315     0.01406         0.995         0.994         0.152
+   26 gdn      0.004584    0.004585    0.004592     0.01427         0.993         0.992         0.170
+   27 attn     0.005833    0.005818    0.005792       2.299         0.994         0.994         0.002
+   28 gdn      0.003994       0.004    0.004004     0.01914         0.995         0.994         0.102
+   29 gdn      0.004262    0.004264    0.004273     0.01564         0.995         0.994         0.140
+   30 gdn      0.005402    0.005384    0.005401     0.01376         0.995         0.995         0.190
+   31 attn      0.01296     0.01299     0.01305       2.299         0.993         0.992         0.003

@@ -1,0 +1,48 @@
+2026-10-15 05:32:19 watchdog v2 up: trial bundle-e9, steps 53, memory limit 385G, stall 7200s, crash trigger on 'Training failed'
+2026-10-15 08:36:52 coordinator: stop after step 10 to raise EPISODES_PER_SERVER 6 -> 10 (worker slot cap binds); resume same trial
+2026-10-15 08:39:01 coordinator: relaunched (rl_launch_bundle-e9.sh pid 3062819)
+2026-10-15 08:40:44 watchdog v2 up: trial bundle-e9, steps 53, memory limit 385G, stall 7200s, crash trigger on 'Training failed'
+2026-10-15 09:13:51 CRASH #1 (update_weights timeout=0, repeats=0): (AReaL) 20261015-09:13:29.391 RLTrainer ERROR: Training failed with exception: Failed to call method 'ppo_update' on worker 'actor/4': Connection error: Cannot 
+2026-10-15 09:13:51 STOP (training failed) last: Train step 10/240 done
+2026-10-15 09:18:43 coordinator: CRASH #1 was the trainer-scope OOM killer (MEM_MAX 400G) in ppo_update of the first step after EPS 6->10 (80 episodes finishing together, buffered in rollout workers); watchdog + its resume stopped; EPISODES_PER_SERVER 10 -> 8, 10 s memory sampler mem.log; relaunch
+2026-10-15 09:20:12 watchdog v2 up: trial bundle-e9, steps 53, memory limit 385G, stall 7200s, crash trigger on 'Training failed'
+2026-10-15 10:01:22 coordinator: step 11 peaked at 399G of MEM_MAX 400G (cgroup shmem 341G = pinned activations of 5 ranks); CRASH #1 was the same, not EPS; stop, MB_TOKENS 262144 -> 196608, resume
+2026-10-15 10:03:27 coordinator: relaunched with MB_TOKENS=196608
+2026-10-15 10:04:41 watchdog v2 up: trial bundle-e9, steps 53, memory limit 385G, stall 7200s, crash trigger on 'Training failed'
+2026-10-15 13:31:42 coordinator: user asked to stop bundle-e9 completely (last: Train step 20/240 done); watchdog + run stopped
+2026-10-15 19:58:43 coordinator: resume bundle-e9 from step 20 on code-e376694 (spool, live.env, orphan kill), EPISODES_PER_SERVER 10, first-step guard falls back to f28550d
+2026-10-15 19:59:28 coordinator: start failed: servers 127.0.0.1:30200,127.0.0.1:30201,127.0.0.1:30202|GPU 0 busy (47222 MiB)|
+2026-10-15 20:00:21 coordinator: first start failed (node-138 GPU 4 taken by haibo); node-138 rollout INFER_GPUS 0-3 (backup rl_run.env.bak-20261015); restart with e9_resume_start.sh
+2026-10-15 20:01:58 coordinator: 2nd start failed (node-138 GPUs 0,1,2,4 taken by haibo); rollout on node-94 only (REMOTE empty), EPISODES_PER_SERVER 20 (env and its f28550d backup); restart
+2026-10-15 20:03:53 GUARD: new code failed before step 21 (see train log tail); restored f28550d env/scripts, relaunching old code
+2026-10-15 20:04:48 watchdog v2 up: trial bundle-e9, steps 53, memory limit 385G, stall 7200s, crash trigger on 'Training failed'
+2026-10-15 20:08:08 coordinator: guard fallback was a false alarm (actor/0 RPC port 17372 already in use); switching back to code-e376694
+2026-10-15 21:42:00 coordinator: 3 servers x 20 episodes saturated KV (0.95, queue 12-17, 40 tok/s per server, no group done in 90 min); restart with live.env EPISODES_PER_SERVER=8
+2026-10-15 21:57:53 coordinator: add remote rollout servers (node-138:3, node-136:0-4 shared, node-68:0-5) -> 15 servers, live EPISODES_PER_SERVER 4 (60 episodes); restart
+2026-10-15 22:00:55 coordinator: start failed: servers 127.0.0.1:30700|servers 127.0.0.1:30800,127.0.0.1:30801,127.0.0.1:30802,127.0.0.1:30803,127.0.0.1:30804|GPU 2 busy (34595 MiB)|
+2026-10-15 22:01:05 coordinator: start failed (node-68 GPU 2 taken by aozhou); node-68 INFER_GPUS 0,1,3,4,5 -> 14 servers; start again
+2026-10-15 22:23:42 coordinator: live EPISODES_PER_SERVER 4 -> 6 (14 servers at KV 0.13-0.18, load 17/32; 84 episodes <= staleness cap ~96)
+2026-10-15 22:25:23 coordinator: live EPISODES_PER_SERVER -> 8 (user: squeeze utilization); staleness cap ~96 episodes
+2026-10-15 22:37:35 coordinator: step 21 done on code-e376694; watchdog started (pid 3081425), guard exits
+2026-10-15 22:37:35 watchdog v2 up: trial bundle-e9, steps 53, memory limit 385G, stall 7200s, crash trigger on 'Training failed'
+2026-10-15 23:01:11 coordinator: MEM_MAX 400G -> 420G, watchdog limit 385 -> 410 (takes effect at the 8-rank restart); MB_TOKENS to be raised live after measuring the 8-rank peak
+2026-10-15 23:22:08 coordinator: after step 23 (1 groups spooled): 8 training ranks (node-94 0-7), MB_TOKENS 131072, rollout on 11 remote servers; restart
+2026-10-15 23:26:30 coordinator: step 24 done after the 8-rank change (TRAIN_GPUS=0,1,2,3,4,5,6,7); watchdog started
+2026-10-15 23:26:30 watchdog v2 up: trial bundle-e9, steps 53, memory limit 410G, stall 7200s, crash trigger on 'Training failed'
+2026-10-15 23:55:01 coordinator: step 25 done on 8 training ranks (real check); guard exits
+2026-10-15 23:58:01 coordinator: user stops bundle-e9 (Train step 25/240 done; 0 groups spooled) to free node-94 for the activations-on-GPU test
+2026-10-16 00:27:11 coordinator: resume bundle-e9 from step 25 on code-ddde6f0, ACT_GPU_GB 18, MB_TOKENS 229376, 8 ranks, 12 rollout servers (node-138 3,4); guard until step 26
+2026-10-16 01:06:43 GUARD: ACT_GPU_GB run failed before step 26 (guard-actgpu-tail.txt); restored the e376694 8-rank MB 131072 env, restarting
+2026-10-16 01:17:41 coordinator: node-138 GPU fault (NVML Unknown Error, SGLang no CUDA); fallback start hung on its serve; dropping node-138, restarting on node-136 + node-68 (10 servers), 8 ranks, MB_TOKENS 131072
+2026-10-16 01:21:18 coordinator: restarted without node-138 (10 servers); watchdog pid 446872
+2026-10-16 01:21:18 watchdog v2 up: trial bundle-e9, steps 53, memory limit 410G, stall 7200s, crash trigger on 'Training failed'
+2026-10-16 01:57:20 coordinator: after step 27 (0 groups spooled): add node-134 GPUs 2-5 (tunnel 2237) -> 14 rollout servers; restart
+2026-10-16 02:00:35 coordinator: restarted with 02:00:35 14 servers ; watchdog pid 953201
+2026-10-16 02:00:35 watchdog v2 up: trial bundle-e9, steps 53, memory limit 410G, stall 7200s, crash trigger on 'Training failed'
+2026-10-16 07:37:11 CRASH #1 (update_weights timeout=0, repeats=0): (AReaL) 20261016-07:36:22.794 RLTrainer ERROR: Training failed with exception: Failed to call method 'update_weights' on worker 'actor/0': Engine method 'update
+2026-10-16 07:37:11 STOP (training failed) last: Train step 52/240 done
+2026-10-16 07:38:35 coordinator: step-53 update_weights failed: node-68 GPU 4 server (30623) died at 07:29 after aozhou started a 10 GB retriever on that GPU; dropped node-68 GPU 4 from its INFER_GPUS before the watchdog restart
+2026-10-16 07:43:52 RESUME rc=0 (after training failed #1), trial bundle-e9
+2026-10-16 08:11:08 DONE: step 53 of 53
+2026-10-16 08:11:28 STOP (done, release GPUs) last: Train step 53/240 done
+2026-10-16 08:13:39 released: 1 MiB 1 MiB 1 MiB 1 MiB 1 MiB 1 MiB 1 MiB 1 MiB 

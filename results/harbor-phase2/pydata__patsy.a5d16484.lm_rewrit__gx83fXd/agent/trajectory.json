@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "pydata__patsy.a5d16484.lm_rewrit__gx83fXd__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "[Bug]: Pandas DataFrame handling in _eval_factor is broken\n\n### Bug summary\n\nWhen using pandas DataFrames with _eval_factor, the function fails to properly handle the data when the DataFrame has multiple columns.\n\n### Code for reproduction\n\n```python\nimport pandas as pd\nimport numpy as np\nfrom patsy.build import _eval_factor\nfrom patsy.design_info import FactorInfo\nfrom patsy.missing import NAAction\n\nclass MockFactor:\n    def eval(self, data, **kwargs):\n        return data[\"mock\"]\n\n# Create a simple factor info\nnaa = NAAction()\nf = MockFactor()\nfi = FactorInfo(f, 'numerical', {}, num_columns=2, categories=None)\n\n# Create a pandas DataFrame with multiple columns\ndf = pd.DataFrame({'A': [1, 2, 3], 'B': [4, 5, 6]}, index=[10, 20, 30])\n\n# This will fail\n_eval_factor(fi, {\"mock\": df}, naa)\n```\n\n### Actual outcome\n\nThe code raises a PatsyError with a message about incompatible dimensions.\n\n### Expected outcome\n\nThe function should properly handle pandas DataFrames with multiple columns, extracting the values correctly and preserving the index information.\n\n### Additional information\n\nThe issue appears to be in how the function processes pandas DataFrames when they have multiple columns. It seems to be expecting a specific format or structure that doesn't match how pandas DataFrames are organized.\n\n### Matplotlib Version\n\nN/A\n\n### Python version\n\n3.10\n\n### Installation\n\npip install patsy"
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository and the `_eval_factor` implementation to reproduce the DataFrame handling bug.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-98ba1462-4db8-4c68-b9b9-b99dd92caa0f-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -50 && cat /testbed/setup.py 2>/dev/null | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-98ba1462-4db8-4c68-b9b9-b99dd92caa0f-0",
+            "content": "total 92\ndrwxr-xr-x 1 root root  4096 Sep 22 17:33 .\ndrwxr-xr-x 1 root root  4096 Sep 22 17:33 ..\n-rw-r--r-- 1 root root   103 Jul 13  2025 .coveragerc\ndrwxr-xr-x 8 root root  4096 Jul 13  2025 .git\n-rw-r--r-- 1 root root  1126 Jul 13  2025 .gitignore\n-rw-rw-r-- 1 1005 1005     0 Sep 22 15:44 .gitkeep\n-rw-r--r-- 1 root root   616 Jul 13  2025 .pre-commit-config.yaml\n-rw-r--r-- 1 root root  2383 Jul 13  2025 CODE_OF_CONDUCT.md\n-rw-r--r-- 1 root root  4313 Jul 13  2025 LICENSE.txt\n-rw-r--r-- 1 root root   166 Jul 13  2025 MANIFEST.in\n-rw-r--r-- 1 root root  2050 Jul 13  2025 README.md\n-rw-r--r-- 1 root root 14752 Jul 13  2025 TODO\ndrwxr-xr-x 6 root root  4096 Jul 13  2025 doc\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 patsy\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 patsy.egg-info\n-rw-r--r-- 1 root root  1080 Jul 13  2025 release-checklist.txt\n-rw-r--r-- 1 root root   118 Jul 13  2025 setup.cfg\n-rw-r--r-- 1 root root  1640 Jul 13  2025 setup.py\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 tools\n-rw-r--r-- 1 root root  1266 Jul 13  2025 tox.ini\n/testbed/tools/check-API-refs.py\n/testbed/setup.py\n/testbed/patsy/compat.py\n/testbed/patsy/test_highlevel.py\n/testbed/patsy/state.py\n/testbed/patsy/compat_ordereddict.py\n/testbed/patsy/splines.py\n/testbed/patsy/user_util.py\n/testbed/patsy/test_build.py\n/testbed/patsy/infix_parser.py\n/testbed/patsy/mgcv_cubic_splines.py\n/testbed/patsy/design_info.py\n/testbed/patsy/tokens.py\n/testbed/patsy/version.py\n/testbed/patsy/__init__.py\n/testbed/patsy/contrasts.py\n/testbed/patsy/eval.py\n/testbed/patsy/parse_formula.py\n/testbed/patsy/builtins.py\n/testbed/patsy/test_state.py\n/testbed/patsy/missing.py\n/testbed/patsy/categorical.py\n/testbed/patsy/test_regressions.py\n/testbed/patsy/origin.py\n/testbed/patsy/build.py\n/testbed/patsy/highlevel.py\n/testbed/patsy/desc.py\n/testbed/patsy/test_splines_bs_data.py\n/testbed/patsy/test_splines_crs_data.py\n/testbed/patsy/redundancy.py\n/testbed/patsy/util.py\n/testbed/patsy/constraint.py\n/testbed/doc/conf.py\n/testbed/doc/_examples/example_treatment.py\n/testbed/doc/_examples/example_lm.py\n/testbed/doc/_examples/add_predictors.py\n#!/usr/bin/env python\n\nfrom setuptools import setup\n\nDESC = (\n    \"A Python package for describing statistical models and for \"\n    \"building design matrices.\"\n)\n\nLONG_DESC = open(\"README.md\").read()\n\n# defines __version__\nexec(open(\"patsy/version.py\").read())\n\nsetup(\n    name=\"patsy\",\n    version=__version__,  # noqa: F821\n    description=DESC,\n    long_description=LONG_DESC,\n    long_description_content_type=\"text/markdown\",\n    author=\"Nathaniel J. Smith\",\n    author_email=\"njs@pobox.com\",\n    license=\"2-clause BSD\",\n    packages=[\"patsy\"],\n    url=\"https://github.com/pydata/patsy\",\n    install_requires=[\n        # Possibly we need an even newer numpy than this, but we definitely\n        # need at least 1.4 for triu_indices\n        \"numpy >= 1.4\",\n    ],\n    extras_require={\n        \"test\": [\"pytest\", \"pytest-cov\", \"scipy\"],\n    },\n    python_requires=\">=3.6\",\n    classifiers=[\n        \"Development Status :: 6 - Mature\",\n        \"Intended Audience :: Developers\",\n        \"Intended Audience :: Science/Research\",\n        \"Intended Audience :: Financial and Insurance Industry\",\n        \"License :: OSI Approved :: BSD License\",\n        \"Programming Language :: Python :: 3\",\n        \"Programming Language :: Python :: 3.6\",\n        \"Programming Language :: Python :: 3.7\",\n        \"Programming Language :: Python :: 3.8\",\n        \"Programming Language :: Python :: 3.9\",\n        \"Programming Language :: Python :: 3.10\",\n        \"Programming Language :: Python :: 3.11\",\n        \"Programming Language :: Python :: 3.12\",\n        \"Programming Language :: Python :: 3.13\",\n        \"Topic :: Scientific/Engineering\",\n    ],\n)\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-2644aff8-8289-4436-83a0-3187eea3a805-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/patsy/build.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-2644aff8-8289-4436-83a0-3187eea3a805-1",
+            "content": "data.shape[0], \"data argument\", None)\n    for design_info in design_infos:\n        # We look at evaluators rather than factors here, because it might\n        # happen that we have the same factor twice, but with different\n        # memorized state.\n        for factor_info in design_info.factor_infos.values():\n            if factor_info not in factor_info_to_values:\n                value, is_NA = _eval_factor(factor_info, data, NA_action)\n                factor_info_to_isNAs[factor_info] = is_NA\n                # value may now be a Series, DataFrame, or ndarray\n                name = factor_info.factor.name()\n                origin = factor_info.factor.origin\n                rows_checker.check(value.shape[0], name, origin)\n                if have_pandas and isinstance(value, (pandas.Series, pandas.DataFrame)):\n                    index_checker.check(value.index, name, origin)\n                # Strategy: we work with raw ndarrays for doing the actual\n                # combining; DesignMatrixBuilder objects never sees pandas\n                # objects. Then at the end, if a DataFrame was requested, we\n                # convert. So every entry in this dict is either a 2-d array\n                # of floats, or a 1-d array of integers (representing\n                # categories).\n                value = np.asarray(value)\n                factor_info_to_values[factor_info] = value\n    # Handle NAs\n    values = list(factor_info_to_values.values())\n    is_NAs = list(factor_info_to_isNAs.values())\n    origins = [factor_info.factor.origin for factor_info in factor_info_to_values]\n    pandas_index = index_checker.value\n    num_rows = rows_checker.value\n    # num_rows is None iff evaluator_to_values (and associated sets like\n    # 'values') are empty, i.e., we have no actual evaluators involved\n    # (formulas like \"~ 1\").\n    if return_type == \"dataframe\" and num_rows is not None:\n        if pandas_index is None:\n            pandas_index = np.arange(num_rows)\n        values.append(pandas_index)\n        is_NAs.append(np.zeros(len(pandas_index), dtype=bool))\n        origins.append(None)\n    new_values = NA_action.handle_NA(values, is_NAs, origins)\n    # NA_action may have changed the number of rows.\n    if new_values:\n        num_rows = new_values[0].shape[0]\n    if return_type == \"dataframe\" and num_rows is not None:\n        pandas_index = new_values.pop()\n    factor_info_to_values = dict(zip(factor_info_to_values, new_values))\n    # Build factor values into matrices\n    results = []\n    for design_info in design_infos:\n        results.append(_build_design_matrix(design_info, factor_info_to_values, dtype))\n    matrices = []\n    for need_reshape, matrix in results:\n        if need_reshape:\n            # There is no data-dependence, at all -- a formula like \"1 ~ 1\".\n            # In this case the builder just returns a single-row matrix, and\n            # we have to broadcast it vertically to the appropriate size. If\n            # we can figure out what that is...\n            assert matrix.shape[0] == 1\n            if num_rows is not None:\n                matrix = DesignMatrix(\n                    np.repeat(matrix, num_rows, axis=0), matrix.design_info\n                )\n            else:\n                raise PatsyError(\n                    \"No design matrix has any non-trivial factors, \"\n                    \"the data object is not a DataFrame. \"\n                    \"I can't tell how many rows the design matrix should \"\n                    \"have!\"\n                )\n        matrices.append(matrix)\n    if return_type == \"dataframe\":\n        assert have_pandas\n        for i, matrix in enumerate(matrices):\n            di = matrix.design_info\n            matrices[i] = pandas.DataFrame(\n                matrix, columns=di.column_names, index=pandas_index\n            )\n            matrices[i].design_info = di\n    return matrices\n\n\n# It should be possible to do just the factors -> factor_infos stuff\n# alone, since that, well, makes logical sense to do.\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-f301aa40-7628-4003-bf77-9feed2605510-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "wc -l /testbed/patsy/build.py && rg -n \"_eval_factor|pandas|DataFrame|num_columns\" /testbed/patsy/build.py /testbed/patsy/util.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-f301aa40-7628-4003-bf77-9feed2605510-2",
+            "content": "1026 /testbed/patsy/build.py\nbash: line 1: rg: command not found\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-f3d282db-5a18-4126-8df8-a823eb13d732-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "grep -n \"_eval_factor\\|pandas\\|DataFrame\\|num_columns\\|asarray\" /testbed/patsy/build.py /testbed/patsy/util.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-f3d282db-5a18-4126-8df8-a823eb13d732-3",
+            "content": "e paths to handle pandas categorical data\n/testbed/patsy/util.py:691:# errors if you try them with pandas categorical stuff. So basically they have\n/testbed/patsy/util.py:699:# Needed to support pandas < 0.15\n/testbed/patsy/util.py:700:def pandas_Categorical_from_codes(codes, categories):\n/testbed/patsy/util.py:701:    assert have_pandas_categorical\n/testbed/patsy/util.py:703:    # Old versions of pandas sometimes fail to coerce this to an array and\n/testbed/patsy/util.py:705:    codes = np.asarray(codes)\n/testbed/patsy/util.py:706:    if hasattr(pandas.Categorical, \"from_codes\"):\n/testbed/patsy/util.py:707:        return pandas.Categorical.from_codes(codes, categories)\n/testbed/patsy/util.py:709:        return pandas.Categorical(codes, categories)\n/testbed/patsy/util.py:712:def test_pandas_Categorical_from_codes():\n/testbed/patsy/util.py:713:    if not have_pandas_categorical:\n/testbed/patsy/util.py:715:    c = pandas_Categorical_from_codes([1, 1, 0, -1], [\"a\", \"b\"])\n/testbed/patsy/util.py:716:    assert np.all(np.asarray(c)[:-1] == [\"b\", \"b\", \"a\"])\n/testbed/patsy/util.py:717:    assert np.isnan(np.asarray(c)[-1])\n/testbed/patsy/util.py:720:# Needed to support pandas < 0.15\n/testbed/patsy/util.py:721:def pandas_Categorical_categories(cat):\n/testbed/patsy/util.py:733:# Needed to support pandas < 0.15\n/testbed/patsy/util.py:734:def pandas_Categorical_codes(cat):\n/testbed/patsy/util.py:746:def test_pandas_Categorical_accessors():\n/testbed/patsy/util.py:747:    if not have_pandas_categorical:\n/testbed/patsy/util.py:749:    c = pandas_Categorical_from_codes([1, 1, 0, -1], [\"a\", \"b\"])\n/testbed/patsy/util.py:750:    assert np.all(pandas_Categorical_categories(c) == [\"a\", \"b\"])\n/testbed/patsy/util.py:751:    assert np.all(pandas_Categorical_codes(c) == [1, 1, 0, -1])\n/testbed/patsy/util.py:753:    if have_pandas_categorical_dtype:\n/testbed/patsy/util.py:754:        s = pandas.Series(c)\n/testbed/patsy/util.py:755:        assert np.all(pandas_Categorical_categories(s) == [\"a\", \"b\"])\n/testbed/patsy/util.py:756:        assert np.all(pandas_Categorical_codes(s) == [1, 1, 0, -1])\n/testbed/patsy/util.py:759:# Needed to support pandas >= 0.15 (!)\n/testbed/patsy/util.py:760:def safe_is_pandas_categorical_dtype(dt):\n/testbed/patsy/util.py:761:    if not have_pandas_categorical_dtype:\n/testbed/patsy/util.py:763:    return _pandas_is_categorical_dtype(dt)\n/testbed/patsy/util.py:766:# Needed to support pandas >= 0.15 (!)\n/testbed/patsy/util.py:767:def safe_is_pandas_categorical(data):\n/testbed/patsy/util.py:768:    if not have_pandas_categorical:\n/testbed/patsy/util.py:770:    if isinstance(data, pandas.Categorical):\n/testbed/patsy/util.py:773:        return safe_is_pandas_categorical_dtype(data.dtype)\n/testbed/patsy/util.py:777:def test_safe_is_pandas_categorical():\n/testbed/patsy/util.py:778:    assert not safe_is_pandas_categorical(np.arange(10))\n/testbed/patsy/util.py:780:    if have_pandas_categorical:\n/testbed/patsy/util.py:781:        c_obj = pandas.Categorical([\"a\", \"b\"])\n/testbed/patsy/util.py:782:        assert safe_is_pandas_categorical(c_obj)\n/testbed/patsy/util.py:784:    if have_pandas_categorical_dtype:\n/testbed/patsy/util.py:785:        s_obj = pandas.Series([\"a\", \"b\"], dtype=\"category\")\n/testbed/patsy/util.py:786:        assert safe_is_pandas_categorical(s_obj)\n/testbed/patsy/util.py:789:# Needed to support pandas >= 0.15 (!)\n/testbed/patsy/util.py:790:# Calling np.issubdtype on a pandas categorical will blow up -- the officially\n/testbed/patsy/util.py:796:#   not pandas.is_categorical_dtype(foo.dtype) and issubdtype(foo.dtype, bool)\n/testbed/patsy/util.py:799:#   https://github.com/pydata/pandas/issues/9581\n/testbed/patsy/util.py:800:#   https://github.com/pydata/pandas/issues/9581#issuecomment-77099564\n/testbed/patsy/util.py:802:    if safe_is_pandas_categorical_dtype(dt1):\n/testbed/patsy/util.py:813:    if have_pandas_categorical_dtype:\n/testbed/patsy/util.py:814:        bad_dtype = pandas.Series([\"a\", \"b\"], dtype=\"category\")\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-80f00a0a-02e7-43c5-bdc0-45cd3c2342c0-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "grep -n \"def _eval_factor\\|def eval_factor\\|PatsyError\\|incompatible\" /testbed/patsy/build.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-80f00a0a-02e7-43c5-bdc0-45cd3c2342c0-4",
+            "content": "13:from patsy import PatsyError\n49:        raise PatsyError(msg, factor)\n58:    pytest.raises(PatsyError, _max_allowed_dim, 1, np.array([[1]]), f)\n59:    pytest.raises(PatsyError, _max_allowed_dim, 1, np.array([[[1]]]), f)\n63:    pytest.raises(PatsyError, _max_allowed_dim, 2, np.array([[[1]]]), f)\n66:def _eval_factor(factor_info, data, NA_action):\n74:            raise PatsyError(\n81:            raise PatsyError(\n111:    pytest.raises(PatsyError, _eval_factor, fi1, {\"mock\": [[[1]]]}, naa)\n112:    pytest.raises(PatsyError, _eval_factor, fi1, {\"mock\": [[1, 2]]}, naa)\n113:    pytest.raises(PatsyError, _eval_factor, fi1, {\"mock\": [\"a\", \"b\"]}, naa)\n114:    pytest.raises(PatsyError, _eval_factor, fi1, {\"mock\": [True, False]}, naa)\n121:    pytest.raises(PatsyError, _eval_factor, fi2, {\"mock\": [1, 2, 3]}, naa)\n122:    pytest.raises(PatsyError, _eval_factor, fi2, {\"mock\": [[1, 2, 3]]}, naa)\n154:            PatsyError,\n161:            PatsyError,\n180:    pytest.raises(PatsyError, _eval_factor, fi1, {\"mock\": [\"c\"]}, naa)\n181:    pytest.raises(PatsyError, _eval_factor, fi1, {\"mock\": C([\"a\", \"c\"])}, naa)\n183:        PatsyError, _eval_factor, fi1, {\"mock\": C([\"a\", \"b\"], levels=[\"b\", \"a\"])}, naa\n185:    pytest.raises(PatsyError, _eval_factor, fi1, {\"mock\": [1, 0, 1]}, naa)\n188:    pytest.raises(PatsyError, _eval_factor, fi1, {\"mock\": bad_cat}, naa)\n196:        PatsyError, _eval_factor, fi1, {\"mock\": [\"a\", None, \"b\"]}, NAAction(NA_types=[])\n287:                    raise PatsyError(\n336:        PatsyError,\n621:        except PatsyError as e:\n858:                raise PatsyError(msg, origin)\n932:        raise PatsyError(\"pandas.DataFrame was requested, but pandas is not installed\")\n934:        raise PatsyError(\n1007:                raise PatsyError(\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-7cdd4515-5e6c-410e-916c-34c7ebd7b791-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '1,250p' /testbed/patsy/build.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-7cdd4515-5e6c-410e-916c-34c7ebd7b791-5",
+            "content": "1], [3]], index=[20, 10, 30])}, naa\n        )\n        assert isinstance(eval_df1, pandas.DataFrame)\n        assert np.array_equal(eval_df1, [[2], [1], [3]])\n        assert np.array_equal(eval_df1.index, [20, 10, 30])\n        eval_df2, _ = _eval_factor(\n            fi2,\n            {\"mock\": pandas.DataFrame([[2, 3], [1, 4], [3, -1]], index=[20, 30, 10])},\n            naa,\n        )\n        assert isinstance(eval_df2, pandas.DataFrame)\n        assert np.array_equal(eval_df2, [[2, 3], [1, 4], [3, -1]])\n        assert np.array_equal(eval_df2.index, [20, 30, 10])\n\n        pytest.raises(\n            PatsyError,\n            _eval_factor,\n            fi2,\n            {\"mock\": pandas.Series([1, 2, 3], index=[10, 20, 30])},\n            naa,\n        )\n        pytest.raises(\n            PatsyError,\n            _eval_factor,\n            fi1,\n            {\"mock\": pandas.DataFrame([[2, 3], [1, 4], [3, -1]], index=[20, 30, 10])},\n            naa,\n        )\n\n\ndef test__eval_factor_categorical():\n    import pytest\n    from patsy.categorical import C\n\n    naa = NAAction()\n    f = _MockFactor()\n    fi1 = FactorInfo(f, \"categorical\", {}, num_columns=None, categories=(\"a\", \"b\"))\n    assert fi1.factor is f\n    cat1, _ = _eval_factor(fi1, {\"mock\": [\"b\", \"a\", \"b\"]}, naa)\n    assert cat1.shape == (3,)\n    assert np.all(cat1 == [1, 0, 1])\n    pytest.raises(PatsyError, _eval_factor, fi1, {\"mock\": [\"c\"]}, naa)\n    pytest.raises(PatsyError, _eval_factor, fi1, {\"mock\": C([\"a\", \"c\"])}, naa)\n    pytest.raises(\n        PatsyError, _eval_factor, fi1, {\"mock\": C([\"a\", \"b\"], levels=[\"b\", \"a\"])}, naa\n    )\n    pytest.raises(PatsyError, _eval_factor, fi1, {\"mock\": [1, 0, 1]}, naa)\n    bad_cat = np.asarray([\"b\", \"a\", \"a\", \"b\"])\n    bad_cat.resize((2, 2))\n    pytest.raises(PatsyError, _eval_factor, fi1, {\"mock\": bad_cat}, naa)\n\n    cat1_NA, is_NA = _eval_factor(\n        fi1, {\"mock\": [\"a\", None, \"b\"]}, NAAction(NA_types=[\"None\"])\n    )\n    assert np.array_equal(is_NA, [False, True, False])\n    assert np.array_equal(cat1_NA, [0, -1, 1])\n    pytest.raises(\n        PatsyError, _eval_factor, fi1, {\"mock\": [\"a\", None, \"b\"]}, NAAction(NA_types=[])\n    )\n\n    fi2 = FactorInfo(\n        _MockFactor(), \"categorical\", {}, num_columns=None, categories=[False, True]\n    )\n    cat2, _ = _eval_factor(fi2, {\"mock\": [True, False, False, True]}, naa)\n    assert cat2.shape == (4,)\n    assert np.all(cat2 == [1, 0, 0, 1])\n\n    if have_pandas:\n        s = pandas.Series([\"b\", \"a\"], index=[10, 20])\n        cat_s, _ = _eval_factor(fi1, {\"mock\": s}, naa)\n        assert isinstance(cat_s, pandas.Series)\n        assert np.array_equal(cat_s, [1, 0])\n        assert np.array_equal(cat_s.index, [10, 20])\n        sbool = pandas.Series([True, False], index=[11, 21])\n        cat_sbool, _ = _eval_factor(fi2, {\"mock\": sbool}, naa)\n        assert isinstance(cat_sbool, pandas.Series)\n        assert np.array_equal(cat_sbool, [1, 0])\n        assert np.array_equal(cat_sbool.index, [11, 21])\n\n\ndef _column_combinations(columns_per_factor):\n    # For consistency with R, the left-most item iterates fastest:\n    iterators = [range(n) for n in reversed(columns_per_factor)]\n    for reversed_combo in itertools.product(*iterators):\n        yield reversed_combo[::-1]\n\n\ndef test__column_combinations():\n    assert list(_column_combinations([2, 3])) == [\n        (0, 0),\n        (1, 0),\n        (0, 1),\n        (1, 1),\n        (0, 2),\n        (1, 2),\n    ]\n    assert list(_column_combinations([3])) == [(0,), (1,), (2,)]\n    assert list(_column_combinations([])) == [()]\n\n\ndef _subterm_column_combinations(factor_infos, subterm):\n    columns_per_factor = []\n    for factor in subterm.factors:\n        if factor in subterm.contrast_matrices:\n            columns = subterm.contrast_matrices[factor].matrix.shape[1]\n        else:\n            columns = factor_infos[factor].num_columns\n        columns_per_factor.append(columns)\n    return _column_combinations(columns_per_factor)\n\n\ndef _subterm_column_names_iter(factor_infos, subterm):\n"
+          }
+        ]
+      }
+    }
+  ]
+}

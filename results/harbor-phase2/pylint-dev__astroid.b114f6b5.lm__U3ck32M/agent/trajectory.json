@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "pylint-dev__astroid.b114f6b5.lm__U3ck32M__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# UnaryOp.op_precedence() crashes on \"not\" operator\n\n## Description\n\nWhen using the `UnaryOp` class with the \"not\" operator, the `op_precedence()` method crashes with a KeyError.\n\n```python\nfrom astroid.nodes.node_classes import UnaryOp\n\n# Create a UnaryOp with \"not\" operator\nunary_op = UnaryOp(op=\"not\", operand=None)\n\n# This crashes with KeyError: 'not'\nprecedence = unary_op.op_precedence()\n```\n\nThe error occurs because the method tries to access `OP_PRECEDENCE[self.op]` directly without checking if the operator is \"not\", which requires special handling.\n\n## Expected behavior\n\nThe `op_precedence()` method should return the correct precedence value for all operators, including the \"not\" operator.\n\n## Actual behavior\n\n```\nKeyError: 'not'\n```\n\nThis affects code that relies on the precedence of unary operators, particularly when dealing with boolean expressions using \"not\"."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository structure and locate the UnaryOp.op_precedence() implementation.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-fd2240b0-b021-4926-b5e5-13c6b77a1680-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -50 && cat /testbed/README.md 2>/dev/null | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-fd2240b0-b021-4926-b5e5-13c6b77a1680-0",
+            "content": "total 288\ndrwxr-xr-x 1 root root   4096 Sep 22 18:00 .\ndrwxr-xr-x 1 root root   4096 Sep 22 18:00 ..\n-rw-r--r-- 1 root root    328 Jul 13  2025 .coveragerc\ndrwxr-xr-x 8 root root   4096 Jul 13  2025 .git\n-rw-r--r-- 1 root root    205 Jul 13  2025 .git-blame-ignore-revs\n-rw-r--r-- 1 root root     80 Jul 13  2025 .gitattributes\ndrwxr-xr-x 2 root root   4096 Jul 13  2025 .github\n-rw-r--r-- 1 root root    192 Jul 13  2025 .gitignore\n-rw-rw-r-- 1 1005 1005      0 Sep 22 15:44 .gitkeep\n-rw-r--r-- 1 root root   1887 Jul 13  2025 .pre-commit-config.yaml\n-rw-r--r-- 1 root root    242 Jul 13  2025 .readthedocs.yaml\n-rw-r--r-- 1 root root   8577 Jul 13  2025 CONTRIBUTORS.txt\n-rw-r--r-- 1 root root 133376 Jul 13  2025 ChangeLog\n-rw-r--r-- 1 root root  26516 Jul 13  2025 LICENSE\n-rw-r--r-- 1 root root    111 Jul 13  2025 MANIFEST.in\n-rw-r--r-- 1 root root   2840 Jul 13  2025 README.rst\ndrwxr-xr-x 5 root root   4096 Jul 13  2025 astroid\ndrwxr-xr-x 2 root root   4096 Jul 13  2025 astroid.egg-info\n-rw-r--r-- 1 root root    162 Jul 13  2025 codecov.yml\ndrwxr-xr-x 5 root root   4096 Jul 13  2025 doc\n-rw-r--r-- 1 root root  11233 Jul 13  2025 pylintrc\n-rw-r--r-- 1 root root   4976 Jul 13  2025 pyproject.toml\n-rw-r--r-- 1 root root    140 Jul 13  2025 requirements_dev.txt\n-rw-r--r-- 1 root root    249 Jul 13  2025 requirements_full.txt\n-rw-r--r-- 1 root root    128 Jul 13  2025 requirements_minimal.txt\ndrwxr-xr-x 2 root root   4096 Jul 13  2025 script\n-rw-r--r-- 1 root root    292 Jul 13  2025 setup.cfg\n-rw-r--r-- 1 root root   1556 Jul 13  2025 tbump.toml\ndrwxr-xr-x 4 root root   4096 Jul 13  2025 tests\n-rw-r--r-- 1 root root    420 Jul 13  2025 tox.ini\n/testbed/astroid/const.py\n/testbed/astroid/_backport_stdlib_names.py\n/testbed/astroid/objects.py\n/testbed/astroid/transforms.py\n/testbed/astroid/modutils.py\n/testbed/astroid/interpreter/dunder_lookup.py\n/testbed/astroid/interpreter/__init__.py\n/testbed/astroid/interpreter/objectmodel.py\n/testbed/astroid/interpreter/_import/__init__.py\n/testbed/astroid/interpreter/_import/spec.py\n/testbed/astroid/interpreter/_import/util.py\n/testbed/astroid/inference_tip.py\n/testbed/astroid/rebuilder.py\n/testbed/astroid/exceptions.py\n/testbed/astroid/context.py\n/testbed/astroid/__init__.py\n/testbed/astroid/protocols.py\n/testbed/astroid/helpers.py\n/testbed/astroid/__pkginfo__.py\n/testbed/astroid/brain/brain_typing.py\n/testbed/astroid/brain/brain_io.py\n/testbed/astroid/brain/brain_http.py\n/testbed/astroid/brain/brain_collections.py\n/testbed/astroid/brain/brain_namedtuple_enum.py\n/testbed/astroid/brain/brain_hypothesis.py\n/testbed/astroid/brain/brain_numpy_core_numerictypes.py\n/testbed/astroid/brain/brain_numpy_ma.py\n/testbed/astroid/brain/brain_numpy_core_umath.py\n/testbed/astroid/brain/brain_functools.py\n/testbed/astroid/brain/brain_uuid.py\n/testbed/astroid/brain/brain_multiprocessing.py\n/testbed/astroid/brain/brain_threading.py\n/testbed/astroid/brain/brain_numpy_core_numeric.py\n/testbed/astroid/brain/brain_pathlib.py\n/testbed/astroid/brain/brain_ssl.py\n/testbed/astroid/brain/brain_random.py\n/testbed/astroid/brain/brain_numpy_ndarray.py\n/testbed/astroid/brain/brain_attrs.py\n/testbed/astroid/brain/__init__.py\n/testbed/astroid/brain/helpers.py\n/testbed/astroid/brain/brain_hashlib.py\n/testbed/astroid/brain/brain_responses.py\n/testbed/astroid/brain/brain_builtin_inference.py\n/testbed/astroid/brain/brain_signal.py\n/testbed/astroid/brain/brain_re.py\n/testbed/astroid/brain/brain_subprocess.py\n/testbed/astroid/brain/brain_scipy_signal.py\n/testbed/astroid/brain/brain_qt.py\n/testbed/astroid/brain/brain_crypt.py\n/testbed/astroid/brain/brain_curses.py\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-805a887b-68f3-4a5f-a9f7-b87cba71da54-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "rg -n \"op_precedence|OP_PRECEDENCE|class UnaryOp\" --type py /testbed | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-805a887b-68f3-4a5f-a9f7-b87cba71da54-1",
+            "content": "bash: line 1: rg: command not found\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-fe6749f7-5ab7-42a1-a895-47b330b74f95-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "grep -rn \"op_precedence\\|OP_PRECEDENCE\\|class UnaryOp\" --include=\"*.py\" /testbed | head -100"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-fe6749f7-5ab7-42a1-a895-47b330b74f95-2",
+            "content": "/testbed/astroid/nodes/node_classes.py:47:from astroid.nodes.const import OP_PRECEDENCE\n/testbed/astroid/nodes/node_classes.py:1527:    def op_precedence(self) -> int:\n/testbed/astroid/nodes/node_classes.py:1528:        return OP_PRECEDENCE[self.op]\n/testbed/astroid/nodes/node_classes.py:1636:    def op_precedence(self) -> int:\n/testbed/astroid/nodes/node_classes.py:1637:        return OP_PRECEDENCE[self.op]\n/testbed/astroid/nodes/node_classes.py:4239:class UnaryOp(_base_nodes.OperatorNode):\n/testbed/astroid/nodes/node_classes.py:4302:    def op_precedence(self) -> int:\n/testbed/astroid/nodes/node_classes.py:4304:            return OP_PRECEDENCE[self.op]\n/testbed/astroid/nodes/node_classes.py:4306:        return super().op_precedence()\n/testbed/astroid/nodes/const.py:5:OP_PRECEDENCE = {\n/testbed/astroid/nodes/node_ng.py:35:from astroid.nodes.const import OP_PRECEDENCE\n/testbed/astroid/nodes/node_ng.py:782:    def op_precedence(self) -> int:\n/testbed/astroid/nodes/node_ng.py:784:        return OP_PRECEDENCE.get(self.__class__.__name__, len(OP_PRECEDENCE))\n/testbed/astroid/nodes/as_string.py:83:        node_precedence = node.op_precedence()\n/testbed/astroid/nodes/as_string.py:84:        child_precedence = child.op_precedence()\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-9cb57527-46af-4cc9-aa7c-0fd612fef919-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '1510,1650p' /testbed/astroid/nodes/node_classes.py; echo \"=====\"; sed -n '4220,4330p' /testbed/astroid/nodes/node_classes.py; echo \"=====\"; cat /testbed/astroid/nodes/const.py; echo \"=====\"; sed -n '770,800p' /testbed/astroid/nodes/node_ng.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-9cb57527-46af-4cc9-aa7c-0fd612fef919-3",
+            "content": "p = op\n        \"\"\"The operator.\"\"\"\n\n        super().__init__(\n            lineno=lineno,\n            col_offset=col_offset,\n            end_lineno=end_lineno,\n            end_col_offset=end_col_offset,\n            parent=parent,\n        )\n\n    def postinit(self, operand: NodeNG) -> None:\n        self.operand = operand\n\n    def type_errors(\n        self, context: InferenceContext | None = None\n    ) -> list[util.BadUnaryOperationMessage]:\n        \"\"\"Get a list of type errors which can occur during inference.\n\n        Each TypeError is represented by a :class:`BadUnaryOperationMessage`,\n        which holds the original exception.\n\n        If any inferred result is uninferable, an empty list is returned.\n        \"\"\"\n        bad = []\n        try:\n            for result in self._infer_unaryop(context=context):\n                if result is util.Uninferable:\n                    raise InferenceError\n                if isinstance(result, util.BadUnaryOperationMessage):\n                    bad.append(result)\n        except InferenceError:\n            return []\n        return bad\n\n    def get_children(self):\n        yield self.operand\n\n    def op_precedence(self) -> int:\n        if self.op == \"not\":\n            return OP_PRECEDENCE[self.op]\n\n        return super().op_precedence()\n\n    def _infer_unaryop(\n        self: nodes.UnaryOp, context: InferenceContext | None = None, **kwargs: Any\n    ) -> Generator[\n        InferenceResult | util.BadUnaryOperationMessage, None, InferenceErrorInfo\n    ]:\n        \"\"\"Infer what an UnaryOp should return when evaluated.\"\"\"\n        from astroid.nodes import ClassDef  # pylint: disable=import-outside-toplevel\n\n        for operand in self.operand.infer(context):\n            try:\n                yield operand.infer_unary_op(self.op)\n            except TypeError as exc:\n                # The operand doesn't support this operation.\n                yield util.BadUnaryOperationMessage(operand, self.op, exc)\n            except AttributeError as exc:\n                meth = UNARY_OP_METHOD[self.op]\n                if meth is None:\n                    # `not node`. Determine node's boolean\n                    # value and negate its result, unless it is\n                    # Uninferable, which will be returned as is.\n                    bool_value = operand.bool_value()\n                    if not isinstance(bool_value, util.UninferableBase):\n                        yield const_factory(not bool_value)\n=====\n# Licensed under the LGPL: https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html\n# For details: https://github.com/pylint-dev/astroid/blob/main/LICENSE\n# Copyright (c) https://github.com/pylint-dev/astroid/blob/main/CONTRIBUTORS.txt\n\nOP_PRECEDENCE = {\n    op: precedence\n    for precedence, ops in enumerate(\n        [\n            [\"Lambda\"],  # lambda x: x + 1\n            [\"IfExp\"],  # 1 if True else 2\n            [\"or\"],\n            [\"and\"],\n            [\"not\"],\n            [\"Compare\"],  # in, not in, is, is not, <, <=, >, >=, !=, ==\n            [\"|\"],\n            [\"^\"],\n            [\"&\"],\n            [\"<<\", \">>\"],\n            [\"+\", \"-\"],\n            [\"*\", \"@\", \"/\", \"//\", \"%\"],\n            [\"UnaryOp\"],  # +, -, ~\n            [\"**\"],\n            [\"Await\"],\n        ]\n    )\n    for op in ops\n}\n=====\n              explicitly False from the __nonzero__ / __bool__\n              method.\n            * True: Most of constructs are True by default:\n              classes, functions, modules etc\n            * Uninferable: The inference engine is uncertain of the\n              node's value.\n\n        :returns: The boolean value of this node.\n        :rtype: bool or Uninferable\n        \"\"\"\n        return util.Uninferable\n\n    def op_precedence(self) -> int:\n        # Look up by class name or default to highest precedence\n        return OP_PRECEDENCE.get(self.__class__.__name__, len(OP_PRECEDENCE))\n\n    def op_left_associative(self) -> bool:\n        # Everything is left associative except `**` and IfExp\n        return True\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-4feb7e15-9466-4048-9ccc-be6d6da3e8fa-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '1480,1650p' /testbed/astroid/nodes/node_classes.py; echo \"===== FILE LENGTH =====\"; wc -l /testbed/astroid/nodes/node_classes.py; echo \"===== CLASS UnaryOp =====\"; grep -n \"class UnaryOp\\|class BinOp\\|class BoolOp\\|class Compare\\|def op_precedence\" /testbed/astroid/nodes/node_classes.py /testbed/astroid/nodes/*.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-4feb7e15-9466-4048-9ccc-be6d6da3e8fa-4",
+            "content": "   except _NonDeducibleTypeHierarchy:\n                yield util.Uninferable\n\n    @decorators.yes_if_nothing_inferred\n    @decorators.path_wrapper\n    def _infer(\n        self: nodes.BinOp, context: InferenceContext | None = None, **kwargs: Any\n    ) -> Generator[InferenceResult]:\n        return self._filter_operation_errors(\n            self._infer_binop, context, util.BadBinaryOperationMessage\n        )\n\n\nclass BoolOp(NodeNG):\n    \"\"\"Class representing an :class:`ast.BoolOp` node.\n\n    A :class:`BoolOp` is an application of a boolean operator.\n\n    >>> import astroid\n    >>> node = astroid.extract_node('a and b')\n    >>> node\n    <BinOp l.1 at 0x7f23b2e71c50>\n    \"\"\"\n\n    _astroid_fields = (\"values\",)\n    _other_fields = (\"op\",)\n\n    def __init__(\n        self,\n        op: str,\n        lineno: int | None = None,\n        col_offset: int | None = None,\n        parent: NodeNG | None = None,\n        *,\n        end_lineno: int | None = None,\n        end_col_offset: int | None = None,\n    ) -> None:\n        \"\"\"\n        :param op: The operator.\n\n        :param lineno: The line that this node appears on in the source code.\n\n        :param col_offset: The column that this node appears on in the\n            source code.\n\n        :param parent: The parent node in the syntax tree.\n\n        :param end_lineno: The last line this node appears on in the source code.\n\n        :param end_col_offset: The end column this node appears on in the\n            source code. Note: This is after the last symbol.\n        \"\"\"\n        self.op: str = op\n        \"\"\"The operator.\"\"\"\n\n        self.values: list[NodeNG] = []\n        \"\"\"The values being applied to the operator.\"\"\"\n\n        super().__init__(\n            lineno=lineno,\n            col_offset=col_offset,\n            end_lineno=end_lineno,\n            end_col_offset=end_col_offset,\n            parent=parent,\n        )\n\n    def postinit(self, values: list[NodeNG] | None = None) -> None:\n        \"\"\"Do some setup after initialisation.\n\n        :param values: The values being applied to the operator.\n        \"\"\"\n        if values is not None:\n            self.values = values\n\n    def get_children(self):\n        yield from self.values\n\n    def op_precedence(self) -> int:\n        return OP_PRECEDENCE[self.op]\n\n    @decorators.raise_if_nothing_inferred\n    @decorators.path_wrapper\n    def _infer(\n        self: nodes.BoolOp, context: InferenceContext | None = None, **kwargs: Any\n    ) -> Generator[InferenceResult, None, InferenceErrorInfo | None]:\n        \"\"\"Infer a boolean operation (and / or / not).\n\n        The function will calculate the boolean operation\n        for all pairs generated through inference for each component\n        node.\n        \"\"\"\n        values = self.values\n===== FILE LENGTH =====\n5555 /testbed/astroid/nodes/node_classes.py\n===== CLASS UnaryOp =====\n/testbed/astroid/nodes/node_classes.py:1457:class BinOp(_base_nodes.OperatorNode):\n/testbed/astroid/nodes/node_classes.py:1527:    def op_precedence(self) -> int:\n/testbed/astroid/nodes/node_classes.py:1572:class BoolOp(NodeNG):\n/testbed/astroid/nodes/node_classes.py:1636:    def op_precedence(self) -> int:\n/testbed/astroid/nodes/node_classes.py:1809:class Compare(NodeNG):\n/testbed/astroid/nodes/node_classes.py:4239:class UnaryOp(_base_nodes.OperatorNode):\n/testbed/astroid/nodes/node_classes.py:4302:    def op_precedence(self) -> int:\n/testbed/astroid/nodes/node_classes.py:1457:class BinOp(_base_nodes.OperatorNode):\n/testbed/astroid/nodes/node_classes.py:1527:    def op_precedence(self) -> int:\n/testbed/astroid/nodes/node_classes.py:1572:class BoolOp(NodeNG):\n/testbed/astroid/nodes/node_classes.py:1636:    def op_precedence(self) -> int:\n/testbed/astroid/nodes/node_classes.py:1809:class Compare(NodeNG):\n/testbed/astroid/nodes/node_classes.py:4239:class UnaryOp(_base_nodes.OperatorNode):\n/testbed/astroid/nodes/node_classes.py:4302:    def op_precedence(self) -> int:\n/testbed/astroid/nodes/node_ng.py:782:    def op_precedence(self) -> int:\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-830f38e1-f0dc-48dd-a886-50f44a3eccc0-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/astroid/nodes/node_classes.py | sed -n '4239,4310p'; echo \"===== GIT LOG =====\"; cd /testbed && git log --oneline -20; echo \"===== CHANGELOG unary =====\"; grep -n -i \"unary\\|precedence\\|not\" /testbed/ChangeLog | head -40; echo \"===== TESTS =====\"; grep -rn \"op_precedence\\|UnaryOp\" --include=\"*.py\" /testbed/tests | head -50"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-830f38e1-f0dc-48dd-a886-50f44a3eccc0-5",
+            "content": " int:\n        if self.op == \"not\":\n            return OP_PRECEDENCE[self.op]\n\n        return super().op_precedence()\n\n    def _infer_unaryop(\n        self: nodes.UnaryOp, context: InferenceContext | None = None, **kwargs: Any\n    ) -> Generator[\n===== GIT LOG =====\n2f7df1f Initial commit\n===== CHANGELOG unary =====\n29:* Fix precedence of `path` arg in `modpath_from_file_with_callback` to be higher than `sys.path`\n53:* Fix bug with ``manager.clear_cache()`` not fully clearing cache.\n70:* Add annotation-only instance attributes to attrs classes to fix `no-member` false positives.\n103:* Add the ``__annotations__`` attribute to the ``ClassDef`` object model.\n118:* Avoid reporting unary/binary op type errors when inference is ambiguous.\n177:  This fixes a problem that ``six.moves`` brain was not effective if ``six.moves``\n302:* Remove the shims for ``OperationError``, ``BinaryOperationError``, and ``UnaryOperationError``\n333:  This is a breaking change but considered a bug fix as the nodes did not share the same\n334:  API and were not interchangeable.\n349:  ``None``. Passing ``None`` again will not create a behaviour change.\n398:  - ``nodes.UnaryOp``\n525:  Most notably this addresses pylint-dev/pylint#7433.\n620:* ``Uninferable`` now has the type ``UninferableBase``. This is to facilitate correctly type annotating\n697:* Fix overwritten attributes in inherited dataclasses not being ordered correctly.\n785:* Prevent returning an empty list for ``ClassDef.slots()`` when the mro list contains one class & it is not ``object``.\n814:* Fix inferring attributes with empty annotation assignments if parent\n935:* Fix false positive with inference of type-annotated Enum classes.\n939:* Fix crash with inference of type-annotated Enum classes where the member has no value.\n952:* Don't add dataclass fields annotated with ``KW_ONLY`` to the list of fields.\n1052:* Fixed pylint ``not-callable`` false positive with nested-tuple assignment in a for-loop.\n1196:  Note: ``doc_node`` is an (optional) ``nodes.Const`` whereas ``doc`` was an (optional) ``str``.\n1200:  Note: ``doc_node`` is an (optional) ``nodes.Const`` whereas ``doc`` was an (optional) ``str``.\n1230:* Fixed builtin inference on `property` calls not calling the `postinit` of the new node, which\n1295:  not recognized or imported correctly.\n1304:  was not accessible anymore.\n1318:  code being available on a filesystem.  Otherwise the source cannot\n1336:* Fix ``Module`` nodes not having a ``col_offset``, ``end_lineno``, and ``end_col_offset``\n1347:  This allows the dataclasses brain to recognize dataclasses annotated by marshmallow_dataclass.\n1473:* Astroid does not trigger it's own deprecation warning anymore.\n1488:  module has not been explicitly authorized to be imported\" of version 2.7.3)\n1505:    * ``op`` (``str``) for ``AugAssign``, ``BinOp``, ``BoolOp``, ``UnaryOp``\n1527:* The transforms related to a module are applied only if this module has not been explicitly authorized to be imported\n1528:  (i.e is not in AstroidManager.extension_package_whitelist). Solves the following issues if numpy is authorized to be imported\n1571:* ``astroid.const.BUILTINS`` and ``astroid.bases.BUILTINS`` are not used internally anymore\n1641:* Fix a crash when there would be a 'TypeError object does not support\n1718:* ``setuptools_scm`` has been removed and replaced by ``tbump`` in order to not\n1789:* Do not set instance attributes on builtin object()\n1831:* Astroid's tags are now the standard form ``vX.Y.Z`` and not ``astroid-X.Y.Z`` anymore.\n1854:  not packaged anymore - reducing the size of the package greatly.\n1886:* Add inference tip for typing.Generic and typing.Annotated with ``__class_getitem__``\n===== TESTS =====\n/testbed/tests/test_inference.py:2835:            return iter([util.BadUnaryOperationMessage(None, None, \"msg\"), Uninferable])\n/testbed/tests/test_nodes_lineno.py:353:        \"\"\"BinOp, BoolOp, UnaryOp, Compare.\"\"\"\n/testbed/tests/test_nodes_lineno.py:388:        assert isinstance(o3, nodes.UnaryOp)\n"
+          }
+        ]
+      }
+    }
+  ]
+}

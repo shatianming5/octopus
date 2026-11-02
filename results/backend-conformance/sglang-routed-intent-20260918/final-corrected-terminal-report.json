@@ -1,0 +1,88 @@
+{
+  "schema": "routed-intent-native-functional-corrected-terminal-v1",
+  "scope_id": "routed-intent-native-work-functional-component-20260918",
+  "status": "native_functional_pass",
+  "wrapper_status": "failed",
+  "wrapper_failure_cause": "The supervisor asserted result.status == 'passed', but the accepted selector terminal status is 'native_functional_pass'. No scientific check failed.",
+  "application_commit": "a577e40ca86097652d6412a43169eda803f228a1",
+  "native_commit": "0bcd822377da7b5718e674eaf9c870d349424dd1",
+  "native_patch_sha256": "0adcbbafef08002e6e1305cc2f2cb7bfc47abbca90c929b85c9ada6a11da2c0f",
+  "gpu": {
+    "phase_start_epoch": 1789701428.1931579,
+    "used_wall_seconds": 109.49471092224121,
+    "cap_seconds": 1200,
+    "unused_seconds": 1090.5052890777588,
+    "unused_is_new_authority": false,
+    "indices": [2, 3],
+    "uuids": [
+      "GPU-7bb7435e-7d3d-6281-60da-f7a828eb90a4",
+      "GPU-34e0dffd-468d-d82f-8198-91cfff054ed7"
+    ]
+  },
+  "first_engine_identity": {
+    "worker_a": {
+      "worker_id": "926c28bc84224376a849adf9e8d7c4ab",
+      "worker_url": "http://127.0.0.1:30111",
+      "engine_pid": 2273536
+    },
+    "worker_b": {
+      "worker_id": "9576ee1d574d435fb94dba63443313bf",
+      "worker_url": "http://127.0.0.1:30112",
+      "engine_pid": 2273537
+    },
+    "model": "SWE-Gym/OpenHands-7B-Agent",
+    "weight_revision": "97054e70501d79c27499518af5ce613be6278bcb",
+    "tokenizer_revision": "c03e6d358207e414f1eca0bb1891e29f1db0e242",
+    "dtype": "bfloat16",
+    "namespace": "b8-routed-intent-20260918",
+    "native_work_protocol": 1,
+    "capabilities": {
+      "dynamic_intent": true,
+      "inline_intent": true,
+      "native_work_counters": true,
+      "prefix_reuse": true
+    }
+  },
+  "result": {
+    "normal_request_count": 5,
+    "completed_extend_tokens": 1092,
+    "completed_decode_tokens": 176,
+    "repeated_scheduled_tokens": 0,
+    "extra_generation_calls": 0,
+    "extra_choice_prefill_tokens": 0,
+    "root_l3_ready_tokens": 512,
+    "cached_tokens_after_reassignment": [512, 526],
+    "completed_checks": [
+      "normal_routed_inline_update_with_active_native_producer",
+      "identity_bound_native_l3_before_reassignment",
+      "actual_new_worker_with_canonical_state_and_ready_native_restore",
+      "native_first_scheduled_use_globally_consumes_once",
+      "consumer_binding_release_and_all_generation_calls_accounted",
+      "actual_scheduled_ranges_and_confirmed_batch_results_not_cached_token_estimates"
+    ]
+  },
+  "durable_paths": {
+    "remote_result": "/home/user/octopus-sglang-joint-138-20260918/results/joint-functional.json",
+    "remote_raw_terminal": "/home/user/octopus-sglang-joint-138-20260918/results/terminal-report.json",
+    "local_result": "/home/ubuntu/.copilot/session-state/75572aa8-2b9c-43ff-be23-abc92016243a/files/routed-intent-native-component/joint-functional.json",
+    "local_raw_terminal": "/home/ubuntu/.copilot/session-state/75572aa8-2b9c-43ff-be23-abc92016243a/files/routed-intent-native-component/raw-terminal-report.json"
+  },
+  "cleanup": {
+    "bridge_pids_stopped": [2273528, 2273530],
+    "engine_pids_stopped": [2273536, 2273537],
+    "gateway_pid_stopped": 2274303,
+    "selector_pid_stopped": 2274352,
+    "task_processes_remaining": 0,
+    "nvidia_compute_apps_remaining": 0,
+    "listeners_30110_to_30114_remaining": 0
+  },
+  "claim_boundaries": {
+    "b8_formal_pass": false,
+    "quality_or_performance_claim": false,
+    "b7_negative_result": "5c6c8eb",
+    "physical_network_bytes": null,
+    "physical_network_blocker": "File/Store acknowledgements are not NIC traffic; no isolated attributable transport/NIC observer was provisioned.",
+    "same_host_functional_validation": true,
+    "cross_physical_host_portability": "untested"
+  }
+}

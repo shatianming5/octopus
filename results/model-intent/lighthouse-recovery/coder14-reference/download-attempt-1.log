@@ -1,0 +1,57 @@
+Traceback (most recent call last):
+  File "/home/user/octopus-r2-20260913/runtime-python/lib/python3.12/urllib/request.py", line 1344, in do_open
+    h.request(req.get_method(), req.selector, req.data, headers,
+  File "/home/user/octopus-r2-20260913/runtime-python/lib/python3.12/http/client.py", line 1386, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+  File "/home/user/octopus-r2-20260913/runtime-python/lib/python3.12/http/client.py", line 1432, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+  File "/home/user/octopus-r2-20260913/runtime-python/lib/python3.12/http/client.py", line 1381, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/home/user/octopus-r2-20260913/runtime-python/lib/python3.12/http/client.py", line 1141, in _send_output
+    self.send(msg)
+  File "/home/user/octopus-r2-20260913/runtime-python/lib/python3.12/http/client.py", line 1085, in send
+    self.connect()
+  File "/home/user/octopus-r2-20260913/runtime-python/lib/python3.12/http/client.py", line 1527, in connect
+    self.sock = self._context.wrap_socket(self.sock,
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-r2-20260913/runtime-python/lib/python3.12/ssl.py", line 457, in wrap_socket
+    return self.sslsocket_class._create(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-r2-20260913/runtime-python/lib/python3.12/ssl.py", line 1053, in _create
+    self.do_handshake()
+  File "/home/user/octopus-r2-20260913/runtime-python/lib/python3.12/ssl.py", line 1331, in do_handshake
+    self._sslobj.do_handshake()
+ConnectionResetError: [Errno 104] Connection reset by peer
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/mnt/ssd1/user/octopus-qwen-coder14-reference-v1-20260916/acquire.py", line 341, in <module>
+    main()
+  File "/mnt/ssd1/user/octopus-qwen-coder14-reference-v1-20260916/acquire.py", line 240, in main
+    items, expected_bytes = fetch_metadata()
+                            ^^^^^^^^^^^^^^^^
+  File "/mnt/ssd1/user/octopus-qwen-coder14-reference-v1-20260916/acquire.py", line 90, in fetch_metadata
+    metadata = request_json(url)
+               ^^^^^^^^^^^^^^^^^
+  File "/mnt/ssd1/user/octopus-qwen-coder14-reference-v1-20260916/acquire.py", line 48, in request_json
+    with urllib.request.urlopen(request, timeout=120) as response:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-r2-20260913/runtime-python/lib/python3.12/urllib/request.py", line 215, in urlopen
+    return opener.open(url, data, timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-r2-20260913/runtime-python/lib/python3.12/urllib/request.py", line 515, in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-r2-20260913/runtime-python/lib/python3.12/urllib/request.py", line 532, in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-r2-20260913/runtime-python/lib/python3.12/urllib/request.py", line 492, in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+  File "/home/user/octopus-r2-20260913/runtime-python/lib/python3.12/urllib/request.py", line 1392, in https_open
+    return self.do_open(http.client.HTTPSConnection, req,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-r2-20260913/runtime-python/lib/python3.12/urllib/request.py", line 1347, in do_open
+    raise URLError(err)
+urllib.error.URLError: <urlopen error [Errno 104] Connection reset by peer>

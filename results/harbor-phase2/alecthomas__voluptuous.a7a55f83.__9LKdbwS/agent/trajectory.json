@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "alecthomas__voluptuous.a7a55f83.__9LKdbwS__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# Object validation fails for named tuples\n\n```python\nfrom collections import namedtuple\nfrom voluptuous import Schema\n\nPerson = namedtuple('Person', ['name', 'age'])\nperson = Person('John', 30)\n\nschema = Schema({\n    'name': str,\n    'age': int\n})\n\n# This fails after the recent changes\nschema(person)\n```\n\nI found this issue after updating to the latest version. The schema validation used to work with named tuples, but now it fails.\n\nThe error I'm getting is:\n```\nvoluptuous.error.MultipleInvalid: required key not provided @ data['name']\n```\n\nIt seems the code is no longer properly handling named tuples. The `_asdict()` method that namedtuples have is not being used anymore."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository and reproduce the named-tuple validation failure.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-3536894a-0ee8-46af-b605-6acf6357e571-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -50 && cat /testbed/README.md 2>/dev/null | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-3536894a-0ee8-46af-b605-6acf6357e571-0",
+            "content": "\n-rw-r--r-- 1 root root   358 Jul 12  2025 pyproject.toml\n-rw-r--r-- 1 root root   281 Jul 12  2025 renovate.json5\n-rw-r--r-- 1 root root  1213 Jul 12  2025 setup.py\n-rw-r--r-- 1 root root   749 Jul 12  2025 tox.ini\ndrwxr-xr-x 4 root root  4096 Jul 12  2025 voluptuous\ndrwxr-xr-x 2 root root  4096 Jul 12  2025 voluptuous.egg-info\n/testbed/setup.py\n/testbed/voluptuous/__init__.py\n/testbed/voluptuous/validators.py\n/testbed/voluptuous/tests/__init__.py\n/testbed/voluptuous/tests/tests.py\n/testbed/voluptuous/schema_builder.py\n/testbed/voluptuous/humanize.py\n/testbed/voluptuous/error.py\n/testbed/voluptuous/util.py\n\n# CONTRIBUTIONS ONLY\n\n**What does this mean?** I do not have time to fix issues myself. The only way fixes or new features will be added is by people submitting PRs.\n\n**Current status:** Voluptuous is largely feature stable. There hasn't been a need to add new features in a while, but there are some bugs that should be fixed.\n\n**Why?** I no longer use Voluptuous personally (in fact I no longer regularly write Python code). Rather than leave the project in a limbo of people filing issues and wondering why they're not being worked on, I believe this notice will more clearly set expectations.\n\n# Voluptuous is a Python data validation library\n\n[![image](https://img.shields.io/pypi/v/voluptuous.svg)](https://python.org/pypi/voluptuous)\n[![image](https://img.shields.io/pypi/l/voluptuous.svg)](https://python.org/pypi/voluptuous)\n[![image](https://img.shields.io/pypi/pyversions/voluptuous.svg)](https://python.org/pypi/voluptuous)\n[![Test status](https://github.com/alecthomas/voluptuous/actions/workflows/tests.yml/badge.svg)](https://github.com/alecthomas/voluptuous/actions/workflows/tests.yml)\n[![Coverage status](https://coveralls.io/repos/github/alecthomas/voluptuous/badge.svg?branch=master)](https://coveralls.io/github/alecthomas/voluptuous?branch=master)\n[![Gitter chat](https://badges.gitter.im/alecthomas.svg)](https://gitter.im/alecthomas/Lobby)\n\nVoluptuous, *despite* the name, is a Python data validation library. It\nis primarily intended for validating data coming into Python as JSON,\nYAML, etc.\n\nIt has three goals:\n\n1. Simplicity.\n2. Support for complex data structures.\n3. Provide useful error messages.\n\n## Contact\n\nVoluptuous now has a mailing list! Send a mail to\n[<voluptuous@librelist.com>](mailto:voluptuous@librelist.com) to subscribe. Instructions\nwill follow.\n\nYou can also contact me directly via [email](mailto:alec@swapoff.org) or\n[Twitter](https://twitter.com/alecthomas).\n\nTo file a bug, create a [new issue](https://github.com/alecthomas/voluptuous/issues/new) on GitHub with a short example of how to replicate the issue.\n\n## Documentation\n\nThe documentation is provided [here](http://alecthomas.github.io/voluptuous/).\n\n## Contribution to Documentation\n\nDocumentation is built using `Sphinx`. You can install it by\n\n    pip install -r requirements.txt\n\nFor building `sphinx-apidoc` from scratch you need to set PYTHONPATH to `voluptuous/voluptuous` repository.\n\nThe documentation is provided [here.](http://alecthomas.github.io/voluptuous/)\n\n## Changelog\n\nSee [CHANGELOG.md](https://github.com/alecthomas/voluptuous/blob/master/CHANGELOG.md).\n\n## Why use Voluptuous over another validation library?\n\n**Validators are simple callables:**\nNo need to subclass anything, just use a function.\n\n**Errors are simple exceptions:**\nA validator can just `raise Invalid(msg)` and expect the user to get\nuseful messages.\n\n**Schemas are basic Python data structures:**\nShould your data be a dictionary of integer keys to strings?\n`{int: str}` does what you expect. List of integers, floats or\nstrings? `[int, float, str]`.\n\n**Designed from the ground up for validating more than just forms:**\nNested data structures are treated in the same way as any other\ntype. Need a list of dictionaries? `[{}]`\n\n**Consistency:**\nTypes in the schema are checked as types. Values are compared as\nvalues. Callables are called to validate. Simple.\n\n## Show me an example\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-0dd63427-3adc-43f1-b0d2-af347f304c76-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cd /testbed && git log --oneline -20 && echo \"====\" && git status && echo \"====\" && ls voluptuous/ && echo \"==== schema_builder.py length ====\" && wc -l voluptuous/schema_builder.py voluptuous/validators.py voluptuous/tests/tests.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-0dd63427-3adc-43f1-b0d2-af347f304c76-1",
+            "content": "b8b0627 Initial commit\n====\nOn branch main\nYour branch is up to date with 'origin/main'.\n\nUntracked files:\n  (use \"git add <file>...\" to include in what will be committed)\n\t.gitkeep\n\nnothing added to commit but untracked files present (use \"git add\" to track)\n====\n__init__.py\n__pycache__\nerror.py\nhumanize.py\npy.typed\nschema_builder.py\ntests\nutil.py\nvalidators.py\n==== schema_builder.py length ====\n  1315 voluptuous/schema_builder.py\n  1250 voluptuous/validators.py\n  1775 voluptuous/tests/tests.py\n  4340 total\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the schema builder and tests to see how named tuples are handled.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-0e32bd86-abc4-4cc4-b39e-1927b38e6857-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cd /testbed && rg -n \"namedtuple|_asdict|Mapping|collections\" voluptuous/ --type py | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-0e32bd86-abc4-4cc4-b39e-1927b38e6857-2",
+            "content": "bash: line 1: rg: command not found\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-966a5e85-3a61-46ae-91c0-77216f3429d6-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cd /testbed && grep -n \"namedtuple\\|_asdict\\|Mapping\\|collections\" voluptuous/*.py voluptuous/tests/*.py | head -100"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-966a5e85-3a61-46ae-91c0-77216f3429d6-3",
+            "content": "voluptuous/schema_builder.py:4:import collections\nvoluptuous/schema_builder.py:10:from collections.abc import Generator\nvoluptuous/schema_builder.py:25:def _isnamedtuple(obj):\nvoluptuous/schema_builder.py:82:    collections.abc.Mapping,\nvoluptuous/schema_builder.py:221:        if isinstance(schema, collections.abc.Mapping):\nvoluptuous/schema_builder.py:603:            if _isnamedtuple(data):\nvoluptuous/schema_builder.py:859:        if hasattr(obj, '_asdict'):\nvoluptuous/schema_builder.py:860:            d = obj._asdict()\nvoluptuous/tests/tests.py:2:import collections\nvoluptuous/tests/tests.py:1036:    NT = collections.namedtuple('NT', ['a', 'b'])\nvoluptuous/tests/tests.py:1065:    if not hasattr(collections, 'OrderedDict'):\nvoluptuous/tests/tests.py:1066:        # collections.OrderedDict was added in Python2.7; only run if present\nvoluptuous/tests/tests.py:1069:    data = collections.OrderedDict(\nvoluptuous/tests/tests.py:1081:    assert isinstance(out, collections.OrderedDict), 'Collection is no longer ordered'\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-f4e3adee-cbd1-4790-a502-bd717282956d-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cd /testbed && sed -n '1,120p' voluptuous/schema_builder.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-f4e3adee-cbd1-4790-a502-bd717282956d-4",
+            "content": "# fmt: off\nfrom __future__ import annotations\n\nimport collections\nimport inspect\nimport itertools\nimport re\nimport sys\nimport typing\nfrom collections.abc import Generator\nfrom contextlib import contextmanager\nfrom functools import cache, wraps\n\nfrom voluptuous import error as er\nfrom voluptuous.error import Error\n\n# fmt: on\n\n# options for extra keys\nPREVENT_EXTRA = 0  # any extra key not in schema will raise an error\nALLOW_EXTRA = 1  # extra keys not in schema will be included in output\nREMOVE_EXTRA = 2  # extra keys not in schema will be excluded from output\n\n\ndef _isnamedtuple(obj):\n    return isinstance(obj, tuple) and hasattr(obj, '_fields')\n\n\nclass Undefined(object):\n    def __nonzero__(self):\n        return False\n\n    def __repr__(self):\n        return '...'\n\n\nUNDEFINED = Undefined()\n\n\ndef Self() -> None:\n    raise er.SchemaError('\"Self\" should never be called')\n\n\nDefaultFactory = typing.Union[Undefined, typing.Callable[[], typing.Any]]\n\n\ndef default_factory(value) -> DefaultFactory:\n    if value is UNDEFINED or callable(value):\n        return value\n    return lambda: value\n\n\n@contextmanager\ndef raises(\n    exc, msg: typing.Optional[str] = None, regex: typing.Optional[re.Pattern] = None\n) -> Generator[None, None, None]:\n    try:\n        yield\n    except exc as e:\n        if msg is not None:\n            assert str(e) == msg, '%r != %r' % (str(e), msg)\n        if regex is not None:\n            assert re.search(regex, str(e)), '%r does not match %r' % (str(e), regex)\n    else:\n        raise AssertionError(f\"Did not raise exception {exc.__name__}\")\n\n\ndef Extra(_) -> None:\n    \"\"\"Allow keys in the data that are not present in the schema.\"\"\"\n    raise er.SchemaError('\"Extra\" should never be called')\n\n\n# As extra() is never called there's no way to catch references to the\n# deprecated object, so we just leave an alias here instead.\nextra = Extra\n\nprimitive_types = (bool, bytes, int, str, float, complex)\n\n# fmt: off\nSchemable = typing.Union[\n    'Schema', 'Object',\n    collections.abc.Mapping,\n    list, tuple, frozenset, set,\n    bool, bytes, int, str, float, complex,\n    type, object, dict, None, typing.Callable\n]\n# fmt: on\n\n\nclass Schema(object):\n    \"\"\"A validation schema.\n\n    The schema is a Python tree-like structure where nodes are pattern\n    matched against corresponding trees of values.\n\n    Nodes can be values, in which case a direct comparison is used, types,\n    in which case an isinstance() check is performed, or callables, which will\n    validate and optionally convert the value.\n\n    We can equate schemas also.\n\n    For Example:\n\n            >>> v = Schema({Required('a'): str})\n            >>> v1 = Schema({Required('a'): str})\n            >>> v2 = Schema({Required('b'): str})\n            >>> assert v == v1\n            >>> assert v != v2\n\n    \"\"\"\n\n    _extra_to_name = {\n        REMOVE_EXTRA: 'REMOVE_EXTRA',\n        ALLOW_EXTRA: 'ALLOW_EXTRA',\n        PREVENT_EXTRA: 'PREVENT_EXTRA',\n    }\n\n    def __init__(\n        self, schema: Schemable, required: bool = False, extra: int = PREVENT_EXTRA\n    ) -> None:\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-9ac690a6-6a25-4d7d-a31f-61cddb7dbce8-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cd /testbed && sed -n '200,280p' voluptuous/schema_builder.py && echo \"========\" && sed -n '560,680p' voluptuous/schema_builder.py && echo \"========\" && sed -n '820,900p' voluptuous/schema_builder.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-9ac690a6-6a25-4d7d-a31f-61cddb7dbce8-5",
+            "content": "d int @ data[0]'):\n        ...   validator([3.5])\n        >>> validator([1])\n        [1]\n        \"\"\"\n        return self._compile_sequence(schema, list)\n\n    def _compile_set(self, schema):\n        \"\"\"Validate a set.\n\n        A set is an unordered collection of unique elements.\n\n        >>> validator = Schema({int})\n        >>> validator(set([42])) == set([42])\n        True\n        >>> with raises(er.Invalid, 'expected a set'):\n        ...   validator(42)\n        >>> with raises(er.MultipleInvalid, 'invalid value in set'):\n        ...   validator(set(['a']))\n        \"\"\"\n        type_ = type(schema)\n        type_name = type_.__name__\n\n        def validate_set(path, data):\n            if not isinstance(data, type_):\n                raise er.Invalid('expected a %s' % type_name, path)\n\n            _compiled = [self._compile(s) for s in schema]\n            errors = []\n            for value in data:\n                for validate in _compiled:\n                    try:\n                        validate(path, value)\n                        break\n                    except er.Invalid:\n                        pass\n                else:\n                    invalid = er.Invalid('invalid value in %s' % type_name, path)\n                    errors.append(invalid)\n\n            if errors:\n                raise er.MultipleInvalid(errors)\n\n            return data\n\n        return validate_set\n\n    def extend(\n========\n        (1, is_remove),  # Remove highest priority after values\n        (2, is_marker),  # then other Markers\n        (4, is_type),  # types/classes lowest before Extra\n        (3, is_callable),  # callables after markers\n        (5, is_extra),  # Extra lowest priority\n    ]\n\n    def item_priority(item_):\n        key_ = item_[0]\n        for i, check_ in priority:\n            if check_(key_):\n                return i\n        # values have highest priorities\n        return 0\n\n    return item_priority\n\n\n_sort_item = _compile_itemsort()\n\n\ndef _iterate_mapping_candidates(schema):\n    \"\"\"Iterate over schema in a meaningful order.\"\"\"\n    # Without this, Extra might appear first in the iterator, and fail to\n    # validate a key even though it's a Required that has its own validation,\n    # generating a false positive.\n    return sorted(schema.items(), key=_sort_item)\n\n\ndef _iterate_object(obj):\n    \"\"\"Return iterator over object attributes. Respect objects with\n    defined __slots__.\n\n    \"\"\"\n    d = {}\n    try:\n        d = vars(obj)\n    except TypeError:\n        # maybe we have named tuple here?\n        if hasattr(obj, '_asdict'):\n            d = obj._asdict()\n    for item in d.items():\n        yield item\n    try:\n        slots = obj.__slots__\n    except AttributeError:\n        pass\n    else:\n        for key in slots:\n            if key != '__dict__':\n                yield (key, getattr(obj, key))\n\n\nclass Msg(object):\n    \"\"\"Report a user-friendly message if a schema fails to validate.\n\n    >>> validate = Schema(\n    ...   Msg(['one', 'two', int],\n    ...       'should be one of \"one\", \"two\" or an integer'))\n    >>> with raises(er.MultipleInvalid, 'should be one of \"one\", \"two\" or an integer'):\n    ...   validate(['three'])\n\n    Messages are only applied to invalid direct descendants of the schema:\n\n    >>> validate = Schema(Msg([['one', 'two', int]], 'not okay!'))\n    >>> with raises(er.MultipleInvalid, 'expected int @ data[0][0]'):\n    ...   validate([['three']])\n\n    The type which is thrown can be overridden but needs to be a subclass of Invalid\n\n    >>> with raises(er.SchemaError, 'Msg can only use subclases of Invalid as custom class'):\n    ...   validate = Schema(Msg([int], 'should be int', cls=KeyError))\n\n    If you do use a subclass of Invalid, that error will be thrown (wrapped in a MultipleInvalid)\n\n    >>> validate = Schema(Msg([['one', 'two', int]], 'not okay!', cls=er.RangeInvalid))\n    >>> try:\n    ...  validate(['three'])\n    ... except er.MultipleInvalid as e:\n    ...   assert isinstance(e.errors[0], er.RangeInvalid)\n    \"\"\"\n"
+          }
+        ]
+      }
+    }
+  ]
+}

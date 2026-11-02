@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "django-money__django-money.835c1__cSmtq3y__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# Division operation in Money class doesn't properly handle non-Money objects\n\n## Description\n\nI've discovered a bug in the `__truediv__` method of the `Money` class. When dividing a `Money` object by a non-`Money` object, an `AttributeError` is raised.\n\nThe issue appears to be in the `__truediv__` method where attributes are being copied regardless of the result type. The current implementation only copies attributes when the result is an instance of the same class, but this check was removed in a recent change.\n\n## Steps to Reproduce\n\n```python\nfrom djmoney.money import Money\nfrom decimal import Decimal\n\n# Create a Money object\nmoney = Money('10.00', 'USD')\n\n# Try to divide by a Decimal\nresult = money / Decimal('2.0')  # This raises an AttributeError\n```\n\n## Expected Results\n\nThe division should return a new `Money` object with the correct amount (5.00 USD in this example).\n\n## Actual Results\n\n```\nAttributeError: 'decimal.Decimal' object has no attribute '_copy_attributes'\n```\n\nThe error occurs because the code is trying to copy attributes to the result object, but when dividing by a non-Money object like a Decimal, the result is a Decimal which doesn't have the required attributes.\n\n## Environment\n- Django-money version: latest\n- Python version: 3.10\n- Django version: 5.1.6\n\nThis bug prevents basic arithmetic operations with Money objects when the result isn't another Money object.\n\n<END WRITING>"
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository and locate the Money class `__truediv__` implementation.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-3f8f7915-1d6a-42a4-8bbb-c3f6b30990bb-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -100"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-3f8f7915-1d6a-42a4-8bbb-c3f6b30990bb-0",
+            "content": "total 108\ndrwxr-xr-x 1 root root  4096 Sep 22 16:42 .\ndrwxr-xr-x 1 root root  4096 Sep 22 16:42 ..\n-rw-r--r-- 1 root root   106 Jul 12  2025 .coveragerc\ndrwxr-xr-x 8 root root  4096 Jul 12  2025 .git\ndrwxr-xr-x 2 root root  4096 Jul 12  2025 .github\n-rw-r--r-- 1 root root   310 Jul 12  2025 .gitignore\n-rw-rw-r-- 1 1005 1005     0 Sep 22 15:44 .gitkeep\n-rw-r--r-- 1 root root  1456 Jul 12  2025 .pre-commit-config.yaml\n-rw-r--r-- 1 root root   571 Jul 12  2025 .readthedocs.yaml\n-rw-r--r-- 1 root root  1432 Jul 12  2025 CONTRIBUTING.rst\n-rw-r--r-- 1 root root  1755 Jul 12  2025 LICENSE.txt\n-rw-r--r-- 1 root root    87 Jul 12  2025 MANIFEST.in\n-rw-r--r-- 1 root root  1214 Jul 12  2025 Makefile\n-rw-r--r-- 1 root root 16572 Jul 12  2025 README.rst\ndrwxr-xr-x 2 root root  4096 Jul 12  2025 django_money.egg-info\ndrwxr-xr-x 6 root root  4096 Jul 12  2025 djmoney\ndrwxr-xr-x 3 root root  4096 Jul 12  2025 docs\n-rw-r--r-- 1 root root   226 Jul 12  2025 mypy.ini\n-rw-r--r-- 1 root root   158 Jul 12  2025 pyproject.toml\n-rw-r--r-- 1 root root   234 Jul 12  2025 pytest.ini\n-rw-r--r-- 1 root root   528 Jul 12  2025 setup.cfg\n-rw-r--r-- 1 root root  2287 Jul 12  2025 setup.py\ndrwxr-xr-x 5 root root  4096 Jul 12  2025 tests\n-rw-r--r-- 1 root root  1410 Jul 12  2025 tox.ini\n/testbed/djmoney/contrib/django_rest_framework/__init__.py\n/testbed/djmoney/contrib/django_rest_framework/fields.py\n/testbed/djmoney/contrib/__init__.py\n/testbed/djmoney/contrib/exchange/exceptions.py\n/testbed/djmoney/contrib/exchange/__init__.py\n/testbed/djmoney/contrib/exchange/management/__init__.py\n/testbed/djmoney/contrib/exchange/management/base.py\n/testbed/djmoney/contrib/exchange/management/commands/__init__.py\n/testbed/djmoney/contrib/exchange/management/commands/update_rates.py\n/testbed/djmoney/contrib/exchange/management/commands/clear_rates.py\n/testbed/djmoney/contrib/exchange/migrations/__init__.py\n/testbed/djmoney/contrib/exchange/migrations/0001_initial.py\n/testbed/djmoney/contrib/exchange/backends/__init__.py\n/testbed/djmoney/contrib/exchange/backends/fixer.py\n/testbed/djmoney/contrib/exchange/backends/openexchangerates.py\n/testbed/djmoney/contrib/exchange/backends/base.py\n/testbed/djmoney/contrib/exchange/admin.py\n/testbed/djmoney/contrib/exchange/models.py\n/testbed/djmoney/serializers.py\n/testbed/djmoney/__init__.py\n/testbed/djmoney/templatetags/djmoney.py\n/testbed/djmoney/templatetags/__init__.py\n/testbed/djmoney/models/__init__.py\n/testbed/djmoney/models/validators.py\n/testbed/djmoney/models/fields.py\n/testbed/djmoney/models/managers.py\n/testbed/djmoney/money.py\n/testbed/djmoney/utils.py\n/testbed/djmoney/forms/__init__.py\n/testbed/djmoney/forms/fields.py\n/testbed/djmoney/forms/widgets.py\n/testbed/djmoney/settings.py\n/testbed/djmoney/_compat.py\n/testbed/djmoney/apps.py\n/testbed/djmoney/admin.py\n/testbed/tests/test_models.py\n/testbed/tests/settings_reversion.py\n/testbed/tests/contrib/__init__.py\n/testbed/tests/contrib/test_django_rest_framework.py\n/testbed/tests/contrib/exchange/test_backends.py\n/testbed/tests/contrib/exchange/test_model.py\n/testbed/tests/contrib/exchange/__init__.py\n/testbed/tests/contrib/exchange/test_admin.py\n/testbed/tests/contrib/exchange/conftest.py\n/testbed/tests/contrib/exchange/test_commands.py\n/testbed/tests/test_serialization.py\n/testbed/tests/test_reversion.py\n/testbed/tests/__init__.py\n/testbed/tests/test_managers.py\n/testbed/tests/test_admin.py\n/testbed/tests/test_settings.py\n/testbed/tests/migrations/__init__.py\n/testbed/tests/migrations/helpers.py\n/testbed/tests/migrations/test_migrations.py\n/testbed/tests/conftest.py\n/testbed/tests/test_form.py\n/testbed/tests/settings.py\n/testbed/tests/testapp/forms.py\n/testbed/tests/testapp/__init__.py\n/testbed/tests/testapp/admin.py\n/testbed/tests/testapp/models.py\n/testbed/tests/test_tags.py\n/testbed/tests/test_money.py\n/testbed/setup.py\n/testbed/docs/conf.py\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-1f7cdcda-d3b1-4430-9dba-65b7082c9ecb-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/djmoney/money.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-1f7cdcda-d3b1-4430-9dba-65b7082c9ecb-1",
+            "content": "RuntimeError: Command timed out after 20 seconds"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-3e9f043b-9f13-4296-a84d-ffd861d91e1d-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "wc -l /testbed/djmoney/money.py && head -n 250 /testbed/djmoney/money.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-3e9f043b-9f13-4296-a84d-ffd861d91e1d-2",
+            "content": "for candidate in (self, source)\n            if getattr(candidate, \"decimal_places\", None) is not None\n        ]\n        if selection:\n            target.decimal_places = max(selection)\n\n    def __add__(self, other):\n        if isinstance(other, F):\n            return other.__radd__(self)\n        other = maybe_convert(other, self.currency)\n        result = super().__add__(other)\n        self._copy_attributes(other, result)\n        return result\n\n    def __sub__(self, other):\n        if isinstance(other, F):\n            return other.__rsub__(self)\n        other = maybe_convert(other, self.currency)\n        result = super().__sub__(other)\n        self._copy_attributes(other, result)\n        return result\n\n    def __mul__(self, other):\n        if isinstance(other, F):\n            return other.__rmul__(self)\n        result = super().__mul__(other)\n        self._copy_attributes(other, result)\n        return result\n\n    def __truediv__(self, other):\n        if isinstance(other, F):\n            return other.__rtruediv__(self)\n        result = super().__truediv__(other)\n        if isinstance(result, self.__class__):\n            self._copy_attributes(other, result)\n        return result\n\n    def __rtruediv__(self, other):\n        # Backported from py-moneyed, non released bug-fix\n        # https://github.com/py-moneyed/py-moneyed/blob/c518745dd9d7902781409daec1a05699799474dd/moneyed/classes.py#L217-L218\n        raise TypeError(\"Cannot divide non-Money by a Money instance.\")\n\n    @property\n    def is_localized(self):\n        if self.use_l10n is None:\n            # This definitely raises a warning in Django 4 - we want to ignore RemovedInDjango50Warning\n            # However, we cannot ignore this specific warning class as it doesn't exist in older\n            # Django versions\n            with warnings.catch_warnings():\n                warnings.filterwarnings(\"ignore\")\n                setting = getattr(settings, \"USE_L10N\", True)\n            return setting\n        return self.use_l10n\n\n    def __str__(self):\n        format_options = {\n            **MONEY_FORMAT,\n            **(self.format_options or {}),\n        }\n        locale = get_current_locale()\n        if locale:\n            format_options[\"locale\"] = locale\n        return moneyed.l10n.format_money(self, **format_options)\n\n    def __html__(self):\n        return mark_safe(avoid_wrapping(conditional_escape(str(self))))\n\n    def __round__(self, n=None):\n        amount = round(self.amount, n)\n        new = self.__class__(amount, self.currency)\n        self._copy_attributes(self, new)\n        return new\n\n    def round(self, ndigits=0):\n        new = super().round(ndigits)\n        self._copy_attributes(self, new)\n        return new\n\n    def __pos__(self):\n        new = super().__pos__()\n        self._copy_attributes(self, new)\n        return new\n\n    def __neg__(self):\n        new = super().__neg__()\n        self._copy_attributes(self, new)\n        return new\n\n    def __abs__(self):\n        new = super().__abs__()\n        self._copy_attributes(self, new)\n        return new\n\n    def __rmod__(self, other):\n        new = super().__rmod__(other)\n        self._copy_attributes(self, new)\n        return new\n\n    # DefaultMoney sets those synonym functions\n    # we overwrite the 'targets' so the wrong synonyms are called\n    # Example: we overwrite __add__; __radd__ calls __add__ on DefaultMoney...\n    __radd__ = __add__\n    __rmul__ = __mul__\n\n\ndef get_current_locale():\n    return translation.to_locale(\n        translation.get_language()\n        # get_language can return None starting from Django 1.8\n        or settings.LANGUAGE_CODE\n    )\n\n\ndef maybe_convert(value, currency):\n    \"\"\"\n    Converts other Money instances to the local currency if `AUTO_CONVERT_MONEY` is set to True.\n    \"\"\"\n    if getattr(settings, \"AUTO_CONVERT_MONEY\", False) and value.currency != currency:\n        from .contrib.exchange.models import convert_money\n\n        return convert_money(value, currency)\n    return value\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-45199f51-3722-4bdc-a1ce-9e1d38ed26bb-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '1,250p' /testbed/djmoney/money.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-45199f51-3722-4bdc-a1ce-9e1d38ed26bb-3",
+            "content": "for candidate in (self, source)\n            if getattr(candidate, \"decimal_places\", None) is not None\n        ]\n        if selection:\n            target.decimal_places = max(selection)\n\n    def __add__(self, other):\n        if isinstance(other, F):\n            return other.__radd__(self)\n        other = maybe_convert(other, self.currency)\n        result = super().__add__(other)\n        self._copy_attributes(other, result)\n        return result\n\n    def __sub__(self, other):\n        if isinstance(other, F):\n            return other.__rsub__(self)\n        other = maybe_convert(other, self.currency)\n        result = super().__sub__(other)\n        self._copy_attributes(other, result)\n        return result\n\n    def __mul__(self, other):\n        if isinstance(other, F):\n            return other.__rmul__(self)\n        result = super().__mul__(other)\n        self._copy_attributes(other, result)\n        return result\n\n    def __truediv__(self, other):\n        if isinstance(other, F):\n            return other.__rtruediv__(self)\n        result = super().__truediv__(other)\n        if isinstance(result, self.__class__):\n            self._copy_attributes(other, result)\n        return result\n\n    def __rtruediv__(self, other):\n        # Backported from py-moneyed, non released bug-fix\n        # https://github.com/py-moneyed/py-moneyed/blob/c518745dd9d7902781409daec1a05699799474dd/moneyed/classes.py#L217-L218\n        raise TypeError(\"Cannot divide non-Money by a Money instance.\")\n\n    @property\n    def is_localized(self):\n        if self.use_l10n is None:\n            # This definitely raises a warning in Django 4 - we want to ignore RemovedInDjango50Warning\n            # However, we cannot ignore this specific warning class as it doesn't exist in older\n            # Django versions\n            with warnings.catch_warnings():\n                warnings.filterwarnings(\"ignore\")\n                setting = getattr(settings, \"USE_L10N\", True)\n            return setting\n        return self.use_l10n\n\n    def __str__(self):\n        format_options = {\n            **MONEY_FORMAT,\n            **(self.format_options or {}),\n        }\n        locale = get_current_locale()\n        if locale:\n            format_options[\"locale\"] = locale\n        return moneyed.l10n.format_money(self, **format_options)\n\n    def __html__(self):\n        return mark_safe(avoid_wrapping(conditional_escape(str(self))))\n\n    def __round__(self, n=None):\n        amount = round(self.amount, n)\n        new = self.__class__(amount, self.currency)\n        self._copy_attributes(self, new)\n        return new\n\n    def round(self, ndigits=0):\n        new = super().round(ndigits)\n        self._copy_attributes(self, new)\n        return new\n\n    def __pos__(self):\n        new = super().__pos__()\n        self._copy_attributes(self, new)\n        return new\n\n    def __neg__(self):\n        new = super().__neg__()\n        self._copy_attributes(self, new)\n        return new\n\n    def __abs__(self):\n        new = super().__abs__()\n        self._copy_attributes(self, new)\n        return new\n\n    def __rmod__(self, other):\n        new = super().__rmod__(other)\n        self._copy_attributes(self, new)\n        return new\n\n    # DefaultMoney sets those synonym functions\n    # we overwrite the 'targets' so the wrong synonyms are called\n    # Example: we overwrite __add__; __radd__ calls __add__ on DefaultMoney...\n    __radd__ = __add__\n    __rmul__ = __mul__\n\n\ndef get_current_locale():\n    return translation.to_locale(\n        translation.get_language()\n        # get_language can return None starting from Django 1.8\n        or settings.LANGUAGE_CODE\n    )\n\n\ndef maybe_convert(value, currency):\n    \"\"\"\n    Converts other Money instances to the local currency if `AUTO_CONVERT_MONEY` is set to True.\n    \"\"\"\n    if getattr(settings, \"AUTO_CONVERT_MONEY\", False) and value.currency != currency:\n        from .contrib.exchange.models import convert_money\n\n        return convert_money(value, currency)\n    return value\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-affa9750-d831-491b-a69d-4301b0a060cd-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "python3 -c \"\nwith open('/testbed/djmoney/money.py') as f:\n    print(f.read())\n\""
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-affa9750-d831-491b-a69d-4301b0a060cd-4",
+            "content": "or candidate in (self, source)\n            if getattr(candidate, \"decimal_places\", None) is not None\n        ]\n        if selection:\n            target.decimal_places = max(selection)\n\n    def __add__(self, other):\n        if isinstance(other, F):\n            return other.__radd__(self)\n        other = maybe_convert(other, self.currency)\n        result = super().__add__(other)\n        self._copy_attributes(other, result)\n        return result\n\n    def __sub__(self, other):\n        if isinstance(other, F):\n            return other.__rsub__(self)\n        other = maybe_convert(other, self.currency)\n        result = super().__sub__(other)\n        self._copy_attributes(other, result)\n        return result\n\n    def __mul__(self, other):\n        if isinstance(other, F):\n            return other.__rmul__(self)\n        result = super().__mul__(other)\n        self._copy_attributes(other, result)\n        return result\n\n    def __truediv__(self, other):\n        if isinstance(other, F):\n            return other.__rtruediv__(self)\n        result = super().__truediv__(other)\n        if isinstance(result, self.__class__):\n            self._copy_attributes(other, result)\n        return result\n\n    def __rtruediv__(self, other):\n        # Backported from py-moneyed, non released bug-fix\n        # https://github.com/py-moneyed/py-moneyed/blob/c518745dd9d7902781409daec1a05699799474dd/moneyed/classes.py#L217-L218\n        raise TypeError(\"Cannot divide non-Money by a Money instance.\")\n\n    @property\n    def is_localized(self):\n        if self.use_l10n is None:\n            # This definitely raises a warning in Django 4 - we want to ignore RemovedInDjango50Warning\n            # However, we cannot ignore this specific warning class as it doesn't exist in older\n            # Django versions\n            with warnings.catch_warnings():\n                warnings.filterwarnings(\"ignore\")\n                setting = getattr(settings, \"USE_L10N\", True)\n            return setting\n        return self.use_l10n\n\n    def __str__(self):\n        format_options = {\n            **MONEY_FORMAT,\n            **(self.format_options or {}),\n        }\n        locale = get_current_locale()\n        if locale:\n            format_options[\"locale\"] = locale\n        return moneyed.l10n.format_money(self, **format_options)\n\n    def __html__(self):\n        return mark_safe(avoid_wrapping(conditional_escape(str(self))))\n\n    def __round__(self, n=None):\n        amount = round(self.amount, n)\n        new = self.__class__(amount, self.currency)\n        self._copy_attributes(self, new)\n        return new\n\n    def round(self, ndigits=0):\n        new = super().round(ndigits)\n        self._copy_attributes(self, new)\n        return new\n\n    def __pos__(self):\n        new = super().__pos__()\n        self._copy_attributes(self, new)\n        return new\n\n    def __neg__(self):\n        new = super().__neg__()\n        self._copy_attributes(self, new)\n        return new\n\n    def __abs__(self):\n        new = super().__abs__()\n        self._copy_attributes(self, new)\n        return new\n\n    def __rmod__(self, other):\n        new = super().__rmod__(other)\n        self._copy_attributes(self, new)\n        return new\n\n    # DefaultMoney sets those synonym functions\n    # we overwrite the 'targets' so the wrong synonyms are called\n    # Example: we overwrite __add__; __radd__ calls __add__ on DefaultMoney...\n    __radd__ = __add__\n    __rmul__ = __mul__\n\n\ndef get_current_locale():\n    return translation.to_locale(\n        translation.get_language()\n        # get_language can return None starting from Django 1.8\n        or settings.LANGUAGE_CODE\n    )\n\n\ndef maybe_convert(value, currency):\n    \"\"\"\n    Converts other Money instances to the local currency if `AUTO_CONVERT_MONEY` is set to True.\n    \"\"\"\n    if getattr(settings, \"AUTO_CONVERT_MONEY\", False) and value.currency != currency:\n        from .contrib.exchange.models import convert_money\n\n        return convert_money(value, currency)\n    return value\n\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-961ee315-e9b2-488c-918c-318d2cfb7725-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cd /testbed && git log --oneline -20 && echo \"====\" && git log --all --oneline -30 && echo \"====\" && wc -c djmoney/money.py && python3 -c \"\nimport pathlib\np = pathlib.Path('/testbed/djmoney/money.py')\ndata = p.read_text()\nprint('LEN', len(data))\nprint(data[:4000])\n\""
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-961ee315-e9b2-488c-918c-318d2cfb7725-5",
+            "content": "mport warnings\nfrom types import MappingProxyType\n\nfrom django.conf import settings\nfrom django.db.models import F\nfrom django.utils import translation\nfrom django.utils.deconstruct import deconstructible\nfrom django.utils.html import avoid_wrapping, conditional_escape\nfrom django.utils.safestring import mark_safe\n\nimport moneyed.l10n\nfrom moneyed import Currency, Money as DefaultMoney\n\nfrom .settings import DECIMAL_PLACES, MONEY_FORMAT\n\n\n__all__ = [\"Money\", \"Currency\"]\n\n\n@deconstructible\nclass Money(DefaultMoney):\n    \"\"\"\n    Extends functionality of Money with Django-related features.\n    \"\"\"\n\n    use_l10n = None\n\n    def __init__(self, *args, format_options=None, **kwargs):\n        self.decimal_places = kwargs.pop(\"decimal_places\", DECIMAL_PLACES)\n        self.format_options = MappingProxyType(format_options) if format_options is not None else None\n        super().__init__(*args, **kwargs)\n\n    def _copy_attributes(self, source, target):\n        \"\"\"Copy attributes to the new `Money` instance.\n\n        This class stores extra bits of information about string formatting that the parent class doesn't have.\n        The problem is that the parent class creates new instances of `Money` without in some of its methods and\n        it does so without knowing about `django-money`-level attributes.\n        For this reason, when this class uses some methods of the parent class that have this behavior, the resulting\n        instances lose those attribute values.\n\n        When it comes to what number of decimal places to choose, we take the maximum number.\n        \"\"\"\n        selection = [\n            getattr(candidate, \"decimal_places\", None)\n            for candidate in (self, source)\n            if getattr(candidate, \"decimal_places\", None) is not None\n        ]\n        if selection:\n            target.decimal_places = max(selection)\n\n    def __add__(self, other):\n        if isinstance(other, F):\n            return other.__radd__(self)\n        other = maybe_convert(other, self.currency)\n        result = super().__add__(other)\n        self._copy_attributes(other, result)\n        return result\n\n    def __sub__(self, other):\n        if isinstance(other, F):\n            return other.__rsub__(self)\n        other = maybe_convert(other, self.currency)\n        result = super().__sub__(other)\n        self._copy_attributes(other, result)\n        return result\n\n    def __mul__(self, other):\n        if isinstance(other, F):\n            return other.__rmul__(self)\n        result = super().__mul__(other)\n        self._copy_attributes(other, result)\n        return result\n\n    def __truediv__(self, other):\n        if isinstance(other, F):\n            return other.__rtruediv__(self)\n        result = super().__truediv__(other)\n        if isinstance(result, self.__class__):\n            self._copy_attributes(other, result)\n        return result\n\n    def __rtruediv__(self, other):\n        # Backported from py-moneyed, non released bug-fix\n        # https://github.com/py-moneyed/py-moneyed/blob/c518745dd9d7902781409daec1a05699799474dd/moneyed/classes.py#L217-L218\n        raise TypeError(\"Cannot divide non-Money by a Money instance.\")\n\n    @property\n    def is_localized(self):\n        if self.use_l10n is None:\n            # This definitely raises a warning in Django 4 - we want to ignore RemovedInDjango50Warning\n            # However, we cannot ignore this specific warning class as it doesn't exist in older\n            # Django versions\n            with warnings.catch_warnings():\n                warnings.filterwarnings(\"ignore\")\n                setting = getattr(settings, \"USE_L10N\", True)\n            return setting\n        return self.use_l10n\n\n    def __str__(self):\n        format_options = {\n            **MONEY_FORMAT,\n            **(self.format_options or {}),\n        }\n        locale = get_current_locale()\n        if locale:\n            format_options[\"locale\"] = locale\n        return moneyed.l10n.format_money(self, **format_options)\n\n    def __html__(\n"
+          }
+        ]
+      }
+    }
+  ]
+}

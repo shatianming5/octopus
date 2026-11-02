@@ -1,0 +1,112 @@
+{
+  "result_id": "30b97351-e626-45d5-bcb0-4b1e71d07af4",
+  "scope_id": "m8-finalstep1-candidate-merge-original-and-heldout-quality-20260918",
+  "status": "completed",
+  "quality_outcome": "failed",
+  "claim": "actual final-step1 merge and two candidate episodes only; no baseline rerun, generalization, B7, or paper-readiness claim",
+  "source": {
+    "merge_and_quality_commit": "e3e1625d3814d27f3d1c656031b0b9f44ef339ab",
+    "candidate_module_sha256": "a23a18f6a7c181bf1df26178ebcc488e264d717934d0daa05f50435d65bb1318",
+    "pair_fix_pre_gpu_failures": 2,
+    "pair_fix_failure": "published bf5f pair() rewrote baseline model_path to candidate path and then rejected equality",
+    "pair_fix_gpu_or_model_cost": 0
+  },
+  "merge": {
+    "source_run": "/home/user/octopus-m8-pilot-20260917-c84g1/run-m8-onepass-c84g1",
+    "python": "/home/user/octopus-m8-pilot-20260917-c84g1/venv/bin/python",
+    "output_138": "/home/user/octopus-m8-pilot-20260917-c84g1/merged-candidate-cpu",
+    "elapsed_seconds": 24.078,
+    "cuda_hidden": true,
+    "base_revision": "97054e70501d79c27499518af5ce613be6278bcb",
+    "adapter_sha256": "ea0218b7a5bbdb6167dbf3e61156c841a79c7c5e7f0086c2187fa013b0d1b334",
+    "candidate_revision": "10f0224eeea5222849dec9f468f5ff3aef1811da07c199f50d87da6d6a541ac7",
+    "merge_receipt_local": "/home/ubuntu/.copilot/session-state/9982c699-cc5d-4682-a8db-1ecc8c706ac0/files/m8-quality/merge/candidate.json",
+    "merge_receipt_sha256": "13ae6e9851cc7842799667e2c4ab53049cbd7ea5d776e4018efd34f7d0750ca4",
+    "merged_files": {
+      "config.json": "8647deadb6451992515a1562adb5300170b13b6f68bfd3bc0c4d1873830444b7",
+      "model-00001-of-00004.safetensors": "0c228b277d6ab179ac9aa862e05f187560935dd111091cdfd1b81c4e6293dce0",
+      "model-00002-of-00004.safetensors": "510bfa82931628afc92e0a89cf1042129db2b98d955b814a1a856acd84863fc7",
+      "model-00003-of-00004.safetensors": "444607060db68e469fd449e7972ddfddc98ac22d8c797d93ab2b823162230559",
+      "model-00004-of-00004.safetensors": "d72145e0a175f17cc9871ea4e9bf2e2ea9bb434d0c1edf202cf4b458f3cbf8d7",
+      "model.safetensors.index.json": "8771e25621a9c9a9e2fe5ab96aaaacc27bdd3d2857d843f278ea5a6c4a276ae8"
+    }
+  },
+  "transfer": {
+    "route": "direct .138 10.0.1.138 to .134 198.51.100.134 SSH/rsync",
+    "destination": "/home/user/octopus-m8-candidate-quality-20260918/model/candidate-step1",
+    "elapsed_seconds": 148.023,
+    "bytes": 15231302414,
+    "files": 7,
+    "hash_verification": "all candidate receipt file hashes matched on .134"
+  },
+  "lighthouse_candidate": {
+    "gpu_index": 0,
+    "gpu_uuid": "GPU-f0e105ce-3965-e444-e4ae-0b8511bed250",
+    "episode_elapsed_seconds": 1055.333,
+    "solver_e2e_seconds": 915.8543431169965,
+    "model_requests": 100,
+    "actions": 100,
+    "stop_reason": "action_limit",
+    "model_patch_bytes": 0,
+    "original_red": false,
+    "same_assertions_green": false,
+    "mechanical_nonempty_candidate": false,
+    "official_resolved": false,
+    "official_grade_elapsed_seconds": 16.053,
+    "episode_path": "/home/ubuntu/.copilot/session-state/9982c699-cc5d-4682-a8db-1ecc8c706ac0/files/m8-quality/lighthouse-episode",
+    "episode_sha256": "d434b2f06bdf104224217af0ab6ff91e0aca060fccccdc11d8e48cab2c35e5d4",
+    "assessment_sha256": "60f4fc12a6f0f9f3a22a36facba56a748295f203858f107dbafe06199927acfc"
+  },
+  "mistune_candidate": {
+    "gpu_index": 1,
+    "gpu_uuid": "GPU-46423c8f-5b40-e606-4217-f104fdd98400",
+    "episode_elapsed_seconds": 991.103,
+    "solver_e2e_seconds": 903.1004863100025,
+    "model_requests": 100,
+    "actions": 100,
+    "stop_reason": "action_limit",
+    "model_patch_bytes": 0,
+    "original_red": false,
+    "same_assertions_green": false,
+    "fixed_behavior_passed": false,
+    "heldout_grade_reason": "model produced no effective patch",
+    "official_resolution": "not measured",
+    "heldout_grade_elapsed_seconds": 1.379,
+    "actor_received_teacher_checks": false,
+    "episode_path": "/home/ubuntu/.copilot/session-state/9982c699-cc5d-4682-a8db-1ecc8c706ac0/files/m8-quality/heldout-episode",
+    "episode_sha256": "1f3016d7ea617d55bd888bfcf06b3f1b5b08448546c6e35ff662d26df49c03a9",
+    "grade_sha256": "509834c23d0d33eaf6e7a3c940289b3b9665c8f956c7318cdc794a532c40285c"
+  },
+  "runtime": {
+    "host": "73F3-8x4090-134",
+    "python": "/home/user/octopus-actor-reproduction-v2-7b-20260917/runtime/python",
+    "backend": "vllm.v1.engine.llm_engine.LLMEngine",
+    "dtype": "torch.bfloat16",
+    "max_model_len": 32768,
+    "max_num_seqs": 1,
+    "prefix_caching": false,
+    "temperature": 0,
+    "seed": 17,
+    "peak_gpu_memory": "not emitted by the frozen episode receipt"
+  },
+  "historical_baseline": {
+    "reference_sha256": "f43d4789f7bafae269aeb9c99b82f7982d6e9650040c2a381ba3cbe9c3bd4abc",
+    "rerun": false,
+    "reuse": "negative reference/protocol only; not a fresh matched episode"
+  },
+  "cleanup": {
+    "gpu0_processes_remaining": 0,
+    "gpu1_processes_remaining": 0,
+    "owned_remote_processes_remaining": 0,
+    "candidate_model_retained": true,
+    "episodes_and_complete_failure histories_retained": true
+  },
+  "decision": {
+    "training_plumbing_passed": true,
+    "merged_candidate_identity_verified": true,
+    "lighthouse_quality_passed": false,
+    "independent_mistune_quality_passed": false,
+    "b7_passed": false,
+    "strongest_falsifier": "both candidate episodes used all 100 actions and produced no effective patch"
+  }
+}

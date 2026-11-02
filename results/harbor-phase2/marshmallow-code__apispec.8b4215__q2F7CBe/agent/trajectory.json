@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "marshmallow-code__apispec.8b4215__q2F7CBe__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# Parameter attribute 'deprecated' not working with OpenAPI 3.0\n\n## Description\n\nI'm trying to mark a parameter as deprecated in my API spec using the `deprecated` metadata attribute, but it's not working with OpenAPI 3.0.\n\nWhen using the following code:\n\n```python\nfrom marshmallow import fields\n\nfield = fields.Str(metadata={'deprecated': True})\n# Using OpenAPIConverter to convert field to parameter\nparameter = converter._field2parameter(field, name='field', location='query')\n```\n\nThe `deprecated` flag is not being included in the resulting parameter object when using OpenAPI 3.0. This works fine with OpenAPI 2.0.\n\n## Steps to reproduce\n\n1. Create a field with deprecated metadata:\n```python\nfrom marshmallow import fields\nfrom apispec import APISpec\nfrom apispec.ext.marshmallow import MarshmallowPlugin\n\n# Create a spec with OpenAPI 3.0\nspec = APISpec(\n    title=\"Test API\",\n    version=\"1.0.0\",\n    openapi_version=\"3.0.0\",\n    plugins=[MarshmallowPlugin()]\n)\n\n# Get the converter from the plugin\nconverter = spec.plugins[0].converter\n\n# Create a field with deprecated metadata\nfield = fields.Str(metadata={'deprecated': True})\n\n# Convert to parameter\nparameter = converter._field2parameter(field, name='test_param', location='query')\n\n# Check if deprecated flag is present\nprint(parameter)\n# Expected: should include 'deprecated': True\n```\n\n## Expected behavior\n\nThe parameter object should include the `deprecated` flag when the field has `deprecated: True` in its metadata, regardless of OpenAPI version.\n\nFor OpenAPI 3.0, the parameter object should look like:\n```python\n{\n    'in': 'query',\n    'name': 'test_param',\n    'schema': {...},\n    'deprecated': True\n}\n```\n\n## Actual behavior\n\nThe `deprecated` flag is missing from the parameter object when using OpenAPI 3.0. It works correctly with OpenAPI 2.0."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository structure and locate how parameter conversion handles the `deprecated` attribute.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-722feac4-5f32-4c89-948c-caa46973ab18-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" -o -name \"*.md\" -o -name \"*.toml\" -o -name \"*.cfg\" -o -name \"setup.py\" -o -name \"setup.cfg\" | head -100"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-722feac4-5f32-4c89-948c-caa46973ab18-0",
+            "content": "total 128\ndrwxr-xr-x 1 root root  4096 Sep 22 16:22 .\ndrwxr-xr-x 1 root root  4096 Sep 22 16:22 ..\ndrwxr-xr-x 8 root root  4096 Jul 13  2025 .git\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 .github\n-rw-r--r-- 1 root root  1236 Jul 13  2025 .gitignore\n-rw-rw-r-- 1 1005 1005     0 Sep 22 15:44 .gitkeep\n-rw-r--r-- 1 root root   600 Jul 13  2025 .pre-commit-config.yaml\n-rw-r--r-- 1 root root  4589 Jul 13  2025 AUTHORS.rst\n-rw-r--r-- 1 root root 41285 Jul 13  2025 CHANGELOG.rst\n-rw-r--r-- 1 root root  3502 Jul 13  2025 CONTRIBUTING.rst\n-rw-r--r-- 1 root root  1087 Jul 13  2025 LICENSE\n-rw-r--r-- 1 root root  8339 Jul 13  2025 README.rst\n-rw-r--r-- 1 root root   275 Jul 13  2025 RELEASING.md\n-rw-r--r-- 1 root root   192 Jul 13  2025 SECURITY.md\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 docs\n-rw-r--r-- 1 root root  2488 Jul 13  2025 pyproject.toml\n-rw-r--r-- 1 root root   212 Jul 13  2025 readthedocs.yml\ndrwxr-xr-x 3 root root  4096 Jul 13  2025 src\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 tests\n-rw-r--r-- 1 root root   778 Jul 13  2025 tox.ini\n/testbed/src/apispec/exceptions.py\n/testbed/src/apispec/__init__.py\n/testbed/src/apispec/ext/marshmallow/openapi.py\n/testbed/src/apispec/ext/marshmallow/__init__.py\n/testbed/src/apispec/ext/marshmallow/common.py\n/testbed/src/apispec/ext/marshmallow/field_converter.py\n/testbed/src/apispec/ext/marshmallow/schema_resolver.py\n/testbed/src/apispec/ext/__init__.py\n/testbed/src/apispec/core.py\n/testbed/src/apispec/plugin.py\n/testbed/src/apispec/yaml_utils.py\n/testbed/src/apispec/utils.py\n/testbed/pyproject.toml\n/testbed/tests/schemas.py\n/testbed/tests/__init__.py\n/testbed/tests/test_ext_marshmallow_field.py\n/testbed/tests/test_ext_marshmallow.py\n/testbed/tests/test_core.py\n/testbed/tests/conftest.py\n/testbed/tests/utils.py\n/testbed/tests/test_ext_marshmallow_common.py\n/testbed/tests/test_yaml_utils.py\n/testbed/tests/test_utils.py\n/testbed/tests/test_ext_marshmallow_openapi.py\n/testbed/RELEASING.md\n/testbed/SECURITY.md\n/testbed/docs/conf.py\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-a62c1003-1a65-4e28-9ec7-68ff268ae0f4-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/src/apispec/ext/marshmallow/field_converter.py && echo \"==== OPENAPI ====\" && cat /testbed/src/apispec/ext/marshmallow/openapi.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-a62c1003-1a65-4e28-9ec7-68ff268ae0f4-1",
+            "content": " if \"deprecated\" in prop:\n                ret[\"deprecated\"] = prop.pop(\"deprecated\")\n            ret[\"schema\"] = prop\n\n        for param_attr_func in self.parameter_attribute_functions:\n            ret.update(param_attr_func(field, ret=ret))\n\n        return ret\n\n    def field2required(\n        self, field: marshmallow.fields.Field, **kwargs: typing.Any\n    ) -> dict:\n        \"\"\"Return the dictionary of OpenAPI parameter attributes for a required field.\n\n        :param Field field: A marshmallow field.\n        :rtype: dict\n        \"\"\"\n        ret = {}\n        partial = getattr(field.parent, \"partial\", False)\n        ret[\"required\"] = field.required and (\n            not partial or (is_collection(partial) and field.name not in partial)  # type:ignore\n        )\n        return ret\n\n    def list2param(self, field: marshmallow.fields.Field, **kwargs: typing.Any) -> dict:\n        \"\"\"Return a dictionary of parameter properties from\n        :class:`List <marshmallow.fields.List` fields.\n\n        :param Field field: A marshmallow field.\n        :rtype: dict\n        \"\"\"\n        ret: dict = {}\n        if isinstance(field, marshmallow.fields.List):\n            if self.openapi_version.major < 3:\n                ret[\"collectionFormat\"] = \"multi\"\n            else:\n                ret[\"explode\"] = True\n                ret[\"style\"] = \"form\"\n        return ret\n\n    def schema2jsonschema(self, schema):\n        \"\"\"Return the JSON Schema Object for a given marshmallow\n        :class:`Schema <marshmallow.Schema>` instance. Schema may optionally\n        provide the ``title`` and ``description`` class Meta options.\n\n        https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#schemaObject\n\n        :param Schema schema: A marshmallow Schema instance\n        :rtype: dict, a JSON Schema Object\n        \"\"\"\n        fields = get_fields(schema)\n        Meta = getattr(schema, \"Meta\", None)\n        partial = getattr(schema, \"partial\", None)\n\n        jsonschema = self.fields2jsonschema(fields, partial=partial)\n\n        if hasattr(Meta, \"title\"):\n            jsonschema[\"title\"] = Meta.title\n        if hasattr(Meta, \"description\"):\n            jsonschema[\"description\"] = Meta.description\n        if hasattr(Meta, \"unknown\") and Meta.unknown != marshmallow.EXCLUDE:\n            jsonschema[\"additionalProperties\"] = Meta.unknown == marshmallow.INCLUDE\n\n        return jsonschema\n\n    def fields2jsonschema(self, fields, *, partial=None):\n        \"\"\"Return the JSON Schema Object given a mapping between field names and\n        :class:`Field <marshmallow.Field>` objects.\n\n        :param dict fields: A dictionary of field name field object pairs\n        :param bool|tuple partial: Whether to override a field's required flag.\n            If `True` no fields will be set as required. If an iterable fields\n            in the iterable will not be marked as required.\n        :rtype: dict, a JSON Schema Object\n        \"\"\"\n        jsonschema = {\"type\": \"object\", \"properties\": {}}\n\n        for field_name, field_obj in fields.items():\n            observed_field_name = field_obj.data_key or field_name\n            prop = self.field2property(field_obj)\n            jsonschema[\"properties\"][observed_field_name] = prop\n\n            if field_obj.required:\n                if not partial or (\n                    is_collection(partial) and field_name not in partial\n                ):\n                    jsonschema.setdefault(\"required\", []).append(observed_field_name)\n\n        if \"required\" in jsonschema:\n            jsonschema[\"required\"].sort()\n\n        return jsonschema\n\n    def get_ref_dict(self, schema):\n        \"\"\"Method to create a dictionary containing a JSON reference to the\n        schema in the spec\n        \"\"\"\n        schema_key = make_schema_key(schema)\n        ref_schema = self.spec.components.get_ref(\"schema\", self.refs[schema_key])\n        if getattr(schema, \"many\", False):\n            return {\"type\": \"array\", \"items\": ref_schema}\n        return ref_schema\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-bfbb185d-9ea1-40b0-a8f0-3f7b8e51c48e-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "wc -l /testbed/src/apispec/ext/marshmallow/field_converter.py /testbed/src/apispec/ext/marshmallow/openapi.py && echo \"==== field_converter start ====\" && head -200 /testbed/src/apispec/ext/marshmallow/field_converter.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-bfbb185d-9ea1-40b0-a8f0-3f7b8e51c48e-2",
+            "content": "         self.field2default,\n            self.field2choices,\n            self.field2read_only,\n            self.field2write_only,\n            self.field2range,\n            self.field2length,\n            self.field2pattern,\n            self.metadata2properties,\n            self.enum2properties,\n            self.nested2properties,\n            self.pluck2properties,\n            self.list2properties,\n            self.dict2properties,\n            self.timedelta2properties,\n            self.datetime2properties,\n            self.field2nullable,\n        ]\n\n    def map_to_openapi_type(self, field_cls, *args):\n        \"\"\"Set mapping for custom field class.\n\n        :param type field_cls: Field class to set mapping for.\n\n        ``*args`` can be:\n\n        - a pair of the form ``(type, format)``\n        - a core marshmallow field type (in which case we reuse that type's mapping)\n        \"\"\"\n        if len(args) == 1 and args[0] in self.field_mapping:\n            openapi_type_field = self.field_mapping[args[0]]\n        elif len(args) == 2:\n            openapi_type_field = args\n        else:\n            raise TypeError(\"Pass core marshmallow field type or (type, fmt) pair.\")\n\n        self.field_mapping[field_cls] = openapi_type_field\n\n    def add_attribute_function(self, func):\n        \"\"\"Method to add an attribute function to the list of attribute functions\n        that will be called on a field to convert it from a field to an OpenAPI\n        property.\n\n        :param func func: the attribute function to add\n            The attribute function will be bound to the\n            `OpenAPIConverter <apispec.ext.marshmallow.openapi.OpenAPIConverter>`\n            instance.\n            It will be called for each field in a schema with\n            `self <apispec.ext.marshmallow.openapi.OpenAPIConverter>` and a\n            `field <marshmallow.fields.Field>` instance\n            positional arguments and `ret <dict>` keyword argument.\n            Must return a dictionary of OpenAPI properties that will be shallow\n            merged with the return values of all other attribute functions called on the field.\n            User added attribute functions will be called after all built-in attribute\n            functions in the order they were added. The merged results of all\n            previously called attribute functions are accessible via the `ret`\n            argument.\n        \"\"\"\n        bound_func = func.__get__(self)\n        setattr(self, func.__name__, bound_func)\n        self.attribute_functions.append(bound_func)\n\n    def field2property(self, field: marshmallow.fields.Field) -> dict:\n        \"\"\"Return the JSON Schema property definition given a marshmallow\n        :class:`Field <marshmallow.fields.Field>`.\n\n        Will include field metadata that are valid properties of OpenAPI schema objects\n        (e.g. \"description\", \"enum\", \"example\").\n\n        https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#schemaObject\n\n        :param Field field: A marshmallow field.\n        :rtype: dict, a Property Object\n        \"\"\"\n        ret: dict = {}\n\n        for attr_func in self.attribute_functions:\n            ret.update(attr_func(field, ret=ret))\n\n        return ret\n\n    def field2type_and_format(\n        self, field: marshmallow.fields.Field, **kwargs: typing.Any\n    ) -> dict:\n        \"\"\"Return the dictionary of OpenAPI type and format based on the field type.\n\n        :param Field field: A marshmallow field.\n        :rtype: dict\n        \"\"\"\n        # If this type isn't directly in the field mapping then check the\n        # hierarchy until we find something that does.\n        for field_class in type(field).__mro__:\n            if field_class in self.field_mapping:\n                type_, fmt = self.field_mapping[field_class]\n                break\n        else:\n            warnings.warn(\n                f\"Field of type {type(field)} does not inherit from marshmallow.Field.\",\n                UserWarning,\n                stacklevel=2,\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-9b230769-3071-45a9-a979-c82a20f55bf3-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/src/apispec/ext/marshmallow/field_converter.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-9b230769-3071-45a9-a979-c82a20f55bf3-3",
+            "content": "marshmallow.fields.Enum` fields.\n\n        :param Field field: A marshmallow field.\n        :rtype: dict\n        \"\"\"\n        ret = {}\n        if isinstance(field, marshmallow.fields.Enum):\n            ret = self.field2property(field.field)\n            if field.by_value is False:\n                choices = (m for m in field.enum.__members__)\n            else:\n                choices = (m.value for m in field.enum)\n            ret[\"enum\"] = [field.field._serialize(v, None, None) for v in choices]\n            if field.allow_none and None not in ret[\"enum\"]:\n                ret[\"enum\"].append(None)\n        return ret\n\n    def datetime2properties(self, field, **kwargs: typing.Any) -> dict:\n        \"\"\"Return a dictionary of properties from :class:`DateTime <marshmallow.fields.DateTime` fields.\n\n        :param Field field: A marshmallow field.\n        :rtype: dict\n        \"\"\"\n        ret = {}\n        if isinstance(field, marshmallow.fields.DateTime) and not isinstance(\n            field, marshmallow.fields.Date\n        ):\n            if field.format == \"iso\" or field.format is None:\n                # Will return { \"type\": \"string\", \"format\": \"date-time\" }\n                # as specified inside DEFAULT_FIELD_MAPPING\n                pass\n            elif field.format == \"rfc\":\n                ret = {\n                    \"type\": \"string\",\n                    \"format\": None,\n                    \"example\": \"Wed, 02 Oct 2002 13:00:00 GMT\",\n                    \"pattern\": r\"((Mon|Tue|Wed|Thu|Fri|Sat|Sun), ){0,1}\\d{2} \"\n                    + r\"(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \\d{4} \\d{2}:\\d{2}:\\d{2} \"\n                    + r\"(UT|GMT|EST|EDT|CST|CDT|MST|MDT|PST|PDT|(Z|A|M|N)|(\\+|-)\\d{4})\",\n                }\n            elif field.format == \"timestamp\":\n                ret = {\n                    \"type\": \"number\",\n                    \"format\": \"float\",\n                    \"example\": \"1676451245.596\",\n                    \"min\": \"0\",\n                }\n            elif field.format == \"timestamp_ms\":\n                ret = {\n                    \"type\": \"number\",\n                    \"format\": \"float\",\n                    \"example\": \"1676451277514.654\",\n                    \"min\": \"0\",\n                }\n            else:\n                ret = {\n                    \"type\": \"string\",\n                    \"format\": None,\n                    \"pattern\": (\n                        field.metadata[\"pattern\"]\n                        if field.metadata.get(\"pattern\")\n                        else None\n                    ),\n                }\n        return ret\n\n\ndef make_type_list(types):\n    \"\"\"Return a list of types from a type attribute\n\n    Since OpenAPI 3.1.0, \"type\" can be a single type as string or a list of\n    types, including 'null'. This function takes a \"type\" attribute as input\n    and returns it as a list, be it an empty or single-element list.\n    This is useful to factorize type-conditional code or code adding a type.\n    \"\"\"\n    if types is None:\n        return []\n    if isinstance(types, str):\n        return [types]\n    return types\n\n\ndef make_min_max_attributes(validators, min_attr, max_attr) -> dict:\n    \"\"\"Return a dictionary of minimum and maximum attributes based on a list\n    of validators. If either minimum or maximum values are not present in any\n    of the validator objects that attribute will be omitted.\n\n    :param validators list: A list of `Marshmallow` validator objects. Each\n        objct is inspected for a minimum and maximum values\n    :param min_attr string: The OpenAPI attribute for the minimum value\n    :param max_attr string: The OpenAPI attribute for the maximum value\n    \"\"\"\n    attributes = {}\n    min_list = [validator.min for validator in validators if validator.min is not None]\n    max_list = [validator.max for validator in validators if validator.max is not None]\n    if min_list:\n        attributes[min_attr] = max(min_list)\n    if max_list:\n        attributes[max_attr] = min(max_list)\n    return attributes\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-dcb05894-b55a-4711-a23e-c7b4362584ee-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "rg -n \"deprecated|field2parameter|_field2parameter|parameter_attribute\" /testbed --type py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-dcb05894-b55a-4711-a23e-c7b4362584ee-4",
+            "content": "bash: line 1: rg: command not found\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-10934bdc-7f93-4224-9e36-24477ced1a15-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "grep -n \"deprecated\\|field2parameter\\|_field2parameter\\|parameter_attribute\" /testbed -r --include=\"*.py\" --include=\"*.rst\" --include=\"*.md\""
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-10934bdc-7f93-4224-9e36-24477ced1a15-5",
+            "content": "/apispec/ext/marshmallow/openapi.py:201:            if \"deprecated\" in prop:\n/testbed/src/apispec/ext/marshmallow/openapi.py:202:                ret[\"deprecated\"] = prop.pop(\"deprecated\")\n/testbed/src/apispec/ext/marshmallow/openapi.py:205:        for param_attr_func in self.parameter_attribute_functions:\n/testbed/src/apispec/ext/marshmallow/field_converter.py:84:    \"deprecated\",\n/testbed/tests/schemas.py:11:            \"deprecated\": False,\n/testbed/tests/test_ext_marshmallow_openapi.py:225:        spec_fixture.marshmallow_plugin.converter.add_parameter_attribute_function(\n/testbed/tests/test_ext_marshmallow_openapi.py:244:        res = openapi._field2parameter(field, name=\"field\", location=\"query\")\n/testbed/tests/test_ext_marshmallow_openapi.py:247:    def test_field_deprecated(self, openapi):\n/testbed/tests/test_ext_marshmallow_openapi.py:248:        field = fields.Str(metadata={\"deprecated\": True})\n/testbed/tests/test_ext_marshmallow_openapi.py:249:        res = openapi._field2parameter(field, name=\"field\", location=\"query\")\n/testbed/tests/test_ext_marshmallow_openapi.py:250:        assert res[\"deprecated\"] is True\n/testbed/tests/test_ext_marshmallow_openapi.py:280:        res = openapi._field2parameter(field, name=\"field\", location=\"query\")\n/testbed/tests/test_ext_marshmallow_openapi.py:514:                    openapi._field2parameter(\n/testbed/tests/test_ext_marshmallow_openapi.py:572:                    openapi._field2parameter(\n/testbed/CHANGELOG.rst:105:-  Fix conversion of deprecated flag on parameters (:issue:`850`).\n/testbed/CHANGELOG.rst:173:- Add ``OpenAPIConverter.add_parameter_attribute_function`` to allow\n/testbed/CHANGELOG.rst:269:- Don't use deprecated ``missing`` marshmallow field attribute but use\n/testbed/CHANGELOG.rst:289:- Document ``deprecated`` property from field metadata (:pr:`686`).\n/testbed/CHANGELOG.rst:317:  deprecated since marshmallow 3.10. apispec is still compatible with\n/testbed/CHANGELOG.rst:407:- ``OpenAPIConverter.field2parameters`` and\n/testbed/CHANGELOG.rst:409:  ``OpenAPIConverter.field2parameter`` becomes private. (:pr:`581`)\n/testbed/CHANGELOG.rst:788:- Drop deprecated plugin interface. Only plugin classes are now supported. This\n/testbed/CHANGELOG.rst:790:  as its ``schema_name_resolver`` parameter. Also drop deprecated\n/testbed/CHANGELOG.rst:819:  with the deprecated legacy interface. However, the new class interface is\n/testbed/CHANGELOG.rst:1142:- [apispec.ext.marshmallow] *Backwards-incompatible*: Remove ``dump`` parameter from ``schema2parameters``, ``fields2parameters``, and ``field2parameter`` (:issue:`114`). Thanks :user:`lafrech` and :user:`frol` for the feedback and :user:`lafrech` for the PR.\n/testbed/CHANGELOG.rst:1384:- Correctly pass ``dump`` parameter to ``field2parameters``.\n/testbed/CHANGELOG.rst:1400:- Add ``schema2parameters``, ``fields2parameters``, and ``field2parameters``.\n/testbed/docs/using_plugins.rst:324:This can be achieved using the `add_parameter_attribute_function\n/testbed/docs/using_plugins.rst:325:<apispec.ext.marshmallow.openapi.OpenAPIConverter.add_parameter_attribute_function>`\n/testbed/docs/using_plugins.rst:345:    ma_plugin.converter.add_parameter_attribute_function(delimited_list2param)\n/testbed/docs/writing_plugins.rst:41:A plugin with an operation helper that adds `deprecated` flag may look like this\n/testbed/docs/writing_plugins.rst:45:   # deprecated_plugin.py\n/testbed/docs/writing_plugins.rst:53:           \"\"\"Operation helper that add `deprecated` flag if in `kwargs`\"\"\"\n/testbed/docs/writing_plugins.rst:54:           if kwargs.pop(\"deprecated\", False) is True:\n/testbed/docs/writing_plugins.rst:56:                   value[\"deprecated\"] = True\n/testbed/docs/writing_plugins.rst:65:   from deprecated_plugin import DeprecatedPlugin\n/testbed/docs/writing_plugins.rst:78:       deprecated=True,\n/testbed/docs/writing_plugins.rst:81:   # {\"/gists/{gist_id}\": {\"get\": {\"responses\": {\"200\": {\"description\": \"standard response\"}}, \"deprecated\": true}}}\n"
+          }
+        ]
+      }
+    }
+  ]
+}

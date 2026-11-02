@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "paramiko__paramiko.23f92003.lm_r__WRkdP4a__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "Key exchange fails when server and client modes are mixed\n\nDescription\n\nI've discovered an issue with the key exchange process in Paramiko. When a client connects to a server, the key exchange fails if the server and client modes are mixed.\n\nHere's a simple reproduction script:\n\n```python\nimport paramiko\nimport socket\n\n# Create a socket pair for testing\nserver_sock, client_sock = socket.socketpair()\n\n# Set up server transport\nserver_transport = paramiko.Transport(server_sock)\nserver_transport.add_server_key(paramiko.RSAKey.generate(2048))\nserver_transport.start_server()\n\n# Set up client transport\nclient_transport = paramiko.Transport(client_sock)\nclient_transport.start_client()\n\n# Try to complete the handshake\n# This will fail with the current implementation\n```\n\nThe issue occurs in the key exchange process. The `parse_next` method in `kex_group1.py` is checking both the packet type AND the transport mode (server or client) when deciding how to handle incoming packets. This causes problems when the server receives a client packet or vice versa.\n\nWhen running this code, you'll get an exception like:\n```\nparamiko.ssh_exception.SSHException: KexGroup1 asked to handle packet type 30\n```\n\nThe key exchange should be handling packets based on their type, not based on whether the transport is in server or client mode. The packet types themselves already indicate whether they're meant for a server or client."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository and the key-exchange code to locate why mixed server/client modes fail.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-161b1b35-97f3-4ef6-b3d3-6893cd2981dd-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -50 && cat /testbed/README.md 2>/dev/null | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-161b1b35-97f3-4ef6-b3d3-6893cd2981dd-0",
+            "content": "total 152\ndrwxr-xr-x 1 root root  4096 Sep 22 18:19 .\ndrwxr-xr-x 1 root root  4096 Sep 22 18:19 ..\n-rw-r--r-- 1 root root    81 Jul 13  2025 .bzrignore\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 .circleci\n-rw-r--r-- 1 root root    40 Jul 13  2025 .codecov.yml\n-rw-r--r-- 1 root root   400 Jul 13  2025 .codespellrc\n-rw-r--r-- 1 root root    84 Jul 13  2025 .coveragerc\n-rw-r--r-- 1 root root   402 Jul 13  2025 .flake8\ndrwxr-xr-x 8 root root  4096 Jul 13  2025 .git\n-rw-r--r-- 1 root root    54 Jul 13  2025 .git-blame-ignore-revs\ndrwxr-xr-x 3 root root  4096 Jul 13  2025 .github\n-rw-r--r-- 1 root root   125 Jul 13  2025 .gitignore\n-rw-rw-r-- 1 1005 1005     0 Sep 22 15:44 .gitkeep\n-rw-r--r-- 1 root root   284 Jul 13  2025 Dockerfile.i386\n-rw-r--r-- 1 root root 26436 Jul 13  2025 LICENSE\n-rw-r--r-- 1 root root   208 Jul 13  2025 MANIFEST.in\n-rw-r--r-- 1 root root  2360 Jul 13  2025 README.rst\n-rw-r--r-- 1 root root   212 Jul 13  2025 SECURITY.md\n-rw-r--r-- 1 root root   207 Jul 13  2025 TODO\n-rw-r--r-- 1 root root    15 Jul 13  2025 codecov.yml\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 demos\n-rw-r--r-- 1 root root   518 Jul 13  2025 dev-requirements.txt\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 images\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 paramiko\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 paramiko.egg-info\n-rw-r--r-- 1 root root    44 Jul 13  2025 pytest.ini\n-rw-r--r-- 1 root root  3289 Jul 13  2025 setup.py\n-rw-r--r-- 1 root root  4992 Jul 13  2025 setup_helper.py\ndrwxr-xr-x 4 root root  4096 Jul 13  2025 sites\n-rw-r--r-- 1 root root  5401 Jul 13  2025 tasks.py\ndrwxr-xr-x 4 root root  4096 Jul 13  2025 tests\n/testbed/sites/shared_conf.py\n/testbed/sites/www/conf.py\n/testbed/sites/docs/conf.py\n/testbed/tests/test_buffered_pipe.py\n/testbed/tests/test_transport.py\n/testbed/tests/_loop.py\n/testbed/tests/test_proxy.py\n/testbed/tests/test_sftp_big.py\n/testbed/tests/test_hostkeys.py\n/testbed/tests/agent.py\n/testbed/tests/test_file.py\n/testbed/tests/test_config.py\n/testbed/tests/test_kex.py\n/testbed/tests/__init__.py\n/testbed/tests/_stub_sftp.py\n/testbed/tests/auth.py\n/testbed/tests/test_kex_gss.py\n/testbed/tests/test_channelfile.py\n/testbed/tests/test_pkey.py\n/testbed/tests/pkey.py\n/testbed/tests/_util.py\n/testbed/tests/conftest.py\n/testbed/tests/test_packetizer.py\n/testbed/tests/test_ssh_exception.py\n/testbed/tests/test_gssapi.py\n/testbed/tests/test_util.py\n/testbed/tests/test_ssh_gss.py\n/testbed/tests/test_sftp.py\n/testbed/tests/test_client.py\n/testbed/tests/test_message.py\n/testbed/tasks.py\n/testbed/setup_helper.py\n/testbed/setup.py\n/testbed/paramiko/sftp_client.py\n/testbed/paramiko/ber.py\n/testbed/paramiko/sftp_file.py\n/testbed/paramiko/primes.py\n/testbed/paramiko/kex_group16.py\n/testbed/paramiko/sftp_si.py\n/testbed/paramiko/auth_strategy.py\n/testbed/paramiko/win_pageant.py\n/testbed/paramiko/sftp_handle.py\n/testbed/paramiko/agent.py\n/testbed/paramiko/file.py\n/testbed/paramiko/kex_group1.py\n/testbed/paramiko/_winapi.py\n/testbed/paramiko/__init__.py\n/testbed/paramiko/transport.py\n/testbed/paramiko/common.py\n/testbed/paramiko/config.py\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-24718496-b2b3-40ed-81f9-a6f6b271533d-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/paramiko/kex_group1.py && echo \"===== GROUP16 =====\" && cat /testbed/paramiko/kex_group16.py && echo \"===== GIT LOG =====\" && cd /testbed && git log --oneline -20 && echo \"===== GIT STATUS =====\" && git status && echo \"===== KEX FILES =====\" && ls -la /testbed/paramiko/kex*"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-24718496-b2b3-40ed-81f9-a6f6b271533d-1",
+            "content": "    # (V_C || V_S || I_C || I_S || K_S || e || f || K)\n        hm = Message()\n        hm.add(\n            self.transport.remote_version,\n            self.transport.local_version,\n            self.transport.remote_kex_init,\n            self.transport.local_kex_init,\n        )\n        hm.add_string(key)\n        hm.add_mpint(self.e)\n        hm.add_mpint(self.f)\n        hm.add_mpint(K)\n        H = self.hash_algo(hm.asbytes()).digest()\n        self.transport._set_K_H(K, H)\n        # sign it\n        sig = self.transport.get_server_key().sign_ssh_data(\n            H, self.transport.host_key_type\n        )\n        # send reply\n        m = Message()\n        m.add_byte(c_MSG_KEXDH_REPLY)\n        m.add_string(key)\n        m.add_mpint(self.f)\n        m.add_string(sig)\n        self.transport._send_message(m)\n        self.transport._activate_outbound()\n===== GROUP16 =====\n# Copyright (C) 2019 Edgar Sousa <https://github.com/edgsousa>\n#\n# This file is part of paramiko.\n#\n# Paramiko is free software; you can redistribute it and/or modify it under the\n# terms of the GNU Lesser General Public License as published by the Free\n# Software Foundation; either version 2.1 of the License, or (at your option)\n# any later version.\n#\n# Paramiko is distributed in the hope that it will be useful, but WITHOUT ANY\n# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR\n# A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more\n# details.\n#\n# You should have received a copy of the GNU Lesser General Public License\n# along with Paramiko; if not, write to the Free Software Foundation, Inc.,\n# 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA.\n\n\"\"\"\nStandard SSH key exchange (\"kex\" if you wanna sound cool).  Diffie-Hellman of\n4096 bit key halves, using a known \"p\" prime and \"g\" generator.\n\"\"\"\n\nfrom paramiko.kex_group1 import KexGroup1\nfrom hashlib import sha512\n\n\nclass KexGroup16SHA512(KexGroup1):\n    name = \"diffie-hellman-group16-sha512\"\n    # http://tools.ietf.org/html/rfc3526#section-5\n    P = 0xFFFFFFFFFFFFFFFFC90FDAA22168C234C4C6628B80DC1CD129024E088A67CC74020BBEA63B139B22514A08798E3404DDEF9519B3CD3A431B302B0A6DF25F14374FE1356D6D51C245E485B576625E7EC6F44C42E9A637ED6B0BFF5CB6F406B7EDEE386BFB5A899FA5AE9F24117C4B1FE649286651ECE45B3DC2007CB8A163BF0598DA48361C55D39A69163FA8FD24CF5F83655D23DCA3AD961C62F356208552BB9ED529077096966D670C354E4ABC9804F1746C08CA18217C32905E462E36CE3BE39E772C180E86039B2783A2EC07A28FB5C55DF06F4C52C9DE2BCBF6955817183995497CEA956AE515D2261898FA051015728E5A8AAAC42DAD33170D04507A33A85521ABDF1CBA64ECFB850458DBEF0A8AEA71575D060C7DB3970F85A6E1E4C7ABF5AE8CDB0933D71E8C94E04A25619DCEE3D2261AD2EE6BF12FFA06D98A0864D87602733EC86A64521F2B18177B200CBBE117577A615D6C770988C0BAD946E208E24FA074E5AB3143DB5BFCE0FD108E4B82D120A92108011A723C12A787E6D788719A10BDBA5B2699C327186AF4E23C1A946834B6150BDA2583E9CA2AD44CE8DBBBC2DB04DE8EF92E8EFC141FBECAA6287C59474E6BC05D99B2964FA090C3A2233BA186515BE7ED1F612970CEE2D7AFB81BDD762170481CD0069127D5B05AA993B4EA988D8FDDC186FFB7DC90A6C08F4DF435C934063199FFFFFFFFFFFFFFFF  # noqa\n    G = 2\n\n    name = \"diffie-hellman-group16-sha512\"\n    hash_algo = sha512\n===== GIT LOG =====\n1609889 Initial commit\n===== GIT STATUS =====\nOn branch main\nYour branch is up to date with 'origin/main'.\n\nUntracked files:\n  (use \"git add <file>...\" to include in what will be committed)\n\t.gitkeep\n\nnothing added to commit but untracked files present (use \"git add\" to track)\n===== KEX FILES =====\n-rw-r--r-- 1 root root  4436 Jul 13  2025 /testbed/paramiko/kex_curve25519.py\n-rw-r--r-- 1 root root  5012 Jul 13  2025 /testbed/paramiko/kex_ecdh_nist.py\n-rw-r--r-- 1 root root 10320 Jul 13  2025 /testbed/paramiko/kex_gex.py\n-rw-r--r-- 1 root root  5740 Jul 13  2025 /testbed/paramiko/kex_group1.py\n-rw-r--r-- 1 root root  1833 Jul 13  2025 /testbed/paramiko/kex_group14.py\n-rw-r--r-- 1 root root  2288 Jul 13  2025 /testbed/paramiko/kex_group16.py\n-rw-r--r-- 1 root root 24562 Jul 13  2025 /testbed/paramiko/kex_gss.py\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-d078d071-e16d-4b1d-95f5-5ffcff00970d-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/paramiko/kex_group1.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-d078d071-e16d-4b1d-95f5-5ffcff00970d-2",
+            "content": "qa\n    G = 2\n\n    name = \"diffie-hellman-group1-sha1\"\n    hash_algo = sha1\n\n    def __init__(self, transport):\n        self.transport = transport\n        self.x = 0\n        self.e = 0\n        self.f = 0\n\n    def start_kex(self):\n        self._generate_x()\n        if self.transport.server_mode:\n            # compute f = g^x mod p, but don't send it yet\n            self.f = pow(self.G, self.x, self.P)\n            self.transport._expect_packet(_MSG_KEXDH_INIT)\n            return\n        # compute e = g^x mod p (where g=2), and send it\n        self.e = pow(self.G, self.x, self.P)\n        m = Message()\n        m.add_byte(c_MSG_KEXDH_INIT)\n        m.add_mpint(self.e)\n        self.transport._send_message(m)\n        self.transport._expect_packet(_MSG_KEXDH_REPLY)\n\n    def parse_next(self, ptype, m):\n        if self.transport.server_mode and (ptype == _MSG_KEXDH_INIT):\n            return self._parse_kexdh_init(m)\n        elif not self.transport.server_mode and (ptype == _MSG_KEXDH_REPLY):\n            return self._parse_kexdh_reply(m)\n        msg = \"KexGroup1 asked to handle packet type {:d}\"\n        raise SSHException(msg.format(ptype))\n\n    # ...internals...\n\n    def _generate_x(self):\n        # generate an \"x\" (1 < x < q), where q is (p-1)/2.\n        # p is a 128-byte (1024-bit) number, where the first 64 bits are 1.\n        # therefore q can be approximated as a 2^1023.  we drop the subset of\n        # potential x where the first 63 bits are 1, because some of those\n        # will be larger than q (but this is a tiny tiny subset of\n        # potential x).\n        while 1:\n            x_bytes = os.urandom(128)\n            x_bytes = byte_mask(x_bytes[0], 0x7F) + x_bytes[1:]\n            if (\n                x_bytes[:8] != b7fffffffffffffff\n                and x_bytes[:8] != b0000000000000000\n            ):\n                break\n        self.x = util.inflate_long(x_bytes)\n\n    def _parse_kexdh_reply(self, m):\n        # client mode\n        host_key = m.get_string()\n        self.f = m.get_mpint()\n        if (self.f < 1) or (self.f > self.P - 1):\n            raise SSHException('Server kex \"f\" is out of range')\n        sig = m.get_binary()\n        K = pow(self.f, self.x, self.P)\n        # okay, build up the hash H of\n        # (V_C || V_S || I_C || I_S || K_S || e || f || K)\n        hm = Message()\n        hm.add(\n            self.transport.local_version,\n            self.transport.remote_version,\n            self.transport.local_kex_init,\n            self.transport.remote_kex_init,\n        )\n        hm.add_string(host_key)\n        hm.add_mpint(self.e)\n        hm.add_mpint(self.f)\n        hm.add_mpint(K)\n        self.transport._set_K_H(K, self.hash_algo(hm.asbytes()).digest())\n        self.transport._verify_key(host_key, sig)\n        self.transport._activate_outbound()\n\n    def _parse_kexdh_init(self, m):\n        # server mode\n        self.e = m.get_mpint()\n        if (self.e < 1) or (self.e > self.P - 1):\n            raise SSHException('Client kex \"e\" is out of range')\n        K = pow(self.e, self.x, self.P)\n        key = self.transport.get_server_key().asbytes()\n        # okay, build up the hash H of\n        # (V_C || V_S || I_C || I_S || K_S || e || f || K)\n        hm = Message()\n        hm.add(\n            self.transport.remote_version,\n            self.transport.local_version,\n            self.transport.remote_kex_init,\n            self.transport.local_kex_init,\n        )\n        hm.add_string(key)\n        hm.add_mpint(self.e)\n        hm.add_mpint(self.f)\n        hm.add_mpint(K)\n        H = self.hash_algo(hm.asbytes()).digest()\n        self.transport._set_K_H(K, H)\n        # sign it\n        sig = self.transport.get_server_key().sign_ssh_data(\n            H, self.transport.host_key_type\n        )\n        # send reply\n        m = Message()\n        m.add_byte(c_MSG_KEXDH_REPLY)\n        m.add_string(key)\n        m.add_mpint(self.f)\n        m.add_string(sig)\n        self.transport._send_message(m)\n        self.transport._activate_outbound()\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-5149b154-24ea-448a-b765-e04a7488f42f-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/paramiko/kex_gex.py && echo \"===== CURVE =====\" && cat /testbed/paramiko/kex_curve25519.py && echo \"===== ECDH =====\" && cat /testbed/paramiko/kex_ecdh_nist.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-5149b154-24ea-448a-b765-e04a7488f42f-3",
+            "content": "ort._expect_packet(_MSG_KEXECDH_INIT)\n            return\n        m = Message()\n        m.add_byte(c_MSG_KEXECDH_INIT)\n        # SEC1: V2.0  2.3.3 Elliptic-Curve-Point-to-Octet-String Conversion\n        m.add_string(\n            self.Q_C.public_bytes(\n                serialization.Encoding.X962,\n                serialization.PublicFormat.UncompressedPoint,\n            )\n        )\n        self.transport._send_message(m)\n        self.transport._expect_packet(_MSG_KEXECDH_REPLY)\n\n    def parse_next(self, ptype, m):\n        if self.transport.server_mode and (ptype == _MSG_KEXECDH_INIT):\n            return self._parse_kexecdh_init(m)\n        elif not self.transport.server_mode and (ptype == _MSG_KEXECDH_REPLY):\n            return self._parse_kexecdh_reply(m)\n        raise SSHException(\n            \"KexECDH asked to handle packet type {:d}\".format(ptype)\n        )\n\n    def _generate_key_pair(self):\n        self.P = ec.generate_private_key(self.curve, default_backend())\n        if self.transport.server_mode:\n            self.Q_S = self.P.public_key()\n            return\n        self.Q_C = self.P.public_key()\n\n    def _parse_kexecdh_init(self, m):\n        Q_C_bytes = m.get_string()\n        self.Q_C = ec.EllipticCurvePublicKey.from_encoded_point(\n            self.curve, Q_C_bytes\n        )\n        K_S = self.transport.get_server_key().asbytes()\n        K = self.P.exchange(ec.ECDH(), self.Q_C)\n        K = int(hexlify(K), 16)\n        # compute exchange hash\n        hm = Message()\n        hm.add(\n            self.transport.remote_version,\n            self.transport.local_version,\n            self.transport.remote_kex_init,\n            self.transport.local_kex_init,\n        )\n        hm.add_string(K_S)\n        hm.add_string(Q_C_bytes)\n        # SEC1: V2.0  2.3.3 Elliptic-Curve-Point-to-Octet-String Conversion\n        hm.add_string(\n            self.Q_S.public_bytes(\n                serialization.Encoding.X962,\n                serialization.PublicFormat.UncompressedPoint,\n            )\n        )\n        hm.add_mpint(int(K))\n        H = self.hash_algo(hm.asbytes()).digest()\n        self.transport._set_K_H(K, H)\n        sig = self.transport.get_server_key().sign_ssh_data(\n            H, self.transport.host_key_type\n        )\n        # construct reply\n        m = Message()\n        m.add_byte(c_MSG_KEXECDH_REPLY)\n        m.add_string(K_S)\n        m.add_string(\n            self.Q_S.public_bytes(\n                serialization.Encoding.X962,\n                serialization.PublicFormat.UncompressedPoint,\n            )\n        )\n        m.add_string(sig)\n        self.transport._send_message(m)\n        self.transport._activate_outbound()\n\n    def _parse_kexecdh_reply(self, m):\n        K_S = m.get_string()\n        Q_S_bytes = m.get_string()\n        self.Q_S = ec.EllipticCurvePublicKey.from_encoded_point(\n            self.curve, Q_S_bytes\n        )\n        sig = m.get_binary()\n        K = self.P.exchange(ec.ECDH(), self.Q_S)\n        K = int(hexlify(K), 16)\n        # compute exchange hash and verify signature\n        hm = Message()\n        hm.add(\n            self.transport.local_version,\n            self.transport.remote_version,\n            self.transport.local_kex_init,\n            self.transport.remote_kex_init,\n        )\n        hm.add_string(K_S)\n        # SEC1: V2.0  2.3.3 Elliptic-Curve-Point-to-Octet-String Conversion\n        hm.add_string(\n            self.Q_C.public_bytes(\n                serialization.Encoding.X962,\n                serialization.PublicFormat.UncompressedPoint,\n            )\n        )\n        hm.add_string(Q_S_bytes)\n        hm.add_mpint(K)\n        self.transport._set_K_H(K, self.hash_algo(hm.asbytes()).digest())\n        self.transport._verify_key(K_S, sig)\n        self.transport._activate_outbound()\n\n\nclass KexNistp384(KexNistp256):\n    name = \"ecdh-sha2-nistp384\"\n    hash_algo = sha384\n    curve = ec.SECP384R1()\n\n\nclass KexNistp521(KexNistp256):\n    name = \"ecdh-sha2-nistp521\"\n    hash_algo = sha512\n    curve = ec.SECP521R1()\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-43dce47c-f6dc-41cb-8e5d-6481b58bfa38-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cd /testbed && git log --all --oneline | head -50 && echo \"=====\" && ls tests && echo \"=====\" && cat tests/test_kex.py | head -100 && echo \"===== TRANSPORT parse =====\" && grep -n \"parse_next\\|server_mode\\|_expect_packet\\|kex_engine\" paramiko/transport.py | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-43dce47c-f6dc-41cb-8e5d-6481b58bfa38-4",
+            "content": "exlify, unhexlify\nimport os\nimport unittest\n\nfrom unittest.mock import Mock, patch\nimport pytest\n\nfrom cryptography.hazmat.backends import default_backend\nfrom cryptography.hazmat.primitives.asymmetric import ec\n\ntry:\n    from cryptography.hazmat.primitives.asymmetric import x25519\nexcept ImportError:\n    x25519 = None\n\nimport paramiko.util\nfrom paramiko.kex_group1 import KexGroup1\nfrom paramiko.kex_group14 import KexGroup14SHA256\nfrom paramiko.kex_gex import KexGex, KexGexSHA256\nfrom paramiko import Message\nfrom paramiko.common import byte_chr\nfrom paramiko.kex_ecdh_nist import KexNistp256\nfrom paramiko.kex_group16 import KexGroup16SHA512\nfrom paramiko.kex_curve25519 import KexCurve25519\n\n\ndef dummy_urandom(n):\n    return byte_chr(0xCC) * n\n\n\ndef dummy_generate_key_pair(obj):\n    private_key_value = 94761803665136558137557783047955027733968423115106677159790289642479432803037  # noqa\n    public_key_numbers = \"042bdab212fa8ba1b7c843301682a4db424d307246c7e1e6083c41d9ca7b098bf30b3d63e2ec6278488c135360456cc054b3444ecc45998c08894cbc1370f5f989\"  # noqa\n    public_key_numbers_obj = ec.EllipticCurvePublicKey.from_encoded_point(\n        ec.SECP256R1(), unhexlify(public_key_numbers)\n    ).public_numbers()\n    obj.P = ec.EllipticCurvePrivateNumbers(\n        private_value=private_key_value, public_numbers=public_key_numbers_obj\n    ).private_key(default_backend())\n    if obj.transport.server_mode:\n        obj.Q_S = ec.EllipticCurvePublicKey.from_encoded_point(\n            ec.SECP256R1(), unhexlify(public_key_numbers)\n        )\n        return\n    obj.Q_C = ec.EllipticCurvePublicKey.from_encoded_point(\n        ec.SECP256R1(), unhexlify(public_key_numbers)\n    )\n\n\nclass FakeKey:\n    def __str__(self):\n        return \"fake-key\"\n\n    def asbytes(self):\n        return b\"fake-key\"\n\n    def sign_ssh_data(self, H, algorithm):\n        return b\"fake-sig\"\n\n\nclass FakeModulusPack:\n    P = 0xFFFFFFFFFFFFFFFFC90FDAA22168C234C4C6628B80DC1CD129024E088A67CC74020BBEA63B139B22514A08798E3404DDEF9519B3CD3A431B302B0A6DF25F14374FE1356D6D51C245E485B576625E7EC6F44C42E9A637ED6B0BFF5CB6F406B7EDEE386BFB5A899FA5AE9F24117C4B1FE649286651ECE65381FFFFFFFFFFFFFFFF  # noqa\n    G = 2\n\n    def get_modulus(self, min, ask, max):\n        return self.G, self.P\n\n\nclass FakeTransport:\n    local_version = \"SSH-2.0-paramiko_1.0\"\n    remote_version = \"SSH-2.0-lame\"\n    local_kex_init = \"local-kex-init\"\n    remote_kex_init = \"remote-kex-init\"\n    host_key_type = \"fake-key\"\n\n    def _send_message(self, m):\n        self._message = m\n\n===== TRANSPORT parse =====\n533:        self.kex_engine = None\n580:        self.server_mode = False\n824:        self.server_mode = True\n2001:    def _expect_packet(self, *ptypes):\n2028:        hash_algo = getattr(self.kex_engine, \"hash_algo\", None)\n2030:            self.kex_engine.__class__.__name__, hash_algo\n2120:            not self.server_mode\n2174:        if self.server_mode:\n2195:                self._expect_packet(MSG_KEXINIT)\n2228:                            self.kex_engine.parse_next(ptype, m)\n2285:                        \"server\" if self.server_mode else \"client\", e\n2357:        self.kex_engine.start_kex()\n2415:        if self.server_mode:\n2452:            which = \"s\" if self.server_mode else \"c\"\n2545:                which = \"c\" if self.server_mode else \"s\"\n2573:        if self.server_mode:\n2588:        self.kex_engine = self._kex_info[agreed_kex[0]](self)\n2591:        if self.server_mode:\n2612:        if self.server_mode and (self.get_server_key() is None):\n2618:        if self.server_mode:\n2654:        if self.server_mode:\n2678:        if self.server_mode:\n2742:        if self.server_mode:\n2761:        if self.server_mode:\n2810:        if self.server_mode:\n2829:        if self.server_mode:\n2857:            self.server_mode\n2870:        self._expect_packet(MSG_NEWKEYS)\n2904:        self.kex_engine = None\n2905:        if self.server_mode and (self.auth_handler is None):\n2935:        if not self.server_mode:\n3071:        elif not self.server_mode:\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-31de8cbc-10f8-4e17-8443-81832b307320-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cd /testbed && cat tests/test_kex.py && echo \"===== KEX GSS =====\" && cat tests/test_kex_gss.py | head -50"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-31de8cbc-10f8-4e17-8443-81832b307320-5",
+            "content": "8129A37840FE5B3EEB8BF26E99FA222EAE830000000866616B652D736967\"  # noqa\n        self.assertEqual(K, transport._K)\n        self.assertEqual(H, hexlify(transport._H).upper())\n        self.assertEqual(x, hexlify(transport._message.asbytes()).upper())\n        self.assertTrue(transport._activated)\n\n    @pytest.mark.skipif(\"not KexCurve25519.is_available()\")\n    def test_kex_c25519_client(self):\n        K = 71294722834835117201316639182051104803802881348227506835068888449366462300724  # noqa\n        transport = FakeTransport()\n        transport.server_mode = False\n        kex = KexCurve25519(transport)\n        kex.start_kex()\n        self.assertEqual(\n            (paramiko.kex_curve25519._MSG_KEXECDH_REPLY,), transport._expect\n        )\n\n        # fake reply\n        msg = Message()\n        msg.add_string(\"fake-host-key\")\n        Q_S = unhexlify(\n            \"8d13a119452382a1ada8eea4c979f3e63ad3f0c7366786d6c5b54b87219bae49\"\n        )\n        msg.add_string(Q_S)\n        msg.add_string(\"fake-sig\")\n        msg.rewind()\n        kex.parse_next(paramiko.kex_curve25519._MSG_KEXECDH_REPLY, msg)\n        H = b\"05B6F6437C0CF38D1A6C5A6F6E2558DEB54E7FC62447EBFB1E5D7407326A5475\"\n        self.assertEqual(K, kex.transport._K)\n        self.assertEqual(H, hexlify(transport._H).upper())\n        self.assertEqual((b\"fake-host-key\", b\"fake-sig\"), transport._verify)\n        self.assertTrue(transport._activated)\n\n    @pytest.mark.skipif(\"not KexCurve25519.is_available()\")\n    def test_kex_c25519_server(self):\n        K = 71294722834835117201316639182051104803802881348227506835068888449366462300724  # noqa\n        transport = FakeTransport()\n        transport.server_mode = True\n        kex = KexCurve25519(transport)\n        kex.start_kex()\n        self.assertEqual(\n            (paramiko.kex_curve25519._MSG_KEXECDH_INIT,), transport._expect\n        )\n\n        # fake init\n        msg = Message()\n        Q_C = unhexlify(\n            \"8d13a119452382a1ada8eea4c979f3e63ad3f0c7366786d6c5b54b87219bae49\"\n        )\n        H = b\"DF08FCFCF31560FEE639D9B6D56D760BC3455B5ADA148E4514181023E7A9B042\"\n        msg.add_string(Q_C)\n        msg.rewind()\n        kex.parse_next(paramiko.kex_curve25519._MSG_KEXECDH_INIT, msg)\n        self.assertEqual(K, transport._K)\n        self.assertTrue(transport._activated)\n        self.assertEqual(H, hexlify(transport._H).upper())\n===== KEX GSS =====\n# Copyright (C) 2003-2007  Robey Pointer <robeypointer@gmail.com>\n# Copyright (C) 2013-2014 science + computing ag\n# Author: Sebastian Deiss <sebastian.deiss@t-online.de>\n#\n#\n# This file is part of paramiko.\n#\n# Paramiko is free software; you can redistribute it and/or modify it under the\n# terms of the GNU Lesser General Public License as published by the Free\n# Software Foundation; either version 2.1 of the License, or (at your option)\n# any later version.\n#\n# Paramiko is distributed in the hope that it will be useful, but WITHOUT ANY\n# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR\n# A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more\n# details.\n#\n# You should have received a copy of the GNU Lesser General Public License\n# along with Paramiko; if not, write to the Free Software Foundation, Inc.,\n# 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA.\n\n\"\"\"\nUnit Tests for the GSS-API / SSPI SSHv2 Diffie-Hellman Key Exchange and user\nauthentication\n\"\"\"\n\n\nimport socket\nimport threading\nimport unittest\n\nimport paramiko\n\nfrom ._util import needs_gssapi, KerberosTestCase, update_env, _support\n\n\nclass NullServer(paramiko.ServerInterface):\n    def get_allowed_auths(self, username):\n        return \"gssapi-keyex\"\n\n    def check_auth_gssapi_keyex(\n        self, username, gss_authenticated=paramiko.AUTH_FAILED, cc_file=None\n    ):\n        if gss_authenticated == paramiko.AUTH_SUCCESSFUL:\n            return paramiko.AUTH_SUCCESSFUL\n        return paramiko.AUTH_FAILED\n\n    def enable_auth_gssapi(self):\n        UseGSSAPI = True\n        return UseGSSAPI\n"
+          }
+        ]
+      }
+    }
+  ]
+}

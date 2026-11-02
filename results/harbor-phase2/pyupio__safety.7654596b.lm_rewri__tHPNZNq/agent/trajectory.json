@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "pyupio__safety.7654596b.lm_rewri__tHPNZNq__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# Unpinned requirements warning message format changed in latest version\n\n## Description\n\nI found a bug in the latest version of Safety. When running a security check on a requirements file with unpinned dependencies, the warning message format has changed and is now incorrect.\n\n## Steps to reproduce\n\n1. Create a requirements file with unpinned dependencies:\n\n```\n# requirements.txt\ndjango\nnumpy\n```\n\n2. Run a safety check on this file:\n\n```\nsafety check -r requirements.txt\n```\n\n## Expected behavior\n\nThe tool should display a warning message about unpinned packages in a readable format, similar to:\n\n```\nWarning: django and numpy are unpinned. Safety by default does not report on potential vulnerabilities in unpinned packages. [Documentation link about pinning packages]\n```\n\n## Actual behavior\n\nInstead, the tool now generates individual warnings for each unpinned package, and the formatting is incorrect. The messages are displayed as separate notifications rather than being grouped together, making the output harder to read.\n\nThe output looks something like:\n\n```\nUnpinned requirement found: django. For security, consider pinning to a specific version with '=='.\nUnpinned requirement found: numpy. For security, consider pinning to a specific version with '=='.\n```\n\nAdditionally, when using the `--ignore-unpinned-requirements` flag, the warning message is also incorrect and doesn't match the expected format.\n\n## Environment\n\n- Safety version: [latest]\n- Python version: 3.10\n- Operating system: Linux\n\nThis appears to be a regression in the `add_local_notifications` function that handles the formatting of unpinned package warnings."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository and locate how unpinned-requirement warnings are formatted.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-58c3b66e-54fe-4c0d-b8f9-d15f7f35c41e-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -100 && cat /testbed/README.md 2>/dev/null | head -50"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-58c3b66e-54fe-4c0d-b8f9-d15f7f35c41e-0",
+            "content": "\n/testbed/safety/auth/main.py\n/testbed/safety/auth/__init__.py\n/testbed/safety/auth/constants.py\n/testbed/safety/auth/server.py\n/testbed/safety/auth/utils.py\n/testbed/safety/auth/cli.py\n/testbed/safety/auth/models.py\n/testbed/safety/auth/cli_utils.py\n/testbed/safety/formatters/text.py\n/testbed/safety/formatters/__init__.py\n/testbed/safety/formatters/screen.py\n/testbed/safety/formatters/bare.py\n/testbed/safety/formatters/json.py\n/testbed/safety/formatters/schemas/__init__.py\n/testbed/safety/formatters/schemas/common.py\n/testbed/safety/formatters/schemas/zero_five.py\n/testbed/safety/formatters/schemas/v3_0.py\n/testbed/safety/formatters/schemas/v0_5.py\n/testbed/safety/formatters/html.py\n/testbed/safety/safety.py\n/testbed/safety/constants.py\n/testbed/safety/output_utils.py\n/testbed/safety/cli.py\n/testbed/safety/console.py\n/testbed/safety/formatter.py\n/testbed/safety/cli_util.py\n/testbed/safety/models.py\n/testbed/safety/util.py\n/testbed/safety/cli_utils.py\n[![safety](https://cdn.safetycli.com/images/cli_readme_header.png)](https://docs.safetycli.com/)\n\n[![Downloads](https://static.pepy.tech/badge/safety/month)](https://pepy.tech/project/safety)\n![Build Status](https://github.com/pyupio/safety/actions/workflows/main.yml/badge.svg)\n![License](https://img.shields.io/github/license/pyupio/safety)\n![PyPI Version](https://img.shields.io/pypi/v/safety)\n![Python Versions](https://img.shields.io/pypi/pyversions/safety)\n![Coverage](https://img.shields.io/codecov/c/github/pyupio/safety)\n\n> [!NOTE]\n> [Come and join us at SafetyCLI](https://apply.workable.com/safety/). We are hiring for various roles.\n\n# Table of Contents\n- [Table of Contents](#table-of-contents)\n- [Introduction](#introduction)\n- [Key Features](#key-features)\n- [Getting Started](#getting-started)\n  - [GitHub Action](#github-action)\n  - [Command Line Interface](#command-line-interface)\n    - [1. Installation](#1-installation)\n    - [2. Log In or Register](#2-log-in-or-register)\n    - [3. Running Your First Scan](#3-running-your-first-scan)\n  - [Basic Commands](#basic-commands)\n- [Service-Level Agreement (SLA)](#service-level-agreement-sla)\n- [Detailed Documentation](#detailed-documentation)\n- [License](#license)\n- [Supported Python Versions](#supported-python-versions)\n- [Resources](#resources)\n\n# Introduction\nSafety CLI is a Python dependency vulnerability scanner designed to enhance software supply chain security by detecting packages with known vulnerabilities and malicious packages in local development environments, CI/CD, and production systems.\nSafety CLI can be deployed in minutes and provides clear, actionable recommendations for remediation of detected vulnerabilities.\n\nLeveraging the industry's most comprehensive database of vulnerabilities and malicious packages, Safety CLI Scanner allows teams to detect vulnerabilities at every stage of the software development lifecycle.\n\n# Key Features\n- Versatile, comprehensive dependency security scanning for Python packages.\n- Leverages Safety DB, the most comprehensive vulnerability data available for Python.\n- Clear output with detailed recommendations for vulnerability remediation.\n- Automatically updates requirements files to secure versions of dependencies where available, guided by your project's policy settings.\n- Scanning of individual requirements files and project directories or system-wide scans on developer machines, CI/CD pipelines, and Production systems to detect vulnerable or malicious dependencies.\n- JSON, SBOM, HTML and text output.\n- Easy integration with CI/CD pipelines, including GitHub Actions.\n- Enterprise Ready: Safety CLI can be deployed to large teams with complex project setups with ease, on-premise or as a SaaS product.\n\n# Getting Started\n## GitHub Action\n\n- Test Safety CLI in CI/CD using our [GitHub Action](https://github.com/pyupio/safety-action).\n- Full documentation on the [GitHub Action](https://github.com/pyupio/safety-action) is available on our [Documentation Hub](https://docs.safetycli.com).\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-eb9f9333-5f6c-4626-ba8f-ba6673edd5f2-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "rg -n \"add_local_notifications|unpinned|ignore-unpinned\" --type py /testbed -g '!*.pyc' | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-eb9f9333-5f6c-4626-ba8f-ba6673edd5f2-1",
+            "content": "bash: line 1: rg: command not found\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-55221da0-16fb-4f2b-b333-8459f5aef1fe-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "grep -rn \"add_local_notifications\\|unpinned\\|ignore-unpinned\" --include=\"*.py\" /testbed | head -100"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-55221da0-16fb-4f2b-b333-8459f5aef1fe-2",
+            "content": "/utils.py:88:        hint = f\"{fix_hint}\\n\\n{get_unpinned_hint(remediation['requirement']['name'])} \" \\\n/testbed/safety/formatters/text.py:8:    build_primary_announcement, format_unpinned_vulnerabilities\n/testbed/safety/formatters/text.py:9:from safety.util import get_primary_announcement, get_basic_announcements, is_ignore_unpinned_mode, \\\n/testbed/safety/formatters/text.py:88:        unpinned_packages = defaultdict(list)\n/testbed/safety/formatters/text.py:97:                if is_ignore_unpinned_mode(version=vuln.analyzed_version) and not full:\n/testbed/safety/formatters/text.py:98:                    unpinned_packages[vuln.package_name].append(vuln)\n/testbed/safety/formatters/text.py:118:            if unpinned_packages:\n/testbed/safety/formatters/text.py:121:            table.extend(map(click.unstyle, format_unpinned_vulnerabilities(unpinned_packages, columns=80)))\n/testbed/safety/formatters/screen.py:7:    build_primary_announcement, get_specifier_range_info, format_unpinned_vulnerabilities\n/testbed/safety/formatters/screen.py:9:    is_ignore_unpinned_mode\n/testbed/safety/formatters/screen.py:84:        unpinned_packages = defaultdict(list)\n/testbed/safety/formatters/screen.py:91:                if is_ignore_unpinned_mode(version=vuln.analyzed_version) and not full:\n/testbed/safety/formatters/screen.py:92:                    unpinned_packages[vuln.package_name].append(vuln)\n/testbed/safety/formatters/screen.py:96:        table.extend(format_unpinned_vulnerabilities(unpinned_packages))\n/testbed/safety/safety.py:38:    get_terminal_size, is_ignore_unpinned_mode, get_hashes\n/testbed/safety/safety.py:417:    unpinned_ignored = ignore_vulns.get(vuln_id, {}).get('requirements', None)\n/testbed/safety/safety.py:418:    should_ignore = not unpinned_ignored or str(affected.specifier) in unpinned_ignored\n/testbed/safety/safety.py:534:    if (is_prev_not_ignored or is_req_not_ignored) and is_ignore_unpinned_mode(version):\n/testbed/safety/safety.py:699:            if not is_pinned and is_ignore_unpinned_mode(version):\n/testbed/safety/safety.py:1457:def add_local_notifications(\n/testbed/safety/safety.py:1459:    ignore_unpinned_requirements: Optional[bool]\n/testbed/safety/safety.py:1462:    Adds local notifications for unpinned packages.\n/testbed/safety/safety.py:1466:        ignore_unpinned_requirements (Optional[bool]): Whether to ignore unpinned requirements.\n/testbed/safety/safety.py:1472:    unpinned_packages: List[str] = [f\"{pkg.name}\" for pkg in packages if pkg.has_unpinned_req()]\n/testbed/safety/safety.py:1474:    if unpinned_packages and ignore_unpinned_requirements is not False:\n/testbed/safety/safety.py:1475:        found = len(unpinned_packages)\n/testbed/safety/safety.py:1479:            last = unpinned_packages.pop()\n/testbed/safety/safety.py:1482:        pkgs: str = f\"{', '.join(unpinned_packages)}{and_msg} {'are' if found > 1 else 'is'}\"\n/testbed/safety/safety.py:1485:        if ignore_unpinned_requirements is None:\n/testbed/safety/safety.py:1486:            msg = f'Warning: {pkgs} unpinned. Safety by default does not ' \\\n/testbed/safety/safety.py:1487:                  f'report on potential vulnerabilities in unpinned packages. {doc_msg}'\n/testbed/safety/safety.py:1489:            msg = f'Warning: {pkgs} unpinned and potential vulnerabilities are ' \\\n/testbed/safety/safety.py:1490:                  f'being ignored given `ignore-unpinned-requirements` is True in your config. {doc_msg}'\n/testbed/safety/constants.py:132:    \"This vulnerability is being ignored due to the 'ignore-unpinned-requirements' flag (default True). \" \\\n/testbed/safety/constants.py:133:    \"To change this, set 'ignore-unpinned-requirements' to False under 'security' in your policy file. \" \\\n/testbed/safety/output_utils.py:291:def get_fix_hint_for_unpinned(remediation: Dict[str, Any]) -> str:\n/testbed/safety/output_utils.py:293:    Get the fix hint for unpinned dependencies.\n/testbed/safety/output_utils.py:313:def get_unpinned_hint(pkg: str) -> str:\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-d34594dc-e6ce-4434-a437-ea4c42ac7527-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '1440,1550p' /testbed/safety/safety.py && echo \"==== TESTS ====\" && grep -rn \"add_local_notifications\\|unpinned_packages\\|ignore_unpinned\" --include=\"*.py\" /testbed/tests /testbed 2>/dev/null | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-d34594dc-e6ce-4434-a437-ea4c42ac7527-3",
+            "content": "full:\n/testbed/safety/formatters/text.py:98:                    unpinned_packages[vuln.package_name].append(vuln)\n/testbed/safety/formatters/text.py:118:            if unpinned_packages:\n/testbed/safety/formatters/text.py:121:            table.extend(map(click.unstyle, format_unpinned_vulnerabilities(unpinned_packages, columns=80)))\n/testbed/safety/formatters/screen.py:9:    is_ignore_unpinned_mode\n/testbed/safety/formatters/screen.py:84:        unpinned_packages = defaultdict(list)\n/testbed/safety/formatters/screen.py:91:                if is_ignore_unpinned_mode(version=vuln.analyzed_version) and not full:\n/testbed/safety/formatters/screen.py:92:                    unpinned_packages[vuln.package_name].append(vuln)\n/testbed/safety/formatters/screen.py:96:        table.extend(format_unpinned_vulnerabilities(unpinned_packages))\n/testbed/safety/safety.py:38:    get_terminal_size, is_ignore_unpinned_mode, get_hashes\n/testbed/safety/safety.py:534:    if (is_prev_not_ignored or is_req_not_ignored) and is_ignore_unpinned_mode(version):\n/testbed/safety/safety.py:699:            if not is_pinned and is_ignore_unpinned_mode(version):\n/testbed/safety/safety.py:1457:def add_local_notifications(\n/testbed/safety/safety.py:1459:    ignore_unpinned_requirements: Optional[bool]\n/testbed/safety/safety.py:1466:        ignore_unpinned_requirements (Optional[bool]): Whether to ignore unpinned requirements.\n/testbed/safety/safety.py:1472:    unpinned_packages: List[str] = [f\"{pkg.name}\" for pkg in packages if pkg.has_unpinned_req()]\n/testbed/safety/safety.py:1474:    if unpinned_packages and ignore_unpinned_requirements is not False:\n/testbed/safety/safety.py:1475:        found = len(unpinned_packages)\n/testbed/safety/safety.py:1479:            last = unpinned_packages.pop()\n/testbed/safety/safety.py:1482:        pkgs: str = f\"{', '.join(unpinned_packages)}{and_msg} {'are' if found > 1 else 'is'}\"\n/testbed/safety/safety.py:1485:        if ignore_unpinned_requirements is None:\n/testbed/safety/output_utils.py:1251:def format_unpinned_vulnerabilities(unpinned_packages: Dict[str, List[Any]], columns: Optional[int] = None) -> List[str]:\n/testbed/safety/output_utils.py:1256:        unpinned_packages (Dict[str, List[Any]]): Unpinned packages and their vulnerabilities.\n/testbed/safety/output_utils.py:1264:    if not unpinned_packages:\n/testbed/safety/output_utils.py:1267:    for pkg_name, vulns in unpinned_packages.items():\n/testbed/safety/cli.py:298:@click.option(\"ignore_unpinned_requirements\", \"--ignore-unpinned-requirements/--check-unpinned-requirements\", \"-iur\",\n/testbed/safety/cli.py:339:def check(ctx, db, full_report, stdin, files, cache, ignore, ignore_unpinned_requirements, output, json,\n/testbed/safety/cli.py:358:        ignore, ignore_severity_rules, exit_code, ignore_unpinned_requirements, project = \\\n/testbed/safety/cli.py:359:            get_processed_options(policy_file, ignore, ignore_severity_rules, exit_code, ignore_unpinned_requirements,\n/testbed/safety/cli.py:368:                  'ignore_unpinned_requirements': ignore_unpinned_requirements}\n/testbed/safety/cli.py:387:        announcements.extend(safety.add_local_notifications(packages, ignore_unpinned_requirements))\n/testbed/safety/util.py:427:    exit_code: bool, ignore_unpinned_requirements: Optional[bool] = None,\n/testbed/safety/util.py:437:        ignore_unpinned_requirements (Optional[bool]): The ignore unpinned requirements setting.\n/testbed/safety/util.py:455:        if ctx.get_parameter_source(\"ignore_unpinned_requirements\") == click.core.ParameterSource.DEFAULT:\n/testbed/safety/util.py:456:            ignore_unpinned_requirements = security.get('ignore-unpinned-requirements', None)\n/testbed/safety/util.py:467:    return ignore, ignore_severity_rules, exit_code, ignore_unpinned_requirements, project\n/testbed/safety/util.py:1184:def is_ignore_unpinned_mode(version: str) -> bool:\n/testbed/safety/util.py:1194:    ignore = SafetyContext().params.get('ignore_unpinned_requirements')\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-586b9719-c76c-4175-80ba-bd8a2bff746e-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '1450,1540p' /testbed/safety/safety.py; echo \"==== GIT LOG ====\"; cd /testbed && git log --oneline -20; echo \"==== GIT STATUS ====\"; git status; echo \"==== TESTS DIR ====\"; ls /testbed/tests 2>/dev/null | head; find /testbed -name \"*test*\" -type d | head"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-586b9719-c76c-4175-80ba-bd8a2bff746e-4",
+            "content": "        else:\n            licenses = fetch_database_file(mirror, db_name=db_name, ecosystem=None)\n        if licenses:\n            return licenses\n    raise DatabaseFetchError()\n\n\ndef add_local_notifications(\n    packages: List[Package],\n    ignore_unpinned_requirements: Optional[bool]\n) -> List[Dict[str, str]]:\n    \"\"\"\n    Adds local notifications for unpinned packages.\n\n    Args:\n        packages (List[Package]): The list of packages.\n        ignore_unpinned_requirements (Optional[bool]): Whether to ignore unpinned requirements.\n\n    Returns:\n        List[Dict[str, str]]: The list of notifications.\n    \"\"\"\n    announcements = []\n    unpinned_packages: List[str] = [f\"{pkg.name}\" for pkg in packages if pkg.has_unpinned_req()]\n\n    if unpinned_packages and ignore_unpinned_requirements is not False:\n        found = len(unpinned_packages)\n        and_msg = ''\n\n        if found >= 2:\n            last = unpinned_packages.pop()\n            and_msg = f' and {last}'\n\n        pkgs: str = f\"{', '.join(unpinned_packages)}{and_msg} {'are' if found > 1 else 'is'}\"\n        doc_msg: str = get_specifier_range_info(style=False, pin_hint=True)\n\n        if ignore_unpinned_requirements is None:\n            msg = f'Warning: {pkgs} unpinned. Safety by default does not ' \\\n                  f'report on potential vulnerabilities in unpinned packages. {doc_msg}'\n        else:\n            msg = f'Warning: {pkgs} unpinned and potential vulnerabilities are ' \\\n                  f'being ignored given `ignore-unpinned-requirements` is True in your config. {doc_msg}'\n\n        announcements.append({'message': msg, 'type': 'warning', 'local': True})\n\n    announcements.extend(SafetyContext().local_announcements)\n\n    return announcements\n\n\ndef get_announcements(\n    session: requests.Session,\n    telemetry: bool = True,\n    with_telemetry: Any = None\n) -> List[Dict[str, str]]:\n    \"\"\"\n    Retrieves announcements from the server.\n\n    Args:\n        session (requests.Session): The requests session.\n        telemetry (bool): Whether to include telemetry data.\n        with_telemetry (Optional[Dict[str, Any]]): The telemetry data.\n\n    Returns:\n        List[Dict[str, str]]: The list of announcements.\n    \"\"\"\n    LOG.info('Getting announcements')\n\n    announcements = []\n\n    url = f\"{DATA_API_BASE_URL}announcements/\"\n    method = 'post'\n    telemetry_data = with_telemetry if with_telemetry else build_telemetry_data(telemetry=telemetry)\n    data = asdict(telemetry_data)\n    request_kwargs = {'timeout': 3}\n    data_keyword = 'json'\n\n    source = os.environ.get('SAFETY_ANNOUNCEMENTS_URL', None)\n\n    if source:\n        LOG.debug(f'Getting the announcement from a different source: {source}')\n        url = source\n        method = 'get'\n        data = {\n            'telemetry': json.dumps(data)}\n        data_keyword = 'params'\n\n    request_kwargs[data_keyword] = data\n    request_kwargs['url'] = url\n\n    LOG.debug(f'Telemetry data sent: {data}')\n\n==== GIT LOG ====\n92bb094 Initial commit\n==== GIT STATUS ====\nOn branch main\nYour branch is up to date with 'origin/main'.\n\nUntracked files:\n  (use \"git add <file>...\" to include in what will be committed)\n\t.gitkeep\n\nnothing added to commit but untracked files present (use \"git add\" to track)\n==== TESTS DIR ====\n__init__.py\naction\nalerts\nauth\nformatters\nreqs_1.txt\nreqs_2.txt\nreqs_3.txt\nreqs_4.txt\nreqs_pinned.txt\n/testbed\n/testbed/tests\n/testbed/tests/test_policy_file\n/testbed/tests/test_fix\n/testbed/tests/auth/test_assets\n/testbed/tests/test_db\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-5537dad6-3009-4300-8742-d72095394496-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "grep -rn \"Unpinned requirement\\|unpinned requirement\\|consider pinning\\|has_unpinned\" --include=\"*.py\" /testbed | head -50; echo \"==== TEST FILES ====\"; ls /testbed/tests/; find /testbed/tests -name \"*.py\" | head -50"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-5537dad6-3009-4300-8742-d72095394496-5",
+            "content": "/testbed/safety/safety.py:1466:        ignore_unpinned_requirements (Optional[bool]): Whether to ignore unpinned requirements.\n/testbed/safety/safety.py:1472:    unpinned_packages: List[str] = [f\"{pkg.name}\" for pkg in packages if pkg.has_unpinned_req()]\n/testbed/safety/cli.py:299:              default=None, help=\"Check or ignore unpinned requirements found.\")\n/testbed/safety/models.py:157:    def has_unpinned_req(self) -> bool:\n/testbed/safety/models.py:159:        Check if the package has unpinned requirements.\n/testbed/safety/models.py:162:            bool: True if there are unpinned requirements, False otherwise.\n/testbed/safety/models.py:171:        Get the unpinned requirements.\n/testbed/safety/models.py:174:            filter: A filter object with the unpinned requirements.\n/testbed/safety/util.py:437:        ignore_unpinned_requirements (Optional[bool]): The ignore unpinned requirements setting.\n==== TEST FILES ====\n__init__.py\naction\nalerts\nauth\nformatters\nreqs_1.txt\nreqs_2.txt\nreqs_3.txt\nreqs_4.txt\nreqs_pinned.txt\nreqs_pinned_affected.txt\nreqs_pinned_and_unpinned.txt\nreqs_unpinned.txt\nresources.py\nscan\ntest_cli.py\ntest_db\ntest_fix\ntest_models.py\ntest_output_utils.py\ntest_policy_file\ntest_safety.py\ntest_util.py\n/testbed/tests/test_models.py\n/testbed/tests/scan/test_file_finder.py\n/testbed/tests/scan/test_command.py\n/testbed/tests/scan/test_render.py\n/testbed/tests/scan/ecosystems/python/__init__.py\n/testbed/tests/scan/ecosystems/python/test_main.py\n/testbed/tests/scan/test_file_handlers.py\n/testbed/tests/alerts/test_utils.py\n/testbed/tests/__init__.py\n/testbed/tests/auth/test_cli.py\n/testbed/tests/auth/test_main.py\n/testbed/tests/test_output_utils.py\n/testbed/tests/formatters/test_screen.py\n/testbed/tests/formatters/__init__.py\n/testbed/tests/formatters/test_text.py\n/testbed/tests/formatters/test_bare.py\n/testbed/tests/formatters/test_json.py\n/testbed/tests/test_safety.py\n/testbed/tests/resources.py\n/testbed/tests/test_cli.py\n/testbed/tests/test_util.py\n"
+          }
+        ]
+      }
+    }
+  ]
+}

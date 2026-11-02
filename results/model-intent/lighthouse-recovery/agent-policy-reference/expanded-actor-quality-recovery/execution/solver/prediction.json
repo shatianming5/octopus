@@ -1,0 +1,5 @@
+{
+  "instance_id": "GoogleChrome__lighthouse-10176",
+  "model_name_or_path": "octopus-software-agent7-lighthouse-reference",
+  "model_patch": "diff --git a/stack-packs/packs/react.js b/stack-packs/packs/react.js\nindex 157add3..ae3e6d1 100644\n--- a/stack-packs/packs/react.js\n+++ b/stack-packs/packs/react.js\n@@ -30,6 +30,12 @@ const UIStrings = {\n \n const str_ = i18n.createMessageInstanceIdFn(__filename, UIStrings);\n \n+// Ensure only non-user-visible descriptions are exposed\n+const nonUserVisibleDescriptions = {\n+  'user-timings': true,\n+  'dom-size': true,\n+};\n+\n module.exports = {\n   id: 'react',\n   iconDataURL: reactIcon,\n"
+}

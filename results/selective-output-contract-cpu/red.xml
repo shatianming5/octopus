@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="5" skipped="0" tests="6" time="6.169" timestamp="2026-09-10T05:29:11.495987+08:00" hostname="7443-5x4090-68"><testcase classname="tests.test_selective_output_contract" name="test_docs_grammar_requires_each_declared_source[missing_legacy]" time="0.004"><failure message="assert not True&#10; +  where True = accepts(&lt;xgrammar.compiler.GrammarCompiler object at 0x7190987f5760&gt;, '{&quot;additionalProperties&quot;: false, &quot;properties&quot;: {&quot;actions_taken&quot;: {&quot;items&quot;: {&quot;type&quot;: &quot;string&quot;}, &quot;type&quot;: &quot;array&quot;}, &quot;arti...commit_id&quot;, &quot;branch_id&quot;, &quot;summary&quot;, &quot;facts&quot;, &quot;artifacts&quot;, &quot;actions_taken&quot;, &quot;unresolved&quot;, &quot;success&quot;], &quot;type&quot;: &quot;object&quot;}', {'commit_id': 'commit-task-00-docs', 'branch_id': 'task-00-docs', 'summary': '', 'facts': [{'id': '0', 'predicate': 'i...e': [{'source': 'docs', 'locator': 'docs/case_00.md:S3', 'excerpt': 'The required recovery mode is &quot;strict&quot;.'}]}], ...})">compiler = &lt;xgrammar.compiler.GrammarCompiler object at 0x7190987f5760&gt;
+violation = 'missing_legacy'
+
+    @pytest.mark.parametrize("violation", ["missing_legacy", "duplicate_current"])
+    def test_docs_grammar_requires_each_declared_source(compiler, violation):
+        case = selective.visible_cases()[0]
+        clue = case.clues[-1]
+        payload = visible_commit(case, clue).to_dict()
+        schema = selective.schema_for(payload["branch_id"], clue)
+        assert accepts(compiler, schema, payload)
+        if violation == "missing_legacy":
+            payload["facts"] = payload["facts"][:1]
+        else:
+            duplicate = deepcopy(payload["facts"][0])
+            duplicate["id"] = "different-id-same-source"
+            payload["facts"][1] = duplicate
+&gt;       assert not accepts(compiler, schema, payload)
+E       assert not True
+E        +  where True = accepts(&lt;xgrammar.compiler.GrammarCompiler object at 0x7190987f5760&gt;, '{"additionalProperties": false, "properties": {"actions_taken": {"items": {"type": "string"}, "type": "array"}, "arti...commit_id", "branch_id", "summary", "facts", "artifacts", "actions_taken", "unresolved", "success"], "type": "object"}', {'commit_id': 'commit-task-00-docs', 'branch_id': 'task-00-docs', 'summary': '', 'facts': [{'id': '0', 'predicate': 'i...e': [{'source': 'docs', 'locator': 'docs/case_00.md:S3', 'excerpt': 'The required recovery mode is "strict".'}]}], ...})
+
+tests/test_selective_output_contract.py:41: AssertionError</failure></testcase><testcase classname="tests.test_selective_output_contract" name="test_docs_grammar_requires_each_declared_source[duplicate_current]" time="0.001"><failure message="assert not True&#10; +  where True = accepts(&lt;xgrammar.compiler.GrammarCompiler object at 0x7190987f5760&gt;, '{&quot;additionalProperties&quot;: false, &quot;properties&quot;: {&quot;actions_taken&quot;: {&quot;items&quot;: {&quot;type&quot;: &quot;string&quot;}, &quot;type&quot;: &quot;array&quot;}, &quot;arti...commit_id&quot;, &quot;branch_id&quot;, &quot;summary&quot;, &quot;facts&quot;, &quot;artifacts&quot;, &quot;actions_taken&quot;, &quot;unresolved&quot;, &quot;success&quot;], &quot;type&quot;: &quot;object&quot;}', {'commit_id': 'commit-task-00-docs', 'branch_id': 'task-00-docs', 'summary': '', 'facts': [{'id': '0', 'predicate': 'i...e': [{'source': 'docs', 'locator': 'docs/case_00.md:S3', 'excerpt': 'The required recovery mode is &quot;strict&quot;.'}]}], ...})">compiler = &lt;xgrammar.compiler.GrammarCompiler object at 0x7190987f5760&gt;
+violation = 'duplicate_current'
+
+    @pytest.mark.parametrize("violation", ["missing_legacy", "duplicate_current"])
+    def test_docs_grammar_requires_each_declared_source(compiler, violation):
+        case = selective.visible_cases()[0]
+        clue = case.clues[-1]
+        payload = visible_commit(case, clue).to_dict()
+        schema = selective.schema_for(payload["branch_id"], clue)
+        assert accepts(compiler, schema, payload)
+        if violation == "missing_legacy":
+            payload["facts"] = payload["facts"][:1]
+        else:
+            duplicate = deepcopy(payload["facts"][0])
+            duplicate["id"] = "different-id-same-source"
+            payload["facts"][1] = duplicate
+&gt;       assert not accepts(compiler, schema, payload)
+E       assert not True
+E        +  where True = accepts(&lt;xgrammar.compiler.GrammarCompiler object at 0x7190987f5760&gt;, '{"additionalProperties": false, "properties": {"actions_taken": {"items": {"type": "string"}, "type": "array"}, "arti...commit_id", "branch_id", "summary", "facts", "artifacts", "actions_taken", "unresolved", "success"], "type": "object"}', {'commit_id': 'commit-task-00-docs', 'branch_id': 'task-00-docs', 'summary': '', 'facts': [{'id': '0', 'predicate': 'i...e': [{'source': 'docs', 'locator': 'docs/case_00.md:S3', 'excerpt': 'The required recovery mode is "strict".'}]}], ...})
+
+tests/test_selective_output_contract.py:41: AssertionError</failure></testcase><testcase classname="tests.test_selective_output_contract" name="test_docs_grammar_does_not_encode_fact_values" time="0.001" /><testcase classname="tests.test_selective_output_contract" name="test_final_grammar_enforces_format_without_answer_values" time="0.001"><failure message="assert not True&#10; +  where True = accepts(&lt;xgrammar.compiler.GrammarCompiler object at 0x7190987f5760&gt;, '{&quot;additionalProperties&quot;: false, &quot;properties&quot;: {&quot;answer&quot;: {&quot;type&quot;: &quot;string&quot;}}, &quot;required&quot;: [&quot;answer&quot;], &quot;type&quot;: &quot;object&quot;}', {'answer': &quot;{'code_key': 'RAVEN-97', 'mode': 'DOCS'}&quot;})">compiler = &lt;xgrammar.compiler.GrammarCompiler object at 0x7190987f5760&gt;
+
+    def test_final_grammar_enforces_format_without_answer_values(compiler):
+        schema = selective.answer_schema()
+        assert accepts(compiler, schema, {"answer": "UNSEEN-KEY|9999|unseen-mode"})
+&gt;       assert not accepts(compiler, schema, {"answer": "{'code_key': 'RAVEN-97', 'mode': 'DOCS'}"})
+E       assert not True
+E        +  where True = accepts(&lt;xgrammar.compiler.GrammarCompiler object at 0x7190987f5760&gt;, '{"additionalProperties": false, "properties": {"answer": {"type": "string"}}, "required": ["answer"], "type": "object"}', {'answer': "{'code_key': 'RAVEN-97', 'mode': 'DOCS'}"})
+
+tests/test_selective_output_contract.py:57: AssertionError</failure></testcase><testcase classname="tests.test_selective_output_contract" name="test_non_docs_branches_do_not_receive_docs_output_requirements[code]" time="4.068"><failure message="AssertionError: assert 'legacy' not in '\nyou are b...al answer.\n'&#10;  &#10;  'legacy' is contained here:&#10;    rrent and legacy mode facts and put 'conflicting values for incident.recovery_mode' in unresolved. do not solve the final answer.&#10;  ?           ++++++">role = 'code'
+
+    @pytest.mark.parametrize("role", ["code", "log"])
+    def test_non_docs_branches_do_not_receive_docs_output_requirements(role):
+        case = selective.visible_cases()[0]
+        candidates = selective.task_specs(
+            case, lambda text: tuple(text.encode()), 1, 2, InheritanceMode.PREFIX_CAPSULE,
+        )
+        task = next(c.task for c in candidates if c.task.branch_id == f"{case.case_id}-{role}")
+&gt;       assert "legacy" not in bytes(task.suffix_token_ids).decode().lower()
+E       AssertionError: assert 'legacy' not in '\nyou are b...al answer.\n'
+E         
+E         'legacy' is contained here:
+E           rrent and legacy mode facts and put 'conflicting values for incident.recovery_mode' in unresolved. do not solve the final answer.
+E         ?           ++++++
+
+tests/test_selective_output_contract.py:67: AssertionError</failure></testcase><testcase classname="tests.test_selective_output_contract" name="test_non_docs_branches_do_not_receive_docs_output_requirements[log]" time="0.002"><failure message="AssertionError: assert 'legacy' not in '\nyou are b...al answer.\n'&#10;  &#10;  'legacy' is contained here:&#10;    rrent and legacy mode facts and put 'conflicting values for incident.recovery_mode' in unresolved. do not solve the final answer.&#10;  ?           ++++++">role = 'log'
+
+    @pytest.mark.parametrize("role", ["code", "log"])
+    def test_non_docs_branches_do_not_receive_docs_output_requirements(role):
+        case = selective.visible_cases()[0]
+        candidates = selective.task_specs(
+            case, lambda text: tuple(text.encode()), 1, 2, InheritanceMode.PREFIX_CAPSULE,
+        )
+        task = next(c.task for c in candidates if c.task.branch_id == f"{case.case_id}-{role}")
+&gt;       assert "legacy" not in bytes(task.suffix_token_ids).decode().lower()
+E       AssertionError: assert 'legacy' not in '\nyou are b...al answer.\n'
+E         
+E         'legacy' is contained here:
+E           rrent and legacy mode facts and put 'conflicting values for incident.recovery_mode' in unresolved. do not solve the final answer.
+E         ?           ++++++
+
+tests/test_selective_output_contract.py:67: AssertionError</failure></testcase></testsuite></testsuites>

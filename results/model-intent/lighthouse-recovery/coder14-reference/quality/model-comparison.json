@@ -1,0 +1,23 @@
+{
+  "reference": "Qwen/Qwen2.5-Coder-7B-Instruct@c03e6d358207e414f1eca0bb1891e29f1db0e242",
+  "treatment": "Qwen/Qwen2.5-Coder-14B-Instruct@aedcc2d42b622764e023cf882b6652e646b95671",
+  "before_model_outputs": true,
+  "file_byte_equal": {
+    "generation_config.json": false,
+    "merges.txt": true,
+    "tokenizer.json": true,
+    "tokenizer_config.json": true,
+    "vocab.json": true
+  },
+  "config_delta": {
+    "hidden_size": [3584, 5120],
+    "intermediate_size": [18944, 13824],
+    "max_window_layers": [28, 48],
+    "num_attention_heads": [28, 40],
+    "num_hidden_layers": [28, 48],
+    "num_key_value_heads": [4, 8],
+    "transformers_version": ["4.44.0", "4.43.1"]
+  },
+  "sampling_contract": "Use unchanged explicit structured_commit_sampling_params and frozen12action/512token/seed17/temperature0 settings, not standalone model.generate defaults.",
+  "interpretation": "A same-family checkpoint capability treatment with byte-identical tokenizer assets, not a pure parameter-count isolation."
+}

@@ -1,0 +1,25 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.14, pytest-9.1.1, pluggy-1.6.0 -- /mnt/disk2/user/octopus-contention/.venv/bin/python3
+cachedir: .pytest_cache
+rootdir: /mnt/disk2/user/octopus-admission
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 2 items
+
+tests/test_gpu_admission.py::test_real_gpu_preemption_and_resume_preserve_request_owners[cost_greedy] PASSED [ 50%]
+tests/test_gpu_admission.py::test_real_gpu_preemption_and_resume_preserve_request_owners[queue_aware] PASSED [100%]
+
+=============================== warnings summary ===============================
+../octopus-contention/.venv/lib/python3.12/site-packages/torch/jit/_script.py:365: 14 warnings
+  /mnt/disk2/user/octopus-contention/.venv/lib/python3.12/site-packages/torch/jit/_script.py:365: DeprecationWarning: `torch.jit.script_method` is deprecated. Please switch to `torch.compile` or `torch.export`.
+    warnings.warn(
+
+tests/test_gpu_admission.py::test_real_gpu_preemption_and_resume_preserve_request_owners[cost_greedy]
+  <frozen importlib._bootstrap_external>:1301: FutureWarning: The cuda.cudart module is deprecated and will be removed in a future release, please switch to use the cuda.bindings.runtime module instead.
+
+tests/test_gpu_admission.py::test_real_gpu_preemption_and_resume_preserve_request_owners[cost_greedy]
+  <frozen importlib._bootstrap_external>:1301: FutureWarning: The cuda.nvrtc module is deprecated and will be removed in a future release, please switch to use the cuda.bindings.nvrtc module instead.
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+- generated xml file: /mnt/disk2/user/octopus-admission/results/checkpoint-admission/repair-device/gpu6-stress-junit.xml -
+======================= 2 passed, 16 warnings in 29.09s ========================

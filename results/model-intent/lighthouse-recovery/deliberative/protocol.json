@@ -1,0 +1,23 @@
+{
+  "schema": "octopus-lighthouse-deliberative-counterfactual-v1",
+  "claim": "Test generic observation-grounded deliberation before action selection in the same single normal inference call, after exact fresh-engine reference reproduced the failure.",
+  "before_model_outputs": true,
+  "reference_freeze": "../raw-evidence/freeze.json",
+  "task": "GoogleChrome__lighthouse-10176",
+  "model_treatment": "tool_recovery_lora",
+  "adapter_sha256": "7819bf7aedc03be3c8d38c45c13570510e970598035aaa230c1c9e3172bfee84",
+  "only_protocol_delta": {"decision_format": "deliberative_v1"},
+  "prompt_and_schema_delta": "Generic reasoning field before nested unchanged tool-action schema; reasoning retained in the journal. No task-specific hints or examples.",
+  "model_episodes_max": 1,
+  "phase_gpu_seconds_max": 1200,
+  "max_actions": 12,
+  "max_output_tokens_per_action": 512,
+  "generation_seed": 17,
+  "training_runs_added": 0,
+  "extra_choice_or_critic_calls": 0,
+  "action_rewriting": false,
+  "quality_gate": "Original official resolved=true; behavior improvement or a nonempty patch alone is not PASS.",
+  "accounting": "All reasoning tokens, journal growth, rejected proposals and model requests count. This is not a zero-overhead or training-effect claim.",
+  "stop": "One completed model episode or real execution/budget blocker; no outcome-driven replay or recipe retuning. No multibranch/formal until their parent gates pass.",
+  "authorization_context": "Renewed autonomous same-task root-cause repair; separate explicit runtime-policy treatment, not a rerun of the original frozen recovery recipe."
+}

@@ -1,0 +1,93 @@
+{
+  "schema": "b5-native-mooncake-component-final-corrected-v1",
+  "scope_id": "b5-native-gpu-mooncake-provider-fault-component-20260918",
+  "status": "passed",
+  "host": "73F3-5xA6000-221",
+  "task_root": "/home/user/octopus-mooncake-b5-gpu-20260918-92142b99/attempt4",
+  "raw_terminal_report": {
+    "remote": "/home/user/octopus-mooncake-b5-gpu-20260918-92142b99/attempt4/results/terminal-report.json",
+    "local": "/home/ubuntu/.copilot/session-state/75572aa8-2b9c-43ff-be23-abc92016243a/files/b5-native-mooncake-component/attempt4-terminal-report.json"
+  },
+  "budget": {
+    "cap_seconds": 1200,
+    "prior_attempts_and_failed_probe_seconds": 557.5521372493244,
+    "corrected_stream_probe_seconds": 2.3232895261608064,
+    "fresh_normal_fault_component_seconds": 213.28365921974182,
+    "cumulative_seconds": 773.159087425227,
+    "remaining_seconds": 426.840912574773
+  },
+  "frozen_runtime": {
+    "LD_PRELOAD": "/home/user/octopus-sglang-conformance-138-20260917/venv/lib/python3.12/site-packages/nvidia/cu13/lib/libcudart.so.13:/usr/local/cuda-12.9/lib64/libcudart.so.12",
+    "io_backend": "direct",
+    "host_layout": "page_first_direct",
+    "namespace": "b5-native-mooncake-provider-fault-component-coherent-streams-20260918",
+    "model": "SWE-Gym/OpenHands-7B-Agent",
+    "weight_revision": "97054e70501d79c27499518af5ce613be6278bcb",
+    "tokenizer_revision": "c03e6d358207e414f1eca0bb1891e29f1db0e242",
+    "dtype": "bfloat16"
+  },
+  "corrected_stream_probe": {
+    "remote": "/home/user/octopus-b5-abi-probe-20260918-9333/native-copy-stream.json",
+    "status": "passed_native_copy_only",
+    "d2h_stream_handle": 397746032,
+    "h2d_stream_handle": 397795360,
+    "d2h_exact_match": true,
+    "h2d_exact_match": true
+  },
+  "normal": {
+    "status": "passed",
+    "attempt_count": 15,
+    "native_cached_tokens_observed": true,
+    "cached_token_examples": [520, 524, 512, 528, 539],
+    "completed_checks": [
+      "exact_raw_token_transport",
+      "multiple_real_engine_workers",
+      "stable_affinity",
+      "native_registry_removal",
+      "actual_origin_reassignment",
+      "canonical_state_rebind",
+      "structured_commit_and_continuation",
+      "precise_remote_abort_and_sibling_ownership",
+      "native_prefix_hit_and_cross_worker_inflight_overlap",
+      "accounted_cold_wave_before_same_key_output_overlap"
+    ]
+  },
+  "provider_fault": {
+    "status": "passed",
+    "run_id": "ea4ec53ae7d14590b59d73a77bbc70e6",
+    "native_persistence_ready_tokens": 512,
+    "provider_process_stopped": true,
+    "fresh_reader_restore": {
+      "status": "failed_as_required",
+      "l1_ready_tokens": 0,
+      "l2_ready_tokens": 0,
+      "l3_confirmed_tokens": 0,
+      "admitted_inference": 0,
+      "error": "native L3 read returned 0/512 tokens"
+    },
+    "explicit_cold_rebind": {
+      "status": "passed",
+      "cached_tokens": 0,
+      "output_tokens": 8
+    },
+    "completed_checks": [
+      "native_l3_persist_before_fault",
+      "external_fault_bound_to_run",
+      "fresh_reader_native_l3_failure",
+      "no_inference_on_failed_restore",
+      "separately_attributed_explicit_canonical_rebind"
+    ]
+  },
+  "cleanup": {
+    "all_recorded_master_provider_worker_gateway_selector_processes_stopped": true,
+    "task_processes_remaining": 0,
+    "nvidia_compute_apps_remaining": 0,
+    "task_listeners_remaining": 0
+  },
+  "claim_boundaries": {
+    "same_host_native_component_only": true,
+    "cross_compute_b5": false,
+    "quality_or_performance": false,
+    "physical_wire_metrics_unemitted": "unknown"
+  }
+}

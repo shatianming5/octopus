@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "buriy__python-readability.40256f__zgGKNFx__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# Long text with repeated spaces causes performance issues\n\n## Description\n\nI've discovered an issue with the readability library when processing HTML content that contains a large number of repeated spaces. When trying to parse content with many consecutive spaces, the library either hangs or takes an extremely long time to complete.\n\n## Steps to reproduce\n\nHere's a simple example that demonstrates the issue:\n\n```python\nfrom readability import Document\n\n# Create HTML with a large number of spaces\nlong_space = ' ' * 1000000\nsample = '<html><body><p>foo' + long_space + '</p></body></html>'\n\n# This operation hangs or takes extremely long\ndoc = Document(sample)\nsummary = doc.summary()\n```\n\nExpected behavior: The library should efficiently process the content and return a summary containing \"foo\" without significant delay.\n\nActual behavior: The operation hangs or takes an extremely long time to complete when processing text with many consecutive spaces.\n\n## Additional information\n\nThis issue appears to be related to how the library handles text content scoring in paragraphs. The problem seems to occur in the `score_paragraphs` method, which might not be efficiently handling very long strings with repeated characters.\n\nI've noticed this issue when processing content scraped from websites that sometimes include large blocks of whitespace in their HTML."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository structure and locate the code that scores paragraphs, since that's the likely source of the hang with long repeated spaces.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-0fc76bef-2922-4265-ace5-47be7f9d2530-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -50 && cat /testbed/README.md 2>/dev/null | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-0fc76bef-2922-4265-ace5-47be7f9d2530-0",
+            "content": "total 76\ndrwxr-xr-x 1 root root  4096 Sep 22 17:11 .\ndrwxr-xr-x 1 root root  4096 Sep 22 17:11 ..\ndrwxr-xr-x 8 root root  4096 Jul 12  2025 .git\n-rw-r--r-- 1 root root    34 Jul 12  2025 .gitattributes\n-rw-r--r-- 1 root root   131 Jul 12  2025 .gitignore\n-rw-rw-r-- 1 1005 1005     0 Sep 22 15:44 .gitkeep\n-rw-r--r-- 1 root root   576 Jul 12  2025 .travis.yml\n-rw-r--r-- 1 root root 11357 Jul 12  2025 LICENSE\n-rw-r--r-- 1 root root  1019 Jul 12  2025 Makefile\n-rw-r--r-- 1 root root  2808 Jul 12  2025 README.rst\ndrwxr-xr-x 3 root root  4096 Jul 12  2025 doc\ndrwxr-xr-x 2 root root  4096 Jul 12  2025 readability\ndrwxr-xr-x 2 root root  4096 Jul 12  2025 readability_lxml.egg-info\n-rw-r--r-- 1 root root    56 Jul 12  2025 requirements-dev.txt\n-rw-r--r-- 1 root root     5 Jul 12  2025 requirements.txt\n-rwxr-xr-x 1 root root  2389 Jul 12  2025 setup.py\ndrwxr-xr-x 3 root root  4096 Jul 12  2025 tests\n-rw-r--r-- 1 root root  1004 Jul 12  2025 tox.ini\n/testbed/readability/readability.py\n/testbed/readability/__init__.py\n/testbed/readability/debug.py\n/testbed/readability/browser.py\n/testbed/readability/htmls.py\n/testbed/readability/encoding.py\n/testbed/readability/cleaners.py\n/testbed/tests/__init__.py\n/testbed/tests/test_article_only.py\n/testbed/setup.py\n/testbed/doc/__init__.py\n/testbed/doc/source/conf.py\n/testbed/doc/source/__init__.py\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-9be9681c-cc2e-4765-9c97-2c809e962012-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/readability/readability.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-9be9681c-cc2e-4765-9c97-2c809e962012-1",
+            "content": "                for sib in el.itersiblings():\n                        # log.debug(sib.text_content())\n                        sib_content_length = text_length(sib)\n                        if sib_content_length:\n                            i = +1\n                            siblings.append(sib_content_length)\n                            if i == x:\n                                break\n                    for sib in el.itersiblings(preceding=True):\n                        # log.debug(sib.text_content())\n                        sib_content_length = text_length(sib)\n                        if sib_content_length:\n                            j = +1\n                            siblings.append(sib_content_length)\n                            if j == x:\n                                break\n                    # log.debug(str_(siblings))\n                    if siblings and sum(siblings) > 1000:\n                        to_remove = False\n                        log.debug(\"Allowing %s\" % describe(el))\n                        for desnode in self.tags(el, \"table\", \"ul\", \"div\", \"section\"):\n                            allowed[desnode] = True\n\n                if to_remove:\n                    log.debug(\n                        \"Removed %6.3f %s with weight %s cause it has %s.\"\n                        % (content_score, describe(el), weight, reason)\n                    )\n                    # print tounicode(el)\n                    # log.debug(\"pname %s pweight %.3f\" %(pname, pweight))\n                    el.drop_tree()\n                else:\n                    log.debug(\n                        \"Not removing %s of length %s: %s\"\n                        % (describe(el), content_length, text_content(el))\n                    )\n\n        self.html = node\n        return self.get_clean_html()\n\n\ndef main():\n    VERBOSITY = {1: logging.WARNING, 2: logging.INFO, 3: logging.DEBUG}\n\n    from optparse import OptionParser\n\n    parser = OptionParser(usage=\"%prog: [options] [file]\")\n    parser.add_option(\"-v\", \"--verbose\", action=\"count\", default=0)\n    parser.add_option(\n        \"-b\", \"--browser\", default=None, action=\"store_true\", help=\"open in browser\"\n    )\n    parser.add_option(\n        \"-l\", \"--log\", default=None, help=\"save logs into file (appended)\"\n    )\n    parser.add_option(\n        \"-u\", \"--url\", default=None, help=\"use URL instead of a local file\"\n    )\n    parser.add_option(\"-x\", \"--xpath\", default=None, help=\"add original xpath\")\n    parser.add_option(\n        \"-p\",\n        \"--positive-keywords\",\n        default=None,\n        help=\"positive keywords (comma-separated)\",\n        action=\"store\",\n    )\n    parser.add_option(\n        \"-n\",\n        \"--negative-keywords\",\n        default=None,\n        help=\"negative keywords (comma-separated)\",\n        action=\"store\",\n    )\n    (options, args) = parser.parse_args()\n\n    if options.verbose:\n        logging.basicConfig(\n            level=VERBOSITY[options.verbose],\n            filename=options.log,\n            format=\"%(asctime)s: %(levelname)s: %(message)s (at %(filename)s: %(lineno)d)\",\n        )\n\n    if not (len(args) == 1 or options.url):\n        parser.print_help()\n        sys.exit(1)\n\n    file = None\n    if options.url:\n        headers = {\"User-Agent\": \"Mozilla/5.0\"}\n        request = urllib.request.Request(options.url, None, headers)\n        file = urllib.request.urlopen(request)\n    else:\n        file = open(args[0])\n    try:\n        doc = Document(\n            file.read(),\n            url=options.url,\n            positive_keywords=options.positive_keywords,\n            negative_keywords=options.negative_keywords,\n        )\n        if options.browser:\n            from .browser import open_in_browser\n\n            result = \"<h2>\" + doc.short_title() + \"</h2><br/>\" + doc.summary()\n            open_in_browser(result)\n        else:\n            result = \"Title:\" + doc.short_title() + \"\\n\" + doc.summary()\n            print(result)\n    finally:\n        file.close()\n\n\nif __name__ == \"__main__\":\n    main()\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-51c9b0be-57b4-4125-bee7-2ff0e53babef-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "wc -l /testbed/readability/readability.py && head -n 400 /testbed/readability/readability.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-51c9b0be-57b4-4125-bee7-2ff0e53babef-2",
+            "content": "y in candidates\n                and candidates[sibling_key][\"content_score\"] >= sibling_score_threshold\n            ):\n                append = True\n\n            if sibling.tag == \"p\":\n                link_density = self.get_link_density(sibling)\n                node_content = sibling.text or \"\"\n                node_length = len(node_content)\n\n                if node_length > 80 and link_density < 0.25:\n                    append = True\n                elif (\n                    node_length <= 80\n                    and link_density == 0\n                    and re.search(r\"\\.( |$)\", node_content)\n                ):\n                    append = True\n\n            if append:\n                # We don't want to append directly to output, but the div\n                # in html->body->div\n                if html_partial:\n                    output.append(sibling)\n                else:\n                    output.getchildren()[0].getchildren()[0].append(sibling)\n        # if output is not None:\n        #    output.append(best_elem)\n        return output\n\n    def select_best_candidate(self, candidates):\n        if not candidates:\n            return None\n\n        sorted_candidates = sorted(\n            candidates.values(), key=lambda x: x[\"content_score\"], reverse=True\n        )\n        for candidate in sorted_candidates[:5]:\n            elem = candidate[\"elem\"]\n            log.debug(\"Top 5 : {:6.3f} {}\".format(candidate[\"content_score\"], describe(elem)))\n\n        best_candidate = sorted_candidates[0]\n        return best_candidate\n\n    def get_link_density(self, elem):\n        link_length = 0\n        for i in elem.findall(\".//a\"):\n            link_length += text_length(i)\n        # if len(elem.findall(\".//div\") or elem.findall(\".//p\")):\n        #    link_length = link_length\n        total_length = text_length(elem)\n        return float(link_length) / max(total_length, 1)\n\n    def score_paragraphs(self):\n        MIN_LEN = self.min_text_length\n        candidates = {}\n        ordered = []\n        for elem in self.tags(self._html(), \"p\", \"pre\", \"td\"):\n            parent_node = elem.getparent()\n            if parent_node is None:\n                continue\n            grand_parent_node = parent_node.getparent()\n\n            inner_text = clean(elem.text_content() or \"\")\n            inner_text_len = len(inner_text)\n\n            # If this paragraph is less than 25 characters\n            # don't even count it.\n            if inner_text_len < MIN_LEN:\n                continue\n\n            if parent_node not in candidates:\n                candidates[parent_node] = self.score_node(parent_node)\n                ordered.append(parent_node)\n\n            if grand_parent_node is not None and grand_parent_node not in candidates:\n                candidates[grand_parent_node] = self.score_node(grand_parent_node)\n                ordered.append(grand_parent_node)\n\n            content_score = 1\n            content_score += len(inner_text.split(\",\"))\n            content_score += min((inner_text_len / 100), 3)\n            # if elem not in candidates:\n            #    candidates[elem] = self.score_node(elem)\n\n            # WTF? candidates[elem]['content_score'] += content_score\n            candidates[parent_node][\"content_score\"] += content_score\n            if grand_parent_node is not None:\n                candidates[grand_parent_node][\"content_score\"] += content_score / 2.0\n\n        # Scale the final candidates score based on link density. Good content\n        # should have a relatively small link density (5% or less) and be\n        # mostly unaffected by this operation.\n        for elem in ordered:\n            candidate = candidates[elem]\n            ld = self.get_link_density(elem)\n            score = candidate[\"content_score\"]\n            log.debug(\n                \"Branch %6.3f %s link density %.3f -> %6.3f\"\n                % (score, describe(elem), ld, score * (1 - ld))\n            )\n            candidate[\"content_score\"] *= 1 - ld\n\n        return candidates\n\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-e1e8db5a-0f12-4317-9578-ba13acb8d55b-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/readability/htmls.py && echo \"====\" && cat /testbed/readability/cleaners.py && echo \"====\" && cat /testbed/readability/__init__.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-e1e8db5a-0f12-4317-9578-ba13acb8d55b-3",
+            "content": "et('content')) == 0:\n        return \"[no-author]\"\n\n    return author.get('content')\n\n\ndef add_match(collection, text, orig):\n    text = norm_title(text)\n    if len(text.split()) >= 2 and len(text) >= 15:\n        if text.replace('\"', \"\") in orig.replace('\"', \"\"):\n            collection.add(text)\n\n\nTITLE_CSS_HEURISTICS = [\n    \"#title\",\n    \"#head\",\n    \"#heading\",\n    \".pageTitle\",\n    \".news_title\",\n    \".title\",\n    \".head\",\n    \".heading\",\n    \".contentheading\",\n    \".small_header_red\",\n]\n\n\ndef shorten_title(doc):\n    title = doc.find(\".//title\")\n    if title is None or title.text is None or len(title.text) == 0:\n        return \"\"\n\n    title = orig = norm_title(title.text)\n\n    candidates = set()\n\n    for item in [\".//h1\", \".//h2\", \".//h3\"]:\n        for e in list(doc.iterfind(item)):\n            if e.text:\n                add_match(candidates, e.text, orig)\n            if e.text_content():\n                add_match(candidates, e.text_content(), orig)\n\n    for item in TITLE_CSS_HEURISTICS:\n        for e in doc.cssselect(item):\n            if e.text:\n                add_match(candidates, e.text, orig)\n            if e.text_content():\n                add_match(candidates, e.text_content(), orig)\n\n    if candidates:\n        title = sorted(candidates, key=len)[-1]\n    else:\n        for delimiter in [\" | \", \" - \", \" :: \", \" / \"]:\n            if delimiter in title:\n                parts = orig.split(delimiter)\n                if len(parts[0].split()) >= 4:\n                    title = parts[0]\n                    break\n                elif len(parts[-1].split()) >= 4:\n                    title = parts[-1]\n                    break\n        else:\n            if \": \" in title:\n                parts = orig.split(\": \")\n                if len(parts[-1].split()) >= 4:\n                    title = parts[-1]\n                else:\n                    title = orig.split(\": \", 1)[1]\n\n    if not 15 < len(title) < 150:\n        return orig\n\n    return title\n\n\n# is it necessary? Cleaner from LXML is initialized correctly in cleaners.py\ndef get_body(doc):\n    for elem in doc.xpath(\".//script | .//link | .//style\"):\n        elem.drop_tree()\n    # tostring() always return utf-8 encoded string\n    # FIXME: isn't better to use tounicode?\n    raw_html = tostring(doc.body or doc)\n    if isinstance(raw_html, bytes):\n        raw_html = raw_html.decode()\n    cleaned = clean_attributes(raw_html)\n    try:\n        # BeautifulSoup(cleaned) #FIXME do we really need to try loading it?\n        return cleaned\n    except Exception:  # FIXME find the equivalent lxml error\n        # logging.error(\"cleansing broke html content: %s\\n---------\\n%s\" % (raw_html, cleaned))\n        return raw_html\n====\n# strip out a set of nuisance html attributes that can mess up rendering in RSS feeds\nimport re\nfrom lxml.html.clean import Cleaner\n\nbad_attrs = [\"width\", \"height\", \"style\", \"[-a-z]*color\", \"background[-a-z]*\", \"on*\"]\nsingle_quoted = \"'[^']+'\"\ndouble_quoted = '\"[^\"]+\"'\nnon_space = \"[^ \\\"'>]+\"\nhtmlstrip = re.compile(\n    \"<\"  # open\n    \"([^>]+) \"  # prefix\n    \"(?:%s) *\" % (\"|\".join(bad_attrs),)\n    + \"= *(?:%s|%s|%s)\"  # undesirable attributes\n    % (non_space, single_quoted, double_quoted)\n    + \"([^>]*)\"  # value  # postfix\n    \">\",  # end\n    re.I,\n)\n\n\ndef clean_attributes(html):\n    while htmlstrip.search(html):\n        html = htmlstrip.sub(\"<\\\\1\\\\2>\", html)\n    return html\n\n\ndef normalize_spaces(s):\n    if not s:\n        return \"\"\n    \"\"\"replace any sequence of whitespace\n    characters with a single space\"\"\"\n    return \" \".join(s.split())\n\n\nhtml_cleaner = Cleaner(\n    scripts=True,\n    javascript=True,\n    comments=True,\n    style=True,\n    links=True,\n    meta=False,\n    add_nofollow=False,\n    page_structure=False,\n    processing_instructions=True,\n    embedded=False,\n    frames=False,\n    forms=False,\n    annoying_tags=False,\n    remove_tags=None,\n    remove_unknown_tags=False,\n    safe_attrs_only=False,\n)\n====\n__version__ = \"0.8.2\"\n\nfrom .readability import Document\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-bb360a84-5a5b-4e17-bb56-347d291cd5ed-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/readability/readability.py | head -n 200"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-bb360a84-5a5b-4e17-bb56-347d291cd5ed-4",
+            "content": "ng like object\n\n\nclass Document:\n    \"\"\"Class to build a etree document out of html.\"\"\"\n\n    def __init__(\n        self,\n        input,\n        positive_keywords=None,\n        negative_keywords=None,\n        url=None,\n        min_text_length=25,\n        retry_length=250,\n        xpath=False,\n        handle_failures=\"discard\",\n    ):\n        \"\"\"Generate the document\n\n        :param input: string of the html content.\n        :param positive_keywords: regex, list or comma-separated string of patterns in classes and ids\n        :param negative_keywords: regex, list or comma-separated string in classes and ids\n        :param min_text_length: Tunable. Set to a higher value for more precise detection of longer texts.\n        :param retry_length: Tunable. Set to a lower value for better detection of very small texts.\n        :param xpath: If set to True, adds x=\"...\" attribute to each HTML node,\n        containing xpath path pointing to original document path (allows to\n        reconstruct selected summary in original document).\n        :param handle_failures: Parameter passed to `lxml` for handling failure during exception.\n        Support options = [\"discard\", \"ignore\", None]\n\n        Examples:\n            positive_keywords=[\"news-item\", \"block\"]\n            positive_keywords=[\"news-item, block\"]\n            positive_keywords=re.compile(\"news|block\")\n            negative_keywords=[\"mysidebar\", \"related\", \"ads\"]\n\n        The Document class is not re-enterable.\n        It is designed to create a new Document() for each HTML file to process it.\n\n        API methods:\n        .title() -- full title\n        .short_title() -- cleaned up title\n        .content() -- full content\n        .summary() -- cleaned up content\n        \"\"\"\n        self.input = input\n        self.html = None\n        self.encoding = None\n        self.positive_keywords = compile_pattern(positive_keywords)\n        self.negative_keywords = compile_pattern(negative_keywords)\n        self.url = url\n        self.min_text_length = min_text_length\n        self.retry_length = retry_length\n        self.xpath = xpath\n        self.handle_failures = handle_failures\n\n    def _html(self, force=False):\n        if force or self.html is None:\n            self.html = self._parse(self.input)\n            if self.xpath:\n                root = self.html.getroottree()\n                for i in self.html.getiterator():\n                    # print root.getpath(i)\n                    i.attrib[\"x\"] = root.getpath(i)\n        return self.html\n\n    def _parse(self, input):\n        if isinstance(input, (_ElementTree, HtmlElement)):\n            doc = input\n            self.encoding = 'utf-8'\n        else:\n            doc, self.encoding = build_doc(input)\n        doc = html_cleaner.clean_html(doc)\n        base_href = self.url\n        if base_href:\n            # trying to guard against bad links like <a href=\"http://[http://...\">\n            try:\n                # such support is added in lxml 3.3.0\n                doc.make_links_absolute(\n                    base_href,\n                    resolve_base_href=True,\n                    handle_failures=self.handle_failures,\n                )\n            except TypeError:  # make_links_absolute() got an unexpected keyword argument 'handle_failures'\n                # then we have lxml < 3.3.0\n                # please upgrade to lxml >= 3.3.0 if you're failing here!\n                doc.make_links_absolute(\n                    base_href,\n                    resolve_base_href=True,\n                    handle_failures=self.handle_failures,\n                )\n        else:\n            doc.resolve_base_href(handle_failures=self.handle_failures)\n        return doc\n\n    def content(self):\n        \"\"\"Returns document body\"\"\"\n        return get_body(self._html(True))\n\n    def title(self):\n        \"\"\"Returns document title\"\"\"\n        return get_title(self._html(True))\n\n    def author(self):\n        \"\"\"Returns document author\"\"\"\n        return get_author(self._html(True))\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-571de526-261c-409c-a272-a1fe18a11086-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '200,450p' /testbed/readability/readability.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-571de526-261c-409c-a272-a1fe18a11086-5",
+            "content": "nk_length = 0\n        for i in elem.findall(\".//a\"):\n            link_length += text_length(i)\n        # if len(elem.findall(\".//div\") or elem.findall(\".//p\")):\n        #    link_length = link_length\n        total_length = text_length(elem)\n        return float(link_length) / max(total_length, 1)\n\n    def score_paragraphs(self):\n        MIN_LEN = self.min_text_length\n        candidates = {}\n        ordered = []\n        for elem in self.tags(self._html(), \"p\", \"pre\", \"td\"):\n            parent_node = elem.getparent()\n            if parent_node is None:\n                continue\n            grand_parent_node = parent_node.getparent()\n\n            inner_text = clean(elem.text_content() or \"\")\n            inner_text_len = len(inner_text)\n\n            # If this paragraph is less than 25 characters\n            # don't even count it.\n            if inner_text_len < MIN_LEN:\n                continue\n\n            if parent_node not in candidates:\n                candidates[parent_node] = self.score_node(parent_node)\n                ordered.append(parent_node)\n\n            if grand_parent_node is not None and grand_parent_node not in candidates:\n                candidates[grand_parent_node] = self.score_node(grand_parent_node)\n                ordered.append(grand_parent_node)\n\n            content_score = 1\n            content_score += len(inner_text.split(\",\"))\n            content_score += min((inner_text_len / 100), 3)\n            # if elem not in candidates:\n            #    candidates[elem] = self.score_node(elem)\n\n            # WTF? candidates[elem]['content_score'] += content_score\n            candidates[parent_node][\"content_score\"] += content_score\n            if grand_parent_node is not None:\n                candidates[grand_parent_node][\"content_score\"] += content_score / 2.0\n\n        # Scale the final candidates score based on link density. Good content\n        # should have a relatively small link density (5% or less) and be\n        # mostly unaffected by this operation.\n        for elem in ordered:\n            candidate = candidates[elem]\n            ld = self.get_link_density(elem)\n            score = candidate[\"content_score\"]\n            log.debug(\n                \"Branch %6.3f %s link density %.3f -> %6.3f\"\n                % (score, describe(elem), ld, score * (1 - ld))\n            )\n            candidate[\"content_score\"] *= 1 - ld\n\n        return candidates\n\n    def class_weight(self, e):\n        weight = 0\n        for feature in [e.get(\"class\", None), e.get(\"id\", None)]:\n            if feature:\n                if REGEXES[\"negativeRe\"].search(feature):\n                    weight -= 25\n\n                if REGEXES[\"positiveRe\"].search(feature):\n                    weight += 25\n\n                if self.positive_keywords and self.positive_keywords.search(feature):\n                    weight += 25\n\n                if self.negative_keywords and self.negative_keywords.search(feature):\n                    weight -= 25\n\n        if self.positive_keywords and self.positive_keywords.match(\"tag-\" + e.tag):\n            weight += 25\n\n        if self.negative_keywords and self.negative_keywords.match(\"tag-\" + e.tag):\n            weight -= 25\n\n        return weight\n\n    def score_node(self, elem):\n        content_score = self.class_weight(elem)\n        name = elem.tag.lower()\n        if name in [\"div\", \"article\"]:\n            content_score += 5\n        elif name in [\"pre\", \"td\", \"blockquote\"]:\n            content_score += 3\n        elif name in [\"address\", \"ol\", \"ul\", \"dl\", \"dd\", \"dt\", \"li\", \"form\", \"aside\"]:\n            content_score -= 3\n        elif name in [\n            \"h1\",\n            \"h2\",\n            \"h3\",\n            \"h4\",\n            \"h5\",\n            \"h6\",\n            \"th\",\n            \"header\",\n            \"footer\",\n            \"nav\",\n        ]:\n            content_score -= 5\n        return {\"content_score\": content_score, \"elem\": elem}\n\n    def remove_unlikely_candidates(self):\n        for elem in self.html.findall(\".//*\"):\n"
+          }
+        ]
+      }
+    }
+  ]
+}

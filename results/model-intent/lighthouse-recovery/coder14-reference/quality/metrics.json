@@ -1,0 +1,110 @@
+{
+  "schema": "octopus-lighthouse-coder14-quality-metrics-v1",
+  "task": "GoogleChrome__lighthouse-10176",
+  "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+  "revision": "aedcc2d42b622764e023cf882b6652e646b95671",
+  "decision": "QUALITY_FAIL",
+  "official_resolved": false,
+  "episode": {
+    "status": "complete",
+    "stop_reason": "model_done",
+    "proposals": 7,
+    "distinct_proposals": 7,
+    "physical_submissions": 6,
+    "rejections": 0,
+    "known_failed_physical_repeats": 0,
+    "repeated_physical_actions": 0,
+    "inspections": 3,
+    "lists": 1,
+    "searches": 1,
+    "reads": 1,
+    "edits": 1,
+    "tests": 2,
+    "done_actions": 1,
+    "failed_physical_submissions": 2,
+    "patch_bytes": 481
+  },
+  "developer_tests": [
+    {
+      "requested_argv": [
+        "yarn",
+        "jest"
+      ],
+      "effective_argv": [
+        "yarn",
+        "jest",
+        "--runInBand"
+      ],
+      "exit_code": 124,
+      "timed_out": true,
+      "feedback": "The serial Jest run made real progress and reported multiple passing suites before the tool timeout."
+    },
+    {
+      "requested_argv": [
+        "yarn",
+        "jest",
+        "--offline"
+      ],
+      "effective_argv": [
+        "yarn",
+        "jest",
+        "--runInBand",
+        "--offline"
+      ],
+      "exit_code": 1,
+      "timed_out": false,
+      "feedback": "Jest rejected --offline as an unrecognized CLI parameter."
+    }
+  ],
+  "official_evaluation": {
+    "status": "complete",
+    "eval_returncode": 0,
+    "fail_to_pass": {
+      "lighthouse-core/test/audits/dobetterweb/js-libraries-test.js": "FAILED"
+    },
+    "pass_to_pass": {},
+    "grading_wall_seconds": 11.67316978587769,
+    "resolved": false
+  },
+  "timing_seconds": {
+    "wrapper_elapsed": 96,
+    "parent_elapsed": 80.06046619894914,
+    "child_process_wall": 80.04064483102411,
+    "solver_e2e": 64.99471160699613,
+    "gpu_engine_scope": 62.318637578981
+  },
+  "native": {
+    "request_count": 7,
+    "finished_stopped": 7,
+    "actual_prefill_tokens": 6756,
+    "actual_decode_tokens": 167,
+    "prompt_tokens": 23140,
+    "selected_parent_tokens": 4842,
+    "inherited_tokens": 16384,
+    "adopted_prefix_tokens": 16384,
+    "capsule_tokens": 216,
+    "checkpoint_frontier_tokens": 4800,
+    "preemptions": 0,
+    "allocation_rejections": 0,
+    "cache_evictions": 0,
+    "max_simultaneous_scheduler_requests": 1,
+    "consumer_records": 37,
+    "final_pool": {
+      "active_blocks": 0,
+      "cold_free_blocks": 4357,
+      "free_blocks": 4787,
+      "request_owned_blocks": 0,
+      "retention_only_blocks": 0,
+      "shared_request_retention_blocks": 0,
+      "total_blocks": 4787,
+      "warm_cached_blocks": 430
+    }
+  },
+  "compute": {
+    "device": "NVIDIA GeForce RTX 4090 D",
+    "device_uuid": "GPU-3e940a5a-a24d-b615-dc69-df141ced7af0",
+    "precision": "torch.bfloat16",
+    "gpu_budget_seconds": 1170,
+    "gpu_engine_scope_seconds": 62.318637578981
+  }
+}

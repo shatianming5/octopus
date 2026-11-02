@@ -1,0 +1,83 @@
+Search RL trial search-read-alpha-full-1022 on Cluster Alpha (job 145532, 4x H200), outcome credit R = 2y-1, unchanged settings
+(BATCH 16 questions x 8 samples, SAVE_EVERY 10, STEPS 190 as the total-step ceiling). Run record, 10-23.
+
+Training code: ROOT/code-d57c294, the 145532 controller's code. On Alpha this directory's scripts/alpha/search.env is the
+#265 version (EPISODES_PER_SERVER=${EPISODES_PER_SERVER:-16}, md5 bb587cf..., copied 10-23 15:14-15:20; the d57c294 file is
+kept as search.env.pre-4c04bb5). That is the only file changed in the directory. Without it, the directory reproduces
+16 per server only; the 8-per-server restart needs the #265 file. The trainer segment before it ran code-5bf5548, which
+differs from d57c294 only in multi-host and env-gated paths for this single-node run. Main's search outcome change (#254,
+branch_credit and the search summaries) is not in the baseline.
+
+Topology: judge GPU0 (Qwen3-32B), rollout GPU1-2 (two SGLang servers, LoRA rank 64), training GPU3 (FSDP world 1 after
+the resume; earlier segments ran FSDP world 3 on another job with 4 remote rollout GPUs).
+
+Timeline:
+- steps 1-16: earlier jobs (14:38 Oct 22 to 02:03 Oct 23); step-16 recover written 02:02:32 (generation_step00000015).
+- 03 resume (queue task 03, 13:40 Oct 23): from the step-16 recover at EPISODES_PER_SERVER 16 (search.env default).
+  Trainer loaded the recover at 13:45:48. Stage A below.
+- 14:53:49: an attempted change to 8 per server through STATE/live.env. It had NO effect: the Search workflow does not read
+  live.env (only the SWE workflow does). Logged as such in ROOT/search/pilot/search-read-alpha-full-1022/concurrency-changes.log.
+  Its 15-minute check (14:53-15:09) therefore measured the 16-per-server run, not 8 per server.
+- 15:14: trainer stopped by hand (coordinator decision). The rollouts in flight at the stop were discarded (3 of 16 groups
+  of the step-17 batch were done). Recover: step 16.
+- 04 resume (queue task 04): started 15:20:03 at EPISODES_PER_SERVER=8 (a launch parameter, via search.env); trainer up
+  15:23:09; the step-16 recover (epoch_step 16, global_step 16) loaded at 15:25:22. max_concurrent_rollouts = 16 (8 x 2
+  servers). Stage B below. Step 17 was retrained from the step-16 recover at 8 per server; step 18 finished at 16:28 EDT.
+
+Request failures. Code path (cursor-d57c294 and d57c294): octopus/rl/workflow.py _trial_requests raises "a model request
+failed" when any request of the episode is not HTTP 200 (lines 55-56); the search run raises; AReaL classifies it as
+unknown_failure_reject; areal/infra/remote_inf_engine.py gathers the group's samples, cancels the others when one fails,
+and raises group_error.
+- A failed episode is NOT scored as y=0 and is NOT trained on. Its whole group (the 8 samples of its question) is not
+  trained. A context overflow with reward zero is the other path: the AReaL proxy logs "Recovering model failure with reward
+  0" (cursor-d57c294 areal/experimental/openai/proxy/workflow.py lines 598-602).
+- Overflow with reward zero, checked by grep -c "Recovering model failure with reward 0" (exact string of that log line):
+  trainer log (train-search-read-alpha-full-1022.log): 0 over the whole trial, 0 from 03 resume (13:45); rollout.log: 0 and
+  0; merged.log: 0 and 0. So no zero-reward overflow in this run, as far as these logs record it.
+- Counts per stage (timestamps in the AReaL log lines; the trainer's stdout log and rollout.log give the same numbers):
+  Stage A, 16 per server, 13:45:48-15:14:00 Oct 23: 76 'Workflow execution failed' lines, one per rejected group = 76 groups
+    rejected; 76 unknown_failure_reject lines, one per failed sample (so one failed sample per rejected group). Episode trees
+    (tree.json main_end, file time in the window): 248 done, 51 'request failed', 49 'no tool call'. The 51 trees are not
+    reconciled with the 76 failed samples. Candidate reasons, not checked: (i) a failed branch thread ends only that thread,
+    while the main thread still ends done or no tool call; (ii) a harness exception raises but does not write 'request
+    failed'; (iii) trees that ended outside the stage window (file time) are not in this count.
+  Stage B, 8 per server, 15:25:22-16:30:00 Oct 23: 1 'Workflow execution failed' = 1 group rejected = 1 unknown_failure_reject.
+    Episode trees in the window: 1061 done, 0 'request failed', 171 'no tool call', 71 'context', 1 'step cap'.
+    'context' is the agent's own thread budget ending: octopus/runtime/core.py appends a "context" step when a thread's
+    prompt grows more than thread_budget past its first prompt, and octopus/runtime/tree.py main_ending returns "context"
+    for it. It is not an overflow of the proxy, and it is not the overflow reward path above.
+  Total rejected groups: 76 + 1 = 77, the same 77 counted from rollout.log and the trainer log since the 03 resume (13:45).
+  main.log is not updated after 02:03 Oct 23 (its last Train step line is 16), so it does not count these; its totals
+  (3240 'Workflow execution failed' in total) are from earlier segments and are not used here.
+- Request-failed share of finished episode trees: stage A 51 of 348 (14.7%); stage B 0 of 1304.
+
+Coverage (train qids covered, the epoch-stop watcher's stop rule): search_finished_qids.py counts a train qid as covered
+when at least one of its episodes has a tree.json main_end that is not 'request failed' (read from the job dirs). So a qid
+is counted covered even when its group was rejected as a whole (a failed sibling discards the group), and a covered qid is
+not necessarily trained. "Covered" means "some rollout of this question finished normally", not "trained". The 1189
+covered at the stop includes such groups. The stop rule (all 3040 covered, or 3000 with five steps without growth, and
+DEADLINE 2026-10-24 05:45 EDT) is unchanged; the 'one pass over the train split' claim must be read with this definition.
+
+Stop (user decision): the Search baseline was stopped before one pass over the train split, by the user's decision
+(16:28-16:32 EDT). An external 40-step baseline, run by a separate helper, exists: its adapter is on the Hugging Face
+private repo octopus-org/octopus-search-qwen3.5-4b-lora. Its Val and BCP are evaluated on Alpha with
+scripts/alpha/search_eval.sh (the eval runs are recorded in the eval logs under ROOT/search/pilot/eval/), and the Beta
+checkpoint curve runs with scripts/beta/tasks/search-ckpt-curve.sh.
+- Stop point: after Train step 18 (the step-18 boundary, +60 s). Recover generation_step00000017 (the step-18 state), with all
+  checkpoints, recover info and the coverage cache (ROOT/search/analysis-covered.txt), kept.
+- The trainer stop and the nested search.sbatch's TERM were checked: judge, BM25 service and rollout servers stopped; GPUs
+  0 MiB on all four.
+- Coverage at the stop: 1189 of 3040 train qids covered (1851 remaining), with the meaning given above.
+
+Concurrency correction: the 14:53 change to 8 per server through STATE/live.env had no effect. The unit of
+EPISODES_PER_SERVER is a group (one question with its 8 samples): AReaL's max_concurrent_rollouts = EPISODES_PER_SERVER x
+servers counts submitted workflow items, and the search workflow submits one row per question (the samples are merged by
+rollout_index in octopus/rl/workflow.py plan_group_rewards). So stage A (16 per server) = 16 groups = 128 episodes per
+server (256 in flight); stage B (8 per server) = 8 groups = 64 episodes per server (128 in flight).
+parallel (rl.episodes_per_server) is stored by SearchEpisodeAgent but not used as a semaphore in search.
+
+Beta's search-v5 run (max_concurrent_rollouts 32, episodes_per_server 16, consumer_batch_size 16): its main.log shows no
+workflow failure at Train step 55 (0 'Workflow execution failed', 0 unknown_failure_reject). Stage A ran the same
+max_concurrent_rollouts (16 per server x 2) and had 76 rejected groups in 88 minutes (13:45:48-15:14:00); the failure
+difference between the two runs is not established (hardware memory and the node layout are the candidates; the stage A
+numbers are from this trial's own logs).

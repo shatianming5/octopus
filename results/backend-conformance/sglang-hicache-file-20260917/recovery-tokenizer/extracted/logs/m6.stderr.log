@@ -1,0 +1,134 @@
+
+Multi-thread loading shards:   0% Completed | 0/4 [00:00<?, ?it/s]
+Multi-thread loading shards:  25% Completed | 1/4 [00:00<00:01,  1.93it/s]
+Multi-thread loading shards:  50% Completed | 2/4 [00:01<00:01,  1.63it/s]
+Multi-thread loading shards:  75% Completed | 3/4 [00:01<00:00,  1.66it/s]
+Multi-thread loading shards: 100% Completed | 4/4 [00:02<00:00,  2.18it/s]
+Multi-thread loading shards: 100% Completed | 4/4 [00:02<00:00,  1.97it/s]
+[2026-09-18 06:24:07] Native placement L3 lookup failed
+Traceback (most recent call last):
+  File "/home/user/octopus-sglang-conformance-138-20260917/venv/lib/python3.12/site-packages/torch/utils/cpp_extension.py", line 2893, in _run_ninja_build
+    subprocess.run(
+  File "/home/user/octopus-sglang-conformance-138-20260917/runtime-python/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['ninja', '-v']' returned non-zero exit status 1.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/mem_cache/cpp_utils/native_hash.py", line 33, in _load_native_hash_module
+    return load(
+           ^^^^^
+  File "/home/user/octopus-sglang-conformance-138-20260917/venv/lib/python3.12/site-packages/torch/utils/cpp_extension.py", line 1927, in load
+    return _jit_compile(
+           ^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-conformance-138-20260917/venv/lib/python3.12/site-packages/torch/utils/cpp_extension.py", line 2382, in _jit_compile
+    _write_ninja_file_and_build_library(
+  File "/home/user/octopus-sglang-conformance-138-20260917/venv/lib/python3.12/site-packages/torch/utils/cpp_extension.py", line 2543, in _write_ninja_file_and_build_library
+    _run_ninja_build(
+  File "/home/user/octopus-sglang-conformance-138-20260917/venv/lib/python3.12/site-packages/torch/utils/cpp_extension.py", line 2910, in _run_ninja_build
+    raise RuntimeError(message) from e
+RuntimeError: Error building extension 'hicache_hash_cpp': [1/2] c++ -MMD -MF hash_binding.o.d -DTORCH_EXTENSION_NAME=hicache_hash_cpp -DTORCH_API_INCLUDE_EXTENSION_H -isystem /home/user/octopus-sglang-conformance-138-20260917/venv/lib/python3.12/site-packages/torch/include -isystem /home/user/octopus-sglang-conformance-138-20260917/venv/lib/python3.12/site-packages/torch/include/torch/csrc/api/include -isystem /home/user/octopus-sglang-conformance-138-20260917/runtime-python/include/python3.12 -fPIC -std=c++20 -O3 -std=c++17 -DNDEBUG -mavx2 -c /home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/mem_cache/cpp_utils/hash_binding.cpp -o hash_binding.o 
+FAILED: [code=1] hash_binding.o 
+c++ -MMD -MF hash_binding.o.d -DTORCH_EXTENSION_NAME=hicache_hash_cpp -DTORCH_API_INCLUDE_EXTENSION_H -isystem /home/user/octopus-sglang-conformance-138-20260917/venv/lib/python3.12/site-packages/torch/include -isystem /home/user/octopus-sglang-conformance-138-20260917/venv/lib/python3.12/site-packages/torch/include/torch/csrc/api/include -isystem /home/user/octopus-sglang-conformance-138-20260917/runtime-python/include/python3.12 -fPIC -std=c++20 -O3 -std=c++17 -DNDEBUG -mavx2 -c /home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/mem_cache/cpp_utils/hash_binding.cpp -o hash_binding.o 
+/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/mem_cache/cpp_utils/hash_binding.cpp:5:10: fatal error: openssl/sha.h: No such file or directory
+    5 | #include <openssl/sha.h>
+      |          ^~~~~~~~~~~~~~~
+compilation terminated.
+ninja: build stopped: subcommand failed.
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/managers/cache_controller.py", line 1227, in prefetch_thread_func
+    hash_value, storage_hit_count = self._storage_hit_query(operation)
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/mem_cache/hybrid_cache/hybrid_cache_controller.py", line 579, in _storage_hit_query
+    hash_value = self.get_hash_str(
+                 ^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/mem_cache/utils.py", line 113, in get_hash_str
+    return get_native_hash(token_ids, prior_digest, page_size)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/mem_cache/cpp_utils/native_hash.py", line 84, in get_native_hash
+    return _load_native_hash_module().get_hash(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/mem_cache/cpp_utils/native_hash.py", line 42, in _load_native_hash_module
+    raise RuntimeError("Failed to load HiCache native hash extension") from exc
+RuntimeError: Failed to load HiCache native hash extension
+[2026-09-18 06:24:35] Scheduler hit an exception: Traceback (most recent call last):
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/mem_cache/cpp_utils/native_hash.py", line 33, in _load_native_hash_module
+    return load(
+           ^^^^^
+  File "/home/user/octopus-sglang-conformance-138-20260917/venv/lib/python3.12/site-packages/torch/utils/cpp_extension.py", line 1927, in load
+    return _jit_compile(
+           ^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-conformance-138-20260917/venv/lib/python3.12/site-packages/torch/utils/cpp_extension.py", line 2408, in _jit_compile
+    return _import_module_from_library(name, build_directory, is_python_module)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-conformance-138-20260917/venv/lib/python3.12/site-packages/torch/utils/cpp_extension.py", line 2931, in _import_module_from_library
+    module = importlib.util.module_from_spec(spec)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 813, in module_from_spec
+  File "<frozen importlib._bootstrap_external>", line 1293, in create_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+ImportError: /mnt/disk5/user/.cache/torch_extensions/py312_cu130/hicache_hash_cpp/hicache_hash_cpp.so: cannot open shared object file: No such file or directory
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/managers/scheduler.py", line 5619, in run_scheduler_process
+    scheduler.run_event_loop()
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/managers/scheduler.py", line 1795, in run_event_loop
+    dispatch_event_loop(self)
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/managers/scheduler.py", line 5465, in dispatch_event_loop
+    scheduler.event_loop_overlap()
+  File "/home/user/octopus-sglang-conformance-138-20260917/venv/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/managers/scheduler.py", line 1904, in event_loop_overlap
+    pop_and_process()
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/managers/scheduler.py", line 1855, in pop_and_process
+    self.process_batch_result(tmp_batch, tmp_result)
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/utils/nvtx_utils.py", line 109, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/managers/scheduler.py", line 4388, in process_batch_result
+    self.batch_result_processor.process_batch_result_prefill(batch, result)
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/managers/scheduler_components/batch_result_processor.py", line 346, in process_batch_result_prefill
+    maybe_cache_unfinished_req(req, self.tree_cache)
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/mem_cache/common.py", line 165, in maybe_cache_unfinished_req
+    tree_cache.cache_unfinished_req(req, **kwargs)
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/mem_cache/unified_radix_cache.py", line 991, in cache_unfinished_req
+    result = self.insert(insert_params)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/mem_cache/unified_radix_cache.py", line 551, in insert
+    step = self.tree_core.begin_insert(params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/mem_cache/unified_cache/unified_tree_core.py", line 968, in begin_insert
+    return self._advance_insert()
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/mem_cache/unified_cache/unified_tree_core.py", line 994, in _advance_insert
+    self._insert_commit_step(state)
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/mem_cache/unified_cache/unified_tree_core.py", line 1097, in _insert_commit_step
+    state.target_node = self._add_new_node(
+                        ^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/mem_cache/unified_cache/unified_tree_core.py", line 1226, in _add_new_node
+    new_node.hash_value = compute_node_hash_values(new_node, self.page_size)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/mem_cache/utils.py", line 134, in compute_node_hash_values
+    hash_values = get_hash_str(node.key, parent_hash, page_size=page_size)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/mem_cache/utils.py", line 113, in get_hash_str
+    return get_native_hash(token_ids, prior_digest, page_size)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/mem_cache/cpp_utils/native_hash.py", line 84, in get_native_hash
+    return _load_native_hash_module().get_hash(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/mem_cache/cpp_utils/native_hash.py", line 42, in _load_native_hash_module
+    raise RuntimeError("Failed to load HiCache native hash extension") from exc
+RuntimeError: Failed to load HiCache native hash extension
+
+[2026-09-18 06:24:35] SIGQUIT received. signum=None, frame=None. It usually means one child failed.
+[rank0]:[W918 06:24:35.821635000 ProcessGroupNCCL.cpp:1624] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+[2026-09-18 06:24:40] No live scheduler processes found; skipping py-spy and CUDA coredump.

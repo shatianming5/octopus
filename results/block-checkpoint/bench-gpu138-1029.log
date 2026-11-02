@@ -1,0 +1,35 @@
+micro-batch: 14 rows, 5 reads, 289839 flat tokens, 199117 tree tokens
+[rank 0] k=1: host saved 32.29 GiB = 170.0 KiB/tree token, GPU peak 15.9 GiB, forward+backward 374.3 s
+[rank 1] k=1: host saved 32.29 GiB = 170.0 KiB/tree token, GPU peak 15.9 GiB, forward+backward 374.3 s
+[rank 0] k=1: host saved 32.29 GiB = 170.0 KiB/tree token, GPU peak 16.1 GiB, forward+backward 192.7 s; vs first run: logp max |diff| 0, LoRA grads max rel L2 diff 0.013, identical False
+[rank 1] k=1: host saved 32.29 GiB = 170.0 KiB/tree token, GPU peak 16.1 GiB, forward+backward 192.7 s; vs first run: logp max |diff| 0, LoRA grads max rel L2 diff 0.0131, identical False
+[rank 0] k=4: host saved 9.50 GiB = 50.0 KiB/tree token, GPU peak 19.5 GiB, forward+backward 214.6 s; vs first run: logp max |diff| 0, LoRA grads max rel L2 diff 0.013, identical False
+[rank 1] k=4: host saved 9.50 GiB = 50.0 KiB/tree token, GPU peak 19.5 GiB, forward+backward 214.1 s; vs first run: logp max |diff| 0, LoRA grads max rel L2 diff 0.0131, identical False
+[rank 0] k=2: host saved 17.10 GiB = 90.0 KiB/tree token, GPU peak 20.1 GiB, forward+backward 208.1 s; vs first run: logp max |diff| 0, LoRA grads max rel L2 diff 0.013, identical False
+[rank 1] k=2: host saved 17.10 GiB = 90.0 KiB/tree token, GPU peak 20.1 GiB, forward+backward 207.5 s; vs first run: logp max |diff| 0, LoRA grads max rel L2 diff 0.0131, identical False
+[rank 0] k=8: host saved 5.70 GiB = 30.0 KiB/tree token, GPU peak 22.4 GiB, forward+backward 220.4 s; vs first run: logp max |diff| 0, LoRA grads max rel L2 diff 0.0128, identical False
+[rank 1] k=8: host saved 5.70 GiB = 30.0 KiB/tree token, GPU peak 22.4 GiB, forward+backward 219.8 s; vs first run: logp max |diff| 0, LoRA grads max rel L2 diff 0.013, identical False
+== 994k-tree-token unit (search-5271), --blocks 4
+micro-batch: 34 rows, 63 reads, 1665205 flat tokens, 993647 tree tokens
+[rank1]: torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 1.90 GiB. GPU 1 has a total capacity of 47.40 GiB of which 1.65 GiB is free. Including non-PyTorch memory, this process has 45.59 GiB memory in use. Of the allocated memory 45.00 GiB is allocated by PyTorch, and 102.90 MiB is reserved by PyTorch but unallocat
+[rank0]: torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 1.90 GiB. GPU 0 has a total capacity of 47.40 GiB of which 1.65 GiB is free. Including non-PyTorch memory, this process has 45.59 GiB memory in use. Of the allocated memory 45.00 GiB is allocated by PyTorch, and 102.90 MiB is reserved by PyTorch but unallocat
+== 994k-tree-token unit (search-5271), --blocks 2
+micro-batch: 34 rows, 63 reads, 1665205 flat tokens, 993647 tree tokens
+[rank1]: torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 1.90 GiB. GPU 1 has a total capacity of 47.40 GiB of which 1.77 GiB is free. Including non-PyTorch memory, this process has 45.34 GiB memory in use. Of the allocated memory 44.63 GiB is allocated by PyTorch, and 226.46 MiB is reserved by PyTorch but unallocat
+[rank0]: torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 1.90 GiB. GPU 0 has a total capacity of 47.40 GiB of which 1.77 GiB is free. Including non-PyTorch memory, this process has 45.34 GiB memory in use. Of the allocated memory 44.63 GiB is allocated by PyTorch, and 226.46 MiB is reserved by PyTorch but unallocat
+== new code, 60k unit (search-1994), GPUs 3-4
+[octopus] mount unit over the micro-batch cap: 92408 > 60000 tree tokens (5 sequences)
+[octopus] mount unit over the micro-batch cap: 92408 > 60000 tree tokens (5 sequences)
+[octopus] mount unit over the micro-batch cap: 63128 > 60000 tree tokens (8 sequences)
+[octopus] mount unit over the micro-batch cap: 63128 > 60000 tree tokens (8 sequences)
+micro-batch: 3 rows, 0 reads, 62328 flat tokens, 59654 tree tokens
+[rank 1] k=1: host saved 9.67 GiB = 170.0 KiB/tree token, GPU peak 11.3 GiB, forward+backward 51.7 s
+[rank 0] k=1: host saved 9.67 GiB = 170.0 KiB/tree token, GPU peak 11.3 GiB, forward+backward 51.7 s
+[rank 0] k=1: host saved 9.67 GiB = 170.0 KiB/tree token, GPU peak 11.5 GiB, forward+backward 48.9 s; vs first run: logp max |diff| 0, LoRA grads max rel L2 diff 0.0128, identical False
+[rank 1] k=1: host saved 9.67 GiB = 170.0 KiB/tree token, GPU peak 11.5 GiB, forward+backward 48.9 s; vs first run: logp max |diff| 0, LoRA grads max rel L2 diff 0.013, identical False
+[rank 1] k=4: host saved 2.85 GiB = 50.0 KiB/tree token, GPU peak 13.6 GiB, forward+backward 55.2 s; vs first run: logp max |diff| 0, LoRA grads max rel L2 diff 0.0132, identical False
+[rank 0] k=4: host saved 2.85 GiB = 50.0 KiB/tree token, GPU peak 13.6 GiB, forward+backward 55.4 s; vs first run: logp max |diff| 0, LoRA grads max rel L2 diff 0.0133, identical False
+== 640k-tree-token unit (search-6296), --blocks 4 --pin-gib 31, GPUs 3-4
+micro-batch: 50 rows, 16 reads, 1531629 flat tokens, 640053 tree tokens
+[rank 0] k=4: host saved 30.54 GiB = 50.0 KiB/tree token, GPU peak 37.8 GiB, forward+backward 725.0 s
+[rank 1] k=4: host saved 30.54 GiB = 50.0 KiB/tree token, GPU peak 37.8 GiB, forward+backward 725.0 s

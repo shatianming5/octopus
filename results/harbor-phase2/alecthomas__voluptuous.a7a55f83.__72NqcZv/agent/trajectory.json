@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "alecthomas__voluptuous.a7a55f83.__72NqcZv__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# Schema.infer() method doesn't correctly infer types from complex data structures\n\n## Description\n\nI'm trying to use the `Schema.infer()` method to automatically create schemas from existing data structures, but it's not working correctly for nested data structures and collections.\n\nFor example, when I try to infer a schema from a dictionary with nested values:\n\n```python\nfrom voluptuous import Schema\n\ndata = {'a': {'b': {'c': 'foo'}}}\nschema = Schema.infer(data)\n```\n\nThe inferred schema doesn't match what I would expect. It creates a nested structure of Schema objects instead of a simple nested dictionary structure.\n\nSimilarly, when inferring from lists, it only seems to use the first element to determine the type:\n\n```python\ndata = {'list': ['foo', True, 42, 3.14]}\nschema = Schema.infer(data)\n```\n\nThe resulting schema only includes the type of the first element in the list, not all the different types.\n\nEven simple cases like empty dictionaries and lists don't work as expected:\n\n```python\nSchema.infer({})  # Returns Schema({}) instead of Schema(dict)\nSchema.infer([])  # Returns Schema([]) instead of Schema(list)\n```\n\n## Steps to reproduce\n\n```python\nfrom voluptuous import Schema\n\n# Test with scalar values\nprint(Schema.infer('foo'))  # Should be Schema(str)\nprint(Schema.infer(True))   # Should be Schema(bool)\nprint(Schema.infer(42))     # Should be Schema(int)\nprint(Schema.infer(3.14))   # Should be Schema(float)\nprint(Schema.infer({}))     # Should be Schema(dict)\nprint(Schema.infer([]))     # Should be Schema(list)\n\n# Test with nested dictionary\nnested_dict = {'a': {'b': {'c': 'foo'}}}\nprint(Schema.infer(nested_dict))  # Should be Schema({'a': {'b': {'c': str}}})\n\n# Test with list of different types\nmixed_list = {'list': ['foo', True, 42, 3.14]}\nprint(Schema.infer(mixed_list))  # Should be Schema({'list': [str, bool, int, float]})\n```\n\nThe issue seems to be in the implementation of the `infer` method, which doesn't correctly handle nested structures and only uses the first element of collections to determine types."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository and the current `Schema.infer()` implementation to see how nested structures and collections are handled.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-ca9dd867-8bd9-412b-88bf-1e61df920dfe-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -50 && cat /testbed/README.md 2>/dev/null | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-ca9dd867-8bd9-412b-88bf-1e61df920dfe-0",
+            "content": "\n-rw-r--r-- 1 root root   358 Jul 12  2025 pyproject.toml\n-rw-r--r-- 1 root root   281 Jul 12  2025 renovate.json5\n-rw-r--r-- 1 root root  1213 Jul 12  2025 setup.py\n-rw-r--r-- 1 root root   749 Jul 12  2025 tox.ini\ndrwxr-xr-x 4 root root  4096 Jul 12  2025 voluptuous\ndrwxr-xr-x 2 root root  4096 Jul 12  2025 voluptuous.egg-info\n/testbed/setup.py\n/testbed/voluptuous/__init__.py\n/testbed/voluptuous/validators.py\n/testbed/voluptuous/tests/__init__.py\n/testbed/voluptuous/tests/tests.py\n/testbed/voluptuous/schema_builder.py\n/testbed/voluptuous/humanize.py\n/testbed/voluptuous/error.py\n/testbed/voluptuous/util.py\n\n# CONTRIBUTIONS ONLY\n\n**What does this mean?** I do not have time to fix issues myself. The only way fixes or new features will be added is by people submitting PRs.\n\n**Current status:** Voluptuous is largely feature stable. There hasn't been a need to add new features in a while, but there are some bugs that should be fixed.\n\n**Why?** I no longer use Voluptuous personally (in fact I no longer regularly write Python code). Rather than leave the project in a limbo of people filing issues and wondering why they're not being worked on, I believe this notice will more clearly set expectations.\n\n# Voluptuous is a Python data validation library\n\n[![image](https://img.shields.io/pypi/v/voluptuous.svg)](https://python.org/pypi/voluptuous)\n[![image](https://img.shields.io/pypi/l/voluptuous.svg)](https://python.org/pypi/voluptuous)\n[![image](https://img.shields.io/pypi/pyversions/voluptuous.svg)](https://python.org/pypi/voluptuous)\n[![Test status](https://github.com/alecthomas/voluptuous/actions/workflows/tests.yml/badge.svg)](https://github.com/alecthomas/voluptuous/actions/workflows/tests.yml)\n[![Coverage status](https://coveralls.io/repos/github/alecthomas/voluptuous/badge.svg?branch=master)](https://coveralls.io/github/alecthomas/voluptuous?branch=master)\n[![Gitter chat](https://badges.gitter.im/alecthomas.svg)](https://gitter.im/alecthomas/Lobby)\n\nVoluptuous, *despite* the name, is a Python data validation library. It\nis primarily intended for validating data coming into Python as JSON,\nYAML, etc.\n\nIt has three goals:\n\n1. Simplicity.\n2. Support for complex data structures.\n3. Provide useful error messages.\n\n## Contact\n\nVoluptuous now has a mailing list! Send a mail to\n[<voluptuous@librelist.com>](mailto:voluptuous@librelist.com) to subscribe. Instructions\nwill follow.\n\nYou can also contact me directly via [email](mailto:alec@swapoff.org) or\n[Twitter](https://twitter.com/alecthomas).\n\nTo file a bug, create a [new issue](https://github.com/alecthomas/voluptuous/issues/new) on GitHub with a short example of how to replicate the issue.\n\n## Documentation\n\nThe documentation is provided [here](http://alecthomas.github.io/voluptuous/).\n\n## Contribution to Documentation\n\nDocumentation is built using `Sphinx`. You can install it by\n\n    pip install -r requirements.txt\n\nFor building `sphinx-apidoc` from scratch you need to set PYTHONPATH to `voluptuous/voluptuous` repository.\n\nThe documentation is provided [here.](http://alecthomas.github.io/voluptuous/)\n\n## Changelog\n\nSee [CHANGELOG.md](https://github.com/alecthomas/voluptuous/blob/master/CHANGELOG.md).\n\n## Why use Voluptuous over another validation library?\n\n**Validators are simple callables:**\nNo need to subclass anything, just use a function.\n\n**Errors are simple exceptions:**\nA validator can just `raise Invalid(msg)` and expect the user to get\nuseful messages.\n\n**Schemas are basic Python data structures:**\nShould your data be a dictionary of integer keys to strings?\n`{int: str}` does what you expect. List of integers, floats or\nstrings? `[int, float, str]`.\n\n**Designed from the ground up for validating more than just forms:**\nNested data structures are treated in the same way as any other\ntype. Need a list of dictionaries? `[{}]`\n\n**Consistency:**\nTypes in the schema are checked as types. Values are compared as\nvalues. Callables are called to validate. Simple.\n\n## Show me an example\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-e0d29474-480a-4f00-a160-1cc47ebaac92-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "rg -n \"infer\" /testbed --type py && echo \"==== schema_builder.py ====\" && wc -l /testbed/voluptuous/schema_builder.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-e0d29474-480a-4f00-a160-1cc47ebaac92-1",
+            "content": "bash: line 1: rg: command not found\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-6400c121-c488-45d3-9bd1-5cc4097fcf0a-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "grep -n \"infer\" /testbed -r --include=\"*.py\" && echo \"==== schema_builder.py lines ====\" && wc -l /testbed/voluptuous/schema_builder.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-6400c121-c488-45d3-9bd1-5cc4097fcf0a-2",
+            "content": "/testbed/voluptuous/tests/tests.py:1103:def test_schema_infer():\n/testbed/voluptuous/tests/tests.py:1104:    schema = Schema.infer({'str': 'foo', 'bool': True, 'int': 42, 'float': 3.14})\n/testbed/voluptuous/tests/tests.py:1115:def test_schema_infer_dict():\n/testbed/voluptuous/tests/tests.py:1116:    schema = Schema.infer({'a': {'b': {'c': 'foo'}}})\n/testbed/voluptuous/tests/tests.py:1121:def test_schema_infer_list():\n/testbed/voluptuous/tests/tests.py:1122:    schema = Schema.infer({'list': ['foo', True, 42, 3.14]})\n/testbed/voluptuous/tests/tests.py:1127:def test_schema_infer_scalar():\n/testbed/voluptuous/tests/tests.py:1128:    assert Schema.infer('foo') == Schema(str)\n/testbed/voluptuous/tests/tests.py:1129:    assert Schema.infer(True) == Schema(bool)\n/testbed/voluptuous/tests/tests.py:1130:    assert Schema.infer(42) == Schema(int)\n/testbed/voluptuous/tests/tests.py:1131:    assert Schema.infer(3.14) == Schema(float)\n/testbed/voluptuous/tests/tests.py:1132:    assert Schema.infer({}) == Schema(dict)\n/testbed/voluptuous/tests/tests.py:1133:    assert Schema.infer([]) == Schema(list)\n/testbed/voluptuous/tests/tests.py:1136:def test_schema_infer_accepts_kwargs():\n/testbed/voluptuous/tests/tests.py:1137:    schema = Schema.infer({'str': 'foo', 'bool': True}, required=False, extra=True)\n/testbed/voluptuous/schema_builder.py:141:    def infer(cls, data, **kwargs) -> Schema:\n/testbed/voluptuous/schema_builder.py:166:        Note: only very basic inference is supported.\n==== schema_builder.py lines ====\n1315 /testbed/voluptuous/schema_builder.py\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-b4b992e8-a95f-4344-8cbd-00199ec6e252-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '130,250p' /testbed/voluptuous/schema_builder.py && echo \"========== TESTS ==========\" && sed -n '1100,1160p' /testbed/voluptuous/tests/tests.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-b4b992e8-a95f-4344-8cbd-00199ec6e252-3",
+            "content": "a(%s, extra=%s, required=%s) object at 0x%x>\" % (\n            self.schema,\n            self._extra_to_name.get(self.extra, '??'),\n            self.required,\n            id(self),\n        )\n\n    def __call__(self, data):\n        \"\"\"Validate data against this schema.\"\"\"\n        try:\n            return self._compiled([], data)\n        except er.MultipleInvalid:\n            raise\n        except er.Invalid as e:\n            raise er.MultipleInvalid([e])\n            # return self.validate([], self.schema, data)\n\n    def _compile(self, schema):\n        if schema is Extra:\n            return lambda _, v: v\n        if schema is Self:\n            return lambda p, v: self._compiled(p, v)\n        elif hasattr(schema, \"__voluptuous_compile__\"):\n            return schema.__voluptuous_compile__(self)\n        if isinstance(schema, Object):\n            return self._compile_object(schema)\n        if isinstance(schema, collections.abc.Mapping):\n            return self._compile_dict(schema)\n        elif isinstance(schema, list):\n            return self._compile_list(schema)\n        elif isinstance(schema, tuple):\n            return self._compile_tuple(schema)\n        elif isinstance(schema, (frozenset, set)):\n            return self._compile_set(schema)\n        type_ = type(schema)\n        if inspect.isclass(schema):\n            type_ = schema\n        if type_ in (*primitive_types, object, type(None)) or callable(schema):\n            return _compile_scalar(schema)\n        raise er.SchemaError('unsupported schema data type %r' % type(schema).__name__)\n\n    def _compile_mapping(self, schema, invalid_msg=None):\n        \"\"\"Create validator for given mapping.\"\"\"\n        invalid_msg = invalid_msg or 'mapping value'\n\n        # Keys that may be required\n        all_required_keys = set(\n            key\n            for key in schema\n            if key is not Extra\n            and (\n                (self.required and not isinstance(key, (Optional, Remove)))\n                or isinstance(key, Required)\n            )\n        )\n\n========== TESTS ==========\n    assert definition.get('j') is None\n\n\ndef test_schema_infer():\n    schema = Schema.infer({'str': 'foo', 'bool': True, 'int': 42, 'float': 3.14})\n    assert schema == Schema(\n        {\n            Required('str'): str,\n            Required('bool'): bool,\n            Required('int'): int,\n            Required('float'): float,\n        }\n    )\n\n\ndef test_schema_infer_dict():\n    schema = Schema.infer({'a': {'b': {'c': 'foo'}}})\n\n    assert schema == Schema({Required('a'): {Required('b'): {Required('c'): str}}})\n\n\ndef test_schema_infer_list():\n    schema = Schema.infer({'list': ['foo', True, 42, 3.14]})\n\n    assert schema == Schema({Required('list'): [str, bool, int, float]})\n\n\ndef test_schema_infer_scalar():\n    assert Schema.infer('foo') == Schema(str)\n    assert Schema.infer(True) == Schema(bool)\n    assert Schema.infer(42) == Schema(int)\n    assert Schema.infer(3.14) == Schema(float)\n    assert Schema.infer({}) == Schema(dict)\n    assert Schema.infer([]) == Schema(list)\n\n\ndef test_schema_infer_accepts_kwargs():\n    schema = Schema.infer({'str': 'foo', 'bool': True}, required=False, extra=True)\n\n    # Subset of schema should be acceptable thanks to required=False.\n    schema({'bool': False})\n\n    # Keys that are in schema should still match required types.\n    try:\n        schema({'str': 42})\n    except Invalid:\n        pass\n    else:\n        assert False, 'Did not raise Invalid for Number'\n\n    # Extra fields should be acceptable thanks to extra=True.\n    schema({'str': 'bar', 'int': 42})\n\n\ndef test_validation_performance():\n    \"\"\"\n    This test comes to make sure the validation complexity of dictionaries is done in a linear time.\n    To achieve this a custom marker is used in the scheme that counts each time it is evaluated.\n    By doing so we can determine if the validation is done in linear complexity.\n    Prior to issue https://github.com/alecthomas/voluptuous/issues/259 this was exponential.\n    \"\"\"\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-1207bdc5-703c-473c-9d44-a00b7c793c43-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '1,200p' /testbed/voluptuous/schema_builder.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-1207bdc5-703c-473c-9d44-a00b7c793c43-4",
+            "content": "eys in the data that are not present in the schema.\"\"\"\n    raise er.SchemaError('\"Extra\" should never be called')\n\n\n# As extra() is never called there's no way to catch references to the\n# deprecated object, so we just leave an alias here instead.\nextra = Extra\n\nprimitive_types = (bool, bytes, int, str, float, complex)\n\n# fmt: off\nSchemable = typing.Union[\n    'Schema', 'Object',\n    collections.abc.Mapping,\n    list, tuple, frozenset, set,\n    bool, bytes, int, str, float, complex,\n    type, object, dict, None, typing.Callable\n]\n# fmt: on\n\n\nclass Schema(object):\n    \"\"\"A validation schema.\n\n    The schema is a Python tree-like structure where nodes are pattern\n    matched against corresponding trees of values.\n\n    Nodes can be values, in which case a direct comparison is used, types,\n    in which case an isinstance() check is performed, or callables, which will\n    validate and optionally convert the value.\n\n    We can equate schemas also.\n\n    For Example:\n\n            >>> v = Schema({Required('a'): str})\n            >>> v1 = Schema({Required('a'): str})\n            >>> v2 = Schema({Required('b'): str})\n            >>> assert v == v1\n            >>> assert v != v2\n\n    \"\"\"\n\n    _extra_to_name = {\n        REMOVE_EXTRA: 'REMOVE_EXTRA',\n        ALLOW_EXTRA: 'ALLOW_EXTRA',\n        PREVENT_EXTRA: 'PREVENT_EXTRA',\n    }\n\n    def __init__(\n        self, schema: Schemable, required: bool = False, extra: int = PREVENT_EXTRA\n    ) -> None:\n        \"\"\"Create a new Schema.\n\n        :param schema: Validation schema. See :module:`voluptuous` for details.\n        :param required: Keys defined in the schema must be in the data.\n        :param extra: Specify how extra keys in the data are treated:\n            - :const:`~voluptuous.PREVENT_EXTRA`: to disallow any undefined\n              extra keys (raise ``Invalid``).\n            - :const:`~voluptuous.ALLOW_EXTRA`: to include undefined extra\n              keys in the output.\n            - :const:`~voluptuous.REMOVE_EXTRA`: to exclude undefined extra keys\n              from the output.\n            - Any value other than the above defaults to\n              :const:`~voluptuous.PREVENT_EXTRA`\n        \"\"\"\n        self.schema: typing.Any = schema\n        self.required = required\n        self.extra = int(extra)  # ensure the value is an integer\n        self._compiled = self._compile(schema)\n\n    @classmethod\n    def infer(cls, data, **kwargs) -> Schema:\n        \"\"\"Create a Schema from concrete data (e.g. an API response).\n\n        For example, this will take a dict like:\n\n        {\n            'foo': 1,\n            'bar': {\n                'a': True,\n                'b': False\n            },\n            'baz': ['purple', 'monkey', 'dishwasher']\n        }\n\n        And return a Schema:\n\n        {\n            'foo': int,\n            'bar': {\n                'a': bool,\n                'b': bool\n            },\n            'baz': [str]\n        }\n\n        Note: only very basic inference is supported.\n        \"\"\"\n\n        def value_to_schema_type(value):\n            if isinstance(value, dict):\n                if len(value) == 0:\n                    return dict\n                return {k: value_to_schema_type(v) for k, v in value.items()}\n            if isinstance(value, list):\n                if len(value) == 0:\n                    return list\n                else:\n                    return [value_to_schema_type(v) for v in value]\n            return type(value)\n\n        return cls(value_to_schema_type(data), **kwargs)\n\n    def __eq__(self, other):\n        if not isinstance(other, Schema):\n            return False\n        return other.schema == self.schema\n\n    def __ne__(self, other):\n        return not (self == other)\n\n    def __str__(self):\n        return str(self.schema)\n\n    def __repr__(self):\n        return \"<Schema(%s, extra=%s, required=%s) object at 0x%x>\" % (\n            self.schema,\n            self._extra_to_name.get(self.extra, '??'),\n            self.required,\n            id(self),\n        )\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-c49d5a76-3a09-4b1e-85e5-66a6e865e7c6-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cd /testbed && python -c \"\nfrom voluptuous import Schema\nprint(repr(Schema.infer('foo')))\nprint(repr(Schema.infer(True)))\nprint(repr(Schema.infer(42)))\nprint(repr(Schema.infer(3.14)))\nprint(repr(Schema.infer({})))\nprint(repr(Schema.infer([])))\nnested_dict = {'a': {'b': {'c': 'foo'}}}\nprint(repr(Schema.infer(nested_dict)))\nmixed_list = {'list': ['foo', True, 42, 3.14]}\nprint(repr(Schema.infer(mixed_list)))\nprint(repr(Schema.infer({'str': 'foo', 'bool': True, 'int': 42, 'float': 3.14})))\n\" && python -m pytest voluptuous/tests/tests.py::test_schema_infer voluptuous/tests/tests.py::test_schema_infer_dict voluptuous/tests/tests.py::test_schema_infer_list voluptuous/tests/tests.py::test_schema_infer_scalar voluptuous/tests/tests.py::test_schema_infer_accepts_kwargs -v 2>&1 | tail -40"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-c49d5a76-3a09-4b1e-85e5-66a6e865e7c6-5",
+            "content": "<Schema(<class 'str'>, extra=PREVENT_EXTRA, required=False) object at 0x7b84d6664710>\n<Schema(<class 'bool'>, extra=PREVENT_EXTRA, required=False) object at 0x7b84d662eb10>\n<Schema(<class 'int'>, extra=PREVENT_EXTRA, required=False) object at 0x7b84d662e690>\n<Schema(<class 'float'>, extra=PREVENT_EXTRA, required=False) object at 0x7b84d671af90>\n<Schema(<class 'dict'>, extra=PREVENT_EXTRA, required=False) object at 0x7b84d671b500>\n<Schema(<class 'list'>, extra=PREVENT_EXTRA, required=False) object at 0x7b84d6719a90>\n<Schema({'a': {'b': {'c': <class 'str'>}}}, extra=PREVENT_EXTRA, required=False) object at 0x7b84d66168d0>\n<Schema({'list': [<class 'str'>, <class 'bool'>, <class 'int'>, <class 'float'>]}, extra=PREVENT_EXTRA, required=False) object at 0x7b84d6488350>\n<Schema({'str': <class 'str'>, 'bool': <class 'bool'>, 'int': <class 'int'>, 'float': <class 'float'>}, extra=PREVENT_EXTRA, required=False) object at 0x7b84d64889b0>\n/opt/miniconda3/bin/python: No module named pytest\n"
+          }
+        ]
+      }
+    }
+  ]
+}

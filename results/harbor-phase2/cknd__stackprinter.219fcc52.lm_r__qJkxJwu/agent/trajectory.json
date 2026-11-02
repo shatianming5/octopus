@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "cknd__stackprinter.219fcc52.lm_r__qJkxJwu__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# hide() function in FrameFormatter is not properly filtering callable values\n\nI noticed that the `hide()` function in `FrameFormatter` class is not properly filtering callable values anymore. This is causing issues when trying to format stack frames.\n\nWhen using `stackprinter.format()`, the output no longer shows the correct information for callable values in the stack trace. The function that should determine whether a callable should be hidden or shown in the output seems to have been replaced with a different implementation that only checks against suppressed variable names, but doesn't handle callable objects properly.\n\n## How to reproduce\n\nHere's a simple script that demonstrates the issue:\n\n```python\nimport stackprinter\n\ndef some_function():\n    another_function()\n\ndef another_function():\n    # This will trigger a stack trace\n    stackprinter.format()\n\nsome_function()\n```\n\nWhen running this script, the output doesn't properly format callable values in the stack trace. The output is missing information about callable objects that should be visible in the trace.\n\nThe issue appears to be in the `hide()` function in `frame_formatting.py`, which no longer checks if a value is callable and applies the appropriate filtering logic. Instead, it only checks against suppressed variable names, which means callable objects aren't being properly handled.\n\nThis is affecting the readability and usefulness of the stack traces produced by stackprinter."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository structure and the `hide()` function in FrameFormatter to see how callable values are currently filtered.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-534f7974-45c9-49f3-871a-daca0a231b14-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -50 && cat /testbed/README.md 2>/dev/null | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-534f7974-45c9-49f3-871a-daca0a231b14-0",
+            "content": "ackprinter/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/cknd/stackprinter/actions/workflows/build.yml)\n\n# Better tracebacks\n\nThis is a more helpful version of Python's built-in exception message: It shows more code context and the current values of nearby variables. That answers many of the questions I'd ask an interactive debugger: Where in the code was the crash, what's in the relevant variables, and why was _that_ function called with _those_ arguments. It either prints to the console or gives you a string for logging.\n\n```bash\npip3 install stackprinter\n```\n### Before\n```\nTraceback (most recent call last):\n  File \"demo.py\", line 12, in <module>\n    dangerous_function(somelist + anotherlist)\n  File \"demo.py\", line 6, in dangerous_function\n    return sorted(blub, key=lambda xs: sum(xs))\n  File \"demo.py\", line 6, in <lambda>\n    return sorted(blub, key=lambda xs: sum(xs))\nTypeError: unsupported operand type(s) for +: 'int' and 'str'\n```\n\n### After\n```\nFile demo.py, line 12, in <module>\n    9        somelist = [[1,2], [3,4]]\n    10       anotherlist = [['5', 6]]\n    11       spam = numpy.zeros((3,3))\n--> 12       dangerous_function(somelist + anotherlist)\n    13   except:\n    ..................................................\n     somelist = [[1, 2, ], [3, 4, ], ]\n     anotherlist = [['5', 6, ], ]\n     spam = 3x3 array([[0. 0. 0.]\n                       [0. 0. 0.]\n                       [0. 0. 0.]])\n    ..................................................\n\nFile demo.py, line 6, in dangerous_function\n    5    def dangerous_function(blub):\n--> 6        return sorted(blub, key=lambda xs: sum(xs))\n    ..................................................\n     blub = [[1, 2, ], [3, 4, ], ['5', 6, ], ]\n    ..................................................\n\nFile demo.py, line 6, in <lambda>\n    3\n    4\n    5    def dangerous_function(blub):\n--> 6        return sorted(blub, key=lambda xs: sum(xs))\n    7\n    ..................................................\n     xs = ['5', 6, ]\n    ..................................................\n\nTypeError: unsupported operand type(s) for +: 'int' and 'str'\n```\nI rarely use this locally instead of a real debugger, but it helps me sleep when my code runs somewhere where the only debug tool is a log file (though it's not a fully-grown [error monitoring system](https://sentry.io/welcome/)).\n\nBy default, it tries to be somewhat polite about screen space, showing only a few source lines & the function header, and only the variables _that appear in those lines_, and using only (?) 500 characters per variable. You can [configure](https://github.com/cknd/stackprinter/blob/master/stackprinter/__init__.py#L28-L149) exactly how verbose things should be.\n\nIt outputs plain text normally, which is good for log files. There's also a color mode for some reason 🌈, with a few different color schemes for light and dark backgrounds. (The colors [track different variables](https://medium.com/@brianwill/making-semantic-highlighting-useful-9aeac92411df) instead of the language syntax.)\n\n<img src=\"https://raw.githubusercontent.com/cknd/stackprinter/master/notebook.png\" width=\"500\">\n\n# Usage\n\n## Option 1: Set and forget\nTo replace the default python crash printout, call `set_excepthook()` somewhere once. Afterwards, any uncaught exception will be printed with an extended traceback (to stderr, by default). You could also [make this permanent for your python installation](#making-it-stick).\n\n```python\nimport stackprinter\nstackprinter.set_excepthook(style='darkbg2')  # for jupyter notebooks try style='lightbg'\n```\n## Option 2: Call it selectively during exception handling\nFor more control, call [`show()`](https://github.com/cknd/stackprinter/blob/master/stackprinter/__init__.py#L166-L183) or [`format()`](https://github.com/cknd/stackprinter/blob/master/stackprinter/__init__.py#L28-L149) inside an `except` block. `show()` prints to stderr, `format()` returns a string, for custom logging.\n\n```python\ntry:\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-b6fbd4e3-1e44-4206-8c1a-a3a0536a0e0a-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "find /testbed -type f | head -100 && echo \"====\" && ls -la /testbed/stackprinter && echo \"====GIT====\" && git -C /testbed log --oneline -20 && echo \"====STATUS====\" && git -C /testbed status && echo \"====DIFF====\" && git -C /testbed log --all --oneline | head -30"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-b6fbd4e3-1e44-4206-8c1a-a3a0536a0e0a-1",
+            "content": "/testbed/demo.py\n/testbed/demo_logging_hack.py\n/testbed/CHANGELOG.md\n/testbed/LICENSE.txt\n/testbed/.git/packed-refs\n/testbed/.git/hooks/pre-applypatch.sample\n/testbed/.git/hooks/applypatch-msg.sample\n/testbed/.git/hooks/push-to-checkout.sample\n/testbed/.git/hooks/post-update.sample\n/testbed/.git/hooks/update.sample\n/testbed/.git/hooks/pre-commit.sample\n/testbed/.git/hooks/prepare-commit-msg.sample\n/testbed/.git/hooks/pre-rebase.sample\n/testbed/.git/hooks/pre-receive.sample\n/testbed/.git/hooks/pre-push.sample\n/testbed/.git/hooks/fsmonitor-watchman.sample\n/testbed/.git/hooks/commit-msg.sample\n/testbed/.git/hooks/pre-merge-commit.sample\n/testbed/.git/description\n/testbed/.git/refs/heads/main\n/testbed/.git/refs/remotes/origin/HEAD\n/testbed/.git/index\n/testbed/.git/objects/pack/pack-f10df1c6464962b12e5f0b8d8c8249a101c44279.idx\n/testbed/.git/objects/pack/pack-f10df1c6464962b12e5f0b8d8c8249a101c44279.pack\n/testbed/.git/logs/refs/heads/main\n/testbed/.git/logs/refs/remotes/origin/HEAD\n/testbed/.git/logs/HEAD\n/testbed/.git/HEAD\n/testbed/.git/config\n/testbed/.git/info/exclude\n/testbed/stackprinter.egg-info/PKG-INFO\n/testbed/stackprinter.egg-info/SOURCES.txt\n/testbed/stackprinter.egg-info/dependency_links.txt\n/testbed/stackprinter.egg-info/top_level.txt\n/testbed/trace.png\n/testbed/demo_keyboard_interrupt.py\n/testbed/tests/test_formatting.py\n/testbed/tests/source.py\n/testbed/tests/conftest.py\n/testbed/tests/test_source_inspection.py\n/testbed/tests/test_frame_inspection.py\n/testbed/tests/test_utils.py\n/testbed/demo_thread_stack.py\n/testbed/demo_traceprinter.py\n/testbed/demo_exceptiongroups.py\n/testbed/README.md\n/testbed/stackprinter/prettyprinting.py\n/testbed/stackprinter/frame_formatting.py\n/testbed/stackprinter/__init__.py\n/testbed/stackprinter/extraction.py\n/testbed/stackprinter/formatting.py\n/testbed/stackprinter/utils.py\n/testbed/stackprinter/source_inspection.py\n/testbed/stackprinter/colorschemes.py\n/testbed/stackprinter/tracing.py\n/testbed/demo_complex.py\n/testbed/setup.py\n/testbed/demo_chained_exceptions.py\n/testbed/notebook.png\n/testbed/darkbg.png\n/testbed/demo_logging.py\n/testbed/demo_pprint.py\n/testbed/.gitkeep\n====\ntotal 96\ndrwxr-xr-x 2 root root  4096 Jul 12  2025 .\ndrwxr-xr-x 1 root root  4096 Sep 22 17:01 ..\n-rw-r--r-- 1 root root 11257 Jul 12  2025 __init__.py\n-rw-r--r-- 1 root root  7361 Jul 12  2025 colorschemes.py\n-rw-r--r-- 1 root root  6808 Jul 12  2025 extraction.py\n-rw-r--r-- 1 root root  9014 Jul 12  2025 formatting.py\n-rw-r--r-- 1 root root 15066 Jul 12  2025 frame_formatting.py\n-rw-r--r-- 1 root root  7208 Jul 12  2025 prettyprinting.py\n-rw-r--r-- 1 root root  8652 Jul 12  2025 source_inspection.py\n-rw-r--r-- 1 root root  5763 Jul 12  2025 tracing.py\n-rw-r--r-- 1 root root  2651 Jul 12  2025 utils.py\n====GIT====\n60ab176 Initial commit\n====STATUS====\nOn branch main\nYour branch is up to date with 'origin/main'.\n\nUntracked files:\n  (use \"git add <file>...\" to include in what will be committed)\n\t.gitkeep\n\tstackprinter.egg-info/\n\nnothing added to commit but untracked files present (use \"git add\" to track)\n====DIFF====\ndedb5e0 Remove F2P Tests\n187395a Bug Patch\n693f175 Remove F2P Tests\nf9c11fb Bug Patch\nbcaef4c Remove F2P Tests\n9418a1e Bug Patch\n76256ea Remove F2P Tests\n4b0f4da Bug Patch\n22d8eb7 Remove F2P Tests\n82869e2 Bug Patch\n5a09a8c Remove F2P Tests\na16d6bf Bug Patch\n56e6df0 Remove F2P Tests\n1675276 Bug Patch\n8ae17c2 Remove F2P Tests\n8009ab0 Bug Patch\naae8d7b Remove F2P Tests\nfd9f893 Bug Patch\n9c292ee Remove F2P Tests\n8b543e6 Bug Patch\nf36525f Remove F2P Tests\n7dd16c9 Bug Patch\n90b6d02 Remove F2P Tests\nd3ae1e6 Bug Patch\n9ec0625 Remove F2P Tests\n7045034 Bug Patch\nf4a1fe1 Remove F2P Tests\nfd157ca Bug Patch\n70a3907 Remove F2P Tests\nafd6e6e Bug Patch\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-e0247fed-2502-4bae-925c-d67997410f42-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/stackprinter/frame_formatting.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-e0247fed-2502-4bae-925c-d67997410f42-2",
+            "content": "f.elipsis_tpl = dots % super().elipsis_tpl\n        self.sep_vars = dots % super().sep_vars\n\n        super().__init__(**kwargs)\n\n    def tpl(self, name):\n        return get_ansi_tpl(*self.colors[name])\n\n    def _format_frame(self, fi):\n        basepath, filename = os.path.split(fi.filename)\n        sep = os.sep if basepath else ''\n        msg = self.headline_tpl % (basepath, sep, filename, fi.lineno, fi.function)\n        source_map, assignments = self.select_scope(fi)\n\n        colormap = self._pick_colors(source_map, fi.name2lines, assignments, fi.lineno)\n\n        if source_map:\n            source_lines = self._format_source(source_map, colormap, fi.lineno)\n            msg += self._format_listing(source_lines, fi.lineno)\n\n        if assignments:\n            msg += self._format_assignments(assignments, colormap)\n        elif self.lines == 'all' or self.lines > 1 or self.show_signature:\n            msg += '\\n'\n\n        return msg\n\n    def _format_source(self, source_map, colormap, lineno):\n        bold_tp = self.tpl('source_bold')\n        default_tpl = self.tpl('source_default')\n        comment_tpl = self.tpl('source_comment')\n\n        source_lines = OrderedDict()\n        for ln in source_map:\n            line = ''\n            for snippet, ttype in source_map[ln]:\n                if ttype in [sc.KEYWORD, sc.OP]:\n                    line += bold_tp % snippet\n                elif ttype == sc.VAR:\n                    if snippet not in colormap:\n                        line += default_tpl % snippet\n                    else:\n                        hue, sat, val, bold = colormap[snippet]\n                        var_tpl = get_ansi_tpl(hue, sat, val, bold)\n                        line += var_tpl % snippet\n                elif ttype == sc.CALL:\n                    line += bold_tp % snippet\n                elif ttype == sc.COMMENT:\n                    line += comment_tpl % snippet\n                else:\n                    line += default_tpl % snippet\n            source_lines[ln] = line\n\n        return source_lines\n\n    def _format_assignments(self, assignments, colormap):\n        msgs = []\n        for name, value in assignments.items():\n            val_str = format_value(value,\n                                   indent=len(name) + self.var_indent + 3,\n                                   truncation=self.truncate_vals,\n                                   wrap=self.line_wrap)\n            assign_str = self.val_tpl % (name, val_str)\n            hue, sat, val, bold = colormap.get(name, self.colors['var_invisible'])\n            clr_str = get_ansi_tpl(hue, sat, val, bold) % assign_str\n            msgs.append(clr_str)\n        if len(msgs) > 0:\n            return self.sep_vars + '\\n' + ''.join(msgs) + self.sep_vars + '\\n\\n'\n        else:\n            return ''\n\n    def _pick_colors(self, source_map, name2lines, assignments, lineno):\n        # TODO refactor: pick a hash for each name across frames, _then_ color.\n        # Currently, colors are consistent across frames purely because there's\n        # a fixed map from hashes to colors. It's not bijective though. If colors\n        # were picked after hashing across all frames, that could be fixed.\n        colormap = {}\n        for line in source_map.values():\n            for name, ttype in line:\n                if name not in colormap and ttype == sc.VAR and name in assignments:\n                    value = assignments[name]\n                    highlight = lineno in name2lines[name]\n                    colormap[name] = self._pick_color(name, value, highlight)\n        return colormap\n\n    def _pick_color(self, name, val, highlight=False, method='id'):\n        if method == 'formatted':\n            seed = format_value(val)\n        elif method == 'repr':\n            seed = repr(val)\n        elif method == 'id':\n            seed = id(val)\n        elif method == 'name':\n            seed = name\n        else:\n            raise ValueError('%r' % method)\n\n        return self.colors.get_random(seed, highlight)\n\n\n\n\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-4cb43b77-3fd7-4fed-94c0-287c71f45b5b-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "wc -l /testbed/stackprinter/frame_formatting.py && echo \"====\" && grep -n \"hide\\|callable\\|suppress\" /testbed/stackprinter/*.py /testbed/tests/*.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-4cb43b77-3fd7-4fed-94c0-287c71f45b5b-3",
+            "content": "                             suppressed_vars=suppressed_vars)\n/testbed/stackprinter/formatting.py:73:                                      suppressed_paths=suppressed_paths,\n/testbed/stackprinter/formatting.py:74:                                      suppressed_vars=suppressed_vars)\n/testbed/stackprinter/formatting.py:79:        fi = ex.get_info(frame, suppressed_vars=suppressed_vars)\n/testbed/stackprinter/formatting.py:80:        is_boring = match(fi.filename, suppressed_paths)\n/testbed/stackprinter/formatting.py:116:                    reverse=False, suppressed_exceptions=[KeyboardInterrupt],\n/testbed/stackprinter/formatting.py:117:                    suppressed_vars=[], **kwargs):\n/testbed/stackprinter/formatting.py:141:        suppress_context = getattr(evalue, '__suppress_context__', False)\n/testbed/stackprinter/formatting.py:146:        elif context and not suppress_context:\n/testbed/stackprinter/formatting.py:160:                                   suppressed_vars=suppressed_vars,\n/testbed/stackprinter/formatting.py:173:            frameinfos = [ex.get_info(tb_, suppressed_vars=suppressed_vars)\n/testbed/stackprinter/formatting.py:175:            if (suppressed_exceptions and\n/testbed/stackprinter/formatting.py:176:                issubclass(etype, tuple(suppressed_exceptions))):\n/testbed/stackprinter/frame_formatting.py:10:from stackprinter.utils import inspect_callable, match, trim_source, get_ansi_tpl\n/testbed/stackprinter/frame_formatting.py:27:                 suppressed_paths=None, suppressed_vars=None):\n/testbed/stackprinter/frame_formatting.py:63:        suppressed_paths: list of regex patterns\n/testbed/stackprinter/frame_formatting.py:71:            Example: To hide numpy internals from the traceback, set\n/testbed/stackprinter/frame_formatting.py:72:            `suppressed_paths=[r\"lib/python.*/site-packages/numpy\"]`\n/testbed/stackprinter/frame_formatting.py:91:        self.suppressed_paths = suppressed_paths\n/testbed/stackprinter/frame_formatting.py:92:        self.suppressed_vars = suppressed_vars\n/testbed/stackprinter/frame_formatting.py:127:            finfo = ex.get_info(frame, lineno, self.suppressed_vars)\n/testbed/stackprinter/frame_formatting.py:240:            def hide(name):\n/testbed/stackprinter/frame_formatting.py:242:                if callable(value):\n/testbed/stackprinter/frame_formatting.py:243:                    qualified_name, path, *_ = inspect_callable(value)\n/testbed/stackprinter/frame_formatting.py:246:                    is_suppressed = match(path, self.suppressed_paths)\n/testbed/stackprinter/frame_formatting.py:247:                    return is_boring or is_suppressed\n/testbed/stackprinter/frame_formatting.py:256:                                               if not hide(n)])\n/testbed/stackprinter/prettyprinting.py:4:from stackprinter.utils import inspect_callable\n/testbed/stackprinter/prettyprinting.py:65:    elif callable(value):\n/testbed/stackprinter/prettyprinting.py:66:        name, filepath, method_owner, ln = inspect_callable(value)\n/testbed/stackprinter/tracing.py:10:def trace(*args, suppressed_paths=[], **formatter_kwargs):\n/testbed/stackprinter/tracing.py:28:    print_function: callable (default: print)\n/testbed/stackprinter/tracing.py:36:    traceprinter = TracePrinter(suppressed_paths=suppressed_paths,\n/testbed/stackprinter/tracing.py:71:    print_function: callable (default: print)\n/testbed/stackprinter/tracing.py:80:                 suppressed_paths=[],\n/testbed/stackprinter/tracing.py:88:        assert isinstance(suppressed_paths, list)\n/testbed/stackprinter/tracing.py:89:        self.suppressed_paths = suppressed_paths\n/testbed/stackprinter/tracing.py:151:        elif match(filepath, self.suppressed_paths):\n/testbed/stackprinter/utils.py:17:def inspect_callable(f):\n/testbed/tests/test_formatting.py:29:    #     stackprinter.format(style=scheme, suppressed_paths=[r\"lib/python.*\"])\n/testbed/tests/test_frame_inspection.py:17:    return ex.get_info(fr, suppressed_vars=hidden)\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-1602602f-1f78-4c17-9894-f5daa272813a-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '1,280p' /testbed/stackprinter/frame_formatting.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-1602602f-1f78-4c17-9894-f5daa272813a-4",
+            "content": "RuntimeError: Command timed out after 20 seconds"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-6ca33174-b5c9-4511-9075-c9f21fd52cee-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "python3 -c \"\nwith open('/testbed/stackprinter/frame_formatting.py') as f:\n    lines = f.readlines()\nprint(''.join(lines[220:280]))\n\""
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-6ca33174-b5c9-4511-9075-c9f21fd52cee-5",
+            "content": "            # that I can't reproduce locally.\n            if not set(source_lines).issubset(fi.source_map.keys()):\n                debug_vals = [source_lines, fi.head_lns, fi.source_map.keys()]\n                info = ', '.join(str(p) for p in debug_vals)\n                raise Exception(\"Picked an invalid source context: %s\" % info)\n            trimmed_source_map = trim_source(fi.source_map, source_lines)\n        else:\n            trimmed_source_map = {}\n\n        if self.show_vals:\n            if self.show_vals == 'all':\n                val_lines = range(minl, maxl)\n            elif self.show_vals == 'like_source':\n                val_lines = source_lines\n            elif self.show_vals == 'line':\n                val_lines = [lineno] if source_lines else []\n\n            # TODO refactor the whole blacklistling mechanism below:\n\n            def hide(name):\n                value = fi.assignments[name]\n                if callable(value):\n                    qualified_name, path, *_ = inspect_callable(value)\n                    is_builtin = value.__class__.__name__ == 'builtin_function_or_method'\n                    is_boring = is_builtin or (qualified_name == name) or (path is None)\n                    is_suppressed = match(path, self.suppressed_paths)\n                    return is_boring or is_suppressed\n                return False\n\n            visible_vars = (name for ln in val_lines\n                            for name in fi.line2names[ln]\n                            if name in fi.assignments)\n\n            visible_assignments = OrderedDict([(n, fi.assignments[n])\n                                               for n in visible_vars\n                                               if not hide(n)])\n        else:\n            visible_assignments = {}\n\n        return trimmed_source_map, visible_assignments\n\n\nclass ColorfulFrameFormatter(FrameFormatter):\n\n    def __init__(self, style='darkbg', **kwargs):\n        \"\"\"\n        See FrameFormatter - this just adds some ANSI color codes here and there\n        \"\"\"\n        self.colors = getattr(colorschemes, style)()\n\n        highlight = self.tpl('highlight')\n        header = self.tpl('header')\n        arrow_lineno = self.tpl('arrow_lineno')\n        dots = self.tpl('dots')\n        lineno = self.tpl('lineno')\n\n        self.headline_tpl = header % 'File \"%s%s' + highlight % '%s' + header % '\", line %s, in %s\\n'\n        self.sourceline_tpl = lineno % super().sourceline_tpl\n        self.marked_sourceline_tpl = arrow_lineno % super().marked_sourceline_tpl\n        self.elipsis_tpl = dots % super().elipsis_tpl\n\n"
+          }
+        ]
+      }
+    }
+  ]
+}

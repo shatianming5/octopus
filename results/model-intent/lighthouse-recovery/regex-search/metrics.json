@@ -1,0 +1,265 @@
+{
+  "schema": "octopus-lighthouse-regex-search-metrics-v1",
+  "scope_id": "lighthouse-regex-search-e3e25abd",
+  "method": "search_pattern_syntax:regex_v1",
+  "definitions": {
+    "raw_action_sha256": "SHA-256 of the original parsed action object using sorted keys and compact JSON.",
+    "canonical_physical_action_sha256": "The executor observation action_hash for a physically submitted action.",
+    "effective_failed_repeats": "Failed physical submissions whose canonical executor identity had already failed earlier.",
+    "nonempty_evidence_unique": "Distinct SHA-256 hashes of byte-exact nonempty tool outputs, counted separately from action identities."
+  },
+  "episode": {
+    "raw_proposals": 12,
+    "distinct_raw_proposals": 4,
+    "physical_submissions": 12,
+    "controller_rejections": 0,
+    "distinct_physical_actions": 4,
+    "physical_failures": 0,
+    "effective_failed_repeats": 0,
+    "nonempty_evidence_total": 6,
+    "nonempty_evidence_unique": 2,
+    "action_type_counts": {
+      "list": 1,
+      "search": 6,
+      "read": 5,
+      "edit": 0,
+      "patch": 0,
+      "test": 0,
+      "done": 0
+    },
+    "patch_bytes": 0,
+    "audit": {
+      "action_records_retained": 12,
+      "raw_model_text_records_retained": 12,
+      "reasoning_records_retained": 12,
+      "maximum_deduplicated_journal_entries": 7,
+      "maximum_ordinary_budget_dropped_entries": 0,
+      "maximum_omitted_optional_evidence": 0
+    },
+    "native_work": {
+      "native_requests": 12,
+      "request_records": 12,
+      "actual_prefill_tokens": 17723,
+      "actual_decode_tokens": 1485,
+      "finish_status": {
+        "FINISHED_STOPPED": 12
+      },
+      "max_simultaneous_scheduler_requests": 1,
+      "allocation_rejections": 0,
+      "cache_evictions": 0,
+      "preemptions": 0,
+      "terminal_pool": {
+        "total_blocks": 4787,
+        "free_blocks": 4787,
+        "cold_free_blocks": 3590,
+        "warm_cached_blocks": 1197,
+        "active_blocks": 0,
+        "request_owned_blocks": 0,
+        "retention_only_blocks": 0,
+        "shared_request_retention_blocks": 0
+      }
+    },
+    "timings_seconds": {
+      "gpu_engine_scope": 77.81475026102271,
+      "solver_e2e": 80.76607801706996,
+      "child_process_wall": 98.12567035597749,
+      "official_grading_wall": 8.98913784394972,
+      "terminal_elapsed": 112
+    },
+    "official_outcome": {
+      "decision": "QUALITY_FAIL",
+      "resolved": false,
+      "solver_status": "complete",
+      "solver_stop_reason": "action_limit",
+      "evaluator_status": "complete",
+      "evaluator_returncode": 0,
+      "fail_to_pass": {
+        "lighthouse-core/test/audits/dobetterweb/js-libraries-test.js": "FAILED"
+      },
+      "pass_to_pass": {}
+    }
+  },
+  "regex_search_evidence": {
+    "protocol_enabled": true,
+    "protocol_value": "regex_v1",
+    "search_actions": 6,
+    "search_actions_with_nonempty_output": 0,
+    "search_output_bytes": 0,
+    "regex_operator_queries_observed": 0,
+    "nonempty_regex_evidence_obtained": false,
+    "explanation": "The mode was enabled, but every search returned an empty byte string. All nonempty evidence came from one list and repeated reads, so this episode did not obtain nonempty regex-search evidence."
+  },
+  "per_turn_novelty": [
+    {
+      "turn": 1,
+      "action": "list",
+      "raw_action_sha256": "a31cf409a216d6ef6a8df85ba54dc1828bd27b257933deed1c5ddd53336cb016",
+      "raw_action_new": true,
+      "canonical_physical_action_sha256": "a31cf409a216d6ef6a8df85ba54dc1828bd27b257933deed1c5ddd53336cb016",
+      "canonical_physical_action_new": true,
+      "output_bytes": 459,
+      "output_sha256": "3b9a897b8f13114bc943a85a0a6b63dc8b7518d17371a2e7be0855aae5767261",
+      "nonempty_evidence_new": true,
+      "deduplicated_journal_entries": 0,
+      "ordinary_budget_dropped_entries": 0
+    },
+    {
+      "turn": 2,
+      "action": "search",
+      "raw_action_sha256": "fa74b2ad163a4f36d5245d58508cbbf54ecdd985c9d1ba36e770ac75994b6609",
+      "raw_action_new": true,
+      "canonical_physical_action_sha256": "fa74b2ad163a4f36d5245d58508cbbf54ecdd985c9d1ba36e770ac75994b6609",
+      "canonical_physical_action_new": true,
+      "output_bytes": 0,
+      "output_sha256": null,
+      "nonempty_evidence_new": false,
+      "deduplicated_journal_entries": 0,
+      "ordinary_budget_dropped_entries": 0
+    },
+    {
+      "turn": 3,
+      "action": "read",
+      "raw_action_sha256": "52e9e6e86082c5c99ba1797b06b3a3c8dbac01797698f9448c652704fe625cda",
+      "raw_action_new": true,
+      "canonical_physical_action_sha256": "52e9e6e86082c5c99ba1797b06b3a3c8dbac01797698f9448c652704fe625cda",
+      "canonical_physical_action_new": true,
+      "output_bytes": 3108,
+      "output_sha256": "fa6685833ac0ab9d8c8b8c28a815253d4679d5daee4d172a546b984857d2c145",
+      "nonempty_evidence_new": true,
+      "deduplicated_journal_entries": 0,
+      "ordinary_budget_dropped_entries": 0
+    },
+    {
+      "turn": 4,
+      "action": "search",
+      "raw_action_sha256": "ab5de8e1fc23feb5d456190afe6a3229ac02e84af6da106b3cfdcf9ac6d7dd5d",
+      "raw_action_new": true,
+      "canonical_physical_action_sha256": "ab5de8e1fc23feb5d456190afe6a3229ac02e84af6da106b3cfdcf9ac6d7dd5d",
+      "canonical_physical_action_new": true,
+      "output_bytes": 0,
+      "output_sha256": null,
+      "nonempty_evidence_new": false,
+      "deduplicated_journal_entries": 0,
+      "ordinary_budget_dropped_entries": 0
+    },
+    {
+      "turn": 5,
+      "action": "read",
+      "raw_action_sha256": "52e9e6e86082c5c99ba1797b06b3a3c8dbac01797698f9448c652704fe625cda",
+      "raw_action_new": false,
+      "canonical_physical_action_sha256": "52e9e6e86082c5c99ba1797b06b3a3c8dbac01797698f9448c652704fe625cda",
+      "canonical_physical_action_new": false,
+      "output_bytes": 3108,
+      "output_sha256": "fa6685833ac0ab9d8c8b8c28a815253d4679d5daee4d172a546b984857d2c145",
+      "nonempty_evidence_new": false,
+      "deduplicated_journal_entries": 0,
+      "ordinary_budget_dropped_entries": 0
+    },
+    {
+      "turn": 6,
+      "action": "search",
+      "raw_action_sha256": "ab5de8e1fc23feb5d456190afe6a3229ac02e84af6da106b3cfdcf9ac6d7dd5d",
+      "raw_action_new": false,
+      "canonical_physical_action_sha256": "ab5de8e1fc23feb5d456190afe6a3229ac02e84af6da106b3cfdcf9ac6d7dd5d",
+      "canonical_physical_action_new": false,
+      "output_bytes": 0,
+      "output_sha256": null,
+      "nonempty_evidence_new": false,
+      "deduplicated_journal_entries": 1,
+      "ordinary_budget_dropped_entries": 0
+    },
+    {
+      "turn": 7,
+      "action": "read",
+      "raw_action_sha256": "52e9e6e86082c5c99ba1797b06b3a3c8dbac01797698f9448c652704fe625cda",
+      "raw_action_new": false,
+      "canonical_physical_action_sha256": "52e9e6e86082c5c99ba1797b06b3a3c8dbac01797698f9448c652704fe625cda",
+      "canonical_physical_action_new": false,
+      "output_bytes": 3108,
+      "output_sha256": "fa6685833ac0ab9d8c8b8c28a815253d4679d5daee4d172a546b984857d2c145",
+      "nonempty_evidence_new": false,
+      "deduplicated_journal_entries": 2,
+      "ordinary_budget_dropped_entries": 0
+    },
+    {
+      "turn": 8,
+      "action": "search",
+      "raw_action_sha256": "ab5de8e1fc23feb5d456190afe6a3229ac02e84af6da106b3cfdcf9ac6d7dd5d",
+      "raw_action_new": false,
+      "canonical_physical_action_sha256": "ab5de8e1fc23feb5d456190afe6a3229ac02e84af6da106b3cfdcf9ac6d7dd5d",
+      "canonical_physical_action_new": false,
+      "output_bytes": 0,
+      "output_sha256": null,
+      "nonempty_evidence_new": false,
+      "deduplicated_journal_entries": 3,
+      "ordinary_budget_dropped_entries": 0
+    },
+    {
+      "turn": 9,
+      "action": "read",
+      "raw_action_sha256": "52e9e6e86082c5c99ba1797b06b3a3c8dbac01797698f9448c652704fe625cda",
+      "raw_action_new": false,
+      "canonical_physical_action_sha256": "52e9e6e86082c5c99ba1797b06b3a3c8dbac01797698f9448c652704fe625cda",
+      "canonical_physical_action_new": false,
+      "output_bytes": 3108,
+      "output_sha256": "fa6685833ac0ab9d8c8b8c28a815253d4679d5daee4d172a546b984857d2c145",
+      "nonempty_evidence_new": false,
+      "deduplicated_journal_entries": 4,
+      "ordinary_budget_dropped_entries": 0
+    },
+    {
+      "turn": 10,
+      "action": "search",
+      "raw_action_sha256": "ab5de8e1fc23feb5d456190afe6a3229ac02e84af6da106b3cfdcf9ac6d7dd5d",
+      "raw_action_new": false,
+      "canonical_physical_action_sha256": "ab5de8e1fc23feb5d456190afe6a3229ac02e84af6da106b3cfdcf9ac6d7dd5d",
+      "canonical_physical_action_new": false,
+      "output_bytes": 0,
+      "output_sha256": null,
+      "nonempty_evidence_new": false,
+      "deduplicated_journal_entries": 5,
+      "ordinary_budget_dropped_entries": 0
+    },
+    {
+      "turn": 11,
+      "action": "read",
+      "raw_action_sha256": "52e9e6e86082c5c99ba1797b06b3a3c8dbac01797698f9448c652704fe625cda",
+      "raw_action_new": false,
+      "canonical_physical_action_sha256": "52e9e6e86082c5c99ba1797b06b3a3c8dbac01797698f9448c652704fe625cda",
+      "canonical_physical_action_new": false,
+      "output_bytes": 3108,
+      "output_sha256": "fa6685833ac0ab9d8c8b8c28a815253d4679d5daee4d172a546b984857d2c145",
+      "nonempty_evidence_new": false,
+      "deduplicated_journal_entries": 6,
+      "ordinary_budget_dropped_entries": 0
+    },
+    {
+      "turn": 12,
+      "action": "search",
+      "raw_action_sha256": "ab5de8e1fc23feb5d456190afe6a3229ac02e84af6da106b3cfdcf9ac6d7dd5d",
+      "raw_action_new": false,
+      "canonical_physical_action_sha256": "ab5de8e1fc23feb5d456190afe6a3229ac02e84af6da106b3cfdcf9ac6d7dd5d",
+      "canonical_physical_action_new": false,
+      "output_bytes": 0,
+      "output_sha256": null,
+      "nonempty_evidence_new": false,
+      "deduplicated_journal_entries": 7,
+      "ordinary_budget_dropped_entries": 0
+    }
+  ],
+  "closed_directory_discovery_comparison": {
+    "method": "directory_search_format:matching_files_v1",
+    "raw_proposals": 12,
+    "distinct_raw_proposals": 5,
+    "physical_failures": 1,
+    "effective_failed_repeats": 0,
+    "nonempty_evidence_total": 2,
+    "nonempty_evidence_unique": 2,
+    "actual_prefill_tokens": 12076,
+    "actual_decode_tokens": 1197,
+    "gpu_engine_scope_seconds": 68.51210533594713,
+    "solver_e2e_seconds": 71.0299214979168,
+    "official_resolved": false,
+    "description": "Both closed episodes exhausted 12 actions with no edit, test, done action, or patch and both failed the same official FAIL_TO_PASS test. Regex mode produced more nonempty observations only because the same file read was repeated five times; byte-exact unique nonempty evidence remained 2, and no search returned nonempty evidence."
+  }
+}

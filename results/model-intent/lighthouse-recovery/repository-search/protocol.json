@@ -1,0 +1,18 @@
+{
+  "schema": "octopus-lighthouse-repository-search-counterfactual-v1",
+  "before_model_outputs": true,
+  "claim": "Repair root search-budget starvation that returned empty limited results despite actual tracked-source matches for the model's exact query.",
+  "reference_freeze": "../coder-reference/freeze.json",
+  "task": "GoogleChrome__lighthouse-10176",
+  "protocol_delta": {},
+  "only_execution_code_delta": "At a Git repository root, discover cached and nonignored untracked files with git ls-files instead of traversing ignored dependencies before the10000-entry limit. Explicit files/directories and non-Git fixtures retain their prior scope. Index errors are explicit, with no silent fallback.",
+  "pre_output_evidence": "Regression with10005ignored files was red before the fix and green afterward. The exact saved model query on the unchanged task image now returns3tracked-source references without hitting the limit. These paths are not inserted into model prompts.",
+  "model_episodes_max": 1,
+  "phase_gpu_seconds_max": 1200,
+  "training_runs_added": 0,
+  "action_rewriting": false,
+  "other_conditions": "Identical pinned Qwen2.5-Coder-7B-Instruct, prompt, schema, v2 memory,12slots,512outputtokens,seed17,BF16,original evaluator. No more model download or checkpoint selection.",
+  "quality_gate": "Original official resolved=true; recovering previously starved search evidence is necessary but not sufficient.",
+  "stop": "One terminal episode or execution/budget blocker; preserve the prior coding-reference failure rather than relabeling it or replaying its frozen protocol.",
+  "authorization_context": "Continued user-authorized same-task blocker repair. This fixes an observed repository-tool defect, not a task hint, an easier task or an output-driven training recipe."
+}

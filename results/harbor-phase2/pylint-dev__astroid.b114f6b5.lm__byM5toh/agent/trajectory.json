@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "pylint-dev__astroid.b114f6b5.lm__byM5toh__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# TypeError when using typing aliases like List, Dict, etc.\n\n## Description\n\nI'm encountering an issue with typing aliases (List, Dict, Set, etc.) not working properly. When I try to use them with type annotations, they fail to be subscriptable.\n\nHere's a minimal example:\n\n```python\nimport typing\ntyping.List[int]  # This raises a TypeError\n```\n\nThe error I'm getting is:\n```\nTypeError: 'ClassDef' object is not subscriptable\n```\n\nThis happens with all the common typing aliases like Dict, Set, FrozenSet, and Tuple as well. It seems like the typing module's special aliases aren't being properly set up to be subscriptable.\n\n## Expected behavior\n\nThe typing aliases should be subscriptable, allowing for type annotations like:\n\n```python\nfrom typing import List, Dict\n\ndef my_function(items: List[int]) -> Dict[str, int]:\n    ...\n```\n\n## Actual behavior\n\nThe typing aliases are not subscriptable, causing TypeError when trying to use them with type parameters.\n\nI think the issue might be related to how the special aliases are being inferred. It looks like they're being created as ClassDef objects but not being properly set up with the __class_getitem__ method that would make them subscriptable."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository structure and the typing-related code to locate why aliases like List and Dict aren't subscriptable.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-0626fded-f02c-475b-a3db-8c48b5b5fbc9-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && echo \"====\" && find /testbed -type f -name \"*.py\" | head -100 && echo \"====\" && cat /testbed/README.md 2>/dev/null | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-0626fded-f02c-475b-a3db-8c48b5b5fbc9-0",
+            "content": "oml\ndrwxr-xr-x 4 root root   4096 Jul 13  2025 tests\n-rw-r--r-- 1 root root    420 Jul 13  2025 tox.ini\n====\n/testbed/astroid/const.py\n/testbed/astroid/_backport_stdlib_names.py\n/testbed/astroid/objects.py\n/testbed/astroid/transforms.py\n/testbed/astroid/modutils.py\n/testbed/astroid/interpreter/dunder_lookup.py\n/testbed/astroid/interpreter/__init__.py\n/testbed/astroid/interpreter/objectmodel.py\n/testbed/astroid/interpreter/_import/__init__.py\n/testbed/astroid/interpreter/_import/spec.py\n/testbed/astroid/interpreter/_import/util.py\n/testbed/astroid/inference_tip.py\n/testbed/astroid/rebuilder.py\n/testbed/astroid/exceptions.py\n/testbed/astroid/context.py\n/testbed/astroid/__init__.py\n/testbed/astroid/protocols.py\n/testbed/astroid/helpers.py\n/testbed/astroid/__pkginfo__.py\n/testbed/astroid/brain/brain_typing.py\n/testbed/astroid/brain/brain_io.py\n/testbed/astroid/brain/brain_http.py\n/testbed/astroid/brain/brain_collections.py\n/testbed/astroid/brain/brain_namedtuple_enum.py\n/testbed/astroid/brain/brain_hypothesis.py\n/testbed/astroid/brain/brain_numpy_core_numerictypes.py\n/testbed/astroid/brain/brain_numpy_ma.py\n/testbed/astroid/brain/brain_numpy_core_umath.py\n/testbed/astroid/brain/brain_functools.py\n/testbed/astroid/brain/brain_uuid.py\n/testbed/astroid/brain/brain_multiprocessing.py\n/testbed/astroid/brain/brain_threading.py\n/testbed/astroid/brain/brain_numpy_core_numeric.py\n/testbed/astroid/brain/brain_pathlib.py\n/testbed/astroid/brain/brain_ssl.py\n/testbed/astroid/brain/brain_random.py\n/testbed/astroid/brain/brain_numpy_ndarray.py\n/testbed/astroid/brain/brain_attrs.py\n/testbed/astroid/brain/__init__.py\n/testbed/astroid/brain/helpers.py\n/testbed/astroid/brain/brain_hashlib.py\n/testbed/astroid/brain/brain_responses.py\n/testbed/astroid/brain/brain_builtin_inference.py\n/testbed/astroid/brain/brain_signal.py\n/testbed/astroid/brain/brain_re.py\n/testbed/astroid/brain/brain_subprocess.py\n/testbed/astroid/brain/brain_scipy_signal.py\n/testbed/astroid/brain/brain_qt.py\n/testbed/astroid/brain/brain_crypt.py\n/testbed/astroid/brain/brain_curses.py\n/testbed/astroid/brain/brain_sqlalchemy.py\n/testbed/astroid/brain/brain_argparse.py\n/testbed/astroid/brain/brain_numpy_core_fromnumeric.py\n/testbed/astroid/brain/brain_unittest.py\n/testbed/astroid/brain/brain_numpy_core_multiarray.py\n/testbed/astroid/brain/brain_mechanize.py\n/testbed/astroid/brain/brain_numpy_core_function_base.py\n/testbed/astroid/brain/brain_ctypes.py\n/testbed/astroid/brain/brain_boto3.py\n/testbed/astroid/brain/brain_six.py\n/testbed/astroid/brain/brain_datetime.py\n/testbed/astroid/brain/brain_numpy_core_einsumfunc.py\n/testbed/astroid/brain/brain_pytest.py\n/testbed/astroid/brain/brain_numpy_random_mtrand.py\n/testbed/astroid/brain/brain_type.py\n/testbed/astroid/brain/brain_pkg_resources.py\n/testbed/astroid/brain/brain_regex.py\n/testbed/astroid/brain/brain_gi.py\n/testbed/astroid/brain/brain_numpy_utils.py\n/testbed/astroid/brain/brain_dataclasses.py\n/testbed/astroid/brain/brain_dateutil.py\n/testbed/astroid/brain/brain_nose.py\n/testbed/astroid/builder.py\n/testbed/astroid/manager.py\n/testbed/astroid/_ast.py\n/testbed/astroid/raw_building.py\n/testbed/astroid/nodes/node_classes.py\n/testbed/astroid/nodes/const.py\n/testbed/astroid/nodes/scoped_nodes/scoped_nodes.py\n/testbed/astroid/nodes/scoped_nodes/__init__.py\n/testbed/astroid/nodes/scoped_nodes/mixin.py\n/testbed/astroid/nodes/scoped_nodes/utils.py\n/testbed/astroid/nodes/_base_nodes.py\n/testbed/astroid/nodes/__init__.py\n/testbed/astroid/nodes/node_ng.py\n/testbed/astroid/nodes/as_string.py\n/testbed/astroid/nodes/utils.py\n/testbed/astroid/astroid_manager.py\n/testbed/astroid/bases.py\n/testbed/astroid/test_utils.py\n/testbed/astroid/typing.py\n/testbed/astroid/filter_statements.py\n/testbed/astroid/arguments.py\n/testbed/astroid/util.py\n/testbed/astroid/constraint.py\n/testbed/astroid/decorators.py\n/testbed/script/test_bump_changelog.py\n/testbed/script/create_contributor_list.py\n/testbed/script/bump_changelog.py\n/testbed/tests/test_object_model.py\n====\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-e5c95226-d906-47c0-94b2-412d661e52d1-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/astroid/brain/brain_typing.py && echo \"==== CHANGELOG ====\" && ls /testbed && cat /testbed/ChangeLog 2>/dev/null | head -50 && echo \"==== TESTS ====\" && ls /testbed/tests | head -50"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-e5c95226-d906-47c0-94b2-412d661e52d1-1",
+            "content": "roidManager()).string_build(\n        textwrap.dedent(\n            \"\"\"\n    class Generic:\n        @classmethod\n        def __class_getitem__(cls, item):  return cls\n    class ParamSpec:\n        @property\n        def args(self):\n            return ParamSpecArgs(self)\n        @property\n        def kwargs(self):\n            return ParamSpecKwargs(self)\n    class ParamSpecArgs: ...\n    class ParamSpecKwargs: ...\n    class TypeAlias: ...\n    class Type:\n        @classmethod\n        def __class_getitem__(cls, item):  return cls\n    class TypeVar:\n        @classmethod\n        def __class_getitem__(cls, item):  return cls\n    class TypeVarTuple: ...\n    class ContextManager:\n        @classmethod\n        def __class_getitem__(cls, item):  return cls\n    class AsyncContextManager:\n        @classmethod\n        def __class_getitem__(cls, item):  return cls\n    class Pattern:\n        @classmethod\n        def __class_getitem__(cls, item):  return cls\n    class Match:\n        @classmethod\n        def __class_getitem__(cls, item):  return cls\n    \"\"\"\n        )\n    )\n\n\ndef register(manager: AstroidManager) -> None:\n    manager.register_transform(\n        Call,\n        inference_tip(infer_typing_typevar_or_newtype),\n        looks_like_typing_typevar_or_newtype,\n    )\n    manager.register_transform(\n        Subscript, inference_tip(infer_typing_attr), _looks_like_typing_subscript\n    )\n    manager.register_transform(\n        Call, inference_tip(infer_typing_cast), _looks_like_typing_cast\n    )\n\n    manager.register_transform(\n        FunctionDef, inference_tip(infer_typedDict), _looks_like_typedDict\n    )\n\n    manager.register_transform(\n        Call, inference_tip(infer_typing_alias), _looks_like_typing_alias\n    )\n    manager.register_transform(\n        Call, inference_tip(infer_special_alias), _looks_like_special_alias\n    )\n\n    if PY312_PLUS:\n        register_module_extender(manager, \"typing\", _typing_transform)\n        manager.register_transform(\n            ClassDef,\n            inference_tip(infer_typing_generic_class_pep695),\n            _looks_like_generic_class_pep695,\n        )\n==== CHANGELOG ====\nCONTRIBUTORS.txt\nChangeLog\nLICENSE\nMANIFEST.in\nREADME.rst\nastroid\nastroid.egg-info\ncodecov.yml\ndoc\npylintrc\npyproject.toml\nrequirements_dev.txt\nrequirements_full.txt\nrequirements_minimal.txt\nscript\nsetup.cfg\ntbump.toml\ntests\ntox.ini\n===================\nastroid's ChangeLog\n===================\n\n\nWhat's New in astroid 4.0.0?\n============================\nRelease date: TBA\n\n* Removed internal functions ``infer_numpy_member``, ``name_looks_like_numpy_member``, and\n  ``attribute_looks_like_numpy_member`` from ``astroid.brain.brain_numpy_utils``.\n\n* Constants now have a parent of ``nodes.SYNTHETIC_ROOT``.\n\n* Fix crashes with large positive and negative list multipliers.\n\n  Closes #2521\n  Closes #2523\n\n* Fix crash when typing._alias() call is missing arguments.\n\n  Closes #2513\n\n\nWhat's New in astroid 3.3.6?\n============================\nRelease date: TBA\n\n* Fix precedence of `path` arg in `modpath_from_file_with_callback` to be higher than `sys.path`\n\n\nWhat's New in astroid 3.3.5?\n============================\nRelease date: 2024-10-04\n\n* Control setting local nodes outside of the supposed local's constructor.\n\n  Closes #1490\n\n* Fix Python 3.13 compatibility re: `collections.abc`\n\n  Closes pylint-dev/pylint#10000\n\n\nWhat's New in astroid 3.3.4?\n============================\nRelease date: 2024-09-23\n\n* Fix regression with f-string inference.\n\n==== TESTS ====\n__init__.py\nbrain\nresources.py\ntest_builder.py\ntest_constraint.py\ntest_decorators.py\ntest_filter_statements.py\ntest_group_exceptions.py\ntest_helpers.py\ntest_inference.py\ntest_inference_calls.py\ntest_lookup.py\ntest_manager.py\ntest_modutils.py\ntest_nodes.py\ntest_nodes_lineno.py\ntest_nodes_position.py\ntest_object_model.py\ntest_objects.py\ntest_protocols.py\ntest_python3.py\ntest_raw_building.py\ntest_regrtest.py\ntest_scoped_nodes.py\ntest_stdlib.py\ntest_transforms.py\ntest_type_params.py\ntest_utils.py\ntestdata\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-37b5fb9d-6160-49e4-812e-f31b50508caa-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/astroid/brain/brain_typing.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-37b5fb9d-6160-49e4-812e-f31b50508caa-2",
+            "content": "instance(node.parent, Assign)\n        and len(node.parent.targets) == 1\n        and isinstance(node.parent.targets[0], AssignName)\n    ):\n        raise UseInferenceDefault\n    try:\n        res = next(node.args[0].infer(context=ctx))\n    except StopIteration as e:\n        raise InferenceError(node=node.args[0], context=ctx) from e\n\n    assign_name = node.parent.targets[0]\n    class_def = ClassDef(\n        name=assign_name.name,\n        parent=node.parent,\n        lineno=assign_name.lineno,\n        col_offset=assign_name.col_offset,\n        end_lineno=assign_name.end_lineno,\n        end_col_offset=assign_name.end_col_offset,\n    )\n    class_def.postinit(bases=[res], body=[], decorators=None)\n    func_to_add = _extract_single_node(CLASS_GETITEM_TEMPLATE)\n    class_def.locals[\"__class_getitem__\"] = [func_to_add]\n    # Avoid re-instantiating this class every time it's seen\n    node._explicit_inference = lambda node, context: iter([class_def])\n    return iter([class_def])\n\n\ndef _looks_like_typing_cast(node: Call) -> bool:\n    return (\n        isinstance(node.func, Name)\n        and node.func.name == \"cast\"\n        or isinstance(node.func, Attribute)\n        and node.func.attrname == \"cast\"\n    )\n\n\ndef infer_typing_cast(\n    node: Call, ctx: context.InferenceContext | None = None\n) -> Iterator[NodeNG]:\n    \"\"\"Infer call to cast() returning same type as casted-from var.\"\"\"\n    if not isinstance(node.func, (Name, Attribute)):\n        raise UseInferenceDefault\n\n    try:\n        func = next(node.func.infer(context=ctx))\n    except (InferenceError, StopIteration) as exc:\n        raise UseInferenceDefault from exc\n    if (\n        not isinstance(func, FunctionDef)\n        or func.qname() != \"typing.cast\"\n        or len(node.args) != 2\n    ):\n        raise UseInferenceDefault\n\n    return node.args[1].infer(context=ctx)\n\n\ndef _typing_transform():\n    return AstroidBuilder(AstroidManager()).string_build(\n        textwrap.dedent(\n            \"\"\"\n    class Generic:\n        @classmethod\n        def __class_getitem__(cls, item):  return cls\n    class ParamSpec:\n        @property\n        def args(self):\n            return ParamSpecArgs(self)\n        @property\n        def kwargs(self):\n            return ParamSpecKwargs(self)\n    class ParamSpecArgs: ...\n    class ParamSpecKwargs: ...\n    class TypeAlias: ...\n    class Type:\n        @classmethod\n        def __class_getitem__(cls, item):  return cls\n    class TypeVar:\n        @classmethod\n        def __class_getitem__(cls, item):  return cls\n    class TypeVarTuple: ...\n    class ContextManager:\n        @classmethod\n        def __class_getitem__(cls, item):  return cls\n    class AsyncContextManager:\n        @classmethod\n        def __class_getitem__(cls, item):  return cls\n    class Pattern:\n        @classmethod\n        def __class_getitem__(cls, item):  return cls\n    class Match:\n        @classmethod\n        def __class_getitem__(cls, item):  return cls\n    \"\"\"\n        )\n    )\n\n\ndef register(manager: AstroidManager) -> None:\n    manager.register_transform(\n        Call,\n        inference_tip(infer_typing_typevar_or_newtype),\n        looks_like_typing_typevar_or_newtype,\n    )\n    manager.register_transform(\n        Subscript, inference_tip(infer_typing_attr), _looks_like_typing_subscript\n    )\n    manager.register_transform(\n        Call, inference_tip(infer_typing_cast), _looks_like_typing_cast\n    )\n\n    manager.register_transform(\n        FunctionDef, inference_tip(infer_typedDict), _looks_like_typedDict\n    )\n\n    manager.register_transform(\n        Call, inference_tip(infer_typing_alias), _looks_like_typing_alias\n    )\n    manager.register_transform(\n        Call, inference_tip(infer_special_alias), _looks_like_special_alias\n    )\n\n    if PY312_PLUS:\n        register_module_extender(manager, \"typing\", _typing_transform)\n        manager.register_transform(\n            ClassDef,\n            inference_tip(infer_typing_generic_class_pep695),\n            _looks_like_generic_class_pep695,\n        )\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-2f9cb1a9-5bb6-48ab-9a5b-529de51c5650-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "wc -l /testbed/astroid/brain/brain_typing.py && echo \"====\" && cat /testbed/astroid/brain/brain_typing.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-2f9cb1a9-5bb6-48ab-9a5b-529de51c5650-3",
+            "content": "instance(node.parent, Assign)\n        and len(node.parent.targets) == 1\n        and isinstance(node.parent.targets[0], AssignName)\n    ):\n        raise UseInferenceDefault\n    try:\n        res = next(node.args[0].infer(context=ctx))\n    except StopIteration as e:\n        raise InferenceError(node=node.args[0], context=ctx) from e\n\n    assign_name = node.parent.targets[0]\n    class_def = ClassDef(\n        name=assign_name.name,\n        parent=node.parent,\n        lineno=assign_name.lineno,\n        col_offset=assign_name.col_offset,\n        end_lineno=assign_name.end_lineno,\n        end_col_offset=assign_name.end_col_offset,\n    )\n    class_def.postinit(bases=[res], body=[], decorators=None)\n    func_to_add = _extract_single_node(CLASS_GETITEM_TEMPLATE)\n    class_def.locals[\"__class_getitem__\"] = [func_to_add]\n    # Avoid re-instantiating this class every time it's seen\n    node._explicit_inference = lambda node, context: iter([class_def])\n    return iter([class_def])\n\n\ndef _looks_like_typing_cast(node: Call) -> bool:\n    return (\n        isinstance(node.func, Name)\n        and node.func.name == \"cast\"\n        or isinstance(node.func, Attribute)\n        and node.func.attrname == \"cast\"\n    )\n\n\ndef infer_typing_cast(\n    node: Call, ctx: context.InferenceContext | None = None\n) -> Iterator[NodeNG]:\n    \"\"\"Infer call to cast() returning same type as casted-from var.\"\"\"\n    if not isinstance(node.func, (Name, Attribute)):\n        raise UseInferenceDefault\n\n    try:\n        func = next(node.func.infer(context=ctx))\n    except (InferenceError, StopIteration) as exc:\n        raise UseInferenceDefault from exc\n    if (\n        not isinstance(func, FunctionDef)\n        or func.qname() != \"typing.cast\"\n        or len(node.args) != 2\n    ):\n        raise UseInferenceDefault\n\n    return node.args[1].infer(context=ctx)\n\n\ndef _typing_transform():\n    return AstroidBuilder(AstroidManager()).string_build(\n        textwrap.dedent(\n            \"\"\"\n    class Generic:\n        @classmethod\n        def __class_getitem__(cls, item):  return cls\n    class ParamSpec:\n        @property\n        def args(self):\n            return ParamSpecArgs(self)\n        @property\n        def kwargs(self):\n            return ParamSpecKwargs(self)\n    class ParamSpecArgs: ...\n    class ParamSpecKwargs: ...\n    class TypeAlias: ...\n    class Type:\n        @classmethod\n        def __class_getitem__(cls, item):  return cls\n    class TypeVar:\n        @classmethod\n        def __class_getitem__(cls, item):  return cls\n    class TypeVarTuple: ...\n    class ContextManager:\n        @classmethod\n        def __class_getitem__(cls, item):  return cls\n    class AsyncContextManager:\n        @classmethod\n        def __class_getitem__(cls, item):  return cls\n    class Pattern:\n        @classmethod\n        def __class_getitem__(cls, item):  return cls\n    class Match:\n        @classmethod\n        def __class_getitem__(cls, item):  return cls\n    \"\"\"\n        )\n    )\n\n\ndef register(manager: AstroidManager) -> None:\n    manager.register_transform(\n        Call,\n        inference_tip(infer_typing_typevar_or_newtype),\n        looks_like_typing_typevar_or_newtype,\n    )\n    manager.register_transform(\n        Subscript, inference_tip(infer_typing_attr), _looks_like_typing_subscript\n    )\n    manager.register_transform(\n        Call, inference_tip(infer_typing_cast), _looks_like_typing_cast\n    )\n\n    manager.register_transform(\n        FunctionDef, inference_tip(infer_typedDict), _looks_like_typedDict\n    )\n\n    manager.register_transform(\n        Call, inference_tip(infer_typing_alias), _looks_like_typing_alias\n    )\n    manager.register_transform(\n        Call, inference_tip(infer_special_alias), _looks_like_special_alias\n    )\n\n    if PY312_PLUS:\n        register_module_extender(manager, \"typing\", _typing_transform)\n        manager.register_transform(\n            ClassDef,\n            inference_tip(infer_typing_generic_class_pep695),\n            _looks_like_generic_class_pep695,\n        )\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-aa2afe8a-9861-4b13-84e6-53d678835f1c-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "head -n 400 /testbed/astroid/brain/brain_typing.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-aa2afe8a-9861-4b13-84e6-53d678835f1c-4",
+            "content": "alias function\n    Insert ClassDef, with same name as aliased class,\n    in mro to simulate _GenericAlias.\n\n    :param node: call node\n    :param context: inference context\n\n    # TODO: evaluate if still necessary when Py3.12 is minimum\n    \"\"\"\n    if (\n        not isinstance(node.parent, Assign)\n        or not len(node.parent.targets) == 1\n        or not isinstance(node.parent.targets[0], AssignName)\n    ):\n        raise UseInferenceDefault\n    try:\n        res = next(node.args[0].infer(context=ctx))\n    except StopIteration as e:\n        raise InferenceError(node=node.args[0], context=ctx) from e\n\n    assign_name = node.parent.targets[0]\n\n    class_def = ClassDef(\n        name=assign_name.name,\n        lineno=assign_name.lineno,\n        col_offset=assign_name.col_offset,\n        parent=node.parent,\n        end_lineno=assign_name.end_lineno,\n        end_col_offset=assign_name.end_col_offset,\n    )\n    if isinstance(res, ClassDef):\n        # Only add `res` as base if it's a `ClassDef`\n        # This isn't the case for `typing.Pattern` and `typing.Match`\n        class_def.postinit(bases=[res], body=[], decorators=None)\n\n    maybe_type_var = node.args[1]\n    if isinstance(maybe_type_var, Const) and maybe_type_var.value > 0:\n        # If typing alias is subscriptable, add `__class_getitem__` to ClassDef\n        func_to_add = _extract_single_node(CLASS_GETITEM_TEMPLATE)\n        class_def.locals[\"__class_getitem__\"] = [func_to_add]\n    else:\n        # If not, make sure that `__class_getitem__` access is forbidden.\n        # This is an issue in cases where the aliased class implements it,\n        # but the typing alias isn't subscriptable. E.g., `typing.ByteString` for PY39+\n        _forbid_class_getitem_access(class_def)\n\n    # Avoid re-instantiating this class every time it's seen\n    node._explicit_inference = lambda node, context: iter([class_def])\n    return iter([class_def])\n\n\ndef _looks_like_special_alias(node: Call) -> bool:\n    \"\"\"Return True if call is for Tuple or Callable alias.\n\n    In PY37 and PY38 the call is to '_VariadicGenericAlias' with 'tuple' as\n    first argument. In PY39+ it is replaced by a call to '_TupleType'.\n\n    PY37: Tuple = _VariadicGenericAlias(tuple, (), inst=False, special=True)\n    PY39: Tuple = _TupleType(tuple, -1, inst=False, name='Tuple')\n\n    PY37: Callable = _VariadicGenericAlias(collections.abc.Callable, (), special=True)\n    PY39: Callable = _CallableType(collections.abc.Callable, 2)\n    \"\"\"\n    return isinstance(node.func, Name) and (\n        node.func.name == \"_TupleType\"\n        and isinstance(node.args[0], Name)\n        and node.args[0].name == \"tuple\"\n        or node.func.name == \"_CallableType\"\n        and isinstance(node.args[0], Attribute)\n        and node.args[0].as_string() == \"collections.abc.Callable\"\n    )\n\n\ndef infer_special_alias(\n    node: Call, ctx: context.InferenceContext | None = None\n) -> Iterator[ClassDef]:\n    \"\"\"Infer call to tuple alias as new subscriptable class typing.Tuple.\"\"\"\n    if not (\n        isinstance(node.parent, Assign)\n        and len(node.parent.targets) == 1\n        and isinstance(node.parent.targets[0], AssignName)\n    ):\n        raise UseInferenceDefault\n    try:\n        res = next(node.args[0].infer(context=ctx))\n    except StopIteration as e:\n        raise InferenceError(node=node.args[0], context=ctx) from e\n\n    assign_name = node.parent.targets[0]\n    class_def = ClassDef(\n        name=assign_name.name,\n        parent=node.parent,\n        lineno=assign_name.lineno,\n        col_offset=assign_name.col_offset,\n        end_lineno=assign_name.end_lineno,\n        end_col_offset=assign_name.end_col_offset,\n    )\n    class_def.postinit(bases=[res], body=[], decorators=None)\n    func_to_add = _extract_single_node(CLASS_GETITEM_TEMPLATE)\n    class_def.locals[\"__class_getitem__\"] = [func_to_add]\n    # Avoid re-instantiating this class every time it's seen\n    node._explicit_inference = lambda node, context: iter([class_def])\n    return iter([class_def])\n\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-f5df1035-abe3-407b-b437-50f52debae67-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '1,250p' /testbed/astroid/brain/brain_typing.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-f5df1035-abe3-407b-b437-50f52debae67-5",
+            "content": "ipt(node) -> bool:\n    \"\"\"Try to figure out if a Subscript node *might* be a typing-related subscript.\"\"\"\n    if isinstance(node, Name):\n        return node.name in TYPING_MEMBERS\n    if isinstance(node, Attribute):\n        return node.attrname in TYPING_MEMBERS\n    if isinstance(node, Subscript):\n        return _looks_like_typing_subscript(node.value)\n    return False\n\n\ndef infer_typing_attr(\n    node: Subscript, ctx: context.InferenceContext | None = None\n) -> Iterator[ClassDef]:\n    \"\"\"Infer a typing.X[...] subscript.\"\"\"\n    try:\n        value = next(node.value.infer())  # type: ignore[union-attr] # value shouldn't be None for Subscript.\n    except (InferenceError, StopIteration) as exc:\n        raise UseInferenceDefault from exc\n\n    if not value.qname().startswith(\"typing.\") or value.qname() in TYPING_ALIAS:\n        # If typing subscript belongs to an alias handle it separately.\n        raise UseInferenceDefault\n\n    if (\n        PY313_PLUS\n        and isinstance(value, FunctionDef)\n        and value.qname() == \"typing.Annotated\"\n    ):\n        # typing.Annotated is a FunctionDef on 3.13+\n        node._explicit_inference = lambda node, context: iter([value])\n        return iter([value])\n\n    if isinstance(value, ClassDef) and value.qname() in {\n        \"typing.Generic\",\n        \"typing.Annotated\",\n        \"typing_extensions.Annotated\",\n    }:\n        # typing.Generic and typing.Annotated (PY39) are subscriptable\n        # through __class_getitem__. Since astroid can't easily\n        # infer the native methods, replace them for an easy inference tip\n        func_to_add = _extract_single_node(CLASS_GETITEM_TEMPLATE)\n        value.locals[\"__class_getitem__\"] = [func_to_add]\n        if (\n            isinstance(node.parent, ClassDef)\n            and node in node.parent.bases\n            and getattr(node.parent, \"__cache\", None)\n        ):\n            # node.parent.slots is evaluated and cached before the inference tip\n            # is first applied. Remove the last result to allow a recalculation of slots\n            cache = node.parent.__cache  # type: ignore[attr-defined] # Unrecognized getattr\n            if cache.get(node.parent.slots) is not None:\n                del cache[node.parent.slots]\n        # Avoid re-instantiating this class every time it's seen\n        node._explicit_inference = lambda node, context: iter([value])\n        return iter([value])\n\n    node = extract_node(TYPING_TYPE_TEMPLATE.format(value.qname().split(\".\")[-1]))\n    return node.infer(context=ctx)\n\n\ndef _looks_like_generic_class_pep695(node: ClassDef) -> bool:\n    \"\"\"Check if class is using type parameter. Python 3.12+.\"\"\"\n    return len(node.type_params) > 0\n\n\ndef infer_typing_generic_class_pep695(\n    node: ClassDef, ctx: context.InferenceContext | None = None\n) -> Iterator[ClassDef]:\n    \"\"\"Add __class_getitem__ for generic classes. Python 3.12+.\"\"\"\n    func_to_add = _extract_single_node(CLASS_GETITEM_TEMPLATE)\n    node.locals[\"__class_getitem__\"] = [func_to_add]\n    return iter([node])\n\n\ndef _looks_like_typedDict(  # pylint: disable=invalid-name\n    node: FunctionDef | ClassDef,\n) -> bool:\n    \"\"\"Check if node is TypedDict FunctionDef.\"\"\"\n    return node.qname() in TYPING_TYPEDDICT_QUALIFIED\n\n\ndef infer_typedDict(  # pylint: disable=invalid-name\n    node: FunctionDef, ctx: context.InferenceContext | None = None\n) -> Iterator[ClassDef]:\n    \"\"\"Replace TypedDict FunctionDef with ClassDef.\"\"\"\n    class_def = ClassDef(\n        name=\"TypedDict\",\n        lineno=node.lineno,\n        col_offset=node.col_offset,\n        parent=node.parent,\n        end_lineno=node.end_lineno,\n        end_col_offset=node.end_col_offset,\n    )\n    class_def.postinit(bases=[extract_node(\"dict\")], body=[], decorators=None)\n    func_to_add = _extract_single_node(\"dict\")\n    class_def.locals[\"__call__\"] = [func_to_add]\n    return iter([class_def])\n\n\ndef _looks_like_typing_alias(node: Call) -> bool:\n    \"\"\"\n    Returns True if the node corresponds to a call to _alias function.\n\n"
+          }
+        ]
+      }
+    }
+  ]
+}

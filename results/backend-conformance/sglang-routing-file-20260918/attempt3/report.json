@@ -1,0 +1,66 @@
+{
+  "result_id": "e3f44579-7098-46b5-845c-05e782db7ab4",
+  "scope_id": "b6-real-two-engine-routing-20260917",
+  "attempt": 3,
+  "status": "failed",
+  "source": {
+    "base_commit": "aa7ef2f7b14882b96b24312fcada134eb951e873",
+    "patch": "b6-cold-start-aa7.patch",
+    "patch_sha256": "bbd7fd20533e8571f3acd1b803f092d392c740a1329fb5151122ed39d9f0ab91",
+    "patched_routing_conformance_sha256": "1ab0a3353faec45db41d53f2839f4cd8ebe416be545d83f514e2c9695dd6f696",
+    "backend_or_native_changes": false
+  },
+  "status_error": "KeyError: 'routing'",
+  "attempts_accounted": 15,
+  "parallel_protocol": {
+    "root_requests": 1,
+    "cold_warmup_requests": 4,
+    "measured_requests": 4,
+    "same_key_same_sampling": true,
+    "tokens_per_warmup_or_measured_request": 32,
+    "overlap_interval": "first_output_at through finished_at"
+  },
+  "reached": {
+    "two_distinct_real_workers": true,
+    "root_l3_ready_tokens": 512,
+    "warmup_reached_both_workers": true,
+    "warmup_output_overlap": false,
+    "measured_reached_both_workers": true,
+    "measured_output_overlap": true,
+    "measured_cached_tokens": [528, 528, 528, 528],
+    "native_registry_worker_removed": true,
+    "canonical_rebind_completed": true,
+    "rebind_cached_tokens": 521,
+    "final_structured_commit_generation_reached": true
+  },
+  "failure": {
+    "location": "benchmarks/routing_conformance.py line 138 on the aa7 source base",
+    "expression": "runtime.reducer.state.facts[\"routing\"][0].value",
+    "actual": "the reducer facts mapping contained no routing key",
+    "effect": "the final routed reducer state assertion raised before completed_checks could be written",
+    "semantic_assertion_weakened": false
+  },
+  "budget": {
+    "attempt3_including_cleanup_seconds": 142.831,
+    "all_attempts_cumulative_seconds": 729.883,
+    "total_cap_seconds": 1200,
+    "remaining_seconds": 470.117,
+    "cleanup_seconds": 7.046
+  },
+  "paths": {
+    "local_result": "/home/ubuntu/.copilot/session-state/9982c699-cc5d-4682-a8db-1ecc8c706ac0/files/b6-two-engine/host-138-attempt3/results/routing-conformance.json",
+    "local_logs": "/home/ubuntu/.copilot/session-state/9982c699-cc5d-4682-a8db-1ecc8c706ac0/files/b6-two-engine/host-138-attempt3/logs",
+    "remote_l3": "/home/user/octopus-sglang-routing-138-20260917/attempt3/l3"
+  },
+  "result_sha256": "e5c1bdc987b01c6f26362a9d132a3e91b4c1f68b6c1f0fa2a0fff614b9e025e1",
+  "cleanup": {
+    "owned_processes_remaining": 0,
+    "gpu1_processes_remaining": 0,
+    "gpu2_processes_remaining": 0,
+    "ports_released": true,
+    "bulk_l3_not_copied": true
+  },
+  "b6_passed": false,
+  "distributed_b5_passed": false,
+  "quality_or_latency_claim": false
+}

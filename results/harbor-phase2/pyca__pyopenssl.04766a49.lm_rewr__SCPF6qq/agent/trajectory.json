@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "pyca__pyopenssl.04766a49.lm_rewr__SCPF6qq__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# Certificate chain verification fails on second call to get_verified_chain()\n\nWhen trying to verify a certificate chain and then retrieve the verified chain multiple times, the second call to `get_verified_chain()` returns incorrect results.\n\n## Steps to reproduce\n\n```python\nfrom OpenSSL import crypto\n\n# Create a certificate chain (root, intermediate, leaf)\n# ... setup code to create certificates ...\n\n# Create a store and add certificates\nstore = crypto.X509Store()\nstore.add_cert(root_cert)\nstore.add_cert(intermediate_cert)\n\n# Create store context with the leaf certificate\nstore_ctx = crypto.X509StoreContext(store, leaf_cert)\n\n# First call works correctly\nchain1 = store_ctx.get_verified_chain()\nprint(f\"First chain length: {len(chain1)}\")  # Shows 3 certificates\n\n# Second call fails\nchain2 = store_ctx.get_verified_chain()\nprint(f\"Second chain length: {len(chain2)}\")  # Shows 0 certificates or incorrect chain\n```\n\n## Expected behavior\nBoth calls to `get_verified_chain()` should return the complete certificate chain with the same certificates in the same order.\n\n## Actual behavior\nThe first call to `get_verified_chain()` works correctly, but subsequent calls on the same context object return an empty list or incorrect certificates.\n\nThis appears to be related to how the certificate references are managed when retrieving the chain from the OpenSSL store context."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository and the `get_verified_chain()` implementation to find why the second call fails.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-3bfd510d-29d9-45de-a116-58a631b1b67d-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" -o -name \"*.rst\" -o -name \"*.md\" -o -name \"setup.py\" -o -name \"pyproject.toml\" | head -100"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-3bfd510d-29d9-45de-a116-58a631b1b67d-0",
+            "content": "total 116\ndrwxr-xr-x 1 root root  4096 Sep 22 17:46 .\ndrwxr-xr-x 1 root root  4096 Sep 22 17:46 ..\ndrwxr-xr-x 8 root root  4096 Jul 13  2025 .git\ndrwxr-xr-x 4 root root  4096 Jul 13  2025 .github\n-rw-r--r-- 1 root root   144 Jul 13  2025 .gitignore\n-rw-rw-r-- 1 1005 1005     0 Sep 22 15:44 .gitkeep\n-rw-r--r-- 1 root root   119 Jul 13  2025 .readthedocs.yml\n-rw-r--r-- 1 root root 24998 Jul 13  2025 CHANGELOG.rst\n-rw-r--r-- 1 root root  3337 Jul 13  2025 CODE_OF_CONDUCT.rst\n-rw-r--r-- 1 root root  5281 Jul 13  2025 CONTRIBUTING.rst\n-rw-r--r-- 1 root root  1152 Jul 13  2025 INSTALL.rst\n-rw-r--r-- 1 root root 11358 Jul 13  2025 LICENSE\n-rw-r--r-- 1 root root   243 Jul 13  2025 MANIFEST.in\n-rw-r--r-- 1 root root  1665 Jul 13  2025 README.rst\ndrwxr-xr-x 4 root root  4096 Jul 13  2025 doc\n-rw-r--r-- 1 root root  1035 Jul 13  2025 pyproject.toml\n-rw-r--r-- 1 root root   359 Jul 13  2025 setup.cfg\n-rw-r--r-- 1 root root  3198 Jul 13  2025 setup.py\ndrwxr-xr-x 4 root root  4096 Jul 13  2025 src\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 tests\n-rw-r--r-- 1 root root  1397 Jul 13  2025 tox.ini\n/testbed/src/OpenSSL/version.py\n/testbed/src/OpenSSL/__init__.py\n/testbed/src/OpenSSL/debug.py\n/testbed/src/OpenSSL/_util.py\n/testbed/src/OpenSSL/rand.py\n/testbed/src/OpenSSL/crypto.py\n/testbed/src/OpenSSL/SSL.py\n/testbed/INSTALL.rst\n/testbed/CODE_OF_CONDUCT.rst\n/testbed/pyproject.toml\n/testbed/README.rst\n/testbed/tests/test_ssl.py\n/testbed/tests/__init__.py\n/testbed/tests/test_crypto.py\n/testbed/tests/test_debug.py\n/testbed/tests/conftest.py\n/testbed/tests/test_rand.py\n/testbed/tests/test_util.py\n/testbed/tests/util.py\n/testbed/CONTRIBUTING.rst\n/testbed/setup.py\n/testbed/doc/conf.py\n/testbed/doc/backward-compatibility.rst\n/testbed/doc/introduction.rst\n/testbed/doc/index.rst\n/testbed/doc/internals.rst\n/testbed/doc/changelog.rst\n/testbed/doc/api.rst\n/testbed/doc/install.rst\n/testbed/doc/api/crypto.rst\n/testbed/doc/api/ssl.rst\n/testbed/CHANGELOG.rst\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-ff313e40-46b7-43be-aa53-bc29ff842cc6-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "grep -n \"get_verified_chain\\|X509StoreContext\\|verified_chain\" /testbed/src/OpenSSL/crypto.py /testbed/tests/test_crypto.py /testbed/CHANGELOG.rst"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-ff313e40-46b7-43be-aa53-bc29ff842cc6-1",
+            "content": "9StoreContext`` raises ``OpenSSL.crypto.Error`` when\n/testbed/tests/test_crypto.py:3224:            X509StoreContext(store, self.intermediate_server_cert, chain=chain)\n/testbed/tests/test_crypto.py:3233:        store_ctx = X509StoreContext(store, self.root_cert)\n/testbed/tests/test_crypto.py:3242:        store_ctx = X509StoreContext(store, self.root_cert)\n/testbed/tests/test_crypto.py:3243:        with pytest.raises(X509StoreContextError) as exc:\n/testbed/tests/test_crypto.py:3260:        store_ctx = X509StoreContext(store, self.intermediate_server_cert)\n/testbed/tests/test_crypto.py:3262:        with pytest.raises(X509StoreContextError) as exc:\n/testbed/tests/test_crypto.py:3275:        store_ctx = X509StoreContext(store, self.intermediate_server_cert)\n/testbed/tests/test_crypto.py:3277:        with pytest.raises(X509StoreContextError) as exc:\n/testbed/tests/test_crypto.py:3293:        store_ctx = X509StoreContext(store_bad, self.intermediate_server_cert)\n/testbed/tests/test_crypto.py:3295:        with pytest.raises(X509StoreContextError) as exc:\n/testbed/tests/test_crypto.py:3319:        store_ctx = X509StoreContext(store, self.intermediate_server_cert)\n/testbed/tests/test_crypto.py:3320:        with pytest.raises(X509StoreContextError) as exc:\n/testbed/tests/test_crypto.py:3325:    def test_get_verified_chain(self):\n/testbed/tests/test_crypto.py:3327:        `get_verified_chain` returns the verified chain.\n/testbed/tests/test_crypto.py:3332:        store_ctx = X509StoreContext(store, self.intermediate_server_cert)\n/testbed/tests/test_crypto.py:3333:        chain = store_ctx.get_verified_chain()\n/testbed/tests/test_crypto.py:3340:        chain = store_ctx.get_verified_chain()\n/testbed/tests/test_crypto.py:3346:    def test_get_verified_chain_invalid_chain_no_root(self):\n/testbed/tests/test_crypto.py:3348:        `get_verified_chain` raises error when cert verification fails.\n/testbed/tests/test_crypto.py:3352:        store_ctx = X509StoreContext(store, self.intermediate_server_cert)\n/testbed/tests/test_crypto.py:3354:        with pytest.raises(X509StoreContextError) as exc:\n/testbed/tests/test_crypto.py:3355:            store_ctx.get_verified_chain()\n/testbed/tests/test_crypto.py:3383:        store_ctx = X509StoreContext(store, self.intermediate_cert)\n/testbed/tests/test_crypto.py:3390:        store_ctx = X509StoreContext(store, self.intermediate_cert)\n/testbed/tests/test_crypto.py:3401:        store_ctx = X509StoreContext(store, self.intermediate_server_cert)\n/testbed/tests/test_crypto.py:3411:        store_ctx = X509StoreContext(store, self.intermediate_server_cert)\n/testbed/tests/test_crypto.py:3418:        store_ctx = X509StoreContext(store, self.intermediate_cert)\n/testbed/tests/test_crypto.py:3419:        with pytest.raises(X509StoreContextError) as exc:\n/testbed/tests/test_crypto.py:3428:        store_ctx = X509StoreContext(store, self.intermediate_server_cert)\n/testbed/tests/test_crypto.py:3429:        with pytest.raises(X509StoreContextError):\n/testbed/tests/test_crypto.py:3434:        store_ctx = X509StoreContext(store, self.intermediate_server_cert)\n/testbed/CHANGELOG.rst:29:* ``OpenSSL.SSL.Connection.get_certificate``, ``OpenSSL.SSL.Connection.get_peer_certificate``, ``OpenSSL.SSL.Connection.get_peer_cert_chain``, and ``OpenSSL.SSL.Connection.get_verified_chain`` now take an ``as_cryptography`` keyword-argument. When ``True`` is passed then ``cryptography.x509.Certificate`` are returned, instead of ``OpenSSL.crypto.X509``. In the future, passing ``False`` (the default) will be deprecated.\n/testbed/CHANGELOG.rst:206:- The ``OpenSSL.crypto.X509StoreContextError`` exception has been refactored,\n/testbed/CHANGELOG.rst:303:- Added a new optional ``chain`` parameter to ``OpenSSL.crypto.X509StoreContext()``\n/testbed/CHANGELOG.rst:311:- Added ``OpenSSL.SSL.Connection.get_verified_chain`` to retrieve the\n/testbed/CHANGELOG.rst:496:- Fixed a memory leak when verifying certificates with ``OpenSSL.crypto.X509StoreContext``.\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-12055ced-49df-40ea-9aca-f9c034ecb51b-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "grep -n \"class X509StoreContext\\|def get_verified_chain\\|def verify_certificate\\|X509_STORE_CTX\\|X509StoreContextError\" /testbed/src/OpenSSL/crypto.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-12055ced-49df-40ea-9aca-f9c034ecb51b-2",
+            "content": "60:    \"X509StoreContextError\",\n1911:class X509StoreContextError(Exception):\n1928:class X509StoreContext:\n1985:    def _exception_from_context(store_ctx: Any) -> X509StoreContextError:\n1995:                _lib.X509_STORE_CTX_get_error(store_ctx)\n1999:            _lib.X509_STORE_CTX_get_error(store_ctx),\n2000:            _lib.X509_STORE_CTX_get_error_depth(store_ctx),\n2005:        _x509 = _lib.X509_STORE_CTX_get_current_cert(store_ctx)\n2008:        return X509StoreContextError(message, errors, pycert)\n2012:        Verifies the certificate and runs an X509_STORE_CTX containing the\n2015:        :raises X509StoreContextError: If an error occurred when validating a\n2019:        store_ctx = _lib.X509_STORE_CTX_new()\n2021:        store_ctx = _ffi.gc(store_ctx, _lib.X509_STORE_CTX_free)\n2023:        ret = _lib.X509_STORE_CTX_init(\n2045:    def verify_certificate(self) -> None:\n2051:        :raises X509StoreContextError: If an error occurred when validating a\n2057:    def get_verified_chain(self) -> list[X509]:\n2062:        :raises X509StoreContextError: If an error occurred when validating a\n2070:        # Note: X509_STORE_CTX_get1_chain returns a deep copy of the chain.\n2071:        cert_stack = _lib.X509_STORE_CTX_get1_chain(store_ctx)\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-510acadc-e7c0-4b8f-a0b6-64ea8f0dc976-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '1910,2150p' /testbed/src/OpenSSL/crypto.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-510acadc-e7c0-4b8f-a0b6-64ea8f0dc976-3",
+            "content": "   ret = _lib.X509_STORE_CTX_init(\n            store_ctx, self._store._store, self._cert._x509, self._chain\n        )\n        _openssl_assert(ret == 1)\n\n        ret = _lib.X509_verify_cert(store_ctx)\n        if ret <= 0:\n            raise self._exception_from_context(store_ctx)\n\n        return store_ctx\n\n    def set_store(self, store: X509Store) -> None:\n        \"\"\"\n        Set the context's X.509 store.\n\n        .. versionadded:: 0.15\n\n        :param X509Store store: The store description which will be used for\n            the purposes of any *future* verifications.\n        \"\"\"\n        self._store = store\n\n    def verify_certificate(self) -> None:\n        \"\"\"\n        Verify a certificate in a context.\n\n        .. versionadded:: 0.15\n\n        :raises X509StoreContextError: If an error occurred when validating a\n          certificate in the context. Sets ``certificate`` attribute to\n          indicate which certificate caused the error.\n        \"\"\"\n        self._verify_certificate()\n\n    def get_verified_chain(self) -> list[X509]:\n        \"\"\"\n        Verify a certificate in a context and return the complete validated\n        chain.\n\n        :raises X509StoreContextError: If an error occurred when validating a\n          certificate in the context. Sets ``certificate`` attribute to\n          indicate which certificate caused the error.\n\n        .. versionadded:: 20.0\n        \"\"\"\n        store_ctx = self._verify_certificate()\n\n        # Note: X509_STORE_CTX_get1_chain returns a deep copy of the chain.\n        cert_stack = _lib.X509_STORE_CTX_get1_chain(store_ctx)\n        _openssl_assert(cert_stack != _ffi.NULL)\n\n        result = []\n        for i in range(_lib.sk_X509_num(cert_stack)):\n            cert = _lib.sk_X509_value(cert_stack, i)\n            _openssl_assert(cert != _ffi.NULL)\n            pycert = X509._from_raw_x509_ptr(cert)\n            result.append(pycert)\n\n        # Free the stack but not the members which are freed by the X509 class.\n        _lib.sk_X509_free(cert_stack)\n        return result\n\n\ndef load_certificate(type: int, buffer: bytes) -> X509:\n    \"\"\"\n    Load a certificate (X509) from the string *buffer* encoded with the\n    type *type*.\n\n    :param type: The file type (one of FILETYPE_PEM, FILETYPE_ASN1)\n\n    :param bytes buffer: The buffer the certificate is stored in\n\n    :return: The X509 object\n    \"\"\"\n    if isinstance(buffer, str):\n        buffer = buffer.encode(\"ascii\")\n\n    bio = _new_mem_buf(buffer)\n\n    if type == FILETYPE_PEM:\n        x509 = _lib.PEM_read_bio_X509(bio, _ffi.NULL, _ffi.NULL, _ffi.NULL)\n    elif type == FILETYPE_ASN1:\n        x509 = _lib.d2i_X509_bio(bio, _ffi.NULL)\n    else:\n        raise ValueError(\"type argument must be FILETYPE_PEM or FILETYPE_ASN1\")\n\n    if x509 == _ffi.NULL:\n        _raise_current_error()\n\n    return X509._from_raw_x509_ptr(x509)\n\n\ndef dump_certificate(type: int, cert: X509) -> bytes:\n    \"\"\"\n    Dump the certificate *cert* into a buffer string encoded with the type\n    *type*.\n\n    :param type: The file type (one of FILETYPE_PEM, FILETYPE_ASN1, or\n        FILETYPE_TEXT)\n    :param cert: The certificate to dump\n    :return: The buffer with the dumped certificate in\n    \"\"\"\n    bio = _new_mem_buf()\n\n    if type == FILETYPE_PEM:\n        result_code = _lib.PEM_write_bio_X509(bio, cert._x509)\n    elif type == FILETYPE_ASN1:\n        result_code = _lib.i2d_X509_bio(bio, cert._x509)\n    elif type == FILETYPE_TEXT:\n        result_code = _lib.X509_print_ex(bio, cert._x509, 0, 0)\n    else:\n        raise ValueError(\n            \"type argument must be FILETYPE_PEM, FILETYPE_ASN1, or \"\n            \"FILETYPE_TEXT\"\n        )\n\n    _openssl_assert(result_code == 1)\n    return _bio_to_string(bio)\n\n\ndef dump_publickey(type: int, pkey: PKey) -> bytes:\n    \"\"\"\n    Dump a public key to a buffer.\n\n    :param type: The file type (one of :data:`FILETYPE_PEM` or\n        :data:`FILETYPE_ASN1`).\n    :param PKey pkey: The public key to dump\n    :return: The buffer with the dumped key in it.\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-818b7227-650e-43d7-a1d0-852d658eea57-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '1600,2010p' /testbed/src/OpenSSL/crypto.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-818b7227-650e-43d7-a1d0-852d658eea57-4",
+            "content": "h *cafile* and *capath* is ``None``\n            or the locations could not be set for any reason.\n\n        \"\"\"\n        if cafile is None:\n            cafile = _ffi.NULL\n        else:\n            cafile = _path_bytes(cafile)\n\n        if capath is None:\n            capath = _ffi.NULL\n        else:\n            capath = _path_bytes(capath)\n\n        load_result = _lib.X509_STORE_load_locations(\n            self._store, cafile, capath\n        )\n        if not load_result:\n            _raise_current_error()\n\n\nclass X509StoreContextError(Exception):\n    \"\"\"\n    An exception raised when an error occurred while verifying a certificate\n    using `OpenSSL.X509StoreContext.verify_certificate`.\n\n    :ivar certificate: The certificate which caused verificate failure.\n    :type certificate: :class:`X509`\n    \"\"\"\n\n    def __init__(\n        self, message: str, errors: list[Any], certificate: X509\n    ) -> None:\n        super().__init__(message)\n        self.errors = errors\n        self.certificate = certificate\n\n\nclass X509StoreContext:\n    \"\"\"\n    An X.509 store context.\n\n    An X.509 store context is used to carry out the actual verification process\n    of a certificate in a described context. For describing such a context, see\n    :class:`X509Store`.\n\n    :param X509Store store: The certificates which will be trusted for the\n        purposes of any verifications.\n    :param X509 certificate: The certificate to be verified.\n    :param chain: List of untrusted certificates that may be used for building\n        the certificate chain. May be ``None``.\n    :type chain: :class:`list` of :class:`X509`\n    \"\"\"\n\n    def __init__(\n        self,\n        store: X509Store,\n        certificate: X509,\n        chain: Sequence[X509] | None = None,\n    ) -> None:\n        self._store = store\n        self._cert = certificate\n        self._chain = self._build_certificate_stack(chain)\n\n    @staticmethod\n    def _build_certificate_stack(\n        certificates: Sequence[X509] | None,\n    ) -> None:\n        def cleanup(s: Any) -> None:\n            # Equivalent to sk_X509_pop_free, but we don't\n            # currently have a CFFI binding for that available\n            for i in range(_lib.sk_X509_num(s)):\n                x = _lib.sk_X509_value(s, i)\n                _lib.X509_free(x)\n            _lib.sk_X509_free(s)\n\n        if certificates is None or len(certificates) == 0:\n            return _ffi.NULL\n\n        stack = _lib.sk_X509_new_null()\n        _openssl_assert(stack != _ffi.NULL)\n        stack = _ffi.gc(stack, cleanup)\n\n        for cert in certificates:\n            if not isinstance(cert, X509):\n                raise TypeError(\"One of the elements is not an X509 instance\")\n\n            _openssl_assert(_lib.X509_up_ref(cert._x509) > 0)\n            if _lib.sk_X509_push(stack, cert._x509) <= 0:\n                _lib.X509_free(cert._x509)\n                _raise_current_error()\n\n        return stack\n\n    @staticmethod\n    def _exception_from_context(store_ctx: Any) -> X509StoreContextError:\n        \"\"\"\n        Convert an OpenSSL native context error failure into a Python\n        exception.\n\n        When a call to native OpenSSL X509_verify_cert fails, additional\n        information about the failure can be obtained from the store context.\n        \"\"\"\n        message = _ffi.string(\n            _lib.X509_verify_cert_error_string(\n                _lib.X509_STORE_CTX_get_error(store_ctx)\n            )\n        ).decode(\"utf-8\")\n        errors = [\n            _lib.X509_STORE_CTX_get_error(store_ctx),\n            _lib.X509_STORE_CTX_get_error_depth(store_ctx),\n            message,\n        ]\n        # A context error should always be associated with a certificate, so we\n        # expect this call to never return :class:`None`.\n        _x509 = _lib.X509_STORE_CTX_get_current_cert(store_ctx)\n        _cert = _lib.X509_dup(_x509)\n        pycert = X509._from_raw_x509_ptr(_cert)\n        return X509StoreContextError(message, errors, pycert)\n\n    def _verify_certificate(self) -> Any:\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-b9e4d3a0-2a09-4fff-9705-3a098fb38f6d-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '2008,2075p' /testbed/src/OpenSSL/crypto.py && echo \"==== TEST ====\" && sed -n '3320,3360p' /testbed/tests/test_crypto.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-b9e4d3a0-2a09-4fff-9705-3a098fb38f6d-5",
+            "content": "rror(message, errors, pycert)\n\n    def _verify_certificate(self) -> Any:\n        \"\"\"\n        Verifies the certificate and runs an X509_STORE_CTX containing the\n        results.\n\n        :raises X509StoreContextError: If an error occurred when validating a\n          certificate in the context. Sets ``certificate`` attribute to\n          indicate which certificate caused the error.\n        \"\"\"\n        store_ctx = _lib.X509_STORE_CTX_new()\n        _openssl_assert(store_ctx != _ffi.NULL)\n        store_ctx = _ffi.gc(store_ctx, _lib.X509_STORE_CTX_free)\n\n        ret = _lib.X509_STORE_CTX_init(\n            store_ctx, self._store._store, self._cert._x509, self._chain\n        )\n        _openssl_assert(ret == 1)\n\n        ret = _lib.X509_verify_cert(store_ctx)\n        if ret <= 0:\n            raise self._exception_from_context(store_ctx)\n\n        return store_ctx\n\n    def set_store(self, store: X509Store) -> None:\n        \"\"\"\n        Set the context's X.509 store.\n\n        .. versionadded:: 0.15\n\n        :param X509Store store: The store description which will be used for\n            the purposes of any *future* verifications.\n        \"\"\"\n        self._store = store\n\n    def verify_certificate(self) -> None:\n        \"\"\"\n        Verify a certificate in a context.\n\n        .. versionadded:: 0.15\n\n        :raises X509StoreContextError: If an error occurred when validating a\n          certificate in the context. Sets ``certificate`` attribute to\n          indicate which certificate caused the error.\n        \"\"\"\n        self._verify_certificate()\n\n    def get_verified_chain(self) -> list[X509]:\n        \"\"\"\n        Verify a certificate in a context and return the complete validated\n        chain.\n\n        :raises X509StoreContextError: If an error occurred when validating a\n          certificate in the context. Sets ``certificate`` attribute to\n          indicate which certificate caused the error.\n\n        .. versionadded:: 20.0\n        \"\"\"\n        store_ctx = self._verify_certificate()\n\n        # Note: X509_STORE_CTX_get1_chain returns a deep copy of the chain.\n        cert_stack = _lib.X509_STORE_CTX_get1_chain(store_ctx)\n        _openssl_assert(cert_stack != _ffi.NULL)\n\n        result = []\n        for i in range(_lib.sk_X509_num(cert_stack)):\n==== TEST ====\n        with pytest.raises(X509StoreContextError) as exc:\n            store_ctx.verify_certificate()\n\n        assert str(exc.value) == \"certificate has expired\"\n\n    def test_get_verified_chain(self):\n        \"\"\"\n        `get_verified_chain` returns the verified chain.\n        \"\"\"\n        store = X509Store()\n        store.add_cert(self.root_cert)\n        store.add_cert(self.intermediate_cert)\n        store_ctx = X509StoreContext(store, self.intermediate_server_cert)\n        chain = store_ctx.get_verified_chain()\n        assert len(chain) == 3\n        intermediate_subject = self.intermediate_server_cert.get_subject()\n        assert chain[0].get_subject() == intermediate_subject\n        assert chain[1].get_subject() == self.intermediate_cert.get_subject()\n        assert chain[2].get_subject() == self.root_cert.get_subject()\n        # Test reuse\n        chain = store_ctx.get_verified_chain()\n        assert len(chain) == 3\n        assert chain[0].get_subject() == intermediate_subject\n        assert chain[1].get_subject() == self.intermediate_cert.get_subject()\n        assert chain[2].get_subject() == self.root_cert.get_subject()\n\n    def test_get_verified_chain_invalid_chain_no_root(self):\n        \"\"\"\n        `get_verified_chain` raises error when cert verification fails.\n        \"\"\"\n        store = X509Store()\n        store.add_cert(self.intermediate_cert)\n        store_ctx = X509StoreContext(store, self.intermediate_server_cert)\n\n        with pytest.raises(X509StoreContextError) as exc:\n            store_ctx.get_verified_chain()\n\n        assert str(exc.value) == \"unable to get issuer certificate\"\n        assert exc.value.certificate.get_subject().CN == \"intermediate\"\n\n    @pytest.fixture\n"
+          }
+        ]
+      }
+    }
+  ]
+}

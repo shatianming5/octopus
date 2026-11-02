@@ -1,0 +1,142 @@
+{
+  "scope_id": "expanded-real-state-policy-sft-quality-20260918",
+  "status": "blocked_before_expanded_replay",
+  "completion_gate_met": false,
+  "B7": "not passed",
+  "blocker": {
+    "kind": "required_immutable_task_image_unavailable",
+    "detail": "The approved .138 host recovered through fresh nonmultiplexed SSH, but two Docker pulls of the exact textdistance image digest failed with TLS handshake timeouts. The image remains absent; no controller replay was launched.",
+    "image": "swebench/swesmith.x86_64.life4_1776_textdistance.c3aca916@sha256:fec01b87c3b2f84e42ebb6f97ed3486850089e69338956e0bd63e9fce979da3e",
+    "pull_attempts": 2,
+    "seconds_per_failed_pull": 20,
+    "next_ready_work": "Restore access to this exact image without an image/controller/backend substitution, then replay the frozen row2 recovery prefix. The full cohort and same-engine environment must still be admitted before training."
+  },
+  "actual_execution": {
+    "approved_host": "gpu.138",
+    "one_time_capacity": "5 NVIDIA RTX A6000, about49.1GB each, idle at admission; not reservations",
+    "prep_active_wall_seconds": 538,
+    "prep_cap_seconds": 5400,
+    "prep_remaining_seconds": 4862,
+    "gpu_jobs": 0,
+    "gpu_seconds": 0,
+    "new_controller_replay_attempts": 0,
+    "new_controller_replays_passed": 0,
+    "sft_runs": 0,
+    "cpu_merges": 0,
+    "quality_episodes": 0,
+    "scheduled_quality_episodes": 8,
+    "training_budget_consumed_seconds": 0,
+    "evaluation_budget_consumed_seconds": 0,
+    "cleanup": "No replay container or training/serving/merge/evaluation process was launched. Supervisor terminal evidence accepted; its exact pane and process family were closed."
+  },
+  "environment": {
+    "original_model_and_C03": "Named verified caches exist; no weights loaded or overwritten.",
+    "training_environment": "Existing task-local torch/transformers/peft/accelerate environment found.",
+    "stock_vllm": "Not admitted. Task-local setup preflight failed because uv and python3.12 were not on host PATH; installation did not start and the proposed venv is absent.",
+    "setup_failure_charged_seconds": 5,
+    "shared_environments_modified": false,
+    "backend_controller_prompt_swapped": false
+  },
+  "source": {
+    "dataset": "SWE-bench/SWE-smith-trajectories",
+    "revision": "08e109b4a59eaeebf80e4675cd125d42e7ac99a4",
+    "trajectory_license": "MIT; individual task licenses are recorded separately in the private task-metadata receipt.",
+    "candidate_cap": 20,
+    "candidates_selected": 20,
+    "additional_candidates_allowed": 0,
+    "selection": "Initial named train/dev source candidates plus two metadata-only fresh holdouts and two deterministic source-order train-family replacements; no model outcomes or resolved labels used for selection."
+  },
+  "cohort": {
+    "required_tasks": {"train": 8, "dev": 2, "heldout": 2},
+    "required_disjoint_families": {"train": 4, "dev": 2, "heldout": 2},
+    "new_admitted_tasks": {"train": 0, "dev": 0, "heldout": 0},
+    "historical_reusable_tasks": {"train": 1, "dev": 1, "heldout": 0},
+    "historical_reuse_limit": "Textdistance's four labels are one task, not four tasks. Its13-action historical replay has no tool errors or recovery-target predecessors. Bottle remains dev-only. Previously analyzed Mistune is not an untouched holdout and is excluded from training.",
+    "prepared_not_admitted_tasks": {"train": 5, "dev": 1},
+    "prepared_conditional_targets": {"train": 16, "dev": 2},
+    "actual_new_recovery_targets": 0,
+    "training_manifest": null,
+    "training_recipe": null,
+    "recipe_not_frozen_reason": "The expanded admitted/encoded train-row count is unknown. No honest full-pass final optimizer step can yet be frozen.",
+    "forbidden_training_families": ["GoogleChrome/lighthouse", "lepture/mistune"]
+  },
+  "candidate_ledger": [
+    {"row": 1, "instance_id": "python-hyper__h11.bed0dd4a.lm_rewrite__rtb2uk8p", "family": "python-hyper/h11", "split": "train", "status": "prefix_prepared_not_replayed"},
+    {"row": 2, "instance_id": "life4__textdistance.c3aca916.lm_rewrite__gdrh4f70", "family": "life4/textdistance", "split": "train", "status": "historical_unit_reusable_new_recovery_prefix_blocked_on_image"},
+    {"row": 3, "instance_id": "mozillazg__python-pinyin.e42dede5.lm_rewrite__wdpprvnh", "family": "mozillazg/python-pinyin", "split": "train", "status": "prefix_prepared_not_replayed"},
+    {"row": 4, "instance_id": "cookiecutter__cookiecutter.b4451231.lm_rewrite__gop1hd1h", "family": "cookiecutter/cookiecutter", "split": "train", "status": "prefix_prepared_not_replayed"},
+    {"row": 5, "instance_id": "pylint-dev__astroid.b114f6b5.lm_rewrite__mz84if55", "family": "pylint-dev/astroid", "split": "train", "status": "not_admitted_source_review_incomplete"},
+    {"row": 6, "instance_id": "PyCQA__flake8.cf1542ce.lm_rewrite__x521e2aj", "family": "PyCQA/flake8", "split": "train", "status": "excluded_changed_expectations", "evidence": "Source8 expects ascending(E1,E11); published edits retain reverse=True; source64 changes expectation to(E11,E1). No same-original-assertion green established."},
+    {"row": 7, "instance_id": "alecthomas__voluptuous.a7a55f83.lm_rewrite__99ngf0jz", "family": "alecthomas/voluptuous", "split": "train", "status": "not_admitted_source_review_incomplete"},
+    {"row": 8, "instance_id": "facelessuser__soupsieve.a8080d97.lm_rewrite__swzqhepn", "family": "facelessuser/soupsieve", "split": "train", "status": "not_admitted_source_review_incomplete"},
+    {"row": 11, "instance_id": "adrienverge__yamllint.8513d9b9.lm_rewrite__rkpalnk3", "family": "adrienverge/yamllint", "split": "dev", "status": "prefix_prepared_not_replayed"},
+    {"row": 15, "instance_id": "alecthomas__voluptuous.a7a55f83.lm_rewrite__gxejqjvw", "family": "alecthomas/voluptuous", "split": "train", "status": "prefix_prepared_not_replayed"},
+    {"row": 16, "instance_id": "tox-dev__pipdeptree.c31b6418.lm_rewrite__cmnm8h5n", "family": "tox-dev/pipdeptree", "split": "train", "status": "excluded_no_valid_original_red", "evidence": "Pre-edit source18 already emits unique nonreserved pkg_* IDs. The later numeric-suffix test requirement is not an original issue oracle."},
+    {"row": 19, "instance_id": "gawel__pyquery.811cd048.lm_rewrite__48wsfffr", "family": "gawel/pyquery", "split": "train", "status": "not_admitted_source_review_incomplete"},
+    {"row": 20, "instance_id": "agronholm__typeguard.b6a7e438.lm_rewrite__1dhk31yf", "family": "agronholm/typeguard", "split": "train", "status": "not_admitted_source_review_incomplete"},
+    {"row": 21, "instance_id": "pexpect__ptyprocess.1067dbda.lm_rewrite__xm4uq84l", "family": "pexpect/ptyprocess", "split": "train", "status": "blocked_reproducer_device_boundary", "evidence": "Published script requires writable PTY devices outside unchanged reproduction confinement. No permission relaxation or substitute was admitted; no remote replay measured."},
+    {"row": 22, "instance_id": "pylint-dev__astroid.b114f6b5.lm_rewrite__4hu12er2", "family": "pylint-dev/astroid", "split": "train", "status": "not_admitted_source_review_incomplete"},
+    {"row": 107, "instance_id": "bottlepy__bottle.a8dfef30.lm_rewrite__6wkup0zn", "family": "bottlepy/bottle", "split": "dev", "status": "historical_dev_unit_reusable"},
+    {"row": 23, "instance_id": "amueller__word_cloud.ec24191c.lm_rewrite__jhxlqo3m", "family": "amueller/word_cloud", "split": "heldout", "status": "metadata_sealed_private_not_controller_admitted"},
+    {"row": 24, "instance_id": "prettytable__prettytable.ca90b055.lm_rewrite__guayblhb", "family": "prettytable/prettytable", "split": "heldout", "status": "metadata_sealed_private_not_controller_admitted"},
+    {"row": 28, "instance_id": "mozillazg__python-pinyin.e42dede5.lm_rewrite__kcs7ts4t", "family": "mozillazg/python-pinyin", "split": "train", "status": "excluded_no_original_red", "evidence": "Teacher adds missing vocabulary at source22 and matches expected segmentation before product edits34/36. Fixture vocabulary repair is not original-product red."},
+    {"row": 39, "instance_id": "life4__textdistance.c3aca916.lm_rewrite__lskjy3p4", "family": "life4/textdistance", "split": "train", "status": "not_admitted_subset_reviewed", "evidence": "Original issue l probability-range start0,width4/7 is a potentially valid subset through source24, not a compression/similarity quality claim."}
+  ],
+  "transformation_boundary": {
+    "unmodified_published_execution_claimed": false,
+    "row2_only": "Two explicitly synthetic MASKED proposals: view a deliberate missing path, then shell ls. The first published discovery action is adapted to structured view. Only actual error/recovery receipts could support a positive label; none exist yet.",
+    "all_prepared_prefixes": "Teacher scripts are inlined with source provenance; pre-red fixture writes remain rejected context; attempted redefinitions after product edits cannot replace frozen original assertions.",
+    "controller": "Unchanged actor solve dispatch and FailureMemory. Direct ActorTools-only replay cannot establish missing-path recovery.",
+    "holdout_privacy": "Holdout solutions/assertions stayed private to the supervisor; neither training selection nor actor prompts received them."
+  },
+  "source_changes": [
+    "Audit unchanged-state failed actions as masked context only, rejecting mutated state, fake red, clipped/timed-out observations and positive failure labels.",
+    "Reuse the unchanged actor action dispatcher and verify before/after/final failure-memory receipts; persist replay failures and cleanup.",
+    "Bind multi-step candidate admission to the actual frozen final recipe step, preserving historical step1 receipts and strict original freeze_reference identity.",
+    "Select exact dev/heldout task IDs in multi-unit manifests and grade the matching unit, never the first arbitrary heldout.",
+    "Exclude all reviewed Mistune family units from training."
+  ],
+  "validation": {
+    "mechanism_and_actor_cases": 53,
+    "new_replay_persistence_cases": 2,
+    "historical_real_replay_integration_cases": 7,
+    "distinct_passed_cases": 62,
+    "new_remote_replay_claimed_by_tests": false,
+    "diff_check": "passed"
+  },
+  "publication_secret_gate": {
+    "command": "~/agent-env/scripts/verify.sh --quick --scan <current-worktree>",
+    "runs": 1,
+    "exit_code": 1,
+    "verifier_summary": {"passed": 129, "failed": 3, "warnings": 4, "skipped": 2},
+    "pattern_matches": {"historical_task_id_substrings": 5572, "public_schema_mask_identifier_substrings": 3},
+    "historical_hit_files": 146,
+    "staged_hit_files": [],
+    "unclassified_matches": 0,
+    "credential_findings": 0,
+    "new_compressed_artifacts": 0,
+    "interpretation": "Not a globally green verifier. Secret-pattern hits are classified unchanged historical task IDs/public schemas, with no staged publication hit. Other failures concern the intentionally undeployed launcher/source mismatch and central routing contract; no global tooling repair was performed.",
+    "raw_log": "/home/ubuntu/.copilot/session-state/59eb9436-1036-42ea-9a9b-75ea9cc94f56/files/publication-secret-gate.log"
+  },
+  "durable_paths": {
+    "remote_root": "/home/user/octopus-expanded-state-policy-138-20260918",
+    "budget_ledger": "/home/user/octopus-expanded-state-policy-138-20260918/state/budget-ledger.tsv",
+    "source_view": "/home/user/octopus-expanded-state-policy-138-20260918/source-view",
+    "private_holdout_seal": "/home/user/octopus-expanded-state-policy-138-20260918/data/private-holdout/holdout-seal.json",
+    "row2_pull_log": "/home/user/octopus-expanded-state-policy-138-20260918/logs/row2-image-pull.log",
+    "row2_pull_retry_log": "/home/user/octopus-expanded-state-policy-138-20260918/logs/row2-image-pull-retry.log",
+    "frozen_prefixes": "/home/ubuntu/.copilot/session-state/59eb9436-1036-42ea-9a9b-75ea9cc94f56/files/expanded-prefixes",
+    "prefix_builder": "/home/ubuntu/.copilot/session-state/59eb9436-1036-42ea-9a9b-75ea9cc94f56/files/build_expanded_prefixes.py",
+    "task_metadata": "/home/ubuntu/.copilot/session-state/59eb9436-1036-42ea-9a9b-75ea9cc94f56/files/expanded-state-initial-train-dev-task-metadata.json",
+    "candidate_checkpoint": "/home/ubuntu/.copilot/session-state/59eb9436-1036-42ea-9a9b-75ea9cc94f56/files/cohort-checkpoint.json",
+    "validation": "/home/ubuntu/.copilot/session-state/59eb9436-1036-42ea-9a9b-75ea9cc94f56/files/local-validation.json"
+  },
+  "frozen_identities": {
+    "row2_prefix_sha256": "91dd397ef625a2cffb43ecbfff2a6c77ed33dea3e0e5036b70e9e232d8e81b42",
+    "replay_runner_sha256": "378a7680180ed58a6e8d7fbea549b0e0c35e3b979482f462069cfde526379711",
+    "task_metadata_sha256": "0daf781440f40549cd931fb45f54e0703783e16ee288f365e42a04c90454b8df",
+    "selected_replacement_source_sha256": "03f0c84c2192bde87ac3606b3d0e780bb12f50f396730d3bc066fb59f6ec1fdb"
+  },
+  "historical_negative_result_changed": false,
+  "raw_corpus_private_grades_weights_committed": false
+}

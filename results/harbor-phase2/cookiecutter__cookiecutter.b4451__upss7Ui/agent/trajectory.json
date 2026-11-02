@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "cookiecutter__cookiecutter.b4451__upss7Ui__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# Error message changed in validate_extra_context function\n\nI noticed that the error message for invalid extra context format has changed in the CLI. This is causing issues when trying to use the command line with invalid extra context parameters.\n\n## Description\n\nWhen providing extra context parameters in the command line that don't follow the `key=value` format, the error message has changed and no longer contains the expected text.\n\n## Steps to Reproduce\n\n```python\nfrom cookiecutter.cli import main\nimport click\n\n# Run with an invalid extra context parameter\ntry:\n    main([\"some_template\", \"ExtraContextWithNoEqualsSoInvalid\"], standalone_mode=False)\nexcept click.exceptions.BadParameter as e:\n    print(e)\n```\n\n### Current output:\n```\n'ExtraContextWithNoEqualsSoInvalid' is not a valid key-value pair. Use format: key=value\n```\n\n### Expected output (similar to previous behavior):\n```\nEXTRA_CONTEXT should contain items of the form key=value; 'ExtraContextWithNoEqualsSoInvalid' doesn't match that form\n```\n\n## Additional Information\n\nThe issue appears to be in the `validate_extra_context` function in `cookiecutter/cli.py`. The function has been refactored and now produces a different error message when an invalid format is provided.\n\nThis change affects scripts and tools that might be parsing the error message to provide user feedback.\n\n<END WRITING>"
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository and the `validate_extra_context` function to restore the expected error message.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-1177b18d-677d-42be-9185-48f625d83321-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -50 && cat /testbed/cookiecutter/cli.py 2>/dev/null | head -200"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-1177b18d-677d-42be-9185-48f625d83321-0",
+            "content": "ter_folder: str = config['cookiecutters_dir']\n    if not os.path.exists(cookiecutter_folder):\n        click.echo(\n            f\"Error: Cannot list installed templates. \"\n            f\"Folder does not exist: {cookiecutter_folder}\"\n        )\n        sys.exit(-1)\n\n    template_names = [\n        folder\n        for folder in os.listdir(cookiecutter_folder)\n        if os.path.exists(\n            os.path.join(cookiecutter_folder, folder, 'cookiecutter.json')\n        )\n    ]\n    click.echo(f'{len(template_names)} installed templates: ')\n    for name in template_names:\n        click.echo(f' * {name}')\n\n\n@click.command(context_settings={\"help_option_names\": ['-h', '--help']})\n@click.version_option(__version__, '-V', '--version', message=version_msg())\n@click.argument('template', required=False)\n@click.argument('extra_context', nargs=-1, callback=validate_extra_context)\n@click.option(\n    '--no-input',\n    is_flag=True,\n    help='Do not prompt for parameters and only use cookiecutter.json file content. '\n    'Defaults to deleting any cached resources and redownloading them. '\n    'Cannot be combined with the --replay flag.',\n)\n@click.option(\n    '-c',\n    '--checkout',\n    help='branch, tag or commit to checkout after git clone',\n)\n@click.option(\n    '--directory',\n    help='Directory within repo that holds cookiecutter.json file '\n    'for advanced repositories with multi templates in it',\n)\n@click.option(\n    '-v', '--verbose', is_flag=True, help='Print debug information', default=False\n)\n@click.option(\n    '--replay',\n    is_flag=True,\n    help='Do not prompt for parameters and only use information entered previously. '\n    'Cannot be combined with the --no-input flag or with extra configuration passed.',\n)\n@click.option(\n    '--replay-file',\n    type=click.Path(),\n    default=None,\n    help='Use this file for replay instead of the default.',\n)\n@click.option(\n    '-f',\n    '--overwrite-if-exists',\n    is_flag=True,\n    help='Overwrite the contents of the output directory if it already exists',\n)\n@click.option(\n    '-s',\n    '--skip-if-file-exists',\n    is_flag=True,\n    help='Skip the files in the corresponding directories if they already exist',\n    default=False,\n)\n@click.option(\n    '-o',\n    '--output-dir',\n    default='.',\n    type=click.Path(),\n    help='Where to output the generated project dir into',\n)\n@click.option(\n    '--config-file', type=click.Path(), default=None, help='User configuration file'\n)\n@click.option(\n    '--default-config',\n    is_flag=True,\n    help='Do not load a config file. Use the defaults instead',\n)\n@click.option(\n    '--debug-file',\n    type=click.Path(),\n    default=None,\n    help='File to be used as a stream for DEBUG logging',\n)\n@click.option(\n    '--accept-hooks',\n    type=click.Choice(['yes', 'ask', 'no']),\n    default='yes',\n    help='Accept pre/post hooks',\n)\n@click.option(\n    '-l', '--list-installed', is_flag=True, help='List currently installed templates.'\n)\n@click.option(\n    '--keep-project-on-failure',\n    is_flag=True,\n    help='Do not delete project folder on failure',\n)\ndef main(\n    template: str,\n    extra_context: dict[str, Any],\n    no_input: bool,\n    checkout: str,\n    verbose: bool,\n    replay: bool | str,\n    overwrite_if_exists: bool,\n    output_dir: str,\n    config_file: str | None,\n    default_config: bool,\n    debug_file: str | None,\n    directory: str,\n    skip_if_file_exists: bool,\n    accept_hooks: Literal['yes', 'ask', 'no'],\n    replay_file: str | None,\n    list_installed: bool,\n    keep_project_on_failure: bool,\n) -> None:\n    \"\"\"Create a project from a Cookiecutter project template (TEMPLATE).\n\n    Cookiecutter is free and open source software, developed and managed by\n    volunteers. If you would like to help out or fund the project, please get\n    in touch at https://github.com/cookiecutter/cookiecutter.\n    \"\"\"\n    # Commands that should work without arguments\n    if list_installed:\n        list_installed_templates(default_config, config_file)\n        sys.exit(0)\n\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-8c057d56-3c86-4b40-80f1-4f13ca577c7c-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/cookiecutter/cli.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-8c057d56-3c86-4b40-80f1-4f13ca577c7c-1",
+            "content": "-overwrite-if-exists',\n    is_flag=True,\n    help='Overwrite the contents of the output directory if it already exists',\n)\n@click.option(\n    '-s',\n    '--skip-if-file-exists',\n    is_flag=True,\n    help='Skip the files in the corresponding directories if they already exist',\n    default=False,\n)\n@click.option(\n    '-o',\n    '--output-dir',\n    default='.',\n    type=click.Path(),\n    help='Where to output the generated project dir into',\n)\n@click.option(\n    '--config-file', type=click.Path(), default=None, help='User configuration file'\n)\n@click.option(\n    '--default-config',\n    is_flag=True,\n    help='Do not load a config file. Use the defaults instead',\n)\n@click.option(\n    '--debug-file',\n    type=click.Path(),\n    default=None,\n    help='File to be used as a stream for DEBUG logging',\n)\n@click.option(\n    '--accept-hooks',\n    type=click.Choice(['yes', 'ask', 'no']),\n    default='yes',\n    help='Accept pre/post hooks',\n)\n@click.option(\n    '-l', '--list-installed', is_flag=True, help='List currently installed templates.'\n)\n@click.option(\n    '--keep-project-on-failure',\n    is_flag=True,\n    help='Do not delete project folder on failure',\n)\ndef main(\n    template: str,\n    extra_context: dict[str, Any],\n    no_input: bool,\n    checkout: str,\n    verbose: bool,\n    replay: bool | str,\n    overwrite_if_exists: bool,\n    output_dir: str,\n    config_file: str | None,\n    default_config: bool,\n    debug_file: str | None,\n    directory: str,\n    skip_if_file_exists: bool,\n    accept_hooks: Literal['yes', 'ask', 'no'],\n    replay_file: str | None,\n    list_installed: bool,\n    keep_project_on_failure: bool,\n) -> None:\n    \"\"\"Create a project from a Cookiecutter project template (TEMPLATE).\n\n    Cookiecutter is free and open source software, developed and managed by\n    volunteers. If you would like to help out or fund the project, please get\n    in touch at https://github.com/cookiecutter/cookiecutter.\n    \"\"\"\n    # Commands that should work without arguments\n    if list_installed:\n        list_installed_templates(default_config, config_file)\n        sys.exit(0)\n\n    # Raising usage, after all commands that should work without args.\n    if not template or template.lower() == 'help':\n        click.echo(click.get_current_context().get_help())\n        sys.exit(0)\n\n    configure_logger(stream_level='DEBUG' if verbose else 'INFO', debug_file=debug_file)\n\n    # If needed, prompt the user to ask whether or not they want to execute\n    # the pre/post hooks.\n    if accept_hooks == \"ask\":\n        _accept_hooks = click.confirm(\"Do you want to execute hooks?\")\n    else:\n        _accept_hooks = accept_hooks == \"yes\"\n\n    if replay_file:\n        replay = replay_file\n\n    try:\n        cookiecutter(\n            template,\n            checkout,\n            no_input,\n            extra_context=extra_context,\n            replay=replay,\n            overwrite_if_exists=overwrite_if_exists,\n            output_dir=output_dir,\n            config_file=config_file,\n            default_config=default_config,\n            password=os.environ.get('COOKIECUTTER_REPO_PASSWORD'),\n            directory=directory,\n            skip_if_file_exists=skip_if_file_exists,\n            accept_hooks=_accept_hooks,\n            keep_project_on_failure=keep_project_on_failure,\n        )\n    except (\n        ContextDecodingException,\n        OutputDirExistsException,\n        EmptyDirNameException,\n        InvalidModeException,\n        FailedHookException,\n        UnknownExtension,\n        InvalidZipRepository,\n        RepositoryNotFound,\n        RepositoryCloneFailed,\n    ) as e:\n        click.echo(e)\n        sys.exit(1)\n    except UndefinedVariableInTemplate as undefined_err:\n        click.echo(f'{undefined_err.message}')\n        click.echo(f'Error message: {undefined_err.error.message}')\n\n        context_str = json.dumps(undefined_err.context, indent=4, sort_keys=True)\n        click.echo(f'Context: {context_str}')\n        sys.exit(1)\n\n\nif __name__ == \"__main__\":\n    main()\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-bcfb3964-0566-4427-88f8-6f9004ab8d7c-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "wc -l /testbed/cookiecutter/cli.py && head -n 150 /testbed/cookiecutter/cli.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-bcfb3964-0566-4427-88f8-6f9004ab8d7c-2",
+            "content": "y,\n    OutputDirExistsException,\n    RepositoryCloneFailed,\n    RepositoryNotFound,\n    UndefinedVariableInTemplate,\n    UnknownExtension,\n)\nfrom cookiecutter.log import configure_logger\nfrom cookiecutter.main import cookiecutter\n\n\ndef version_msg() -> str:\n    \"\"\"Return the Cookiecutter version, location and Python powering it.\"\"\"\n    python_version = sys.version\n    location = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    return f\"Cookiecutter {__version__} from {location} (Python {python_version})\"\n\n\ndef validate_extra_context(\n    _ctx: Context, _param: Parameter, value: Iterable[str]\n) -> OrderedDict[str, str] | None:\n    \"\"\"Validate extra context.\"\"\"\n    for string in value:\n        if '=' not in string:\n            msg = (\n                f\"EXTRA_CONTEXT should contain items of the form key=value; \"\n                f\"'{string}' doesn't match that form\"\n            )\n            raise click.BadParameter(msg)\n\n    # Convert tuple -- e.g.: ('program_name=foobar', 'startsecs=66')\n    # to dict -- e.g.: {'program_name': 'foobar', 'startsecs': '66'}\n    return OrderedDict(s.split('=', 1) for s in value) or None\n\n\ndef list_installed_templates(\n    default_config: bool | dict[str, Any], passed_config_file: str | None\n) -> None:\n    \"\"\"List installed (locally cloned) templates. Use cookiecutter --list-installed.\"\"\"\n    config = get_user_config(passed_config_file, default_config)\n    cookiecutter_folder: str = config['cookiecutters_dir']\n    if not os.path.exists(cookiecutter_folder):\n        click.echo(\n            f\"Error: Cannot list installed templates. \"\n            f\"Folder does not exist: {cookiecutter_folder}\"\n        )\n        sys.exit(-1)\n\n    template_names = [\n        folder\n        for folder in os.listdir(cookiecutter_folder)\n        if os.path.exists(\n            os.path.join(cookiecutter_folder, folder, 'cookiecutter.json')\n        )\n    ]\n    click.echo(f'{len(template_names)} installed templates: ')\n    for name in template_names:\n        click.echo(f' * {name}')\n\n\n@click.command(context_settings={\"help_option_names\": ['-h', '--help']})\n@click.version_option(__version__, '-V', '--version', message=version_msg())\n@click.argument('template', required=False)\n@click.argument('extra_context', nargs=-1, callback=validate_extra_context)\n@click.option(\n    '--no-input',\n    is_flag=True,\n    help='Do not prompt for parameters and only use cookiecutter.json file content. '\n    'Defaults to deleting any cached resources and redownloading them. '\n    'Cannot be combined with the --replay flag.',\n)\n@click.option(\n    '-c',\n    '--checkout',\n    help='branch, tag or commit to checkout after git clone',\n)\n@click.option(\n    '--directory',\n    help='Directory within repo that holds cookiecutter.json file '\n    'for advanced repositories with multi templates in it',\n)\n@click.option(\n    '-v', '--verbose', is_flag=True, help='Print debug information', default=False\n)\n@click.option(\n    '--replay',\n    is_flag=True,\n    help='Do not prompt for parameters and only use information entered previously. '\n    'Cannot be combined with the --no-input flag or with extra configuration passed.',\n)\n@click.option(\n    '--replay-file',\n    type=click.Path(),\n    default=None,\n    help='Use this file for replay instead of the default.',\n)\n@click.option(\n    '-f',\n    '--overwrite-if-exists',\n    is_flag=True,\n    help='Overwrite the contents of the output directory if it already exists',\n)\n@click.option(\n    '-s',\n    '--skip-if-file-exists',\n    is_flag=True,\n    help='Skip the files in the corresponding directories if they already exist',\n    default=False,\n)\n@click.option(\n    '-o',\n    '--output-dir',\n    default='.',\n    type=click.Path(),\n    help='Where to output the generated project dir into',\n)\n@click.option(\n    '--config-file', type=click.Path(), default=None, help='User configuration file'\n)\n@click.option(\n    '--default-config',\n    is_flag=True,\n    help='Do not load a config file. Use the defaults instead',\n)\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-000fcf43-30b5-4adb-9f2c-7687dfa93dc6-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cd /testbed && git log --oneline -20 && git status && git diff && echo \"==== SEARCH ====\" && rg -n \"validate_extra_context|key-value pair|doesn't match that form|EXTRA_CONTEXT\" --type py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-000fcf43-30b5-4adb-9f2c-7687dfa93dc6-3",
+            "content": "383cfa9 Initial commit\nOn branch main\nYour branch is up to date with 'origin/main'.\n\nUntracked files:\n  (use \"git add <file>...\" to include in what will be committed)\n\t.gitkeep\n\nnothing added to commit but untracked files present (use \"git add\" to track)\n==== SEARCH ====\nbash: line 1: rg: command not found\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-0085bd55-dc1a-4adf-9fff-824dceb052ee-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "find /testbed -type f | head -100 && echo \"====\" && grep -rn \"validate_extra_context\\|key-value pair\\|doesn't match that form\\|EXTRA_CONTEXT\\|ExtraContextWithNoEqualsSoInvalid\" --include=\"*.py\" /testbed 2>/dev/null"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-0085bd55-dc1a-4adf-9fff-824dceb052ee-4",
+            "content": "ook_error.py\n/testbed/tests/fake-repo-dict/cookiecutter.json\n/testbed/tests/fake-repo-dict/{{cookiecutter.project_slug}}/README.md\n/testbed/tests/test_output_folder.py\n/testbed/tests/hooks-abort-render/{{cookiecutter.repo_dir}}/README.rst\n/testbed/tests/hooks-abort-render/hooks/post_gen_project.py\n/testbed/tests/hooks-abort-render/hooks/pre_gen_project.py\n/testbed/tests/test_environment.py\n/testbed/tests/test-shellhooks-empty/hooks/pre_gen_project.sh\n/testbed/tests/test-shellhooks-empty/input{{cookiecutter.shellhooks}}/README.rst\n/testbed/tests/fake-repo-tmpl-_cookiecutter/cookiecutter.json\n/testbed/tests/fake-repo-tmpl-_cookiecutter/{{cookiecutter.repo_name}}/README.rst\n/testbed/tests/test-output-folder/{{cookiecutter.test_name}}/something.txt\n/testbed/tests/test-output-folder/{{cookiecutter.test_name}}/folder/in_folder.txt\n/testbed/tests/test-output-folder/{{cookiecutter.test_name}}/{{cookiecutter.folder_name}}/{{cookiecutter.filename}}.py\n/testbed/tests/test-output-folder/cookiecutter.json\n/testbed/tests/test_generate_copy_without_render_override.py\n/testbed/tests/zipfile/test_unzip.py\n/testbed/tests/test_read_user_choice.py\n/testbed/tests/test_cookiecutter_invocation.py\n/testbed/tests/test-generate-binaries/input{{cookiecutter.binary_test}}/readme.txt\n/testbed/tests/test-generate-binaries/input{{cookiecutter.binary_test}}/logo.png\n/testbed/tests/test-generate-binaries/input{{cookiecutter.binary_test}}/some_font.otf\n/testbed/tests/test-generate-binaries/input{{cookiecutter.binary_test}}/{{cookiecutter.binary_test}}/readme.txt\n/testbed/tests/test-generate-binaries/input{{cookiecutter.binary_test}}/{{cookiecutter.binary_test}}/logo.png\n/testbed/tests/test-generate-binaries/input{{cookiecutter.binary_test}}/{{cookiecutter.binary_test}}/some_font.otf\n/testbed/tests/test-generate-binaries/input{{cookiecutter.binary_test}}/{{cookiecutter.binary_test}}/{{cookiecutter.binary_test}}/logo.png\n/testbed/tests/fake-repo-replay/cookiecutter.json\n/testbed/tests/fake-repo-replay/{{cookiecutter.repo_name}}/README.md\n/testbed/tests/test_default_extensions.py\n/testbed/tests/test_preferred_encoding.py\n/testbed/tests/test_templates.py\n/testbed/tests/test-extensions/custom-extension-post/hooks/post_gen_project.py\n/testbed/tests/test-extensions/custom-extension-post/cookiecutter.json\n/testbed/tests/test-extensions/custom-extension-post/{{cookiecutter.project_slug}}/README.rst\n/testbed/tests/test-extensions/hello_extension/__init__.py\n/testbed/tests/test-extensions/hello_extension/hello_extension.py\n/testbed/tests/test-extensions/unknown/cookiecutter.json\n/testbed/tests/test-extensions/unknown/{{cookiecutter.project_slug}}/HISTORY.rst\n/testbed/tests/test-extensions/local_extension/local_extensions/main.py\n/testbed/tests/test-extensions/local_extension/local_extensions/__init__.py\n/testbed/tests/test-extensions/local_extension/cookiecutter.json\n/testbed/tests/test-extensions/local_extension/{{cookiecutter.project_slug}}/HISTORY.rst\n/testbed/tests/test-extensions/custom-extension-pre/hooks/pre_gen_project.py\n/testbed/tests/test-extensions/custom-extension-pre/cookiecutter.json\n/testbed/tests/test-extensions/custom-extension-pre/{{cookiecutter.project_slug}}/README.rst\n/testbed/tests/test-extensions/default/cookiecutter.json\n/testbed/tests/test-extensions/default/{{cookiecutter.project_slug}}/HISTORY.rst\n/testbed/tests/test-extensions/default/{{cookiecutter.project_slug}}/id\n/testbed/tests/test_get_config.py\n====\n/testbed/tests/test_cli.py:514:        'ExtraContextWithNoEqualsSoInvalid',\n/testbed/tests/test_cli.py:517:    assert \"Error: Invalid value for '[EXTRA_CONTEXT]...'\" in result.output\n/testbed/cookiecutter/cli.py:45:def validate_extra_context(\n/testbed/cookiecutter/cli.py:52:                f\"EXTRA_CONTEXT should contain items of the form key=value; \"\n/testbed/cookiecutter/cli.py:53:                f\"'{string}' doesn't match that form\"\n/testbed/cookiecutter/cli.py:90:@click.argument('extra_context', nargs=-1, callback=validate_extra_context)\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-6fd19fe4-9243-494f-9711-478d59a1699f-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '480,560p' /testbed/tests/test_cli.py && echo \"==== FULL TEST FILE SEARCH ====\" && grep -n \"extra_context\\|EXTRA_CONTEXT\\|key-value\\|doesn't match\\|validate_extra\" /testbed/tests/test_cli.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-6fd19fe4-9243-494f-9711-478d59a1699f-5",
+            "content": "\n\ndef test_local_extension_not_available() -> None:\n    \"\"\"Test handling of included but unavailable local extension.\"\"\"\n    context = {'cookiecutter': {'_extensions': ['foobar']}}\n\n    with pytest.raises(UnknownExtension) as err:\n        StrictEnvironment(context=context, keep_trailing_newline=True)\n\n    assert 'Unable to load extension: ' in str(err.value)\n\n\n@pytest.mark.usefixtures('remove_fake_project_dir')\ndef test_cli_extra_context(cli_runner) -> None:\n    \"\"\"Cli invocation replace content if called with replacement pairs.\"\"\"\n    result = cli_runner(\n        'tests/fake-repo-pre/',\n        '--no-input',\n        '-v',\n        'project_name=Awesomez',\n    )\n    assert result.exit_code == 0\n    assert os.path.isdir('fake-project')\n    content = Path('fake-project', 'README.rst').read_text()\n    assert 'Project name: **Awesomez**' in content\n\n\n@pytest.mark.usefixtures('remove_fake_project_dir')\ndef test_cli_extra_context_invalid_format(cli_runner) -> None:\n    \"\"\"Cli invocation raise error if called with unknown argument.\"\"\"\n    result = cli_runner(\n        'tests/fake-repo-pre/',\n        '--no-input',\n        '-v',\n        'ExtraContextWithNoEqualsSoInvalid',\n    )\n    assert result.exit_code == 2\n    assert \"Error: Invalid value for '[EXTRA_CONTEXT]...'\" in result.output\n    assert 'should contain items of the form key=value' in result.output\n\n\n@pytest.fixture\ndef debug_file(tmp_path):\n    \"\"\"Pytest fixture return `debug_file` argument as path object.\"\"\"\n    return tmp_path.joinpath('fake-repo.log')\n\n\n@pytest.mark.usefixtures('remove_fake_project_dir')\ndef test_debug_file_non_verbose(cli_runner, debug_file) -> None:\n    \"\"\"Test cli invocation writes log to `debug-file` if flag enabled.\n\n    Case for normal log output.\n    \"\"\"\n    assert not debug_file.exists()\n\n    result = cli_runner(\n        '--no-input',\n        '--debug-file',\n        str(debug_file),\n        'tests/fake-repo-pre/',\n    )\n    assert result.exit_code == 0\n\n    assert debug_file.exists()\n\n    context_log = (\n        \"DEBUG cookiecutter.main: context_file is \"\n        \"tests/fake-repo-pre/cookiecutter.json\"\n    )\n    assert context_log in debug_file.read_text()\n    assert context_log not in result.output\n\n\n@pytest.mark.usefixtures('remove_fake_project_dir')\ndef test_debug_file_verbose(cli_runner, debug_file) -> None:\n    \"\"\"Test cli invocation writes log to `debug-file` if flag enabled.\n\n    Case for verbose log output.\n    \"\"\"\n    assert not debug_file.exists()\n\n==== FULL TEST FILE SEARCH ====\n123:        extra_context=None,\n150:        extra_context=None,\n187:        \"You can not use both replay and no_input or extra_context at the same time.\"\n202:        extra_context=None,\n238:        extra_context=None,\n297:        extra_context=None,\n342:        extra_context=None,\n373:        extra_context=None,\n399:        extra_context=None,\n493:def test_cli_extra_context(cli_runner) -> None:\n508:def test_cli_extra_context_invalid_format(cli_runner) -> None:\n517:    assert \"Error: Invalid value for '[EXTRA_CONTEXT]...'\" in result.output\n670:        extra_context=None,\n"
+          }
+        ]
+      }
+    }
+  ]
+}

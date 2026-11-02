@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "pylint-dev__astroid.b114f6b5.lm__M582ne6__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# Boolean operations with unknown values don't properly handle short-circuit evaluation\n\n## Description\n\nI've encountered an issue with boolean operations (`and`/`or`) when one of the operands is an unknown value. The current implementation doesn't correctly handle short-circuit evaluation when dealing with unknown values.\n\nFor example, when I have code like this:\n\n```python\nfrom unknown import unknown\n0 and unknown\nunknown or 0\n```\n\nThe boolean operations should properly handle the unknown values and return the expected results based on short-circuit evaluation rules. However, the current implementation seems to have issues with this scenario.\n\n## Expected behavior\n\n- For `0 and unknown`, it should return `0` (since `and` short-circuits on falsy values)\n- For `unknown or 0`, it should return `Uninferable` (since we can't determine if `unknown` is truthy)\n- For more complex expressions like `any or not_any and unknown`, the evaluation should follow Python's short-circuit rules\n\n## Actual behavior\n\nThe current implementation doesn't correctly handle these cases, especially when dealing with unknown values in boolean operations. It seems the short-circuit logic isn't properly implemented for cases involving uninferable values.\n\n## Reproduction\n\nThis can be reproduced with code that uses boolean operations with unknown or uninferable values:\n\n```python\nfrom unknown import unknown, any, not_any\nresult1 = 0 and unknown  # Should be 0\nresult2 = unknown or 0   # Should be Uninferable\nresult3 = any or not_any and unknown  # Should follow short-circuit rules\n```\n\nThe issue appears to be in how the boolean operation inference handles unknown values in combination with short-circuit evaluation."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository structure and locate how boolean operations currently handle unknown values.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-b5c6240f-28d4-4add-871b-e88079af70f3-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" -o -name \"*.md\" -o -name \"*.txt\" -o -name \"*.toml\" -o -name \"*.cfg\" | head -100"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-b5c6240f-28d4-4add-871b-e88079af70f3-0",
+            "content": "up.cfg\n-rw-r--r-- 1 root root   1556 Jul 13  2025 tbump.toml\ndrwxr-xr-x 4 root root   4096 Jul 13  2025 tests\n-rw-r--r-- 1 root root    420 Jul 13  2025 tox.ini\n/testbed/astroid/const.py\n/testbed/astroid/_backport_stdlib_names.py\n/testbed/astroid/objects.py\n/testbed/astroid/transforms.py\n/testbed/astroid/modutils.py\n/testbed/astroid/interpreter/dunder_lookup.py\n/testbed/astroid/interpreter/__init__.py\n/testbed/astroid/interpreter/objectmodel.py\n/testbed/astroid/interpreter/_import/__init__.py\n/testbed/astroid/interpreter/_import/spec.py\n/testbed/astroid/interpreter/_import/util.py\n/testbed/astroid/inference_tip.py\n/testbed/astroid/rebuilder.py\n/testbed/astroid/exceptions.py\n/testbed/astroid/context.py\n/testbed/astroid/__init__.py\n/testbed/astroid/protocols.py\n/testbed/astroid/helpers.py\n/testbed/astroid/__pkginfo__.py\n/testbed/astroid/brain/brain_typing.py\n/testbed/astroid/brain/brain_io.py\n/testbed/astroid/brain/brain_http.py\n/testbed/astroid/brain/brain_collections.py\n/testbed/astroid/brain/brain_namedtuple_enum.py\n/testbed/astroid/brain/brain_hypothesis.py\n/testbed/astroid/brain/brain_numpy_core_numerictypes.py\n/testbed/astroid/brain/brain_numpy_ma.py\n/testbed/astroid/brain/brain_numpy_core_umath.py\n/testbed/astroid/brain/brain_functools.py\n/testbed/astroid/brain/brain_uuid.py\n/testbed/astroid/brain/brain_multiprocessing.py\n/testbed/astroid/brain/brain_threading.py\n/testbed/astroid/brain/brain_numpy_core_numeric.py\n/testbed/astroid/brain/brain_pathlib.py\n/testbed/astroid/brain/brain_ssl.py\n/testbed/astroid/brain/brain_random.py\n/testbed/astroid/brain/brain_numpy_ndarray.py\n/testbed/astroid/brain/brain_attrs.py\n/testbed/astroid/brain/__init__.py\n/testbed/astroid/brain/helpers.py\n/testbed/astroid/brain/brain_hashlib.py\n/testbed/astroid/brain/brain_responses.py\n/testbed/astroid/brain/brain_builtin_inference.py\n/testbed/astroid/brain/brain_signal.py\n/testbed/astroid/brain/brain_re.py\n/testbed/astroid/brain/brain_subprocess.py\n/testbed/astroid/brain/brain_scipy_signal.py\n/testbed/astroid/brain/brain_qt.py\n/testbed/astroid/brain/brain_crypt.py\n/testbed/astroid/brain/brain_curses.py\n/testbed/astroid/brain/brain_sqlalchemy.py\n/testbed/astroid/brain/brain_argparse.py\n/testbed/astroid/brain/brain_numpy_core_fromnumeric.py\n/testbed/astroid/brain/brain_unittest.py\n/testbed/astroid/brain/brain_numpy_core_multiarray.py\n/testbed/astroid/brain/brain_mechanize.py\n/testbed/astroid/brain/brain_numpy_core_function_base.py\n/testbed/astroid/brain/brain_ctypes.py\n/testbed/astroid/brain/brain_boto3.py\n/testbed/astroid/brain/brain_six.py\n/testbed/astroid/brain/brain_datetime.py\n/testbed/astroid/brain/brain_numpy_core_einsumfunc.py\n/testbed/astroid/brain/brain_pytest.py\n/testbed/astroid/brain/brain_numpy_random_mtrand.py\n/testbed/astroid/brain/brain_type.py\n/testbed/astroid/brain/brain_pkg_resources.py\n/testbed/astroid/brain/brain_regex.py\n/testbed/astroid/brain/brain_gi.py\n/testbed/astroid/brain/brain_numpy_utils.py\n/testbed/astroid/brain/brain_dataclasses.py\n/testbed/astroid/brain/brain_dateutil.py\n/testbed/astroid/brain/brain_nose.py\n/testbed/astroid/builder.py\n/testbed/astroid/manager.py\n/testbed/astroid/_ast.py\n/testbed/astroid/raw_building.py\n/testbed/astroid/nodes/node_classes.py\n/testbed/astroid/nodes/const.py\n/testbed/astroid/nodes/scoped_nodes/scoped_nodes.py\n/testbed/astroid/nodes/scoped_nodes/__init__.py\n/testbed/astroid/nodes/scoped_nodes/mixin.py\n/testbed/astroid/nodes/scoped_nodes/utils.py\n/testbed/astroid/nodes/_base_nodes.py\n/testbed/astroid/nodes/__init__.py\n/testbed/astroid/nodes/node_ng.py\n/testbed/astroid/nodes/as_string.py\n/testbed/astroid/nodes/utils.py\n/testbed/astroid/astroid_manager.py\n/testbed/astroid/bases.py\n/testbed/astroid/test_utils.py\n/testbed/astroid/typing.py\n/testbed/astroid/filter_statements.py\n/testbed/astroid/arguments.py\n/testbed/astroid/util.py\n/testbed/astroid/constraint.py\n/testbed/astroid/decorators.py\n/testbed/requirements_dev.txt\n/testbed/requirements_full.txt\n/testbed/tbump.toml\n/testbed/pyproject.toml\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll search the codebase for boolean-operation inference and related tests.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-eeb52bb4-b760-4b59-9070-25cdc34d0c38-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "rg -n \"and|or|bool_op|BoolOp|short-circuit|Uninferable\" /testbed/tests --type py -g \"*bool*\" | head -50; echo \"====\"; ls /testbed/tests; echo \"====\"; rg -n \"def infer_boolop|class BoolOp|boolop|boolean\" /testbed --type py | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-eeb52bb4-b760-4b59-9070-25cdc34d0c38-1",
+            "content": "bash: line 1: rg: command not found\n====\n__init__.py\nbrain\nresources.py\ntest_builder.py\ntest_constraint.py\ntest_decorators.py\ntest_filter_statements.py\ntest_group_exceptions.py\ntest_helpers.py\ntest_inference.py\ntest_inference_calls.py\ntest_lookup.py\ntest_manager.py\ntest_modutils.py\ntest_nodes.py\ntest_nodes_lineno.py\ntest_nodes_position.py\ntest_object_model.py\ntest_objects.py\ntest_protocols.py\ntest_python3.py\ntest_raw_building.py\ntest_regrtest.py\ntest_scoped_nodes.py\ntest_stdlib.py\ntest_transforms.py\ntest_type_params.py\ntest_utils.py\ntestdata\n====\nbash: line 1: rg: command not found\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-e93e47da-c21c-4fae-9682-41a240ee688c-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "grep -n -E \"infer_boolop|class BoolOp|boolop|boolean\" /testbed --include=\"*.py\" -r | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-e93e47da-c21c-4fae-9682-41a240ee688c-2",
+            "content": "ain_namedtuple_enum.py:260:        # pylint: disable = too-many-boolean-expressions\n/testbed/astroid/brain/brain_builtin_inference.py:176:    # pylint: disable = too-many-boolean-expressions\n/testbed/astroid/_ast.py:21:    bool_op_classes: dict[type[ast.boolop], str]\n/testbed/astroid/_ast.py:77:def _bool_operators_from_module() -> dict[type[ast.boolop], str]:\n/testbed/astroid/nodes/node_classes.py:330:        \"\"\"Determine the boolean value of this node.\n/testbed/astroid/nodes/node_classes.py:332:        :returns: The boolean value of this node.\n/testbed/astroid/nodes/node_classes.py:1572:class BoolOp(NodeNG):\n/testbed/astroid/nodes/node_classes.py:1575:    A :class:`BoolOp` is an application of a boolean operator.\n/testbed/astroid/nodes/node_classes.py:1644:        \"\"\"Infer a boolean operation (and / or / not).\n/testbed/astroid/nodes/node_classes.py:1646:        The function will calculate the boolean operation\n/testbed/astroid/nodes/node_classes.py:1674:            # Since the boolean operations are short circuited operations,\n/testbed/astroid/nodes/node_classes.py:2172:        \"\"\"Determine the boolean value of this node.\n/testbed/astroid/nodes/node_classes.py:2174:        :returns: The boolean value of this node.\n/testbed/astroid/nodes/node_classes.py:2437:        \"\"\"Determine the boolean value of this node.\n/testbed/astroid/nodes/node_classes.py:2439:        :returns: The boolean value of this node.\n/testbed/astroid/nodes/node_classes.py:4325:                    # `not node`. Determine node's boolean\n/testbed/astroid/nodes/scoped_nodes/scoped_nodes.py:587:        \"\"\"Determine the boolean value of this node.\n/testbed/astroid/nodes/scoped_nodes/scoped_nodes.py:589:        :returns: The boolean value of this node.\n/testbed/astroid/nodes/scoped_nodes/scoped_nodes.py:663:        \"\"\"Determine the boolean value of this node.\n/testbed/astroid/nodes/scoped_nodes/scoped_nodes.py:665:        :returns: The boolean value of this node.\n/testbed/astroid/nodes/scoped_nodes/scoped_nodes.py:721:        \"\"\"Determine the boolean value of this node.\n/testbed/astroid/nodes/scoped_nodes/scoped_nodes.py:723:        :returns: The boolean value of this node.\n/testbed/astroid/nodes/scoped_nodes/scoped_nodes.py:778:        \"\"\"Determine the boolean value of this node.\n/testbed/astroid/nodes/scoped_nodes/scoped_nodes.py:780:        :returns: The boolean value of this node.\n/testbed/astroid/nodes/scoped_nodes/scoped_nodes.py:835:        \"\"\"Determine the boolean value of this node.\n/testbed/astroid/nodes/scoped_nodes/scoped_nodes.py:837:        :returns: The boolean value of this node.\n/testbed/astroid/nodes/scoped_nodes/scoped_nodes.py:1029:        \"\"\"Determine the boolean value of this node.\n/testbed/astroid/nodes/scoped_nodes/scoped_nodes.py:1031:        :returns: The boolean value of this node.\n/testbed/astroid/nodes/scoped_nodes/scoped_nodes.py:1640:        \"\"\"Determine the boolean value of this node.\n/testbed/astroid/nodes/scoped_nodes/scoped_nodes.py:1642:        :returns: The boolean value of this node.\n/testbed/astroid/nodes/scoped_nodes/scoped_nodes.py:2866:        \"\"\"Determine the boolean value of this node.\n/testbed/astroid/nodes/scoped_nodes/scoped_nodes.py:2868:        :returns: The boolean value of this node.\n/testbed/astroid/nodes/_base_nodes.py:606:        # pylint: disable = too-many-boolean-expressions\n/testbed/astroid/nodes/node_ng.py:763:        \"\"\"Determine the boolean value of this node.\n/testbed/astroid/nodes/node_ng.py:765:        The boolean value of a node can have three\n/testbed/astroid/nodes/node_ng.py:777:        :returns: The boolean value of this node.\n/testbed/astroid/nodes/as_string.py:156:    def visit_boolop(self, node: nodes.BoolOp) -> str:\n/testbed/astroid/decorators.py:140:                    # pylint: disable = too-many-boolean-expressions\n/testbed/tests/test_inference.py:1171:    def test_binary_op_not_used_in_boolean_context(self) -> None:\n/testbed/tests/test_inference.py:4817:class BoolOpTest(unittest.TestCase):\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-9935da71-dcd7-4e4f-9c4a-36207b79caa8-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '1570,1800p' /testbed/astroid/nodes/node_classes.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-9935da71-dcd7-4e4f-9c4a-36207b79caa8-3",
+            "content": "value).\n            # This is conforming to the semantics of `and` and `or`:\n            #   1 and 0 -> 1\n            #   0 and 1 -> 0\n            #   1 or 0 -> 1\n            #   0 or 1 -> 1\n            value = util.Uninferable\n            for value, bool_value in zip(pair, bool_values):\n                if predicate(bool_value):\n                    yield value\n                    break\n            else:\n                yield value\n\n        return InferenceErrorInfo(node=self, context=context)\n\n\nclass Break(_base_nodes.NoChildrenNode, _base_nodes.Statement):\n    \"\"\"Class representing an :class:`ast.Break` node.\n\n    >>> import astroid\n    >>> node = astroid.extract_node('break')\n    >>> node\n    <Break l.1 at 0x7f23b2e9e5c0>\n    \"\"\"\n\n\nclass Call(NodeNG):\n    \"\"\"Class representing an :class:`ast.Call` node.\n\n    A :class:`Call` node is a call to a function, method, etc.\n\n    >>> import astroid\n    >>> node = astroid.extract_node('function()')\n    >>> node\n    <Call l.1 at 0x7f23b2e71eb8>\n    \"\"\"\n\n    _astroid_fields = (\"func\", \"args\", \"keywords\")\n\n    func: NodeNG\n    \"\"\"What is being called.\"\"\"\n\n    args: list[NodeNG]\n    \"\"\"The positional arguments being given to the call.\"\"\"\n\n    keywords: list[Keyword]\n    \"\"\"The keyword arguments being given to the call.\"\"\"\n\n    def postinit(\n        self, func: NodeNG, args: list[NodeNG], keywords: list[Keyword]\n    ) -> None:\n        self.func = func\n        self.args = args\n        self.keywords = keywords\n\n    @property\n    def starargs(self) -> list[Starred]:\n        \"\"\"The positional arguments that unpack something.\"\"\"\n        return [arg for arg in self.args if isinstance(arg, Starred)]\n\n    @property\n    def kwargs(self) -> list[Keyword]:\n        \"\"\"The keyword arguments that unpack something.\"\"\"\n        return [keyword for keyword in self.keywords if keyword.arg is None]\n\n    def get_children(self):\n        yield self.func\n\n        yield from self.args\n\n        yield from self.keywords\n\n    @decorators.raise_if_nothing_inferred\n    @decorators.path_wrapper\n    def _infer(\n        self, context: InferenceContext | None = None, **kwargs: Any\n    ) -> Generator[InferenceResult, None, InferenceErrorInfo]:\n        \"\"\"Infer a Call node by trying to guess what the function returns.\"\"\"\n        callcontext = copy_context(context)\n        callcontext.boundnode = None\n        if context is not None:\n            callcontext.extra_context = self._populate_context_lookup(context.clone())\n\n        for callee in self.func.infer(context):\n            if isinstance(callee, util.UninferableBase):\n                yield callee\n                continue\n            try:\n                if hasattr(callee, \"infer_call_result\"):\n                    callcontext.callcontext = CallContext(\n                        args=self.args, keywords=self.keywords, callee=callee\n                    )\n                    yield from callee.infer_call_result(\n                        caller=self, context=callcontext\n                    )\n            except InferenceError:\n                continue\n        return InferenceErrorInfo(node=self, context=context)\n\n    def _populate_context_lookup(self, context: InferenceContext | None):\n        \"\"\"Allows context to be saved for later for inference inside a function.\"\"\"\n        context_lookup: dict[InferenceResult, InferenceContext] = {}\n        if context is None:\n            return context_lookup\n        for arg in self.args:\n            if isinstance(arg, Starred):\n                context_lookup[arg.value] = context\n            else:\n                context_lookup[arg] = context\n        keywords = self.keywords if self.keywords is not None else []\n        for keyword in keywords:\n            context_lookup[keyword.value] = context\n        return context_lookup\n\n\nCOMPARE_OPS: dict[str, Callable[[Any, Any], bool]] = {\n    \"==\": operator.eq,\n    \"!=\": operator.ne,\n    \"<\": operator.lt,\n    \"<=\": operator.le,\n    \">\": operator.gt,\n    \">=\": operator.ge,\n    \"in\": lambda a, b: a in b,\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-df965283-f8c9-4d7a-8dcb-dc77e7eeea78-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '1572,1720p' /testbed/astroid/nodes/node_classes.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-df965283-f8c9-4d7a-8dcb-dc77e7eeea78-4",
+            "content": "The operator.\n\n        :param lineno: The line that this node appears on in the source code.\n\n        :param col_offset: The column that this node appears on in the\n            source code.\n\n        :param parent: The parent node in the syntax tree.\n\n        :param end_lineno: The last line this node appears on in the source code.\n\n        :param end_col_offset: The end column this node appears on in the\n            source code. Note: This is after the last symbol.\n        \"\"\"\n        self.op: str = op\n        \"\"\"The operator.\"\"\"\n\n        self.values: list[NodeNG] = []\n        \"\"\"The values being applied to the operator.\"\"\"\n\n        super().__init__(\n            lineno=lineno,\n            col_offset=col_offset,\n            end_lineno=end_lineno,\n            end_col_offset=end_col_offset,\n            parent=parent,\n        )\n\n    def postinit(self, values: list[NodeNG] | None = None) -> None:\n        \"\"\"Do some setup after initialisation.\n\n        :param values: The values being applied to the operator.\n        \"\"\"\n        if values is not None:\n            self.values = values\n\n    def get_children(self):\n        yield from self.values\n\n    def op_precedence(self) -> int:\n        return OP_PRECEDENCE[self.op]\n\n    @decorators.raise_if_nothing_inferred\n    @decorators.path_wrapper\n    def _infer(\n        self: nodes.BoolOp, context: InferenceContext | None = None, **kwargs: Any\n    ) -> Generator[InferenceResult, None, InferenceErrorInfo | None]:\n        \"\"\"Infer a boolean operation (and / or / not).\n\n        The function will calculate the boolean operation\n        for all pairs generated through inference for each component\n        node.\n        \"\"\"\n        values = self.values\n        if self.op == \"or\":\n            predicate = operator.truth\n        else:\n            predicate = operator.not_\n\n        try:\n            inferred_values = [value.infer(context=context) for value in values]\n        except InferenceError:\n            yield util.Uninferable\n            return None\n\n        for pair in itertools.product(*inferred_values):\n            if any(isinstance(item, util.UninferableBase) for item in pair):\n                # Can't infer the final result, just yield Uninferable.\n                yield util.Uninferable\n                continue\n\n            bool_values = [item.bool_value() for item in pair]\n            if any(isinstance(item, util.UninferableBase) for item in bool_values):\n                # Can't infer the final result, just yield Uninferable.\n                yield util.Uninferable\n                continue\n\n            # Since the boolean operations are short circuited operations,\n            # this code yields the first value for which the predicate is True\n            # and if no value respected the predicate, then the last value will\n            # be returned (or Uninferable if there was no last value).\n            # This is conforming to the semantics of `and` and `or`:\n            #   1 and 0 -> 1\n            #   0 and 1 -> 0\n            #   1 or 0 -> 1\n            #   0 or 1 -> 1\n            value = util.Uninferable\n            for value, bool_value in zip(pair, bool_values):\n                if predicate(bool_value):\n                    yield value\n                    break\n            else:\n                yield value\n\n        return InferenceErrorInfo(node=self, context=context)\n\n\nclass Break(_base_nodes.NoChildrenNode, _base_nodes.Statement):\n    \"\"\"Class representing an :class:`ast.Break` node.\n\n    >>> import astroid\n    >>> node = astroid.extract_node('break')\n    >>> node\n    <Break l.1 at 0x7f23b2e9e5c0>\n    \"\"\"\n\n\nclass Call(NodeNG):\n    \"\"\"Class representing an :class:`ast.Call` node.\n\n    A :class:`Call` node is a call to a function, method, etc.\n\n    >>> import astroid\n    >>> node = astroid.extract_node('function()')\n    >>> node\n    <Call l.1 at 0x7f23b2e71eb8>\n    \"\"\"\n\n    _astroid_fields = (\"func\", \"args\", \"keywords\")\n\n    func: NodeNG\n    \"\"\"What is being called.\"\"\"\n\n    args: list[NodeNG]\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-efea8aa2-1038-4713-b711-4fb054b7862c-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '4817,5100p' /testbed/tests/test_inference.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-efea8aa2-1038-4713-b711-4fb054b7862c-5",
+            "content": " extract_node(code)\n            inferred = next(node.infer())\n            if expected is util.Uninferable:\n                self.assertEqual(expected, inferred)\n            else:\n                self.assertEqual(inferred.value, expected)\n\n    def test_bool_bool_special_method(self) -> None:\n        ast_nodes = extract_node(\n            \"\"\"\n        class FalseClass:\n           def __bool__(self):\n               return False\n        class TrueClass:\n           def __bool__(self):\n               return True\n        class C(object):\n           def __call__(self):\n               return False\n        class B(object):\n           __bool__ = C()\n        class LambdaBoolFalse(object):\n            __bool__ = lambda self: self.foo\n            @property\n            def foo(self): return 0\n        class FalseBoolLen(object):\n            __len__ = lambda self: self.foo\n            @property\n            def foo(self): return 0\n        bool(FalseClass) #@\n        bool(TrueClass) #@\n        bool(FalseClass()) #@\n        bool(TrueClass()) #@\n        bool(B()) #@\n        bool(LambdaBoolFalse()) #@\n        bool(FalseBoolLen()) #@\n        \"\"\"\n        )\n        expected = [True, True, False, True, False, False, False]\n        for node, expected_value in zip(ast_nodes, expected):\n            inferred = next(node.infer())\n            self.assertEqual(inferred.value, expected_value)\n\n    def test_bool_instance_not_callable(self) -> None:\n        ast_nodes = extract_node(\n            \"\"\"\n        class BoolInvalid(object):\n           __bool__ = 42\n        class LenInvalid(object):\n           __len__ = \"a\"\n        bool(BoolInvalid()) #@\n        bool(LenInvalid()) #@\n        \"\"\"\n        )\n        for node in ast_nodes:\n            inferred = next(node.infer())\n            self.assertEqual(inferred, util.Uninferable)\n\n    def test_class_subscript(self) -> None:\n        node = extract_node(\n            \"\"\"\n        class Foo:\n            def __class_getitem__(cls, *args, **kwargs):\n                return cls\n\n        Foo[int]\n        \"\"\"\n        )\n        inferred = next(node.infer())\n        self.assertIsInstance(inferred, nodes.ClassDef)\n        self.assertEqual(inferred.name, \"Foo\")\n\n    def test_class_subscript_inference_context(self) -> None:\n        \"\"\"Context path has a reference to any parents inferred by getitem().\"\"\"\n        code = \"\"\"\n        class Parent: pass\n\n        class A(Parent):\n            def __class_getitem__(self, value):\n                return cls\n        \"\"\"\n        klass = extract_node(code)\n        context = InferenceContext()\n        # For this test, we want a fresh inference, rather than a cache hit on\n        # the inference done at brain time in _is_enum_subclass()\n        context.lookupname = \"Fresh lookup!\"\n        _ = klass.getitem(0, context=context)\n\n        assert next(iter(context.path))[0].name == \"Parent\"\n\n\nclass TestType(unittest.TestCase):\n    def test_type(self) -> None:\n        pairs = [\n            (\"type(1)\", \"int\"),\n            (\"type(type)\", \"type\"),\n            (\"type(None)\", \"NoneType\"),\n            (\"type(object)\", \"type\"),\n            (\"type(dict())\", \"dict\"),\n            (\"type({})\", \"dict\"),\n            (\"type(frozenset())\", \"frozenset\"),\n        ]\n        for code, expected in pairs:\n            node = extract_node(code)\n            inferred = next(node.infer())\n            self.assertIsInstance(inferred, nodes.ClassDef)\n            self.assertEqual(inferred.name, expected)\n\n\nclass ArgumentsTest(unittest.TestCase):\n    @staticmethod\n    def _get_dict_value(\n        inferred: dict,\n    ) -> list[tuple[str, int]] | list[tuple[str, str]]:\n        items = inferred.items\n        return sorted((key.value, value.value) for key, value in items)\n\n    @staticmethod\n    def _get_tuple_value(inferred: tuple) -> tuple[int, ...]:\n        elts = inferred.elts\n        return tuple(elt.value for elt in elts)\n\n    def test_args(self) -> None:\n        expected_values = [\n            (),\n            (1,),\n            (2, 3),\n"
+          }
+        ]
+      }
+    }
+  ]
+}

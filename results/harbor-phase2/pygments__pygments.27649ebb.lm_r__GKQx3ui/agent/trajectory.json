@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "pygments__pygments.27649ebb.lm_r__GKQx3ui__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "YAML Lexer incorrectly handles block scalar indentation indicators\n\nWhen using the YAML lexer with block scalars that have explicit indentation indicators, the lexer is not correctly processing the indentation.\n\nFor example, with this YAML:\n\n```yaml\nexample: |2\n  This is a block scalar\n  with explicit indentation\n```\n\nThe lexer fails to properly handle the indentation indicator (the \"2\" after the pipe character).\n\nTo reproduce:\n1. Create a YAML file with block scalars using explicit indentation indicators\n2. Try to highlight/parse the file with the YamlLexer\n\nThe issue appears to be in the block scalar indentation handling logic where the indentation indicator is not being properly extracted and applied."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository structure and locate the YAML lexer code that handles block scalar indentation.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-dc06fa3f-04dd-4326-8c53-00d85984dbe9-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -50 && cat /testbed/README.md 2>/dev/null | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-dc06fa3f-04dd-4326-8c53-00d85984dbe9-0",
+            "content": "total 160\ndrwxr-xr-x 1 root root  4096 Sep 22 16:14 .\ndrwxr-xr-x 1 root root  4096 Sep 22 16:14 ..\n-rw-r--r-- 1 root root    28 Jul 13  2025 .coveragerc\n-rw-r--r-- 1 root root    98 Jul 13  2025 .dockerignore\ndrwxr-xr-x 8 root root  4096 Jul 13  2025 .git\n-rw-r--r-- 1 root root    49 Jul 13  2025 .gitattributes\n-rw-r--r-- 1 root root   178 Jul 13  2025 .gitignore\n-rw-rw-r-- 1 1005 1005     0 Sep 22 15:44 .gitkeep\n-rw-r--r-- 1 root root 10614 Jul 13  2025 AUTHORS\n-rw-r--r-- 1 root root 73754 Jul 13  2025 CHANGES\n-rw-r--r-- 1 root root  1331 Jul 13  2025 LICENSE\n-rw-r--r-- 1 root root  3658 Jul 13  2025 README.rst\n-rw-r--r-- 1 root root   733 Jul 13  2025 description.rst\ndrwxr-xr-x 8 root root  4096 Jul 13  2025 doc\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 external\ndrwxr-xr-x 6 root root  4096 Jul 13  2025 pygments\n-rw-r--r-- 1 root root  2326 Jul 13  2025 pyproject.toml\n-rw-r--r-- 1 root root    54 Jul 13  2025 requirements.txt\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 scripts\ndrwxr-xr-x 8 root root  4096 Jul 13  2025 tests\n-rw-r--r-- 1 root root  2403 Jul 13  2025 tox.ini\n/testbed/pygments/filters/__init__.py\n/testbed/pygments/sphinxext.py\n/testbed/pygments/styles/gh_dark.py\n/testbed/pygments/styles/material.py\n/testbed/pygments/styles/lilypond.py\n/testbed/pygments/styles/pastie.py\n/testbed/pygments/styles/manni.py\n/testbed/pygments/styles/lightbulb.py\n/testbed/pygments/styles/vs.py\n/testbed/pygments/styles/rrt.py\n/testbed/pygments/styles/algol.py\n/testbed/pygments/styles/autumn.py\n/testbed/pygments/styles/abap.py\n/testbed/pygments/styles/nord.py\n/testbed/pygments/styles/vim.py\n/testbed/pygments/styles/inkpot.py\n/testbed/pygments/styles/murphy.py\n/testbed/pygments/styles/paraiso_light.py\n/testbed/pygments/styles/borland.py\n/testbed/pygments/styles/colorful.py\n/testbed/pygments/styles/friendly_grayscale.py\n/testbed/pygments/styles/paraiso_dark.py\n/testbed/pygments/styles/__init__.py\n/testbed/pygments/styles/_mapping.py\n/testbed/pygments/styles/zenburn.py\n/testbed/pygments/styles/monokai.py\n/testbed/pygments/styles/solarized.py\n/testbed/pygments/styles/onedark.py\n/testbed/pygments/styles/perldoc.py\n/testbed/pygments/styles/friendly.py\n/testbed/pygments/styles/default.py\n/testbed/pygments/styles/tango.py\n/testbed/pygments/styles/sas.py\n/testbed/pygments/styles/fruity.py\n/testbed/pygments/styles/lovelace.py\n/testbed/pygments/styles/trac.py\n/testbed/pygments/styles/rainbow_dash.py\n/testbed/pygments/styles/algol_nu.py\n/testbed/pygments/styles/gruvbox.py\n/testbed/pygments/styles/coffee.py\n/testbed/pygments/styles/igor.py\n/testbed/pygments/styles/arduino.py\n/testbed/pygments/styles/staroffice.py\n/testbed/pygments/styles/emacs.py\n/testbed/pygments/styles/native.py\n/testbed/pygments/styles/bw.py\n/testbed/pygments/styles/stata_light.py\n/testbed/pygments/styles/stata_dark.py\n/testbed/pygments/styles/xcode.py\n/testbed/pygments/styles/dracula.py\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-0cddbe54-00c1-4968-878c-f31e8810f706-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "find /testbed -iname \"*yaml*\" && grep -l \"YamlLexer\\|yaml\" /testbed/pygments/lexers/*.py | head -20"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-0cddbe54-00c1-4968-878c-f31e8810f706-1",
+            "content": "/testbed/tests/examplefiles/yaml+jinja\n/testbed/tests/examplefiles/yaml\n/testbed/tests/examplefiles/yaml/example.yaml\n/testbed/tests/examplefiles/yaml/example.yaml.output\n/testbed/tests/snippets/yaml\n/testbed/tests/snippets/yaml/test_yaml_colon_in_key_double.txt\n/testbed/tests/snippets/yaml/test_yaml_colon_in_key_start.txt\n/testbed/tests/snippets/yaml/test_yaml.txt\n/testbed/tests/snippets/yaml/test_yaml_colon_in_key.txt\n/testbed/doc/pyodide/meta.yaml\n/testbed/pygments/lexers/_mapping.py\n/testbed/pygments/lexers/_php_builtins.py\n/testbed/pygments/lexers/configs.py\n/testbed/pygments/lexers/data.py\n/testbed/pygments/lexers/templates.py\n/testbed/pygments/lexers/text.py\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-6f683077-5cfb-4ad8-81ea-d674e763d1aa-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "grep -n \"Yaml\\|yaml\\|block.scalar\\|indentation\" /testbed/pygments/lexers/data.py | head -80 && echo \"====\" && ls /testbed/pygments/lexers/ | head -50"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-6f683077-5cfb-4ad8-81ea-d674e763d1aa-2",
+            "content": "16:__all__ = ['YamlLexer', 'JsonLexer', 'JsonBareObjectLexer', 'JsonLdLexer']\n19:class YamlLexerContext(LexerContext):\n27:        self.block_scalar_indent = None\n30:class YamlLexer(ExtendedRegexLexer):\n37:    url = 'http://yaml.org/'\n38:    aliases = ['yaml']\n39:    filenames = ['*.yaml', '*.yml']\n40:    mimetypes = ['text/x-yaml']\n54:        \"\"\"Reset the indentation levels.\"\"\"\n60:            context.block_scalar_indent = None\n66:        \"\"\"Save a possible indentation level.\"\"\"\n88:        \"\"\"Set the previously saved indentation level.\"\"\"\n100:    def set_block_scalar_indent(token_class):\n101:        \"\"\"Set an explicit indentation level for a block scalar.\"\"\"\n104:            context.block_scalar_indent = None\n111:                context.block_scalar_indent = current_indent + increment\n117:    def parse_block_scalar_empty_line(indent_token_class, content_token_class):\n118:        \"\"\"Process an empty line in a block scalar.\"\"\"\n121:            if (context.block_scalar_indent is None or\n122:                    len(text) <= context.block_scalar_indent):\n126:                indentation = text[:context.block_scalar_indent]\n127:                content = text[context.block_scalar_indent:]\n128:                yield match.start(), indent_token_class, indentation\n129:                yield (match.start()+context.block_scalar_indent,\n134:    def parse_block_scalar_indent(token_class):\n135:        \"\"\"Process indentation spaces in a block scalar.\"\"\"\n138:            if context.block_scalar_indent is None:\n143:                context.block_scalar_indent = len(text)\n145:                if len(text) < context.block_scalar_indent:\n155:        \"\"\"Process indentation spaces in a plain scalar.\"\"\"\n177:            (r'^%YAML(?=[ ]|$)', reset_indent(Name.Tag), 'yaml-directive'),\n183:            # indentation spaces\n185:             ('block-line', 'indentation')),\n188:        # trailing whitespaces after directives or a block scalar indicator\n199:        'yaml-directive': [\n214:        # block scalar indicators and indentation spaces\n215:        'indentation': [\n266:             ('block-scalar-content', 'block-scalar-header')),\n320:        # block scalar lines\n321:        'block-scalar-content': [\n326:             parse_block_scalar_empty_line(Whitespace, Name.Constant)),\n327:            # indentation spaces (we may leave the state here)\n328:            (r'^[ ]*', parse_block_scalar_indent(Whitespace)),\n334:        'block-scalar-header': [\n335:            # indentation indicator followed by chomping flag\n337:             set_block_scalar_indent(Punctuation.Indicator),\n339:            # chomping flag followed by indentation indicator\n341:             set_block_scalar_indent(Punctuation.Indicator),\n391:            # indentation spaces (we may leave the block line state here)\n432:            context = YamlLexerContext(text, 0)\n====\n__init__.py\n_ada_builtins.py\n_asy_builtins.py\n_cl_builtins.py\n_cocoa_builtins.py\n_csound_builtins.py\n_css_builtins.py\n_julia_builtins.py\n_lasso_builtins.py\n_lilypond_builtins.py\n_lua_builtins.py\n_luau_builtins.py\n_mapping.py\n_mql_builtins.py\n_mysql_builtins.py\n_openedge_builtins.py\n_php_builtins.py\n_postgres_builtins.py\n_qlik_builtins.py\n_scheme_builtins.py\n_scilab_builtins.py\n_sourcemod_builtins.py\n_stan_builtins.py\n_stata_builtins.py\n_tsql_builtins.py\n_usd_builtins.py\n_vbscript_builtins.py\n_vim_builtins.py\nactionscript.py\nada.py\nagile.py\nalgebra.py\nambient.py\namdgpu.py\nampl.py\napdlexer.py\napl.py\narchetype.py\narrow.py\narturo.py\nasc.py\nasm.py\nasn1.py\nautomation.py\nbare.py\nbasic.py\nbdd.py\nberry.py\nbibtex.py\nblueprint.py\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-56b96c57-57ab-4a77-a017-4a09ca468645-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '1,450p' /testbed/pygments/lexers/data.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-56b96c57-57ab-4a77-a017-4a09ca468645-3",
+            "content": "     'quoted-scalar-whitespaces': [\n            # leading and trailing whitespaces are ignored\n            (r'^[ ]+', Whitespace),\n            (r'[ ]+$', Whitespace),\n            # line breaks are ignored\n            (r'\\n+', Whitespace),\n            # other whitespaces are a part of the value\n            (r'[ ]+', Name.Variable),\n        ],\n\n        # single-quoted scalars\n        'single-quoted-scalar': [\n            # include whitespace and line break rules\n            include('quoted-scalar-whitespaces'),\n            # escaping of the quote character\n            (r'\\'\\'', String.Escape),\n            # regular non-whitespace characters\n            (r'[^\\s\\']+', String),\n            # the closing quote\n            (r'\\'', String, '#pop'),\n        ],\n\n        # double-quoted scalars\n        'double-quoted-scalar': [\n            # include whitespace and line break rules\n            include('quoted-scalar-whitespaces'),\n            # escaping of special characters\n            (r'\\\\[0abt\\tn\\nvfre \"\\\\N_LP]', String),\n            # escape codes\n            (r'\\\\(?:x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}|U[0-9A-Fa-f]{8})',\n             String.Escape),\n            # regular non-whitespace characters\n            (r'[^\\s\"\\\\]+', String),\n            # the closing quote\n            (r'\"', String, '#pop'),\n        ],\n\n        # the beginning of a new line while scanning a plain scalar\n        'plain-scalar-in-block-context-new-line': [\n            # empty lines\n            (r'^[ ]+$', Whitespace),\n            # line breaks\n            (r'\\n+', Whitespace),\n            # document start and document end indicators\n            (r'^(?=---|\\.\\.\\.)', something(Name.Namespace), '#pop:3'),\n            # indentation spaces (we may leave the block line state here)\n            (r'^[ ]*', parse_plain_scalar_indent(Whitespace), '#pop'),\n        ],\n\n        # a plain scalar in the block context\n        'plain-scalar-in-block-context': [\n            # the scalar ends with the ':' indicator\n            (r'[ ]*(?=:[ ]|:$)', something(Whitespace), '#pop'),\n            # the scalar ends with whitespaces followed by a comment\n            (r'[ ]+(?=#)', Whitespace, '#pop'),\n            # trailing whitespaces are ignored\n            (r'[ ]+$', Whitespace),\n            # line breaks are ignored\n            (r'\\n+', Whitespace, 'plain-scalar-in-block-context-new-line'),\n            # other whitespaces are a part of the value\n            (r'[ ]+', Literal.Scalar.Plain),\n            # regular non-whitespace characters\n            (r'(?::(?!\\s)|[^\\s:])+', Literal.Scalar.Plain),\n        ],\n\n        # a plain scalar is the flow context\n        'plain-scalar-in-flow-context': [\n            # the scalar ends with an indicator character\n            (r'[ ]*(?=[,:?\\[\\]{}])', something(Whitespace), '#pop'),\n            # the scalar ends with a comment\n            (r'[ ]+(?=#)', Whitespace, '#pop'),\n            # leading and trailing whitespaces are ignored\n            (r'^[ ]+', Whitespace),\n            (r'[ ]+$', Whitespace),\n            # line breaks are ignored\n            (r'\\n+', Whitespace),\n            # other whitespaces are a part of the value\n            (r'[ ]+', Name.Variable),\n            # regular non-whitespace characters\n            (r'[^\\s,:?\\[\\]{}]+', Name.Variable),\n        ],\n\n    }\n\n    def get_tokens_unprocessed(self, text=None, context=None):\n        if context is None:\n            context = YamlLexerContext(text, 0)\n        return super().get_tokens_unprocessed(text, context)\n\n\nclass JsonLexer(Lexer):\n    \"\"\"\n    For JSON data structures.\n\n    Javascript-style comments are supported (like ``/* */`` and ``//``),\n    though comments are not part of the JSON specification.\n    This allows users to highlight JSON as it is used in the wild.\n\n    No validation is performed on the input JSON document.\n    \"\"\"\n\n    name = 'JSON'\n    url = 'https://www.json.org'\n    aliases = ['json', 'json-object']\n    filenames = ['*.json', '*.jsonl', '*.ndjson', 'Pipfile.lock']\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-c68636be-fd8a-4dc4-9c1a-6a2bf12c3885-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '1,220p' /testbed/pygments/lexers/data.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-c68636be-fd8a-4dc4-9c1a-6a2bf12c3885-4",
+            "content": "_class):\n        \"\"\"Process an empty line in a block scalar.\"\"\"\n        def callback(lexer, match, context):\n            text = match.group()\n            if (context.block_scalar_indent is None or\n                    len(text) <= context.block_scalar_indent):\n                if text:\n                    yield match.start(), indent_token_class, text\n            else:\n                indentation = text[:context.block_scalar_indent]\n                content = text[context.block_scalar_indent:]\n                yield match.start(), indent_token_class, indentation\n                yield (match.start()+context.block_scalar_indent,\n                       content_token_class, content)\n            context.pos = match.end()\n        return callback\n\n    def parse_block_scalar_indent(token_class):\n        \"\"\"Process indentation spaces in a block scalar.\"\"\"\n        def callback(lexer, match, context):\n            text = match.group()\n            if context.block_scalar_indent is None:\n                if len(text) <= max(context.indent, 0):\n                    context.stack.pop()\n                    context.stack.pop()\n                    return\n                context.block_scalar_indent = len(text)\n            else:\n                if len(text) < context.block_scalar_indent:\n                    context.stack.pop()\n                    context.stack.pop()\n                    return\n            if text:\n                yield match.start(), token_class, text\n                context.pos = match.end()\n        return callback\n\n    def parse_plain_scalar_indent(token_class):\n        \"\"\"Process indentation spaces in a plain scalar.\"\"\"\n        def callback(lexer, match, context):\n            text = match.group()\n            if len(text) <= context.indent:\n                context.stack.pop()\n                context.stack.pop()\n                return\n            if text:\n                yield match.start(), token_class, text\n                context.pos = match.end()\n        return callback\n\n    tokens = {\n        # the root rules\n        'root': [\n            # ignored whitespaces\n            (r'[ ]+(?=#|$)', Whitespace),\n            # line breaks\n            (r'\\n+', Whitespace),\n            # a comment\n            (r'#[^\\n]*', Comment.Single),\n            # the '%YAML' directive\n            (r'^%YAML(?=[ ]|$)', reset_indent(Name.Tag), 'yaml-directive'),\n            # the %TAG directive\n            (r'^%TAG(?=[ ]|$)', reset_indent(Name.Tag), 'tag-directive'),\n            # document start and document end indicators\n            (r'^(?:---|\\.\\.\\.)(?=[ ]|$)', reset_indent(Name.Namespace),\n             'block-line'),\n            # indentation spaces\n            (r'[ ]*(?!\\s|$)', save_indent(Whitespace, start=True),\n             ('block-line', 'indentation')),\n        ],\n\n        # trailing whitespaces after directives or a block scalar indicator\n        'ignored-line': [\n            # ignored whitespaces\n            (r'[ ]+(?=#|$)', Whitespace),\n            # a comment\n            (r'#[^\\n]*', Comment.Single),\n            # line break\n            (r'\\n', Whitespace, '#pop:2'),\n        ],\n\n        # the %YAML directive\n        'yaml-directive': [\n            # the version number\n            (r'([ ]+)([0-9]+\\.[0-9]+)',\n             bygroups(Whitespace, Number), 'ignored-line'),\n        ],\n\n        # the %TAG directive\n        'tag-directive': [\n            # a tag handle and the corresponding prefix\n            (r'([ ]+)(!|![\\w-]*!)'\n             r'([ ]+)(!|!?[\\w;/?:@&=+$,.!~*\\'()\\[\\]%-]+)',\n             bygroups(Whitespace, Keyword.Type, Whitespace, Keyword.Type),\n             'ignored-line'),\n        ],\n\n        # block scalar indicators and indentation spaces\n        'indentation': [\n            # trailing whitespaces are ignored\n            (r'[ ]*$', something(Whitespace), '#pop:2'),\n            # whitespaces preceding block collection indicators\n            (r'[ ]+(?=[?:-](?:[ ]|$))', save_indent(Whitespace)),\n            # block collection indicators\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-6306fc91-8273-45f7-a38a-ec96da8d8acb-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '19,180p' /testbed/pygments/lexers/data.py && echo \"======= block-scalar =======\" && sed -n '214,350p' /testbed/pygments/lexers/data.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-6306fc91-8273-45f7-a38a-ec96da8d8acb-5",
+            "content": "lections and quoted scalars\n            include('flow-nodes'),\n            # a plain scalar\n            (r'(?=[^\\s?:,\\[\\]{}#&*!|>\\'\"%@`-]|[?:-]\\S)',\n             something(Name.Variable),\n             'plain-scalar-in-block-context'),\n        ],\n\n        # tags, anchors, aliases\n        'descriptors': [\n            # a full-form tag\n            (r'!<[\\w#;/?:@&=+$,.!~*\\'()\\[\\]%-]+>', Keyword.Type),\n            # a tag in the form '!', '!suffix' or '!handle!suffix'\n            (r'!(?:[\\w-]+!)?'\n             r'[\\w#;/?:@&=+$,.!~*\\'()\\[\\]%-]*', Keyword.Type),\n            # an anchor\n            (r'&[\\w-]+', Name.Label),\n            # an alias\n            (r'\\*[\\w-]+', Name.Variable),\n        ],\n\n        # block collections and scalars\n        'block-nodes': [\n            # implicit key\n            (r':(?=[ ]|$)', set_indent(Punctuation.Indicator, implicit=True)),\n            # literal and folded scalars\n            (r'[|>]', Punctuation.Indicator,\n             ('block-scalar-content', 'block-scalar-header')),\n        ],\n\n        # flow collections and quoted scalars\n        'flow-nodes': [\n            # a flow sequence\n            (r'\\[', Punctuation.Indicator, 'flow-sequence'),\n            # a flow mapping\n            (r'\\{', Punctuation.Indicator, 'flow-mapping'),\n            # a single-quoted scalar\n            (r'\\'', String, 'single-quoted-scalar'),\n            # a double-quoted scalar\n            (r'\\\"', String, 'double-quoted-scalar'),\n        ],\n\n        # the content of a flow collection\n        'flow-collection': [\n            # whitespaces\n            (r'[ ]+', Whitespace),\n            # line breaks\n            (r'\\n+', Whitespace),\n            # a comment\n            (r'#[^\\n]*', Comment.Single),\n            # simple indicators\n            (r'[?:,]', Punctuation.Indicator),\n            # tags, anchors and aliases\n            include('descriptors'),\n            # nested collections and quoted scalars\n            include('flow-nodes'),\n            # a plain scalar\n            (r'(?=[^\\s?:,\\[\\]{}#&*!|>\\'\"%@`])',\n             something(Name.Variable),\n             'plain-scalar-in-flow-context'),\n        ],\n\n        # a flow sequence indicated by '[' and ']'\n        'flow-sequence': [\n            # include flow collection rules\n            include('flow-collection'),\n            # the closing indicator\n            (r'\\]', Punctuation.Indicator, '#pop'),\n        ],\n\n        # a flow mapping indicated by '{' and '}'\n        'flow-mapping': [\n            # key with colon\n            (r'''([^,:?\\[\\]{}\"'\\n]+)(:)(?=[ ]|$)''',\n             bygroups(Name.Tag, Punctuation)),\n            # include flow collection rules\n            include('flow-collection'),\n            # the closing indicator\n            (r'\\}', Punctuation.Indicator, '#pop'),\n        ],\n\n        # block scalar lines\n        'block-scalar-content': [\n            # line break\n            (r'\\n', Whitespace),\n            # empty line\n            (r'^[ ]+$',\n             parse_block_scalar_empty_line(Whitespace, Name.Constant)),\n            # indentation spaces (we may leave the state here)\n            (r'^[ ]*', parse_block_scalar_indent(Whitespace)),\n            # line content\n            (r'[\\S\\t ]+', Name.Constant),\n        ],\n\n        # the content of a literal or folded scalar\n        'block-scalar-header': [\n            # indentation indicator followed by chomping flag\n            (r'([1-9])?[+-]?(?=[ ]|$)',\n             set_block_scalar_indent(Punctuation.Indicator),\n             'ignored-line'),\n            # chomping flag followed by indentation indicator\n            (r'[+-]?([1-9])?(?=[ ]|$)',\n             set_block_scalar_indent(Punctuation.Indicator),\n             'ignored-line'),\n        ],\n\n        # ignored and regular whitespaces in quoted scalars\n        'quoted-scalar-whitespaces': [\n            # leading and trailing whitespaces are ignored\n            (r'^[ ]+', Whitespace),\n            (r'[ ]+$', Whitespace),\n            # line breaks are ignored\n"
+          }
+        ]
+      }
+    }
+  ]
+}

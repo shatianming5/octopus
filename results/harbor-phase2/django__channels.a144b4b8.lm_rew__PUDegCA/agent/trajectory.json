@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "django__channels.a144b4b8.lm_rew__PUDegCA__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# Cookie handling issues in CookieMiddleware.set_cookie\n\n## Description\n\nI've encountered a couple of issues with the `set_cookie` method in the `CookieMiddleware` class. The problems appear to be related to cookie handling and validation.\n\n### Issue 1: SameSite validation error\n\nWhen trying to set a cookie with an invalid SameSite value, the code doesn't properly validate or handle it. The error message is different from what I expected.\n\n### Issue 2: Cookie encoding problem\n\nThe cookies aren't being properly encoded in the response headers. When I try to set a cookie, the headers in the response message don't contain the expected cookie data.\n\n## Reproduction\n\nHere's a simple code snippet that demonstrates the issues:\n\n```python\nfrom channels.sessions import CookieMiddleware\n\n# Create a message dict\nmessage = {}\n\n# This should work but fails\ntry:\n    CookieMiddleware.set_cookie(message, \"test_cookie\", \"test_value\", samesite=\"invalid\")\nexcept Exception as e:\n    print(f\"Error: {e}\")\n\n# Check the headers in the message\nprint(message)\n\n# Set a normal cookie\nCookieMiddleware.set_cookie(message, \"test_cookie\", \"test_value\")\nprint(message)\n```\n\nWhen running this code, you'll see that:\n1. The samesite validation error message is different than expected\n2. The cookie headers in the message don't contain the expected format\n\nI believe there might be an issue with how the cookies are being processed and added to the headers. The cookie values don't seem to be properly encoded or the headers aren't being correctly set in the message dictionary."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository and the CookieMiddleware.set_cookie implementation to identify the SameSite validation and encoding issues.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-2b62d0f9-2007-4db5-a00e-73d46e9e1359-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -100 && cat /testbed/README.md 2>/dev/null | head -50"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-2b62d0f9-2007-4db5-a00e-73d46e9e1359-0",
+            "content": "total 92\ndrwxr-xr-x 1 root root  4096 Sep 22 16:32 .\ndrwxr-xr-x 1 root root  4096 Sep 22 16:32 ..\ndrwxr-xr-x 8 root root  4096 Jul 12  2025 .git\ndrwxr-xr-x 2 root root  4096 Jul 12  2025 .github\n-rw-r--r-- 1 root root   221 Jul 12  2025 .gitignore\n-rw-rw-r-- 1 1005 1005     0 Sep 22 15:44 .gitkeep\n-rw-r--r-- 1 root root  1096 Jul 12  2025 .readthedocs.yaml\n-rw-r--r-- 1 root root 18291 Jul 12  2025 CHANGELOG.txt\n-rw-r--r-- 1 root root  1292 Jul 12  2025 CONTRIBUTING.rst\n-rw-r--r-- 1 root root  1552 Jul 12  2025 LICENSE\n-rw-r--r-- 1 root root    42 Jul 12  2025 MANIFEST.in\n-rw-r--r-- 1 root root  3026 Jul 12  2025 README.rst\ndrwxr-xr-x 6 root root  4096 Jul 12  2025 channels\ndrwxr-xr-x 2 root root  4096 Jul 12  2025 channels.egg-info\ndrwxr-xr-x 6 root root  4096 Jul 12  2025 docs\ndrwxr-xr-x 3 root root  4096 Jul 12  2025 loadtesting\n-rw-r--r-- 1 root root    81 Jul 12  2025 pyproject.toml\n-rw-r--r-- 1 root root  1554 Jul 12  2025 setup.cfg\ndrwxr-xr-x 3 root root  4096 Jul 12  2025 tests\n-rw-r--r-- 1 root root   592 Jul 12  2025 tox.ini\n/testbed/channels/routing.py\n/testbed/channels/exceptions.py\n/testbed/channels/layers.py\n/testbed/channels/db.py\n/testbed/channels/__init__.py\n/testbed/channels/auth.py\n/testbed/channels/management/__init__.py\n/testbed/channels/management/commands/runworker.py\n/testbed/channels/management/commands/__init__.py\n/testbed/channels/consumer.py\n/testbed/channels/utils.py\n/testbed/channels/worker.py\n/testbed/channels/sessions.py\n/testbed/channels/generic/websocket.py\n/testbed/channels/generic/http.py\n/testbed/channels/generic/__init__.py\n/testbed/channels/security/websocket.py\n/testbed/channels/security/__init__.py\n/testbed/channels/middleware.py\n/testbed/channels/apps.py\n/testbed/channels/testing/websocket.py\n/testbed/channels/testing/http.py\n/testbed/channels/testing/__init__.py\n/testbed/channels/testing/application.py\n/testbed/channels/testing/live.py\n/testbed/tests/test_http.py\n/testbed/tests/test_generic_websocket.py\n/testbed/tests/test_routing.py\n/testbed/tests/__init__.py\n/testbed/tests/test_testing.py\n/testbed/tests/test_database.py\n/testbed/tests/test_inmemorychannel.py\n/testbed/tests/test_layers.py\n/testbed/tests/conftest.py\n/testbed/tests/security/test_auth.py\n/testbed/tests/security/test_websocket.py\n/testbed/tests/test_generic_http.py\n/testbed/docs/conf.py\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-baf2d487-9da8-4cef-985a-50f4821a0267-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/channels/sessions.py && echo \"======= TESTS =======\" && ls -la /testbed/tests && cat /testbed/CHANGELOG.txt | head -80 && cat /testbed/setup.cfg && cat /testbed/pyproject.toml"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-baf2d487-9da8-4cef-985a-50f4821a0267-1",
+            "content": "-------\n\nChannels 4.2 introduces a couple of major but backwards-compatible\nchanges, including most notably enhanced async suppport and fixing\na long-standing bug where tests would try and close db connections\nand erroneously fail.\n\nThere are a number of other small bugfixes. Please ensure to review the\n`Version 4.2.0 release notes\n<https://channels.readthedocs.io/en/latest/releases/4.2.0.html>`_ for full\ndetails.\n\n4.1.0 (2024-04-03)\n------------------\n\nChannels 4.1 is maintenance release in the 4.x series.\n\nThe main change is an update in the required Python and Django version.\nPython 3.8, and Django 4.2 are now the minimum required versions.\n\nThere are a number of other small bugfixes. Please ensure to review the\n`Version 4.1.0 release notes\n<https://channels.readthedocs.io/en/latest/releases/4.1.0.html>`_ for full\ndetails.\n\n4.0.0 (2022-10-15)\n------------------\n\nChannels 4 is the next major version of the Channels package. Together with the\nmatching Daphne v4 and channels-redis v4 releases, it updates dependencies,\nfixes issues, and removes outdated code. It so provides the foundation for\nChannels development going forward.\n\nIn most cases, you can update now by updating ``channels``, ``daphne``, and\n``channels-redis`` as appropriate, with ``pip``, and by adding ``daphne`` at\nthe top of your ``INSTALLED_APPS`` setting.\n\nFirst ``pip``::\n\n    pip install -U 'channels[daphne]' channels-redis\n\nThen in your Django settings file::\n\n    INSTALLED_APPS = [\n        \"daphne\",\n        ...\n    ]\n\nAgain, this is a major version change. Amongst other changes, large amounts of\nthe Django-wrapping code deprecated in Channels v3 has now been removed, in\nfavour of Django's own ASGI handling, and the ``runserver`` command has been\nmoved into the Daphne package.\n\nPlease ensure to review the `Version 4.0.0 release notes\n<https://channels.readthedocs.io/en/latest/releases/4.0.0.html>`_ for full\ndetails.\n\n3.0.5 (2022-06-24)\n------------------\n\nChannels 3.0.5 is a bugfix release in the 3.0 series.\n\nPlease see the `Version 3.0.5 release notes\n<https://channels.readthedocs.io/en/latest/releases/3.0.5.html>`_ for full\ndetails.\n\n\n3.0.4 (2021-07-11)\n------------------\n\nChannels 3.0.4 is a bugfix release in the 3.0 series.\n\nPlease see the `Version 3.0.4 release notes\n<https://channels.readthedocs.io/en/latest/releases/3.0.4.html>`_ for full\ndetails.\n\n[metadata]\nname = channels\nversion = attr: channels.__version__\nurl = http://github.com/django/channels\nauthor = Django Software Foundation\nauthor_email = foundation@djangoproject.com\ndescription = Brings async, event-driven capabilities to Django.\nlong_description = file: README.rst\nlong_description_content_type = text/x-rst\nlicense = BSD\nclassifiers =\n    Development Status :: 5 - Production/Stable\n    Environment :: Web Environment\n    Intended Audience :: Developers\n    License :: OSI Approved :: BSD License\n    Operating System :: OS Independent\n    Programming Language :: Python\n    Programming Language :: Python :: 3\n    Programming Language :: Python :: 3.8\n    Programming Language :: Python :: 3.9\n    Programming Language :: Python :: 3.10\n    Programming Language :: Python :: 3.11\n    Programming Language :: Python :: 3.12\n    Programming Language :: Python :: 3.13\n    Framework :: Django\n    Framework :: Django :: 4.2\n    Framework :: Django :: 5.0\n    Framework :: Django :: 5.1\n    Topic :: Internet :: WWW/HTTP\n\n[options]\npackages = find:\ninclude_package_data = True\ninstall_requires =\n    Django>=4.2\n    asgiref>=3.6.0,<4\npython_requires = >=3.8\n\n[options.extras_require]\ntests =\n    async-timeout\n    coverage~=4.5\n    pytest\n    pytest-django\n    pytest-asyncio\ndaphne =\n    daphne>=4.0.0\n\n[options.packages.find]\nexclude =\n    tests\n\n[flake8]\nexclude = venv/*,tox/*,docs/*,testproject/*,build/*\nmax-line-length = 88\nextend-ignore = E203, W503\n\n[isort]\nprofile = black\n\n[tool:pytest]\ntestpaths = tests\nasyncio_mode = auto\n[build-system]\nrequires = [\"setuptools\"]\nbuild-backend = \"setuptools.build_meta\"\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-05e8cc69-5da5-4385-bdd1-b90913743e1d-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/channels/sessions.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-05e8cc69-5da5-4385-bdd1-b90913743e1d-2",
+            "content": "e're the outermost session middleware\n        if self.activated:\n            modified = self.scope[\"session\"].modified\n            empty = self.scope[\"session\"].is_empty()\n            # If this is a message type that we want to save on, and there's\n            # changed data, save it. We also save if it's empty as we might\n            # not be able to send a cookie-delete along with this message.\n            if (\n                message[\"type\"] in self.save_message_types\n                and message.get(\"status\", 200) != 500\n                and (modified or settings.SESSION_SAVE_EVERY_REQUEST)\n            ):\n                await self.save_session()\n                # If this is a message type that can transport cookies back to the\n                # client, then do so.\n                if message[\"type\"] in self.cookie_response_message_types:\n                    if empty:\n                        # Delete cookie if it's set\n                        if settings.SESSION_COOKIE_NAME in self.scope[\"cookies\"]:\n                            CookieMiddleware.delete_cookie(\n                                message,\n                                settings.SESSION_COOKIE_NAME,\n                                path=settings.SESSION_COOKIE_PATH,\n                                domain=settings.SESSION_COOKIE_DOMAIN,\n                            )\n                    else:\n                        # Get the expiry data\n                        if self.scope[\"session\"].get_expire_at_browser_close():\n                            max_age = None\n                            expires = None\n                        else:\n                            max_age = self.scope[\"session\"].get_expiry_age()\n                            expires_time = time.time() + max_age\n                            expires = http_date(expires_time)\n                        # Set the cookie\n                        CookieMiddleware.set_cookie(\n                            message,\n                            self.cookie_name,\n                            self.scope[\"session\"].session_key,\n                            max_age=max_age,\n                            expires=expires,\n                            domain=settings.SESSION_COOKIE_DOMAIN,\n                            path=settings.SESSION_COOKIE_PATH,\n                            secure=settings.SESSION_COOKIE_SECURE or None,\n                            httponly=settings.SESSION_COOKIE_HTTPONLY or None,\n                            samesite=settings.SESSION_COOKIE_SAMESITE,\n                        )\n        # Pass up the send\n        return await self.real_send(message)\n\n    async def save_session(self):\n        \"\"\"\n        Saves the current session.\n        \"\"\"\n        try:\n            if django.VERSION >= (5, 1):\n                await self.scope[\"session\"].asave()\n            else:\n                await database_sync_to_async(self.scope[\"session\"].save)()\n        except UpdateError:\n            raise SuspiciousOperation(\n                \"The request's session was deleted before the \"\n                \"request completed. The user may have logged \"\n                \"out in a concurrent request, for example.\"\n            )\n\n\nclass SessionMiddleware:\n    \"\"\"\n    Class that adds Django sessions (from HTTP cookies) to the\n    scope. Works with HTTP or WebSocket protocol types (or anything that\n    provides a \"headers\" entry in the scope).\n\n    Requires the CookieMiddleware to be higher up in the stack.\n    \"\"\"\n\n    def __init__(self, inner):\n        self.inner = inner\n\n    async def __call__(self, scope, receive, send):\n        \"\"\"\n        Instantiate a session wrapper for this scope, resolve the session and\n        call the inner application.\n        \"\"\"\n        wrapper = InstanceSessionWrapper(scope, send)\n\n        await wrapper.resolve_session()\n\n        return await self.inner(wrapper.scope, receive, wrapper.send)\n\n\n# Shortcut to include cookie middleware\ndef SessionMiddlewareStack(inner):\n    return CookieMiddleware(SessionMiddleware(inner))\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-e7fbcdac-776f-418a-89d8-9874a11d2345-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "wc -l /testbed/channels/sessions.py && head -n 250 /testbed/channels/sessions.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-e7fbcdac-776f-418a-89d8-9874a11d2345-3",
+            "content": "scope into cookies\n            self.scope[\"session\"] = LazyObject()\n            self.activated = True\n\n        # Override send\n        self.real_send = send\n\n    async def resolve_session(self):\n        session_key = self.scope[\"cookies\"].get(self.cookie_name)\n        self.scope[\"session\"]._wrapped = self.session_store(session_key)\n\n    async def send(self, message):\n        \"\"\"\n        Overridden send that also does session saves/cookies.\n        \"\"\"\n        # Only save session if we're the outermost session middleware\n        if self.activated:\n            modified = self.scope[\"session\"].modified\n            empty = self.scope[\"session\"].is_empty()\n            # If this is a message type that we want to save on, and there's\n            # changed data, save it. We also save if it's empty as we might\n            # not be able to send a cookie-delete along with this message.\n            if (\n                message[\"type\"] in self.save_message_types\n                and message.get(\"status\", 200) != 500\n                and (modified or settings.SESSION_SAVE_EVERY_REQUEST)\n            ):\n                await self.save_session()\n                # If this is a message type that can transport cookies back to the\n                # client, then do so.\n                if message[\"type\"] in self.cookie_response_message_types:\n                    if empty:\n                        # Delete cookie if it's set\n                        if settings.SESSION_COOKIE_NAME in self.scope[\"cookies\"]:\n                            CookieMiddleware.delete_cookie(\n                                message,\n                                settings.SESSION_COOKIE_NAME,\n                                path=settings.SESSION_COOKIE_PATH,\n                                domain=settings.SESSION_COOKIE_DOMAIN,\n                            )\n                    else:\n                        # Get the expiry data\n                        if self.scope[\"session\"].get_expire_at_browser_close():\n                            max_age = None\n                            expires = None\n                        else:\n                            max_age = self.scope[\"session\"].get_expiry_age()\n                            expires_time = time.time() + max_age\n                            expires = http_date(expires_time)\n                        # Set the cookie\n                        CookieMiddleware.set_cookie(\n                            message,\n                            self.cookie_name,\n                            self.scope[\"session\"].session_key,\n                            max_age=max_age,\n                            expires=expires,\n                            domain=settings.SESSION_COOKIE_DOMAIN,\n                            path=settings.SESSION_COOKIE_PATH,\n                            secure=settings.SESSION_COOKIE_SECURE or None,\n                            httponly=settings.SESSION_COOKIE_HTTPONLY or None,\n                            samesite=settings.SESSION_COOKIE_SAMESITE,\n                        )\n        # Pass up the send\n        return await self.real_send(message)\n\n    async def save_session(self):\n        \"\"\"\n        Saves the current session.\n        \"\"\"\n        try:\n            if django.VERSION >= (5, 1):\n                await self.scope[\"session\"].asave()\n            else:\n                await database_sync_to_async(self.scope[\"session\"].save)()\n        except UpdateError:\n            raise SuspiciousOperation(\n                \"The request's session was deleted before the \"\n                \"request completed. The user may have logged \"\n                \"out in a concurrent request, for example.\"\n            )\n\n\nclass SessionMiddleware:\n    \"\"\"\n    Class that adds Django sessions (from HTTP cookies) to the\n    scope. Works with HTTP or WebSocket protocol types (or anything that\n    provides a \"headers\" entry in the scope).\n\n    Requires the CookieMiddleware to be higher up in the stack.\n    \"\"\"\n\n    def __init__(self, inner):\n        self.inner = inner\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-f903f7a5-0e24-4c4b-8265-1fa0f5a07f08-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '1,250p' /testbed/channels/sessions.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-f903f7a5-0e24-4c4b-8265-1fa0f5a07f08-4",
+            "content": "scope into cookies\n            self.scope[\"session\"] = LazyObject()\n            self.activated = True\n\n        # Override send\n        self.real_send = send\n\n    async def resolve_session(self):\n        session_key = self.scope[\"cookies\"].get(self.cookie_name)\n        self.scope[\"session\"]._wrapped = self.session_store(session_key)\n\n    async def send(self, message):\n        \"\"\"\n        Overridden send that also does session saves/cookies.\n        \"\"\"\n        # Only save session if we're the outermost session middleware\n        if self.activated:\n            modified = self.scope[\"session\"].modified\n            empty = self.scope[\"session\"].is_empty()\n            # If this is a message type that we want to save on, and there's\n            # changed data, save it. We also save if it's empty as we might\n            # not be able to send a cookie-delete along with this message.\n            if (\n                message[\"type\"] in self.save_message_types\n                and message.get(\"status\", 200) != 500\n                and (modified or settings.SESSION_SAVE_EVERY_REQUEST)\n            ):\n                await self.save_session()\n                # If this is a message type that can transport cookies back to the\n                # client, then do so.\n                if message[\"type\"] in self.cookie_response_message_types:\n                    if empty:\n                        # Delete cookie if it's set\n                        if settings.SESSION_COOKIE_NAME in self.scope[\"cookies\"]:\n                            CookieMiddleware.delete_cookie(\n                                message,\n                                settings.SESSION_COOKIE_NAME,\n                                path=settings.SESSION_COOKIE_PATH,\n                                domain=settings.SESSION_COOKIE_DOMAIN,\n                            )\n                    else:\n                        # Get the expiry data\n                        if self.scope[\"session\"].get_expire_at_browser_close():\n                            max_age = None\n                            expires = None\n                        else:\n                            max_age = self.scope[\"session\"].get_expiry_age()\n                            expires_time = time.time() + max_age\n                            expires = http_date(expires_time)\n                        # Set the cookie\n                        CookieMiddleware.set_cookie(\n                            message,\n                            self.cookie_name,\n                            self.scope[\"session\"].session_key,\n                            max_age=max_age,\n                            expires=expires,\n                            domain=settings.SESSION_COOKIE_DOMAIN,\n                            path=settings.SESSION_COOKIE_PATH,\n                            secure=settings.SESSION_COOKIE_SECURE or None,\n                            httponly=settings.SESSION_COOKIE_HTTPONLY or None,\n                            samesite=settings.SESSION_COOKIE_SAMESITE,\n                        )\n        # Pass up the send\n        return await self.real_send(message)\n\n    async def save_session(self):\n        \"\"\"\n        Saves the current session.\n        \"\"\"\n        try:\n            if django.VERSION >= (5, 1):\n                await self.scope[\"session\"].asave()\n            else:\n                await database_sync_to_async(self.scope[\"session\"].save)()\n        except UpdateError:\n            raise SuspiciousOperation(\n                \"The request's session was deleted before the \"\n                \"request completed. The user may have logged \"\n                \"out in a concurrent request, for example.\"\n            )\n\n\nclass SessionMiddleware:\n    \"\"\"\n    Class that adds Django sessions (from HTTP cookies) to the\n    scope. Works with HTTP or WebSocket protocol types (or anything that\n    provides a \"headers\" entry in the scope).\n\n    Requires the CookieMiddleware to be higher up in the stack.\n    \"\"\"\n\n    def __init__(self, inner):\n        self.inner = inner\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-2bc69002-b3c3-436e-9cac-62327efa0a5c-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "python3 -c \"\nwith open('/testbed/channels/sessions.py') as f:\n    content = f.read()\nprint(content[:8000])\n\""
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-2bc69002-b3c3-436e-9cac-62327efa0a5c-5",
+            "content": "ge.setdefault(\"headers\", []).append(\n                (b\"Set-Cookie\", bytes(c.output(header=\"\").strip(), encoding=\"utf-8\"))\n            )\n\n    @classmethod\n    def delete_cookie(cls, message, key, path=\"/\", domain=None):\n        \"\"\"\n        Deletes a cookie in a response.\n        \"\"\"\n        return cls.set_cookie(\n            message,\n            key,\n            max_age=0,\n            path=path,\n            domain=domain,\n            expires=\"Thu, 01-Jan-1970 00:00:00 GMT\",\n        )\n\n\nclass InstanceSessionWrapper:\n    \"\"\"\n    Populates the session in application instance scope, and wraps send to save\n    the session.\n    \"\"\"\n\n    # Message types that trigger a session save if it's modified\n    save_message_types = [\"http.response.start\"]\n\n    # Message types that can carry session cookies back\n    cookie_response_message_types = [\"http.response.start\"]\n\n    def __init__(self, scope, send):\n        self.cookie_name = settings.SESSION_COOKIE_NAME\n        self.session_store = import_module(settings.SESSION_ENGINE).SessionStore\n\n        self.scope = dict(scope)\n\n        if \"session\" in self.scope:\n            # There's already session middleware of some kind above us, pass\n            # that through\n            self.activated = False\n        else:\n            # Make sure there are cookies in the scope\n            if \"cookies\" not in self.scope:\n                raise ValueError(\n                    \"No cookies in scope - SessionMiddleware needs to run \"\n                    \"inside of CookieMiddleware.\"\n                )\n            # Parse the headers in the scope into cookies\n            self.scope[\"session\"] = LazyObject()\n            self.activated = True\n\n        # Override send\n        self.real_send = send\n\n    async def resolve_session(self):\n        session_key = self.scope[\"cookies\"].get(self.cookie_name)\n        self.scope[\"session\"]._wrapped = self.session_store(session_key)\n\n    async def send(self, message):\n        \"\"\"\n        Overridden send that also does session saves/cookies.\n        \"\"\"\n        # Only save session if we're the outermost session middleware\n        if self.activated:\n            modified = self.scope[\"session\"].modified\n            empty = self.scope[\"session\"].is_empty()\n            # If this is a message type that we want to save on, and there's\n            # changed data, save it. We also save if it's empty as we might\n            # not be able to send a cookie-delete along with this message.\n            if (\n                message[\"type\"] in self.save_message_types\n                and message.get(\"status\", 200) != 500\n                and (modified or settings.SESSION_SAVE_EVERY_REQUEST)\n            ):\n                await self.save_session()\n                # If this is a message type that can transport cookies back to the\n                # client, then do so.\n                if message[\"type\"] in self.cookie_response_message_types:\n                    if empty:\n                        # Delete cookie if it's set\n                        if settings.SESSION_COOKIE_NAME in self.scope[\"cookies\"]:\n                            CookieMiddleware.delete_cookie(\n                                message,\n                                settings.SESSION_COOKIE_NAME,\n                                path=settings.SESSION_COOKIE_PATH,\n                                domain=settings.SESSION_COOKIE_DOMAIN,\n                            )\n                    else:\n                        # Get the expiry data\n                        if self.scope[\"session\"].get_expire_at_browser_close():\n                            max_age = None\n                            expires = None\n                        else:\n                            max_age = self.scope[\"session\"].get_expiry_age()\n                            expires_time = time.time() + max_age\n                            expires = http_date(expires_time)\n                        # Set the cookie\n                        CookieMiddleware.set_cookie(\n                 \n"
+          }
+        ]
+      }
+    }
+  ]
+}

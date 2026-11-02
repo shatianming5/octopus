@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "hukkin__tomli.443a0c1b.lm_rewrit__ZZZ3mEW__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# Multiline strings in keys are incorrectly parsed\n\n### Describe the bug\n\nWhen using multiline strings as keys in TOML, the parser incorrectly handles them. The current implementation of `parse_key_part` doesn't properly detect and parse multiline string keys (triple-quoted strings like `\"\"\"key\"\"\"` or `'''key'''`).\n\n### Steps to Reproduce\n\n```python\nimport tomli\n\n# This should be valid TOML according to the spec\ntoml_str = \"\"\"\n[table]\n\"\"\"multiline key\"\"\" = \"value\"\n\"\"\"\n\nresult = tomli.loads(toml_str)\nprint(result)\n```\n\n### Expected Results\n\nThe TOML should be parsed correctly, as multiline string keys are valid according to the TOML specification.\n\n```python\n{'table': {'multiline key': 'value'}}\n```\n\n### Actual Results\n\nThe parser raises a `TOMLDecodeError` with a message like:\n\n```\nTOMLDecodeError: Invalid initial character for a key part\n```\n\n### Additional Information\n\nAccording to the TOML specification, keys can be quoted using basic strings, literal strings, or their multiline variants. The current implementation only handles single-line quoted keys but fails to detect and properly parse multiline string keys.\n\nThis affects any TOML document that uses triple-quoted strings (either `\"\"\"` or `'''`) as keys.\n\n### Versions\n\n- tomli version: 2.0.1\n- Python: 3.10"
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository structure and locate how key parsing currently handles quoted strings.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-0ee71bd5-70c1-4d61-99fe-31ca11c86e3c-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -50 && cat /testbed/README.md 2>/dev/null | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-0ee71bd5-70c1-4d61-99fe-31ca11c86e3c-0",
+            "content": "total 88\ndrwxr-xr-x 1 root root 4096 Sep 22 15:58 .\ndrwxr-xr-x 1 root root 4096 Sep 22 15:58 ..\n-rw-r--r-- 1 root root  455 Jul 13  2025 .bumpversion.cfg\n-rw-r--r-- 1 root root  155 Jul 13  2025 .flake8\ndrwxr-xr-x 8 root root 4096 Jul 13  2025 .git\n-rw-r--r-- 1 root root 1838 Jul 13  2025 .gitignore\n-rw-rw-r-- 1 1005 1005    0 Sep 22 15:44 .gitkeep\n-rw-r--r-- 1 root root 2000 Jul 13  2025 .pre-commit-config.yaml\n-rw-r--r-- 1 root root 5048 Jul 13  2025 CHANGELOG.md\n-rw-r--r-- 1 root root 1072 Jul 13  2025 LICENSE\n-rw-r--r-- 1 root root  121 Jul 13  2025 LICENSE-HEADER\n-rw-r--r-- 1 root root 9129 Jul 13  2025 README.md\ndrwxr-xr-x 2 root root 4096 Jul 13  2025 benchmark\ndrwxr-xr-x 2 root root 4096 Jul 13  2025 fuzzer\ndrwxr-xr-x 2 root root 4096 Jul 13  2025 profiler\n-rw-r--r-- 1 root root 4900 Jul 13  2025 pyproject.toml\ndrwxr-xr-x 3 root root 4096 Jul 13  2025 src\ndrwxr-xr-x 3 root root 4096 Jul 13  2025 tests\n-rw-r--r-- 1 root root 1776 Jul 13  2025 tomllib.md\n/testbed/src/tomli/_types.py\n/testbed/src/tomli/_parser.py\n/testbed/src/tomli/__init__.py\n/testbed/src/tomli/_re.py\n/testbed/fuzzer/fuzz.py\n/testbed/tests/__init__.py\n/testbed/tests/test_error.py\n/testbed/tests/test_data.py\n/testbed/tests/burntsushi.py\n/testbed/tests/test_misc.py\n/testbed/benchmark/run.py\n/testbed/profiler/profiler_script.py\n[![Build Status](https://github.com/hukkin/tomli/actions/workflows/tests.yaml/badge.svg?branch=master)](https://github.com/hukkin/tomli/actions?query=workflow%3ATests+branch%3Amaster+event%3Apush)\n[![codecov.io](https://codecov.io/gh/hukkin/tomli/branch/master/graph/badge.svg)](https://codecov.io/gh/hukkin/tomli)\n[![PyPI version](https://img.shields.io/pypi/v/tomli)](https://pypi.org/project/tomli)\n\n# Tomli\n\n> A lil' TOML parser\n\n**Table of Contents** *generated with [mdformat-toc](https://github.com/hukkin/mdformat-toc)*\n\n<!-- mdformat-toc start --slug=github --maxlevel=6 --minlevel=2 -->\n\n- [Intro](#intro)\n- [Installation](#installation)\n- [Usage](#usage)\n  - [Parse a TOML string](#parse-a-toml-string)\n  - [Parse a TOML file](#parse-a-toml-file)\n  - [Handle invalid TOML](#handle-invalid-toml)\n  - [Construct `decimal.Decimal`s from TOML floats](#construct-decimaldecimals-from-toml-floats)\n  - [Building a `tomli`/`tomllib` compatibility layer](#building-a-tomlitomllib-compatibility-layer)\n- [FAQ](#faq)\n  - [Why this parser?](#why-this-parser)\n  - [Is comment preserving round-trip parsing supported?](#is-comment-preserving-round-trip-parsing-supported)\n  - [Is there a `dumps`, `write` or `encode` function?](#is-there-a-dumps-write-or-encode-function)\n  - [How do TOML types map into Python types?](#how-do-toml-types-map-into-python-types)\n- [Performance](#performance)\n\n<!-- mdformat-toc end -->\n\n## Intro<a name=\"intro\"></a>\n\nTomli is a Python library for parsing [TOML](https://toml.io).\nIt is fully compatible with [TOML v1.0.0](https://toml.io/en/v1.0.0).\n\nA version of Tomli, the `tomllib` module,\nwas added to the standard library in Python 3.11\nvia [PEP 680](https://www.python.org/dev/peps/pep-0680/).\nTomli continues to provide a backport on PyPI for Python versions\nwhere the standard library module is not available\nand that have not yet reached their end-of-life.\n\n## Installation<a name=\"installation\"></a>\n\n```bash\npip install tomli\n```\n\n## Usage<a name=\"usage\"></a>\n\n### Parse a TOML string<a name=\"parse-a-toml-string\"></a>\n\n```python\nimport tomli\n\ntoml_str = \"\"\"\n[[players]]\nname = \"Lehtinen\"\nnumber = 26\n\n[[players]]\nname = \"Numminen\"\nnumber = 27\n\"\"\"\n\ntoml_dict = tomli.loads(toml_str)\nassert toml_dict == {\n    \"players\": [{\"name\": \"Lehtinen\", \"number\": 26}, {\"name\": \"Numminen\", \"number\": 27}]\n}\n```\n\n### Parse a TOML file<a name=\"parse-a-toml-file\"></a>\n\n```python\nimport tomli\n\nwith open(\"path_to_file/conf.toml\", \"rb\") as f:\n    toml_dict = tomli.load(f)\n```\n\nThe file must be opened in binary mode (with the `\"rb\"` flag).\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-e20169d8-b5f3-478c-a299-91a00be16bc7-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/src/tomli/_parser.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-e20169d8-b5f3-478c-a299-91a00be16bc7-1",
+            "content": "pes = parse_basic_str_escape_multiline\n    else:\n        error_on = ILLEGAL_BASIC_STR_CHARS\n        parse_escapes = parse_basic_str_escape\n    result = \"\"\n    start_pos = pos\n    while True:\n        try:\n            char = src[pos]\n        except IndexError:\n            raise TOMLDecodeError(\"Unterminated string\", src, pos) from None\n        if char == '\"':\n            if not multiline:\n                return pos + 1, result + src[start_pos:pos]\n            if src.startswith('\"\"\"', pos):\n                return pos + 3, result + src[start_pos:pos]\n            pos += 1\n            continue\n        if char == \"\\\\\":\n            result += src[start_pos:pos]\n            pos, parsed_escape = parse_escapes(src, pos)\n            result += parsed_escape\n            start_pos = pos\n            continue\n        if char in error_on:\n            raise TOMLDecodeError(f\"Illegal character {char!r}\", src, pos)\n        pos += 1\n\n\ndef parse_value(  # noqa: C901\n    src: str, pos: Pos, parse_float: ParseFloat\n) -> tuple[Pos, Any]:\n    try:\n        char: str | None = src[pos]\n    except IndexError:\n        char = None\n\n    # IMPORTANT: order conditions based on speed of checking and likelihood\n\n    # Basic strings\n    if char == '\"':\n        if src.startswith('\"\"\"', pos):\n            return parse_multiline_str(src, pos, literal=False)\n        return parse_one_line_basic_str(src, pos)\n\n    # Literal strings\n    if char == \"'\":\n        if src.startswith(\"'''\", pos):\n            return parse_multiline_str(src, pos, literal=True)\n        return parse_literal_str(src, pos)\n\n    # Booleans\n    if char == \"t\":\n        if src.startswith(\"true\", pos):\n            return pos + 4, True\n    if char == \"f\":\n        if src.startswith(\"false\", pos):\n            return pos + 5, False\n\n    # Arrays\n    if char == \"[\":\n        return parse_array(src, pos, parse_float)\n\n    # Inline tables\n    if char == \"{\":\n        return parse_inline_table(src, pos, parse_float)\n\n    # Dates and times\n    datetime_match = RE_DATETIME.match(src, pos)\n    if datetime_match:\n        try:\n            datetime_obj = match_to_datetime(datetime_match)\n        except ValueError as e:\n            raise TOMLDecodeError(\"Invalid date or datetime\", src, pos) from e\n        return datetime_match.end(), datetime_obj\n    localtime_match = RE_LOCALTIME.match(src, pos)\n    if localtime_match:\n        return localtime_match.end(), match_to_localtime(localtime_match)\n\n    # Integers and \"normal\" floats.\n    # The regex will greedily match any type starting with a decimal\n    # char, so needs to be located after handling of dates and times.\n    number_match = RE_NUMBER.match(src, pos)\n    if number_match:\n        return number_match.end(), match_to_number(number_match, parse_float)\n\n    # Special floats\n    first_three = src[pos : pos + 3]\n    if first_three in {\"inf\", \"nan\"}:\n        return pos + 3, parse_float(first_three)\n    first_four = src[pos : pos + 4]\n    if first_four in {\"-inf\", \"+inf\", \"-nan\", \"+nan\"}:\n        return pos + 4, parse_float(first_four)\n\n    raise TOMLDecodeError(\"Invalid value\", src, pos)\n\n\ndef is_unicode_scalar_value(codepoint: int) -> bool:\n    return (0 <= codepoint <= 55295) or (57344 <= codepoint <= 1114111)\n\n\ndef make_safe_parse_float(parse_float: ParseFloat) -> ParseFloat:\n    \"\"\"A decorator to make `parse_float` safe.\n\n    `parse_float` must not return dicts or lists, because these types\n    would be mixed with parsed TOML tables and arrays, thus confusing\n    the parser. The returned decorated callable raises `ValueError`\n    instead of returning illegal types.\n    \"\"\"\n    # The default `float` callable never returns illegal types. Optimize it.\n    if parse_float is float:\n        return float\n\n    def safe_parse_float(float_str: str) -> Any:\n        float_value = parse_float(float_str)\n        if isinstance(float_value, (dict, list)):\n            raise ValueError(\"parse_float must not return dicts or lists\")\n        return float_value\n\n    return safe_parse_float\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-d632342e-8535-4fae-909f-ba4c975e2bea-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "wc -l /testbed/src/tomli/_parser.py && head -n 400 /testbed/src/tomli/_parser.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-d632342e-8535-4fae-909f-ba4c975e2bea-2",
+            "content": "lf.dict\n        for k in key:\n            if k not in cont:\n                cont[k] = {}\n            cont = cont[k]\n            if access_lists and isinstance(cont, list):\n                cont = cont[-1]\n            if not isinstance(cont, dict):\n                raise KeyError(\"There is no nest behind this key\")\n        return cont\n\n    def append_nest_to_list(self, key: Key) -> None:\n        cont = self.get_or_create_nest(key[:-1])\n        last_key = key[-1]\n        if last_key in cont:\n            list_ = cont[last_key]\n            if not isinstance(list_, list):\n                raise KeyError(\"An object other than list found behind this key\")\n            list_.append({})\n        else:\n            cont[last_key] = [{}]\n\n\nclass Output(NamedTuple):\n    data: NestedDict\n    flags: Flags\n\n\ndef skip_chars(src: str, pos: Pos, chars: Iterable[str]) -> Pos:\n    try:\n        while src[pos] in chars:\n            pos += 1\n    except IndexError:\n        pass\n    return pos\n\n\ndef skip_until(\n    src: str,\n    pos: Pos,\n    expect: str,\n    *,\n    error_on: frozenset[str],\n    error_on_eof: bool,\n) -> Pos:\n    try:\n        new_pos = src.index(expect, pos)\n    except ValueError:\n        new_pos = len(src)\n        if error_on_eof:\n            raise TOMLDecodeError(f\"Expected {expect!r}\", src, new_pos) from None\n\n    if not error_on.isdisjoint(src[pos:new_pos]):\n        while src[pos] not in error_on:\n            pos += 1\n        raise TOMLDecodeError(f\"Found invalid character {src[pos]!r}\", src, pos)\n    return new_pos\n\n\ndef skip_comment(src: str, pos: Pos) -> Pos:\n    try:\n        char: str | None = src[pos]\n    except IndexError:\n        char = None\n    if char == \"#\":\n        return skip_until(\n            src, pos + 1, \"\\n\", error_on=ILLEGAL_COMMENT_CHARS, error_on_eof=False\n        )\n    return pos\n\n\ndef skip_comments_and_array_ws(src: str, pos: Pos) -> Pos:\n    while True:\n        pos_before_skip = pos\n        pos = skip_chars(src, pos, TOML_WS_AND_NEWLINE)\n        pos = skip_comment(src, pos)\n        if pos == pos_before_skip:\n            return pos\n\n\ndef create_dict_rule(src: str, pos: Pos, out: Output) -> tuple[Pos, Key]:\n    pos += 1  # Skip \"[\"\n    pos = skip_chars(src, pos, TOML_WS)\n    pos, key = parse_key(src, pos)\n\n    if out.flags.is_(key, Flags.EXPLICIT_NEST) or out.flags.is_(key, Flags.FROZEN):\n        raise TOMLDecodeError(f\"Cannot declare {key} twice\", src, pos)\n    out.flags.set(key, Flags.EXPLICIT_NEST, recursive=False)\n    try:\n        out.data.get_or_create_nest(key)\n    except KeyError:\n        raise TOMLDecodeError(\"Cannot overwrite a value\", src, pos) from None\n\n    if not src.startswith(\"]\", pos):\n        raise TOMLDecodeError(\n            \"Expected ']' at the end of a table declaration\", src, pos\n        )\n    return pos + 1, key\n\n\ndef create_list_rule(src: str, pos: Pos, out: Output) -> tuple[Pos, Key]:\n    pos += 2  # Skip \"[[\"\n    pos = skip_chars(src, pos, TOML_WS)\n    pos, key = parse_key(src, pos)\n\n    if out.flags.is_(key, Flags.FROZEN):\n        raise TOMLDecodeError(f\"Cannot mutate immutable namespace {key}\", src, pos)\n    # Free the namespace now that it points to another empty list item...\n    out.flags.unset_all(key)\n    # ...but this key precisely is still prohibited from table declaration\n    out.flags.set(key, Flags.EXPLICIT_NEST, recursive=False)\n    try:\n        out.data.append_nest_to_list(key)\n    except KeyError:\n        raise TOMLDecodeError(\"Cannot overwrite a value\", src, pos) from None\n\n    if not src.startswith(\"]]\", pos):\n        raise TOMLDecodeError(\n            \"Expected ']]' at the end of an array declaration\", src, pos\n        )\n    return pos + 2, key\n\n\ndef key_value_rule(\n    src: str, pos: Pos, out: Output, header: Key, parse_float: ParseFloat\n) -> Pos:\n    pos, key, value = parse_key_value_pair(src, pos, parse_float)\n    key_parent, key_stem = key[:-1], key[-1]\n    abs_key_parent = header + key_parent\n\n    relative_path_cont_keys = (header + key[:i] for i in range(1, len(key)))\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-a286d11a-debd-4543-95e6-cba1a05e3338-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "rg -n \"parse_key\" /testbed/src/tomli/_parser.py && echo \"====\" && sed -n '1,250p' /testbed/src/tomli/_parser.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-a286d11a-debd-4543-95e6-cba1a05e3338-3",
+            "content": "bash: line 1: rg: command not found\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-9ddf4ce9-bade-41ec-8ff8-adf5608ee431-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "grep -n \"parse_key\\|parse_key_part\\|parse_basic_str\\|parse_literal\" /testbed/src/tomli/_parser.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-9ddf4ce9-bade-41ec-8ff8-adf5608ee431-4",
+            "content": "353:    pos, key = parse_key(src, pos)\n373:    pos, key = parse_key(src, pos)\n396:    pos, key, value = parse_key_value_pair(src, pos, parse_float)\n427:def parse_key_value_pair(\n430:    pos, key = parse_key(src, pos)\n443:def parse_key(src: str, pos: Pos) -> tuple[Pos, Key]:\n444:    pos, key_part = parse_key_part(src, pos)\n456:        pos, key_part = parse_key_part(src, pos)\n461:def parse_key_part(src: str, pos: Pos) -> tuple[Pos, str]:\n471:        return parse_literal_str(src, pos)\n479:    return parse_basic_str(src, pos, multiline=False)\n515:        pos, key, value = parse_key_value_pair(src, pos, parse_float)\n538:def parse_basic_str_escape(\n567:def parse_basic_str_escape_multiline(src: str, pos: Pos) -> tuple[Pos, str]:\n568:    return parse_basic_str_escape(src, pos, multiline=True)\n584:def parse_literal_str(src: str, pos: Pos) -> tuple[Pos, str]:\n611:        pos, result = parse_basic_str(src, pos, multiline=True)\n624:def parse_basic_str(src: str, pos: Pos, *, multiline: bool) -> tuple[Pos, str]:\n627:        parse_escapes = parse_basic_str_escape_multiline\n630:        parse_escapes = parse_basic_str_escape\n676:        return parse_literal_str(src, pos)\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-b37bf3e1-f8a6-434d-9bfe-5479d5cb8e43-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '427,650p' /testbed/src/tomli/_parser.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-b37bf3e1-f8a6-434d-9bfe-5479d5cb8e43-5",
+            "content": "odeError(\"Unclosed inline table\", src, pos)\n        if isinstance(value, (dict, list)):\n            flags.set(key, Flags.FROZEN, recursive=True)\n        pos += 1\n        pos = skip_chars(src, pos, TOML_WS)\n\n\ndef parse_basic_str_escape(\n    src: str, pos: Pos, *, multiline: bool = False\n) -> tuple[Pos, str]:\n    escape_id = src[pos : pos + 2]\n    pos += 2\n    if multiline and escape_id in {\"\\\\ \", \"\\\\\\t\", \"\\\\\\n\"}:\n        # Skip whitespace until next non-whitespace character or end of\n        # the doc. Error if non-whitespace is found before newline.\n        if escape_id != \"\\\\\\n\":\n            pos = skip_chars(src, pos, TOML_WS)\n            try:\n                char = src[pos]\n            except IndexError:\n                return pos, \"\"\n            if char != \"\\n\":\n                raise TOMLDecodeError(\"Unescaped '\\\\' in a string\", src, pos)\n            pos += 1\n        pos = skip_chars(src, pos, TOML_WS_AND_NEWLINE)\n        return pos, \"\"\n    if escape_id == \"\\\\u\":\n        return parse_hex_char(src, pos, 4)\n    if escape_id == \"\\\\U\":\n        return parse_hex_char(src, pos, 8)\n    try:\n        return pos, BASIC_STR_ESCAPE_REPLACEMENTS[escape_id]\n    except KeyError:\n        raise TOMLDecodeError(\"Unescaped '\\\\' in a string\", src, pos) from None\n\n\ndef parse_basic_str_escape_multiline(src: str, pos: Pos) -> tuple[Pos, str]:\n    return parse_basic_str_escape(src, pos, multiline=True)\n\n\ndef parse_hex_char(src: str, pos: Pos, hex_len: int) -> tuple[Pos, str]:\n    hex_str = src[pos : pos + hex_len]\n    if len(hex_str) != hex_len or not HEXDIGIT_CHARS.issuperset(hex_str):\n        raise TOMLDecodeError(\"Invalid hex value\", src, pos)\n    pos += hex_len\n    hex_int = int(hex_str, 16)\n    if not is_unicode_scalar_value(hex_int):\n        raise TOMLDecodeError(\n            \"Escaped character is not a Unicode scalar value\", src, pos\n        )\n    return pos, chr(hex_int)\n\n\ndef parse_literal_str(src: str, pos: Pos) -> tuple[Pos, str]:\n    pos += 1  # Skip starting apostrophe\n    start_pos = pos\n    pos = skip_until(\n        src, pos, \"'\", error_on=ILLEGAL_LITERAL_STR_CHARS, error_on_eof=True\n    )\n    return pos + 1, src[start_pos:pos]  # Skip ending apostrophe\n\n\ndef parse_multiline_str(src: str, pos: Pos, *, literal: bool) -> tuple[Pos, str]:\n    pos += 3\n    if src.startswith(\"\\n\", pos):\n        pos += 1\n\n    if literal:\n        delim = \"'\"\n        end_pos = skip_until(\n            src,\n            pos,\n            \"'''\",\n            error_on=ILLEGAL_MULTILINE_LITERAL_STR_CHARS,\n            error_on_eof=True,\n        )\n        result = src[pos:end_pos]\n        pos = end_pos + 3\n    else:\n        delim = '\"'\n        pos, result = parse_basic_str(src, pos, multiline=True)\n\n    # Add at maximum two extra apostrophes/quotes if the end sequence\n    # is 4 or 5 chars long instead of just 3.\n    if not src.startswith(delim, pos):\n        return pos, result\n    pos += 1\n    if not src.startswith(delim, pos):\n        return pos, result + delim\n    pos += 1\n    return pos, result + (delim * 2)\n\n\ndef parse_basic_str(src: str, pos: Pos, *, multiline: bool) -> tuple[Pos, str]:\n    if multiline:\n        error_on = ILLEGAL_MULTILINE_BASIC_STR_CHARS\n        parse_escapes = parse_basic_str_escape_multiline\n    else:\n        error_on = ILLEGAL_BASIC_STR_CHARS\n        parse_escapes = parse_basic_str_escape\n    result = \"\"\n    start_pos = pos\n    while True:\n        try:\n            char = src[pos]\n        except IndexError:\n            raise TOMLDecodeError(\"Unterminated string\", src, pos) from None\n        if char == '\"':\n            if not multiline:\n                return pos + 1, result + src[start_pos:pos]\n            if src.startswith('\"\"\"', pos):\n                return pos + 3, result + src[start_pos:pos]\n            pos += 1\n            continue\n        if char == \"\\\\\":\n            result += src[start_pos:pos]\n            pos, parsed_escape = parse_escapes(src, pos)\n            result += parsed_escape\n            start_pos = pos\n            continue\n"
+          }
+        ]
+      }
+    }
+  ]
+}

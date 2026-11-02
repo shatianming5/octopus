@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "graphql-python__graphene.8290326__LPm9WUG__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# DataLoader.prime() doesn't handle exceptions properly\n\nCurrently, when using `DataLoader.prime()` to manually add values to the cache, it doesn't properly handle exceptions. \n\nWhen a value is an Exception, it should be cached as a rejected future to match the behavior of `load(key)`, but this functionality appears to be broken.\n\n## Steps to reproduce\n\n```python\nfrom graphene.utils.dataloader import DataLoader\n\n# Create a data loader\nloader = DataLoader(lambda keys: keys)\n\n# Try to prime the cache with an exception\nerror = Exception(\"Test error\")\nloader.prime(\"key\", error)\n\n# When we try to load the key, we should get the exception\n# but instead we get the exception object itself\nresult = loader.load(\"key\")\n```\n\nExpected behavior: The `load(\"key\")` call should return a future that rejects with the exception.\n\nActual behavior: The `load(\"key\")` call returns a future that resolves with the exception object itself, rather than rejecting with it.\n\nThis inconsistency causes problems when you're trying to use the same error handling logic for both loaded and primed values."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository structure and the DataLoader.prime() implementation to see how exceptions are currently handled.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-bf621f33-f94b-43d9-8357-738697b74513-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -50 && cat /testbed/README.md 2>/dev/null | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-bf621f33-f94b-43d9-8357-738697b74513-0",
+            "content": "e/utils/str_converters.py\n/testbed/graphene/utils/subclass_with_meta.py\n/testbed/graphene/utils/deprecated.py\n/testbed/graphene/utils/__init__.py\n/testbed/graphene/utils/thenables.py\n/testbed/graphene/utils/trim_docstring.py\n/testbed/graphene/utils/tests/test_deduplicator.py\n/testbed/graphene/utils/tests/test_orderedtype.py\n/testbed/graphene/utils/tests/test_str_converters.py\n/testbed/graphene/utils/tests/test_dataloader.py\n/testbed/graphene/utils/tests/__init__.py\n/testbed/graphene/utils/tests/test_resolver_from_annotations.py\n/testbed/graphene/utils/tests/test_module_loading.py\n/testbed/graphene/utils/tests/test_deprecated.py\n/testbed/graphene/utils/tests/test_trim_docstring.py\n/testbed/graphene/utils/tests/test_crunch.py\n# ![Graphene Logo](http://graphene-python.org/favicon.png) [Graphene](http://graphene-python.org)  [![PyPI version](https://badge.fury.io/py/graphene.svg)](https://badge.fury.io/py/graphene) [![Coverage Status](https://coveralls.io/repos/graphql-python/graphene/badge.svg?branch=master&service=github)](https://coveralls.io/github/graphql-python/graphene?branch=master) [![](https://dcbadge.vercel.app/api/server/T6Gp6NFYHe?style=flat)](https://discord.gg/T6Gp6NFYHe)\n\n[💬 Join the community on Discord](https://discord.gg/T6Gp6NFYHe)\n\n**We are looking for contributors**! Please check the current issues to see how you can help ❤️\n\n## Introduction\n\n[Graphene](http://graphene-python.org) is an opinionated Python library for building GraphQL schemas/types fast and easily.\n\n- **Easy to use:** Graphene helps you use GraphQL in Python without effort.\n- **Relay:** Graphene has builtin support for Relay.\n- **Data agnostic:** Graphene supports any kind of data source: SQL (Django, SQLAlchemy), Mongo, custom Python objects, etc.\n  We believe that by providing a complete API you could plug Graphene anywhere your data lives and make your data available\n  through GraphQL.\n\n## Integrations\n\nGraphene has multiple integrations with different frameworks:\n\n| integration       | Package                                                                                 |\n| ----------------- | --------------------------------------------------------------------------------------- |\n| SQLAlchemy        | [graphene-sqlalchemy](https://github.com/graphql-python/graphene-sqlalchemy/)           |\n| Mongo             | [graphene-mongo](https://github.com/graphql-python/graphene-mongo/)                     |\n| Apollo Federation | [graphene-federation](https://github.com/graphql-python/graphene-federation/)           |\n| Django            | [graphene-django](https://github.com/graphql-python/graphene-django/)                   |\n\nAlso, Graphene is fully compatible with the GraphQL spec, working seamlessly with all GraphQL clients, such as [Relay](https://github.com/facebook/relay), [Apollo](https://github.com/apollographql/apollo-client) and [gql](https://github.com/graphql-python/gql).\n\n## Installation\n\nTo install `graphene`, just run this command in your shell\n\n```bash\npip install \"graphene>=3.1\"\n```\n\n## Examples\n\nHere is one example for you to get started:\n\n```python\nimport graphene\n\nclass Query(graphene.ObjectType):\n    hello = graphene.String(description='A typical hello world')\n\n    def resolve_hello(self, info):\n        return 'World'\n\nschema = graphene.Schema(query=Query)\n```\n\nThen Querying `graphene.Schema` is as simple as:\n\n```python\nquery = '''\n    query SayHello {\n      hello\n    }\n'''\nresult = schema.execute(query)\n```\n\nIf you want to learn even more, you can also check the following [examples](examples/):\n\n- **Basic Schema**: [Starwars example](examples/starwars)\n- **Relay Schema**: [Starwars Relay example](examples/starwars_relay)\n\n## Documentation\n\nDocumentation and links to additional resources are available at\nhttps://docs.graphene-python.org/en/latest/\n\n## Contributing\n\nAfter cloning this repo, create a [virtualenv](https://virtualenv.pypa.io/en/stable/) and ensure dependencies are installed by running:\n\n```sh\nvirtualenv venv\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-d0c64f19-6965-4b2b-b052-07a155fae126-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/graphene/utils/dataloader.py && echo \"==== TESTS ====\" && cat /testbed/graphene/utils/tests/test_dataloader.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-d0c64f19-6965-4b2b-b052-07a155fae126-1",
+            "content": "id_loader()\n\n    identity_loader.prime(\"A\", \"X\")\n\n    a1 = await identity_loader.load(\"A\")\n    b1 = await identity_loader.load(\"B\")\n\n    assert a1 == \"X\"\n    assert b1 == \"B\"\n\n    identity_loader.prime(\"A\", \"Y\")\n    identity_loader.prime(\"B\", \"Y\")\n\n    a2 = await identity_loader.load(\"A\")\n    b2 = await identity_loader.load(\"B\")\n\n    assert a2 == \"X\"\n    assert b2 == \"B\"\n\n    assert load_calls == [[\"B\"]]\n\n\n# # Represents Errors\n@mark.asyncio\nasync def test_resolves_to_error_to_indicate_failure():\n    async def resolve(keys):\n        mapped_keys = [\n            key if key % 2 == 0 else Exception(\"Odd: {}\".format(key)) for key in keys\n        ]\n        return mapped_keys\n\n    even_loader, load_calls = id_loader(resolve=resolve)\n\n    with raises(Exception) as exc_info:\n        await even_loader.load(1)\n\n    assert str(exc_info.value) == \"Odd: 1\"\n\n    value2 = await even_loader.load(2)\n    assert value2 == 2\n    assert load_calls == [[1], [2]]\n\n\n@mark.asyncio\nasync def test_can_represent_failures_and_successes_simultaneously():\n    async def resolve(keys):\n        mapped_keys = [\n            key if key % 2 == 0 else Exception(\"Odd: {}\".format(key)) for key in keys\n        ]\n        return mapped_keys\n\n    even_loader, load_calls = id_loader(resolve=resolve)\n\n    promise1 = even_loader.load(1)\n    promise2 = even_loader.load(2)\n\n    with raises(Exception) as exc_info:\n        await promise1\n\n    assert str(exc_info.value) == \"Odd: 1\"\n    value2 = await promise2\n    assert value2 == 2\n    assert load_calls == [[1, 2]]\n\n\n@mark.asyncio\nasync def test_caches_failed_fetches():\n    async def resolve(keys):\n        mapped_keys = [Exception(\"Error: {}\".format(key)) for key in keys]\n        return mapped_keys\n\n    error_loader, load_calls = id_loader(resolve=resolve)\n\n    with raises(Exception) as exc_info:\n        await error_loader.load(1)\n\n    assert str(exc_info.value) == \"Error: 1\"\n\n    with raises(Exception) as exc_info:\n        await error_loader.load(1)\n\n    assert str(exc_info.value) == \"Error: 1\"\n\n    assert load_calls == [[1]]\n\n\n@mark.asyncio\nasync def test_caches_failed_fetches_2():\n    identity_loader, load_calls = id_loader()\n\n    identity_loader.prime(1, Exception(\"Error: 1\"))\n\n    with raises(Exception) as _:\n        await identity_loader.load(1)\n\n    assert load_calls == []\n\n\n# It is resilient to job queue ordering\n@mark.asyncio\nasync def test_batches_loads_occuring_within_promises():\n    identity_loader, load_calls = id_loader()\n\n    async def load_b_1():\n        return await load_b_2()\n\n    async def load_b_2():\n        return await identity_loader.load(\"B\")\n\n    values = await gather(identity_loader.load(\"A\"), load_b_1())\n\n    assert values == [\"A\", \"B\"]\n\n    assert load_calls == [[\"A\", \"B\"]]\n\n\n@mark.asyncio\nasync def test_catches_error_if_loader_resolver_fails():\n    exc = Exception(\"AOH!\")\n\n    def do_resolve(x):\n        raise exc\n\n    a_loader, a_load_calls = id_loader(resolve=do_resolve)\n\n    with raises(Exception) as exc_info:\n        await a_loader.load(\"A1\")\n\n    assert exc_info.value == exc\n\n\n@mark.asyncio\nasync def test_can_call_a_loader_from_a_loader():\n    deep_loader, deep_load_calls = id_loader()\n    a_loader, a_load_calls = id_loader(\n        resolve=lambda keys: deep_loader.load(tuple(keys))\n    )\n    b_loader, b_load_calls = id_loader(\n        resolve=lambda keys: deep_loader.load(tuple(keys))\n    )\n\n    a1, b1, a2, b2 = await gather(\n        a_loader.load(\"A1\"),\n        b_loader.load(\"B1\"),\n        a_loader.load(\"A2\"),\n        b_loader.load(\"B2\"),\n    )\n\n    assert a1 == \"A1\"\n    assert b1 == \"B1\"\n    assert a2 == \"A2\"\n    assert b2 == \"B2\"\n\n    assert a_load_calls == [[\"A1\", \"A2\"]]\n    assert b_load_calls == [[\"B1\", \"B2\"]]\n    assert deep_load_calls == [[(\"A1\", \"A2\"), (\"B1\", \"B2\")]]\n\n\n@mark.asyncio\nasync def test_dataloader_clear_with_missing_key_works():\n    async def do_resolve(x):\n        return x\n\n    a_loader, a_load_calls = id_loader(resolve=do_resolve)\n    assert a_loader.clear(\"A1\") == a_loader\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-c148f488-434e-49a3-8335-629f1c00ca24-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/graphene/utils/dataloader.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-c148f488-434e-49a3-8335-629f1c00ca24-2",
+            "content": "he_key not in self._cache:\n            # Cache a rejected future if the value is an Error, in order to match\n            # the behavior of load(key).\n            future = self.loop.create_future()\n            if isinstance(value, Exception):\n                future.set_exception(value)\n            else:\n                future.set_result(value)\n\n            self._cache[cache_key] = future\n\n        return self\n\n\ndef enqueue_post_future_job(loop, loader):\n    async def dispatch():\n        dispatch_queue(loader)\n\n    loop.call_soon(ensure_future, dispatch())\n\n\ndef get_chunks(iterable_obj, chunk_size=1):\n    chunk_size = max(1, chunk_size)\n    return (\n        iterable_obj[i : i + chunk_size]\n        for i in range(0, len(iterable_obj), chunk_size)\n    )\n\n\ndef dispatch_queue(loader):\n    \"\"\"\n    Given the current state of a Loader instance, perform a batch load\n    from its current queue.\n    \"\"\"\n    # Take the current loader queue, replacing it with an empty queue.\n    queue = loader._queue\n    loader._queue = []\n\n    # If a max_batch_size was provided and the queue is longer, then segment the\n    # queue into multiple batches, otherwise treat the queue as a single batch.\n    max_batch_size = loader.max_batch_size\n\n    if max_batch_size and max_batch_size < len(queue):\n        chunks = get_chunks(queue, max_batch_size)\n        for chunk in chunks:\n            ensure_future(dispatch_queue_batch(loader, chunk))\n    else:\n        ensure_future(dispatch_queue_batch(loader, queue))\n\n\nasync def dispatch_queue_batch(loader, queue):\n    # Collect all keys to be loaded in this dispatch\n    keys = [loaded.key for loaded in queue]\n\n    # Call the provided batch_load_fn for this loader with the loader queue's keys.\n    batch_future = loader.batch_load_fn(keys)\n\n    # Assert the expected response from batch_load_fn\n    if not batch_future or not iscoroutine(batch_future):\n        return failed_dispatch(  # pragma: no cover\n            loader,\n            queue,\n            TypeError(\n                (\n                    \"DataLoader must be constructed with a function which accepts \"\n                    \"Iterable<key> and returns Future<Iterable<value>>, but the function did \"\n                    \"not return a Coroutine: {}.\"\n                ).format(batch_future)\n            ),\n        )\n\n    try:\n        values = await batch_future\n        if not isinstance(values, Iterable):\n            raise TypeError(  # pragma: no cover\n                (\n                    \"DataLoader must be constructed with a function which accepts \"\n                    \"Iterable<key> and returns Future<Iterable<value>>, but the function did \"\n                    \"not return a Future of a Iterable: {}.\"\n                ).format(values)\n            )\n\n        values = list(values)\n        if len(values) != len(keys):\n            raise TypeError(  # pragma: no cover\n                (\n                    \"DataLoader must be constructed with a function which accepts \"\n                    \"Iterable<key> and returns Future<Iterable<value>>, but the function did \"\n                    \"not return a Future of a Iterable with the same length as the Iterable \"\n                    \"of keys.\"\n                    \"\\n\\nKeys:\\n{}\"\n                    \"\\n\\nValues:\\n{}\"\n                ).format(keys, values)\n            )\n\n        # Step through the values, resolving or rejecting each Future in the\n        # loaded queue.\n        for loaded, value in zip(queue, values):\n            if isinstance(value, Exception):\n                loaded.future.set_exception(value)\n            else:\n                loaded.future.set_result(value)\n\n    except Exception as e:\n        return failed_dispatch(loader, queue, e)\n\n\ndef failed_dispatch(loader, queue, error):\n    \"\"\"\n    Do not cache individual loads if the entire batch dispatch fails,\n    but still reject each request so they do not hang.\n    \"\"\"\n    for loaded in queue:\n        loader.clear(loaded.key)\n        loaded.future.set_exception(error)\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-5aad06cb-4070-44fd-bc28-7e951d332071-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "wc -l /testbed/graphene/utils/dataloader.py && echo \"==== FULL FILE ====\" && cat -n /testbed/graphene/utils/dataloader.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-5aad06cb-4070-44fd-bc28-7e951d332071-3",
+            "content": " 189\t    return (\n   190\t        iterable_obj[i : i + chunk_size]\n   191\t        for i in range(0, len(iterable_obj), chunk_size)\n   192\t    )\n   193\t\n   194\t\n   195\tdef dispatch_queue(loader):\n   196\t    \"\"\"\n   197\t    Given the current state of a Loader instance, perform a batch load\n   198\t    from its current queue.\n   199\t    \"\"\"\n   200\t    # Take the current loader queue, replacing it with an empty queue.\n   201\t    queue = loader._queue\n   202\t    loader._queue = []\n   203\t\n   204\t    # If a max_batch_size was provided and the queue is longer, then segment the\n   205\t    # queue into multiple batches, otherwise treat the queue as a single batch.\n   206\t    max_batch_size = loader.max_batch_size\n   207\t\n   208\t    if max_batch_size and max_batch_size < len(queue):\n   209\t        chunks = get_chunks(queue, max_batch_size)\n   210\t        for chunk in chunks:\n   211\t            ensure_future(dispatch_queue_batch(loader, chunk))\n   212\t    else:\n   213\t        ensure_future(dispatch_queue_batch(loader, queue))\n   214\t\n   215\t\n   216\tasync def dispatch_queue_batch(loader, queue):\n   217\t    # Collect all keys to be loaded in this dispatch\n   218\t    keys = [loaded.key for loaded in queue]\n   219\t\n   220\t    # Call the provided batch_load_fn for this loader with the loader queue's keys.\n   221\t    batch_future = loader.batch_load_fn(keys)\n   222\t\n   223\t    # Assert the expected response from batch_load_fn\n   224\t    if not batch_future or not iscoroutine(batch_future):\n   225\t        return failed_dispatch(  # pragma: no cover\n   226\t            loader,\n   227\t            queue,\n   228\t            TypeError(\n   229\t                (\n   230\t                    \"DataLoader must be constructed with a function which accepts \"\n   231\t                    \"Iterable<key> and returns Future<Iterable<value>>, but the function did \"\n   232\t                    \"not return a Coroutine: {}.\"\n   233\t                ).format(batch_future)\n   234\t            ),\n   235\t        )\n   236\t\n   237\t    try:\n   238\t        values = await batch_future\n   239\t        if not isinstance(values, Iterable):\n   240\t            raise TypeError(  # pragma: no cover\n   241\t                (\n   242\t                    \"DataLoader must be constructed with a function which accepts \"\n   243\t                    \"Iterable<key> and returns Future<Iterable<value>>, but the function did \"\n   244\t                    \"not return a Future of a Iterable: {}.\"\n   245\t                ).format(values)\n   246\t            )\n   247\t\n   248\t        values = list(values)\n   249\t        if len(values) != len(keys):\n   250\t            raise TypeError(  # pragma: no cover\n   251\t                (\n   252\t                    \"DataLoader must be constructed with a function which accepts \"\n   253\t                    \"Iterable<key> and returns Future<Iterable<value>>, but the function did \"\n   254\t                    \"not return a Future of a Iterable with the same length as the Iterable \"\n   255\t                    \"of keys.\"\n   256\t                    \"\\n\\nKeys:\\n{}\"\n   257\t                    \"\\n\\nValues:\\n{}\"\n   258\t                ).format(keys, values)\n   259\t            )\n   260\t\n   261\t        # Step through the values, resolving or rejecting each Future in the\n   262\t        # loaded queue.\n   263\t        for loaded, value in zip(queue, values):\n   264\t            if isinstance(value, Exception):\n   265\t                loaded.future.set_exception(value)\n   266\t            else:\n   267\t                loaded.future.set_result(value)\n   268\t\n   269\t    except Exception as e:\n   270\t        return failed_dispatch(loader, queue, e)\n   271\t\n   272\t\n   273\tdef failed_dispatch(loader, queue, error):\n   274\t    \"\"\"\n   275\t    Do not cache individual loads if the entire batch dispatch fails,\n   276\t    but still reject each request so they do not hang.\n   277\t    \"\"\"\n   278\t    for loaded in queue:\n   279\t        loader.clear(loaded.key)\n   280\t        loaded.future.set_exception(error)\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-bcaabac5-19b6-4fc2-aa07-1e04e8605ad7-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '1,180p' /testbed/graphene/utils/dataloader.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-bcaabac5-19b6-4fc2-aa07-1e04e8605ad7-4",
+            "content": "_size = max_batch_size\n\n        if cache is not None:\n            self.cache = cache  # pragma: no cover\n\n        self.get_cache_key = get_cache_key or (lambda x: x)\n\n        self._cache = cache_map if cache_map is not None else {}\n        self._queue: List[Loader] = []\n\n    @property\n    def loop(self):\n        if not self._loop:\n            self._loop = get_event_loop()\n\n        return self._loop\n\n    def load(self, key=None):\n        \"\"\"\n        Loads a key, returning a `Future` for the value represented by that key.\n        \"\"\"\n        if key is None:\n            raise TypeError(  # pragma: no cover\n                (\n                    \"The loader.load() function must be called with a value, \"\n                    \"but got: {}.\"\n                ).format(key)\n            )\n\n        cache_key = self.get_cache_key(key)\n\n        # If caching and there is a cache-hit, return cached Future.\n        if self.cache:\n            cached_result = self._cache.get(cache_key)\n            if cached_result:\n                return cached_result\n\n        # Otherwise, produce a new Future for this value.\n        future = self.loop.create_future()\n        # If caching, cache this Future.\n        if self.cache:\n            self._cache[cache_key] = future\n\n        self.do_resolve_reject(key, future)\n        return future\n\n    def do_resolve_reject(self, key, future):\n        # Enqueue this Future to be dispatched.\n        self._queue.append(Loader(key=key, future=future))\n        # Determine if a dispatch of this queue should be scheduled.\n        # A single dispatch should be scheduled per queue at the time when the\n        # queue changes from \"empty\" to \"full\".\n        if len(self._queue) == 1:\n            if self.batch:\n                # If batching, schedule a task to dispatch the queue.\n                enqueue_post_future_job(self.loop, self)\n            else:\n                # Otherwise dispatch the (queue of one) immediately.\n                dispatch_queue(self)  # pragma: no cover\n\n    def load_many(self, keys):\n        \"\"\"\n        Loads multiple keys, returning a list of values\n\n        >>> a, b = await my_loader.load_many([ 'a', 'b' ])\n\n        This is equivalent to the more verbose:\n\n        >>> a, b = await gather(\n        >>>    my_loader.load('a'),\n        >>>    my_loader.load('b')\n        >>> )\n        \"\"\"\n        if not isinstance(keys, Iterable):\n            raise TypeError(  # pragma: no cover\n                (\n                    \"The loader.load_many() function must be called with Iterable<key> \"\n                    \"but got: {}.\"\n                ).format(keys)\n            )\n\n        return gather(*[self.load(key) for key in keys])\n\n    def clear(self, key):\n        \"\"\"\n        Clears the value at `key` from the cache, if it exists. Returns itself for\n        method chaining.\n        \"\"\"\n        cache_key = self.get_cache_key(key)\n        self._cache.pop(cache_key, None)\n        return self\n\n    def clear_all(self):\n        \"\"\"\n        Clears the entire cache. To be used when some event results in unknown\n        invalidations across this particular `DataLoader`. Returns itself for\n        method chaining.\n        \"\"\"\n        self._cache.clear()\n        return self\n\n    def prime(self, key, value):\n        \"\"\"\n        Adds the provied key and value to the cache. If the key already exists, no\n        change is made. Returns itself for method chaining.\n        \"\"\"\n        cache_key = self.get_cache_key(key)\n\n        # Only add the key if it does not already exist.\n        if cache_key not in self._cache:\n            # Cache a rejected future if the value is an Error, in order to match\n            # the behavior of load(key).\n            future = self.loop.create_future()\n            if isinstance(value, Exception):\n                future.set_exception(value)\n            else:\n                future.set_result(value)\n\n            self._cache[cache_key] = future\n\n        return self\n\n\ndef enqueue_post_future_job(loop, loader):\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-a19a63ae-8bc5-47ea-828d-35e27192d9ab-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cd /testbed && git log --oneline -20 && echo \"====\" && git log -p -- graphene/utils/dataloader.py | head -200 && echo \"==== GIT BLAME PRIME ====\" && git blame graphene/utils/dataloader.py | tail -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-a19a63ae-8bc5-47ea-828d-35e27192d9ab-5",
+            "content": " (sweft 2025-03-15 06:41:42 +0000 233)                 ).format(batch_future)\n^d7ed208 (sweft 2025-03-15 06:41:42 +0000 234)             ),\n^d7ed208 (sweft 2025-03-15 06:41:42 +0000 235)         )\n^d7ed208 (sweft 2025-03-15 06:41:42 +0000 236) \n^d7ed208 (sweft 2025-03-15 06:41:42 +0000 237)     try:\n^d7ed208 (sweft 2025-03-15 06:41:42 +0000 238)         values = await batch_future\n^d7ed208 (sweft 2025-03-15 06:41:42 +0000 239)         if not isinstance(values, Iterable):\n^d7ed208 (sweft 2025-03-15 06:41:42 +0000 240)             raise TypeError(  # pragma: no cover\n^d7ed208 (sweft 2025-03-15 06:41:42 +0000 241)                 (\n^d7ed208 (sweft 2025-03-15 06:41:42 +0000 242)                     \"DataLoader must be constructed with a function which accepts \"\n^d7ed208 (sweft 2025-03-15 06:41:42 +0000 243)                     \"Iterable<key> and returns Future<Iterable<value>>, but the function did \"\n^d7ed208 (sweft 2025-03-15 06:41:42 +0000 244)                     \"not return a Future of a Iterable: {}.\"\n^d7ed208 (sweft 2025-03-15 06:41:42 +0000 245)                 ).format(values)\n^d7ed208 (sweft 2025-03-15 06:41:42 +0000 246)             )\n^d7ed208 (sweft 2025-03-15 06:41:42 +0000 247) \n^d7ed208 (sweft 2025-03-15 06:41:42 +0000 248)         values = list(values)\n^d7ed208 (sweft 2025-03-15 06:41:42 +0000 249)         if len(values) != len(keys):\n^d7ed208 (sweft 2025-03-15 06:41:42 +0000 250)             raise TypeError(  # pragma: no cover\n^d7ed208 (sweft 2025-03-15 06:41:42 +0000 251)                 (\n^d7ed208 (sweft 2025-03-15 06:41:42 +0000 252)                     \"DataLoader must be constructed with a function which accepts \"\n^d7ed208 (sweft 2025-03-15 06:41:42 +0000 253)                     \"Iterable<key> and returns Future<Iterable<value>>, but the function did \"\n^d7ed208 (sweft 2025-03-15 06:41:42 +0000 254)                     \"not return a Future of a Iterable with the same length as the Iterable \"\n^d7ed208 (sweft 2025-03-15 06:41:42 +0000 255)                     \"of keys.\"\n^d7ed208 (sweft 2025-03-15 06:41:42 +0000 256)                     \"\\n\\nKeys:\\n{}\"\n^d7ed208 (sweft 2025-03-15 06:41:42 +0000 257)                     \"\\n\\nValues:\\n{}\"\n^d7ed208 (sweft 2025-03-15 06:41:42 +0000 258)                 ).format(keys, values)\n^d7ed208 (sweft 2025-03-15 06:41:42 +0000 259)             )\n^d7ed208 (sweft 2025-03-15 06:41:42 +0000 260) \n^d7ed208 (sweft 2025-03-15 06:41:42 +0000 261)         # Step through the values, resolving or rejecting each Future in the\n^d7ed208 (sweft 2025-03-15 06:41:42 +0000 262)         # loaded queue.\n^d7ed208 (sweft 2025-03-15 06:41:42 +0000 263)         for loaded, value in zip(queue, values):\n^d7ed208 (sweft 2025-03-15 06:41:42 +0000 264)             if isinstance(value, Exception):\n^d7ed208 (sweft 2025-03-15 06:41:42 +0000 265)                 loaded.future.set_exception(value)\n^d7ed208 (sweft 2025-03-15 06:41:42 +0000 266)             else:\n^d7ed208 (sweft 2025-03-15 06:41:42 +0000 267)                 loaded.future.set_result(value)\n^d7ed208 (sweft 2025-03-15 06:41:42 +0000 268) \n^d7ed208 (sweft 2025-03-15 06:41:42 +0000 269)     except Exception as e:\n^d7ed208 (sweft 2025-03-15 06:41:42 +0000 270)         return failed_dispatch(loader, queue, e)\n^d7ed208 (sweft 2025-03-15 06:41:42 +0000 271) \n^d7ed208 (sweft 2025-03-15 06:41:42 +0000 272) \n^d7ed208 (sweft 2025-03-15 06:41:42 +0000 273) def failed_dispatch(loader, queue, error):\n^d7ed208 (sweft 2025-03-15 06:41:42 +0000 274)     \"\"\"\n^d7ed208 (sweft 2025-03-15 06:41:42 +0000 275)     Do not cache individual loads if the entire batch dispatch fails,\n^d7ed208 (sweft 2025-03-15 06:41:42 +0000 276)     but still reject each request so they do not hang.\n^d7ed208 (sweft 2025-03-15 06:41:42 +0000 277)     \"\"\"\n^d7ed208 (sweft 2025-03-15 06:41:42 +0000 278)     for loaded in queue:\n^d7ed208 (sweft 2025-03-15 06:41:42 +0000 279)         loader.clear(loaded.key)\n^d7ed208 (sweft 2025-03-15 06:41:42 +0000 280)         loaded.future.set_exception(error)\n"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "cloudpipe__cloudpickle.6220b0ce.__GojB7BL__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# TypeVar objects not properly pickled when module is registered for pickling by value\n\n## Description\n\nI've discovered an issue with pickling TypeVar objects when their module is registered for pickling by value. The current implementation of `_typevar_reduce` in cloudpickle.py always uses the `_make_typevar` function with the decomposed TypeVar data, regardless of whether the module is registered for pickling by value.\n\nThis behavior differs from other objects where cloudpickle checks if the module is registered for pickling by value before deciding how to pickle the object.\n\n## Steps to reproduce\n\n1. Create a module with a TypeVar definition\n2. Register that module for pickling by value using `register_pickle_by_value`\n3. Try to pickle and unpickle the TypeVar across processes\n\n```python\nimport typing\nimport cloudpickle\nfrom cloudpickle import register_pickle_by_value\n\n# Create a module with a TypeVar\nimport my_module\nregister_pickle_by_value(my_module)\n\n# Try to pickle and unpickle the TypeVar\nfrom my_module import MyT  # where MyT is a TypeVar\nwith cloudpickle.subprocess_worker() as worker:\n    # This will fail because the TypeVar is not properly pickled\n    result = worker.run(lambda: MyT.__name__)\n```\n\n## Expected behavior\n\nWhen a module containing a TypeVar is registered for pickling by value, the TypeVar should be pickled by reference (using getattr and the module name) rather than always being reconstructed using `_make_typevar`.\n\n## Actual behavior\n\nTypeVar objects are always pickled using `_make_typevar` regardless of whether their module is registered for pickling by value, which causes issues when trying to use them across processes.\n\nThis behavior is inconsistent with how other objects are handled when their modules are registered for pickling by value."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository structure and the TypeVar pickling implementation to identify the bug.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-471f3c8e-38f1-4161-99d2-91ac0198c020-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -50 && cat /testbed/README.md 2>/dev/null | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-471f3c8e-38f1-4161-99d2-91ac0198c020-0",
+            "content": "4 Jul 12  2025 LICENSE\n-rw-r--r-- 1 root root   262 Jul 12  2025 MANIFEST.in\n-rw-r--r-- 1 root root  5751 Jul 12  2025 README.md\ndrwxr-xr-x 2 root root  4096 Jul 12  2025 ci\ndrwxr-xr-x 3 root root  4096 Jul 12  2025 cloudpickle\n-rw-r--r-- 1 root root   163 Jul 12  2025 codecov.yml\ndrwxr-xr-x 2 root root  4096 Jul 12  2025 dev\n-rw-r--r-- 1 root root   526 Jul 12  2025 dev-requirements.txt\n-rw-r--r-- 1 root root  1352 Jul 12  2025 pyproject.toml\ndrwxr-xr-x 5 root root  4096 Jul 12  2025 tests\n-rw-r--r-- 1 root root   221 Jul 12  2025 tox.ini\n/testbed/ci/install_coverage_subprocess_pth.py\n/testbed/tests/test_backward_compat.py\n/testbed/tests/testutils.py\n/testbed/tests/mock_local_folder/subfolder/submod.py\n/testbed/tests/mock_local_folder/mod.py\n/testbed/tests/__init__.py\n/testbed/tests/generate_old_pickles.py\n/testbed/tests/cloudpickle_test.py\n/testbed/tests/cloudpickle_testpkg/_cloudpickle_testpkg/__init__.py\n/testbed/tests/cloudpickle_testpkg/_cloudpickle_testpkg/mod.py\n/testbed/tests/cloudpickle_testpkg/setup.py\n/testbed/tests/cloudpickle_file_test.py\n/testbed/cloudpickle/cloudpickle.py\n/testbed/cloudpickle/__init__.py\n/testbed/cloudpickle/cloudpickle_fast.py\n# cloudpickle\n\n[![Automated Tests](https://github.com/cloudpipe/cloudpickle/workflows/Automated%20Tests/badge.svg?branch=master&event=push)](https://github.com/cloudpipe/cloudpickle/actions)\n[![codecov.io](https://codecov.io/github/cloudpipe/cloudpickle/coverage.svg?branch=master)](https://codecov.io/github/cloudpipe/cloudpickle?branch=master)\n\n`cloudpickle` makes it possible to serialize Python constructs not supported\nby the default `pickle` module from the Python standard library.\n\n`cloudpickle` is especially useful for **cluster computing** where Python\ncode is shipped over the network to execute on remote hosts, possibly close\nto the data.\n\nAmong other things, `cloudpickle` supports pickling for **lambda functions**\nalong with **functions and classes defined interactively** in the\n`__main__` module (for instance in a script, a shell or a Jupyter notebook).\n\nCloudpickle can only be used to send objects between the **exact same version\nof Python**.\n\nUsing `cloudpickle` for **long-term object storage is not supported and\nstrongly discouraged.**\n\n**Security notice**: one should **only load pickle data from trusted sources** as\notherwise `pickle.load` can lead to arbitrary code execution resulting in a critical\nsecurity vulnerability.\n\n\nInstallation\n------------\n\nThe latest release of `cloudpickle` is available from\n[pypi](https://pypi.python.org/pypi/cloudpickle):\n\n    pip install cloudpickle\n\n\nExamples\n--------\n\nPickling a lambda expression:\n\n```python\n>>> import cloudpickle\n>>> squared = lambda x: x ** 2\n>>> pickled_lambda = cloudpickle.dumps(squared)\n\n>>> import pickle\n>>> new_squared = pickle.loads(pickled_lambda)\n>>> new_squared(2)\n4\n```\n\nPickling a function interactively defined in a Python shell session\n(in the `__main__` module):\n\n```python\n>>> CONSTANT = 42\n>>> def my_function(data: int) -> int:\n...     return data + CONSTANT\n...\n>>> pickled_function = cloudpickle.dumps(my_function)\n>>> depickled_function = pickle.loads(pickled_function)\n>>> depickled_function\n<function __main__.my_function(data:int) -> int>\n>>> depickled_function(43)\n85\n```\n\n\nOverriding pickle's serialization mechanism for importable constructs:\n----------------------------------------------------------------------\n\nAn important difference between `cloudpickle` and `pickle` is that\n`cloudpickle` can serialize a function or class **by value**, whereas `pickle`\ncan only serialize it **by reference**. Serialization by reference treats\nfunctions and classes as attributes of modules, and pickles them through\ninstructions that trigger the import of their module at load time.\nSerialization by reference is thus limited in that it assumes that the module\ncontaining the function or class is available/importable in the unpickling\nenvironment. This assumption breaks when pickling constructs defined in an\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-e210dc4c-61fc-45cf-9d98-bff0243441ad-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/cloudpickle/cloudpickle.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-e210dc4c-61fc-45cf-9d98-bff0243441ad-1",
+            "content": "ce(obj, name=name):\n                self._save_reduce_pickle5(*_dynamic_class_reduce(obj), obj=obj)\n            else:\n                super().save_global(obj, name=name)\n\n        dispatch[type] = save_global\n\n        def save_function(self, obj, name=None):\n            \"\"\"Registered with the dispatch to handle all function types.\n\n            Determines what kind of function obj is (e.g. lambda, defined at\n            interactive prompt, etc) and handles the pickling appropriately.\n            \"\"\"\n            if _should_pickle_by_reference(obj, name=name):\n                return super().save_global(obj, name=name)\n            elif PYPY and isinstance(obj.__code__, builtin_code_type):\n                return self.save_pypy_builtin_func(obj)\n            else:\n                return self._save_reduce_pickle5(\n                    *self._dynamic_function_reduce(obj), obj=obj\n                )\n\n        def save_pypy_builtin_func(self, obj):\n            \"\"\"Save pypy equivalent of builtin functions.\n\n            PyPy does not have the concept of builtin-functions. Instead,\n            builtin-functions are simple function instances, but with a\n            builtin-code attribute.\n            Most of the time, builtin functions should be pickled by attribute.\n            But PyPy has flaky support for __qualname__, so some builtin\n            functions such as float.__new__ will be classified as dynamic. For\n            this reason only, we created this special routine. Because\n            builtin-functions are not expected to have closure or globals,\n            there is no additional hack (compared the one already implemented\n            in pickle) to protect ourselves from reference cycles. A simple\n            (reconstructor, newargs, obj.__dict__) tuple is save_reduced.  Note\n            also that PyPy improved their support for __qualname__ in v3.6, so\n            this routing should be removed when cloudpickle supports only PyPy\n            3.6 and later.\n            \"\"\"\n            rv = (\n                types.FunctionType,\n                (obj.__code__, {}, obj.__name__, obj.__defaults__, obj.__closure__),\n                obj.__dict__,\n            )\n            self.save_reduce(*rv, obj=obj)\n\n        dispatch[types.FunctionType] = save_function\n\n\n# Shorthands similar to pickle.dump/pickle.dumps\n\n\ndef dump(obj, file, protocol=None, buffer_callback=None):\n    \"\"\"Serialize obj as bytes streamed into file\n\n    protocol defaults to cloudpickle.DEFAULT_PROTOCOL which is an alias to\n    pickle.HIGHEST_PROTOCOL. This setting favors maximum communication\n    speed between processes running the same Python version.\n\n    Set protocol=pickle.DEFAULT_PROTOCOL instead if you need to ensure\n    compatibility with older versions of Python (although this is not always\n    guaranteed to work because cloudpickle relies on some internal\n    implementation details that can change from one Python version to the\n    next).\n    \"\"\"\n    Pickler(file, protocol=protocol, buffer_callback=buffer_callback).dump(obj)\n\n\ndef dumps(obj, protocol=None, buffer_callback=None):\n    \"\"\"Serialize obj as a string of bytes allocated in memory\n\n    protocol defaults to cloudpickle.DEFAULT_PROTOCOL which is an alias to\n    pickle.HIGHEST_PROTOCOL. This setting favors maximum communication\n    speed between processes running the same Python version.\n\n    Set protocol=pickle.DEFAULT_PROTOCOL instead if you need to ensure\n    compatibility with older versions of Python (although this is not always\n    guaranteed to work because cloudpickle relies on some internal\n    implementation details that can change from one Python version to the\n    next).\n    \"\"\"\n    with io.BytesIO() as file:\n        cp = Pickler(file, protocol=protocol, buffer_callback=buffer_callback)\n        cp.dump(obj)\n        return file.getvalue()\n\n\n# Include pickles unloading functions in this namespace for convenience.\nload, loads = pickle.load, pickle.loads\n\n# Backward compat alias.\nCloudPickler = Pickler\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-c8af9e83-6dc9-4acf-944b-d3175e367828-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "wc -l /testbed/cloudpickle/cloudpickle.py /testbed/cloudpickle/cloudpickle_fast.py /testbed/cloudpickle/__init__.py; echo \"====\"; rg -n \"typevar|TypeVar|_make_typevar|_typevar_reduce|register_pickle_by_value\" /testbed --type py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-c8af9e83-6dc9-4acf-944b-d3175e367828-2",
+            "content": " 1537 /testbed/cloudpickle/cloudpickle.py\n   14 /testbed/cloudpickle/cloudpickle_fast.py\n   18 /testbed/cloudpickle/__init__.py\n 1569 total\n====\nbash: line 1: rg: command not found\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-0cfbb2f2-f278-4b3b-ac28-3f79603c161f-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "grep -n \"typevar\\|TypeVar\\|_make_typevar\\|_typevar_reduce\\|register_pickle_by_value\\|_should_pickle_by_reference\" /testbed --include=\"*.py\" -r"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-0cfbb2f2-f278-4b3b-ac28-3f79603c161f-3",
+            "content": "             unregister_pickle_by_value(mock_local_folder.subfolder.submod)\n/testbed/tests/cloudpickle_test.py:2844:                register_pickle_by_value(mock_local_folder.subfolder)\n/testbed/tests/cloudpickle_test.py:2849:                unregister_pickle_by_value(mock_local_folder.subfolder)\n/testbed/tests/cloudpickle_test.py:2861:                    unregister_pickle_by_value(mod)\n/testbed/tests/cloudpickle_test.py:2882:                    register_pickle_by_value(m)\n/testbed/tests/cloudpickle_test.py:2887:                    unregister_pickle_by_value(m)\n/testbed/tests/cloudpickle_test.py:2891:                    unregister_pickle_by_value(m)\n/testbed/tests/cloudpickle_test.py:2922:                register_pickle_by_value(_cloudpickle_testpkg)\n/testbed/tests/cloudpickle_test.py:2932:                unregister_pickle_by_value(_cloudpickle_testpkg)\n/testbed/tests/cloudpickle_test.py:3039:def test_lookup_module_and_qualname_dynamic_typevar():\n/testbed/tests/cloudpickle_test.py:3040:    T = typing.TypeVar(\"T\")\n/testbed/tests/cloudpickle_test.py:3045:def test_lookup_module_and_qualname_importable_typevar():\n/testbed/tests/cloudpickle_test.py:3055:def test_lookup_module_and_qualname_stdlib_typevar():\n/testbed/tests/cloudpickle_test.py:3065:def test_register_pickle_by_value():\n/testbed/tests/cloudpickle_test.py:3071:    register_pickle_by_value(pkg)\n/testbed/tests/cloudpickle_test.py:3074:    register_pickle_by_value(mod)\n/testbed/tests/cloudpickle_test.py:3077:    unregister_pickle_by_value(mod)\n/testbed/tests/cloudpickle_test.py:3082:        unregister_pickle_by_value(pkg.__name__)\n/testbed/tests/cloudpickle_test.py:3084:    unregister_pickle_by_value(pkg)\n/testbed/tests/cloudpickle_test.py:3089:        unregister_pickle_by_value(pkg)\n/testbed/tests/cloudpickle_test.py:3093:        register_pickle_by_value(pkg.__name__)\n/testbed/tests/cloudpickle_test.py:3101:        register_pickle_by_value(dynamic_mod)\n/testbed/tests/cloudpickle_test.py:3105:    T = typing.TypeVar(\"T\")\n/testbed/tests/cloudpickle_testpkg/_cloudpickle_testpkg/__init__.py:48:T = typing.TypeVar(\"T\")\n/testbed/cloudpickle/cloudpickle.py:9:  enums, typevars, lambdas and nested functions to compiled byte code;\n/testbed/cloudpickle/cloudpickle.py:128:def register_pickle_by_value(module):\n/testbed/cloudpickle/cloudpickle.py:135:    If `register_pickle_by_value(module)` is called, all its functions and\n/testbed/cloudpickle/cloudpickle.py:167:def unregister_pickle_by_value(module):\n/testbed/cloudpickle/cloudpickle.py:229:def _should_pickle_by_reference(obj, name=None):\n/testbed/cloudpickle/cloudpickle.py:583:def _make_typevar(name, bound, constraints, covariant, contravariant, class_tracker_id):\n/testbed/cloudpickle/cloudpickle.py:584:    tv = typing.TypeVar(\n/testbed/cloudpickle/cloudpickle.py:594:def _decompose_typevar(obj):\n/testbed/cloudpickle/cloudpickle.py:605:def _typevar_reduce(obj):\n/testbed/cloudpickle/cloudpickle.py:606:    # TypeVar instances require the module information hence why we\n/testbed/cloudpickle/cloudpickle.py:607:    # are not using the _should_pickle_by_reference directly\n/testbed/cloudpickle/cloudpickle.py:611:        return (_make_typevar, _decompose_typevar(obj))\n/testbed/cloudpickle/cloudpickle.py:613:        return (_make_typevar, _decompose_typevar(obj))\n/testbed/cloudpickle/cloudpickle.py:996:    if _should_pickle_by_reference(obj):\n/testbed/cloudpickle/cloudpickle.py:1065:    elif not _should_pickle_by_reference(obj):\n/testbed/cloudpickle/cloudpickle.py:1223:    _dispatch_table[typing.TypeVar] = _typevar_reduce\n/testbed/cloudpickle/cloudpickle.py:1255:        if _should_pickle_by_reference(obj):\n/testbed/cloudpickle/cloudpickle.py:1445:            elif not _should_pickle_by_reference(obj, name=name):\n/testbed/cloudpickle/cloudpickle.py:1458:            if _should_pickle_by_reference(obj, name=name):\n/testbed/cloudpickle/__init__.py:16:    \"register_pickle_by_value\",\n/testbed/cloudpickle/__init__.py:17:    \"unregister_pickle_by_value\",\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-36c66e0d-58c5-4b10-9c24-7f443075c999-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '120,250p' /testbed/cloudpickle/cloudpickle.py; echo \"========\"; sed -n '570,630p' /testbed/cloudpickle/cloudpickle.py; echo \"========\"; sed -n '980,1020p' /testbed/cloudpickle/cloudpickle.py; echo \"========\"; sed -n '1210,1270p' /testbed/cloudpickle/cloudpickle.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-36c66e0d-58c5-4b10-9c24-7f443075c999-4",
+            "content": "mport, (obj.__name__,)\n    else:\n        # Some external libraries can populate the \"__builtins__\" entry of a\n        # module's `__dict__` with unpicklable objects (see #316). For that\n        # reason, we do not attempt to pickle the \"__builtins__\" entry, and\n        # restore a default value for it at unpickling time.\n        state = obj.__dict__.copy()\n        state.pop(\"__builtins__\", None)\n        return dynamic_subimport, (obj.__name__, state)\n\n\ndef _method_reduce(obj):\n    return (types.MethodType, (obj.__func__, obj.__self__))\n\n\ndef _logger_reduce(obj):\n    return logging.getLogger, (obj.name,)\n\n\ndef _root_logger_reduce(obj):\n    return logging.getLogger, ()\n\n\ndef _property_reduce(obj):\n========\n    _dispatch_table[io.TextIOWrapper] = _file_reduce\n    _dispatch_table[logging.Logger] = _logger_reduce\n    _dispatch_table[logging.RootLogger] = _root_logger_reduce\n    _dispatch_table[memoryview] = _memoryview_reduce\n    _dispatch_table[property] = _property_reduce\n    _dispatch_table[staticmethod] = _classmethod_reduce\n    _dispatch_table[CellType] = _cell_reduce\n    _dispatch_table[types.CodeType] = _code_reduce\n    _dispatch_table[types.GetSetDescriptorType] = _getset_descriptor_reduce\n    _dispatch_table[types.ModuleType] = _module_reduce\n    _dispatch_table[types.MethodType] = _method_reduce\n    _dispatch_table[types.MappingProxyType] = _mappingproxy_reduce\n    _dispatch_table[weakref.WeakSet] = _weakset_reduce\n    _dispatch_table[typing.TypeVar] = _typevar_reduce\n    _dispatch_table[_collections_abc.dict_keys] = _dict_keys_reduce\n    _dispatch_table[_collections_abc.dict_values] = _dict_values_reduce\n    _dispatch_table[_collections_abc.dict_items] = _dict_items_reduce\n    _dispatch_table[type(OrderedDict().keys())] = _odict_keys_reduce\n    _dispatch_table[type(OrderedDict().values())] = _odict_values_reduce\n    _dispatch_table[type(OrderedDict().items())] = _odict_items_reduce\n    _dispatch_table[abc.abstractmethod] = _classmethod_reduce\n    _dispatch_table[abc.abstractclassmethod] = _classmethod_reduce\n    _dispatch_table[abc.abstractstaticmethod] = _classmethod_reduce\n    _dispatch_table[abc.abstractproperty] = _property_reduce\n    _dispatch_table[dataclasses._FIELD_BASE] = _dataclass_field_base_reduce\n\n    dispatch_table = ChainMap(_dispatch_table, copyreg.dispatch_table)\n\n    # function reducers are defined as instance methods of cloudpickle.Pickler\n    # objects, as they rely on a cloudpickle.Pickler attribute (globals_ref)\n    def _dynamic_function_reduce(self, func):\n        \"\"\"Reduce a function that is not pickleable via attribute lookup.\"\"\"\n        newargs = self._function_getnewargs(func)\n        state = _function_getstate(func)\n        return (_make_function, newargs, state, None, None, _function_setstate)\n\n    def _function_reduce(self, obj):\n        \"\"\"Reducer for function objects.\n\n        If obj is a top-level attribute of a file-backed module, this reducer\n        returns NotImplemented, making the cloudpickle.Pickler fall back to\n        traditional pickle.Pickler routines to save obj. Otherwise, it reduces\n        obj using a custom cloudpickle reducer designed specifically to handle\n        dynamic functions.\n        \"\"\"\n        if _should_pickle_by_reference(obj):\n            return NotImplemented\n        else:\n            return self._dynamic_function_reduce(obj)\n\n    def _function_getnewargs(self, func):\n        code = func.__code__\n\n        # base_globals represents the future global namespace of func at\n        # unpickling time. Looking it up and storing it in\n        # cloudpickle.Pickler.globals_ref allow functions sharing the same\n        # globals at pickling time to also share them once unpickled, at one\n        # condition: since globals_ref is an attribute of a cloudpickle.Pickler\n        # instance, and that a new cloudpickle.Pickler is created each time\n        # cloudpickle.dump or cloudpickle.dumps is called, functions also need\n        # to be saved within the same invocation of\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-7c838862-4897-4ea5-acc0-8661d122fbcc-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '1,250p' /testbed/cloudpickle/cloudpickle.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-7c838862-4897-4ea5-acc0-8661d122fbcc-5",
+            "content": "-873684633).\n    # This access can be ensured by checking that module is present in\n    # sys.modules at registering time and assuming that it will still be in\n    # there when accessed during pickling. Another alternative would be to\n    # store a weakref to the module. Even though cloudpickle does not implement\n    # this introspection yet, in order to avoid a possible breaking change\n    # later, we still enforce the presence of module inside sys.modules.\n    if module.__name__ not in sys.modules:\n        raise ValueError(\n            f\"{module} was not imported correctly, have you used an \"\n            \"`import` statement to access it?\"\n        )\n    _PICKLE_BY_VALUE_MODULES.add(module.__name__)\n\n\ndef unregister_pickle_by_value(module):\n    \"\"\"Unregister that the input module should be pickled by value.\"\"\"\n    if not isinstance(module, types.ModuleType):\n        raise ValueError(f\"Input should be a module object, got {str(module)} instead\")\n    if module.__name__ not in _PICKLE_BY_VALUE_MODULES:\n        raise ValueError(f\"{module} is not registered for pickle by value\")\n    else:\n        _PICKLE_BY_VALUE_MODULES.remove(module.__name__)\n\n\ndef list_registry_pickle_by_value():\n    return _PICKLE_BY_VALUE_MODULES.copy()\n\n\ndef _is_registered_pickle_by_value(module):\n    module_name = module.__name__\n    if module_name in _PICKLE_BY_VALUE_MODULES:\n        return True\n    while True:\n        parent_name = module_name.rsplit(\".\", 1)[0]\n        if parent_name == module_name:\n            break\n        if parent_name in _PICKLE_BY_VALUE_MODULES:\n            return True\n        module_name = parent_name\n    return False\n\n\ndef _whichmodule(obj, name):\n    \"\"\"Find the module an object belongs to.\n\n    This function differs from ``pickle.whichmodule`` in two ways:\n    - it does not mangle the cases where obj's module is __main__ and obj was\n      not found in any module.\n    - Errors arising during module introspection are ignored, as those errors\n      are considered unwanted side effects.\n    \"\"\"\n    module_name = getattr(obj, \"__module__\", None)\n\n    if module_name is not None:\n        return module_name\n    # Protect the iteration by using a copy of sys.modules against dynamic\n    # modules that trigger imports of other modules upon calls to getattr or\n    # other threads importing at the same time.\n    for module_name, module in sys.modules.copy().items():\n        # Some modules such as coverage can inject non-module objects inside\n        # sys.modules\n        if (\n            module_name == \"__main__\"\n            or module_name == \"__mp_main__\"\n            or module is None\n            or not isinstance(module, types.ModuleType)\n        ):\n            continue\n        try:\n            if _getattribute(module, name)[0] is obj:\n                return module_name\n        except Exception:\n            pass\n    return None\n\n\ndef _should_pickle_by_reference(obj, name=None):\n    \"\"\"Test whether an function or a class should be pickled by reference\n\n    Pickling by reference means by that the object (typically a function or a\n    class) is an attribute of a module that is assumed to be importable in the\n    target Python environment. Loading will therefore rely on importing the\n    module and then calling `getattr` on it to access the function or class.\n\n    Pickling by reference is the only option to pickle functions and classes\n    in the standard library. In cloudpickle the alternative option is to\n    pickle by value (for instance for interactively or locally defined\n    functions and classes or for attributes of modules that have been\n    explicitly registered to be pickled by value.\n    \"\"\"\n    if isinstance(obj, types.FunctionType) or issubclass(type(obj), type):\n        module_and_name = _lookup_module_and_qualname(obj, name=name)\n        if module_and_name is None:\n            return False\n        module, name = module_and_name\n        return not _is_registered_pickle_by_value(module)\n\n    elif isinstance(obj, types.ModuleType):\n"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "Suor__funcy.207a7810.lm_rewrite__qvBH9sc__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# monkey decorator fails with property decorators\n\n#### Description\n\nThe `monkey` decorator in funcy doesn't work correctly when used with properties. When trying to monkey patch a class with a property, it fails to properly handle the property decorator.\n\n#### Steps to Reproduce\n\n```python\nfrom funcy import monkey\n\nclass A(object):\n    pass\n\n@monkey(A)\n@property\ndef prop(self):\n    return 42\n\n# This fails with AttributeError\nA().prop\n```\n\n#### Expected Results\n\nThe property should be correctly added to the class and accessible through instances, returning 42.\n\n#### Actual Results\n\nTrying to access the property raises an AttributeError. The monkey decorator doesn't properly handle properties when they're being patched onto a class.\n\n#### Additional Information\n\nThe issue appears to be related to how the monkey decorator processes decorated functions. It doesn't correctly handle the property decorator when it's applied before the monkey decorator."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository and the `monkey` decorator to see why it fails with properties.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-c06bc65e-272c-430e-b172-768b902e6ea6-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -50 && cat /testbed/README.md 2>/dev/null | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-c06bc65e-272c-430e-b172-768b902e6ea6-0",
+            "content": "total 96\ndrwxr-xr-x 1 root root  4096 Sep 22 18:09 .\ndrwxr-xr-x 1 root root  4096 Sep 22 18:09 ..\ndrwxr-xr-x 8 root root  4096 Jul 12  2025 .git\n-rw-r--r-- 1 root root    91 Jul 12  2025 .gitignore\n-rw-rw-r-- 1 1005 1005     0 Sep 22 15:44 .gitkeep\n-rw-r--r-- 1 root root   169 Jul 12  2025 .readthedocs.yaml\n-rw-r--r-- 1 root root 12557 Jul 12  2025 CHANGELOG\n-rw-r--r-- 1 root root  1530 Jul 12  2025 LICENSE\n-rw-r--r-- 1 root root    95 Jul 12  2025 MANIFEST.in\n-rw-r--r-- 1 root root  4820 Jul 12  2025 README.rst\n-rw-r--r-- 1 root root   698 Jul 12  2025 TODO.rst\n-rw-r--r-- 1 root root     4 Jul 12  2025 VERSION\ndrwxr-xr-x 3 root root  4096 Jul 12  2025 docs\ndrwxr-xr-x 2 root root  4096 Jul 12  2025 funcy\ndrwxr-xr-x 2 root root  4096 Jul 12  2025 funcy.egg-info\n-rwxr-xr-x 1 root root   184 Jul 12  2025 publish.sh\n-rw-r--r-- 1 root root    63 Jul 12  2025 setup.cfg\n-rw-r--r-- 1 root root  1454 Jul 12  2025 setup.py\n-rw-r--r-- 1 root root   200 Jul 12  2025 test_requirements.txt\ndrwxr-xr-x 2 root root  4096 Jul 12  2025 tests\n-rw-r--r-- 1 root root   647 Jul 12  2025 tox.ini\n/testbed/funcy/objects.py\n/testbed/funcy/__init__.py\n/testbed/funcy/strings.py\n/testbed/funcy/_inspect.py\n/testbed/funcy/colls.py\n/testbed/funcy/debug.py\n/testbed/funcy/funcmakers.py\n/testbed/funcy/funcs.py\n/testbed/funcy/seqs.py\n/testbed/funcy/tree.py\n/testbed/funcy/primitives.py\n/testbed/funcy/flow.py\n/testbed/funcy/types.py\n/testbed/funcy/funcolls.py\n/testbed/funcy/calc.py\n/testbed/funcy/decorators.py\n/testbed/tests/test_funcs.py\n/testbed/tests/test_types.py\n/testbed/tests/test_strings.py\n/testbed/tests/test_flow.py\n/testbed/tests/__init__.py\n/testbed/tests/test_decorators.py\n/testbed/tests/test_debug.py\n/testbed/tests/test_funcolls.py\n/testbed/tests/test_calc.py\n/testbed/tests/test_funcmakers.py\n/testbed/tests/test_objects.py\n/testbed/tests/test_interface.py\n/testbed/tests/test_colls.py\n/testbed/tests/py38_funcs.py\n/testbed/tests/test_seqs.py\n/testbed/tests/py38_decorators.py\n/testbed/tests/test_tree.py\n/testbed/setup.py\n/testbed/docs/conf.py\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-b7fb2dcf-9fb0-4320-bfea-47117c5c30b4-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/funcy/objects.py && echo \"===== TESTS =====\" && cat /testbed/tests/test_objects.py && echo \"===== CHANGELOG =====\" && cat /testbed/CHANGELOG | head -100 && echo \"===== VERSION =====\" && cat /testbed/VERSION"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-b7fb2dcf-9fb0-4320-bfea-47117c5c30b4-1",
+            "content": " A(object):\n        def f(self):\n            return 7\n\n    @monkey(A, name='f')\n    def g(self):\n        return g.original(self) * 6\n\n    assert A().f() == 42\n\n\ndef test_monkey_property():\n    class A(object):\n        pass\n\n    @monkey(A)\n    @property\n    def prop(self):\n        return 42\n\n    assert A().prop == 42\n\n\ndef f(x):\n    return x\n\ndef test_monkey_module():\n    this_module = sys.modules[__name__]\n\n    @monkey(this_module)\n    def f(x):\n        return f.original(x) * 2\n\n    assert f(21) == 42\n\n\ndef test_lazy_object():\n    class A(object):\n        x = 42\n        def __init__(self):\n            log.append('init')\n\n    log = []\n    a = LazyObject(A)\n    assert not log\n    assert a.x == 42\n===== CHANGELOG =====\n2.0\n- support Python 3.11 officially\n- added get_lax()\n- added lzip(strict) param\n- made autocurry() and friends support kw-only and pos-only arguments\n- improved call._whatever_ arg introspection: pos-only, kw-only, kwargs and varargs are supported\nBackwards incompatible changes:\n- dropped Python 2 support\n- dropped namespace helper class\n- dropped old SkipMemoization alias for SkipMemory exception\n- @cache(key_func) param is now keyword only\n- @decorator's call won't access args capturesd by **kwargs individually anymore\n\n1.18\n- added join_with(strict=)\n- use more precise timer `timeit.default_timer` for log*durations (Saugat Pachhai)\n- preserve metadata when using autocurry as a decorator (#117) (Kale Kundert)\n- doc improvements (thx to Tim Gates)\n\n1.17\n- support Python 3.10 officially\n- added del_in()\n- made throttle() and limit_error_rate() work on methods\n- added str and repr to Call objects\n- migrated CI to Github actions (thx to Bruno Alla)\n- fixed doc[string] for zip_dicts (Tal Einat)\n- fixed some inspect issues\n- minor doc fixes\n\n1.16\n- support Python 3.9 officially\n- unify @memoize() and @cache(): both have .skip/.memory/.invalidate/.invalidate_all now\n- support dynamic resulting exception in @reraise() (Laurens Duijvesteijn)\n- made () optional for @decorator-made decorators with kw-only args\n- added @throttle()\n- added has_path() (Denys Zorinets)\n- fixed autocurry kwargs handling\n\n1.15\n- made rpartial accept keyworded arguments (Ruan Comelli)\n- made `@cache.invalidate()` idempotent (Dmitry Vasilyanov)\n- made raiser() accept a string as a shortcut\n- fixed cheatsheat description for 'distinct' helper (tsouvarev)\n- fixed some seqs docstrings\n- fixed some typos (Tim Gates)\n\n1.14\n- stated Python 3.7 and 3.8 support\n- dropped Python 2.6\n- added @wrap_prop()\n- added filter_errors param to @retry()\n- published nullcontext properly\n\n1.13\n- added @wrap_with()\n- added nullcontext\n\n1.12\n- added @cached_readonly\n- more introspection in @decorator decorators\n- documented @cached_property inheritance limitations\n- included tests in pypi sdist tarball (Tomáš Chvátal)\n\n1.11\n- switched docs and internals to Python 3\n- improved docs: better texts and examples here and there\n- support Python 3.7 officially\n- added popups over functions everywhere in docs\n- accept any iterables of errors in flow utils\n- fixed walk_values() for defaultdicts with empty factory\n- fixed xmap() signature introspection\n- documented lzip()\n\n1.10.3\n- added repr_len param to various debug utils\n- dropped testing in Python 3.3\n\n1.10.2\n- support extended function semantics in iffy (Eric Prykhodko)\n- distribute as a universal wheel.\n\n1.10.1\n- use raise from in reraise()\n- fix @cache with mixed positional and keywords args (thx to adrian-dankiv)\n\n1.10\n- added @reraise()\n- added unit and threshold params to *_durations() utils\n- published and documented LazyObject\n- fixed iffy() default argument when action is not present (Dmytro Kabakchei)\n\n1.9.1\n- make where() skip nonexistent keys (Aleksei Voronov)\n- fixed r?curry() on funcy i?map(), i?mapcat() and merge_with()\n\n1.9\n- filled in docstrings and some names\n- better currying:\n    - all *curry() now work with builtins and classes\n    - autocurry() is robust in deciding when to call\n===== VERSION =====\n2.0\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-8fb49297-b15f-46c6-85bf-70f752295000-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/funcy/objects.py; echo \"===== FULL TEST FILE =====\"; cat /testbed/tests/test_objects.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-8fb49297-b15f-46c6-85bf-70f752295000-2",
+            "content": "lass(cls) or ismodule(cls), \"Attempting to monkey patch non-class and non-module\"\n\n    def decorator(value):\n        func = getattr(value, 'fget', value) # Support properties\n        func_name = name or cut_prefix(func.__name__, '%s__' % cls.__name__)\n\n        func.__name__ = func_name\n        func.original = getattr(cls, func_name, None)\n\n        setattr(cls, func_name, value)\n        return value\n    return decorator\n\n\n# TODO: monkey_mix()?\n\n\nclass LazyObject(object):\n    \"\"\"\n    A simplistic lazy init object.\n    Rewrites itself when any attribute is accessed.\n    \"\"\"\n    # NOTE: we can add lots of magic methods here to intercept on more events,\n    #       this is postponed. As well as metaclass to support isinstance() check.\n    def __init__(self, init):\n        self.__dict__['_init'] = init\n\n    def _setup(self):\n        obj = self._init()\n        object.__setattr__(self, '__class__', obj.__class__)\n        object.__setattr__(self, '__dict__', obj.__dict__)\n\n    def __getattr__(self, name):\n        self._setup()\n        return getattr(self, name)\n\n    def __setattr__(self, name, value):\n        self._setup()\n        return setattr(self, name, value)\n===== FULL TEST FILE =====\nimport sys\nimport pytest\nfrom funcy.objects import *\nfrom funcy import suppress\n\n\n### @cached_property\n\ndef test_cached_property():\n    calls = [0]\n\n    class A(object):\n        @cached_property\n        def prop(self):\n            calls[0] += 1\n            return 7\n\n    a = A()\n    assert a.prop == 7\n    assert a.prop == 7\n    assert calls == [1]\n\n    a.prop = 42\n    assert a.prop == 42\n\n    del a.prop\n    assert a.prop == 7\n    assert calls == [2]\n\ndef test_cached_property_doc():\n    class A(object):\n        @cached_property\n        def prop(self):\n            \"prop doc\"\n            return 7\n\n    assert A.prop.__doc__ == \"prop doc\"\n\n\ndef test_cached_readonly():\n    class A(object):\n        @cached_readonly\n        def prop(self):\n            return 7\n\n    a = A()\n    assert a.prop == 7\n    with pytest.raises(AttributeError):\n        a.prop = 8\n\n\ndef test_wrap_prop():\n    calls = []\n\n    # Not using @contextmanager to not make this a decorator\n    class Manager:\n        def __init__(self, name):\n            self.name = name\n\n        def __enter__(self):\n            calls.append(self.name)\n            return self\n\n        def __exit__(self, *args):\n            pass\n\n    class A(object):\n        @wrap_prop(Manager('p'))\n        @property\n        def prop(self):\n            return 1\n\n        @wrap_prop(Manager('cp'))\n        @cached_property\n        def cached_prop(self):\n            return 1\n\n    a = A()\n    assert a.prop and calls == ['p']\n    assert a.prop and calls == ['p', 'p']\n    assert a.cached_prop and calls == ['p', 'p', 'cp']\n    assert a.cached_prop and calls == ['p', 'p', 'cp']\n\n    # Wrap __set__ for data props\n    a = A()\n    calls[:] = []\n    with suppress(AttributeError):\n        a.prop = 2\n    assert calls == ['p']\n\n    # Do not wrap __set__ for non-data props\n    a.cached_property = 2\n    assert calls == ['p']\n\n\n### Monkey tests\n\ndef test_monkey():\n    class A(object):\n        def f(self):\n            return 7\n\n    @monkey(A)\n    def f(self):\n        return f.original(self) * 6\n\n    assert A().f() == 42\n\n\ndef test_monkey_with_name():\n    class A(object):\n        def f(self):\n            return 7\n\n    @monkey(A, name='f')\n    def g(self):\n        return g.original(self) * 6\n\n    assert A().f() == 42\n\n\ndef test_monkey_property():\n    class A(object):\n        pass\n\n    @monkey(A)\n    @property\n    def prop(self):\n        return 42\n\n    assert A().prop == 42\n\n\ndef f(x):\n    return x\n\ndef test_monkey_module():\n    this_module = sys.modules[__name__]\n\n    @monkey(this_module)\n    def f(x):\n        return f.original(x) * 2\n\n    assert f(21) == 42\n\n\ndef test_lazy_object():\n    class A(object):\n        x = 42\n        def __init__(self):\n            log.append('init')\n\n    log = []\n    a = LazyObject(A)\n    assert not log\n    assert a.x == 42\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-ccbd5342-9856-47d6-968a-8f38d0af841e-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "wc -l /testbed/funcy/objects.py; cat -n /testbed/funcy/objects.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-ccbd5342-9856-47d6-968a-8f38d0af841e-3",
+            "content": "107 /testbed/funcy/objects.py\n     1\tfrom inspect import isclass, ismodule\n     2\t\n     3\tfrom .strings import cut_prefix\n     4\t\n     5\t\n     6\t__all__ = ['cached_property', 'cached_readonly', 'wrap_prop', 'monkey', 'LazyObject']\n     7\t\n     8\t\n     9\tclass cached_property(object):\n    10\t    \"\"\"\n    11\t    Decorator that converts a method with a single self argument into\n    12\t    a property cached on the instance.\n    13\t    \"\"\"\n    14\t    # NOTE: implementation borrowed from Django.\n    15\t    # NOTE: we use fget, fset and fdel attributes to mimic @property.\n    16\t    fset = fdel = None\n    17\t\n    18\t    def __init__(self, fget):\n    19\t        self.fget = fget\n    20\t        self.__doc__ = getattr(fget, '__doc__')\n    21\t\n    22\t    def __get__(self, instance, type=None):\n    23\t        if instance is None:\n    24\t            return self\n    25\t        res = instance.__dict__[self.fget.__name__] = self.fget(instance)\n    26\t        return res\n    27\t\n    28\t\n    29\tclass cached_readonly(cached_property):\n    30\t    \"\"\"Same as @cached_property, but protected against rewrites.\"\"\"\n    31\t    def __set__(self, instance, value):\n    32\t        raise AttributeError(\"property is read-only\")\n    33\t\n    34\t\n    35\tdef wrap_prop(ctx):\n    36\t    \"\"\"Wrap a property accessors with a context manager\"\"\"\n    37\t    def decorator(prop):\n    38\t        class WrapperProp(object):\n    39\t            def __repr__(self):\n    40\t                return repr(prop)\n    41\t\n    42\t            def __get__(self, instance, type=None):\n    43\t                if instance is None:\n    44\t                    return self\n    45\t\n    46\t                with ctx:\n    47\t                    return prop.__get__(instance, type)\n    48\t\n    49\t            if hasattr(prop, '__set__'):\n    50\t                def __set__(self, name, value):\n    51\t                    with ctx:\n    52\t                        return prop.__set__(name, value)\n    53\t\n    54\t            if hasattr(prop, '__del__'):\n    55\t                def __del__(self, name):\n    56\t                    with ctx:\n    57\t                        return prop.__del__(name)\n    58\t\n    59\t        return WrapperProp()\n    60\t    return decorator\n    61\t\n    62\t\n    63\tdef monkey(cls, name=None):\n    64\t    \"\"\"\n    65\t    Monkey patches class or module by adding to it decorated function.\n    66\t\n    67\t    Anything overwritten could be accessed via .original attribute of decorated object.\n    68\t    \"\"\"\n    69\t    assert isclass(cls) or ismodule(cls), \"Attempting to monkey patch non-class and non-module\"\n    70\t\n    71\t    def decorator(value):\n    72\t        func = getattr(value, 'fget', value) # Support properties\n    73\t        func_name = name or cut_prefix(func.__name__, '%s__' % cls.__name__)\n    74\t\n    75\t        func.__name__ = func_name\n    76\t        func.original = getattr(cls, func_name, None)\n    77\t\n    78\t        setattr(cls, func_name, value)\n    79\t        return value\n    80\t    return decorator\n    81\t\n    82\t\n    83\t# TODO: monkey_mix()?\n    84\t\n    85\t\n    86\tclass LazyObject(object):\n    87\t    \"\"\"\n    88\t    A simplistic lazy init object.\n    89\t    Rewrites itself when any attribute is accessed.\n    90\t    \"\"\"\n    91\t    # NOTE: we can add lots of magic methods here to intercept on more events,\n    92\t    #       this is postponed. As well as metaclass to support isinstance() check.\n    93\t    def __init__(self, init):\n    94\t        self.__dict__['_init'] = init\n    95\t\n    96\t    def _setup(self):\n    97\t        obj = self._init()\n    98\t        object.__setattr__(self, '__class__', obj.__class__)\n    99\t        object.__setattr__(self, '__dict__', obj.__dict__)\n   100\t\n   101\t    def __getattr__(self, name):\n   102\t        self._setup()\n   103\t        return getattr(self, name)\n   104\t\n   105\t    def __setattr__(self, name, value):\n   106\t        self._setup()\n   107\t        return setattr(self, name, value)\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll run the existing tests and reproduce the property failure.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-ebe00375-aab4-4aad-a55e-40a4e2e0aeeb-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cd /testbed && python -c \"\nfrom funcy import monkey\n\nclass A(object):\n    pass\n\n@monkey(A)\n@property\ndef prop(self):\n    return 42\n\nprint('A.prop:', A.prop)\nprint('type:', type(A.prop))\nprint('dir A:', dir(A))\ntry:\n    print('A().prop:', A().prop)\nexcept Exception as e:\n    print('Error:', type(e).__name__, e)\n\" 2>&1\necho \"=====\"\ncd /testbed && python -m pytest tests/test_objects.py::test_monkey_property -v 2>&1"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-ebe00375-aab4-4aad-a55e-40a4e2e0aeeb-4",
+            "content": "A.prop: <property object at 0x75b3c74658a0>\ntype: <class 'property'>\ndir A: ['__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__getstate__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', 'prop']\nA().prop: 42\n=====\n/opt/miniconda3/bin/python: No module named pytest\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-1c9c571c-a81e-4bef-a802-ab343dec49a1-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cd /testbed && git log --oneline -20 && echo \"=====\" && git log --all --oneline | head -40 && echo \"=====\" && git status && echo \"=====\" && ls tests/ && echo \"=====\" && cat /testbed/TODO.rst"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-1c9c571c-a81e-4bef-a802-ab343dec49a1-5",
+            "content": "4895f91 Initial commit\n=====\ncc70b2d Remove F2P Tests\na039782 Bug Patch\n08d3797 Remove F2P Tests\nbec3bc5 Bug Patch\n0ef6153 Remove F2P Tests\n37e3a71 Bug Patch\nc132c92 Remove F2P Tests\nb964adb Bug Patch\n87030e9 Remove F2P Tests\ne0e44cb Bug Patch\nb6b3610 Remove F2P Tests\na60cfd5 Bug Patch\ne029462 Remove F2P Tests\n445f1d3 Bug Patch\n7cb31c7 Remove F2P Tests\n8cf30de Bug Patch\nc33ff2c Remove F2P Tests\n9e429be Bug Patch\n3ebf80b Remove F2P Tests\n6448246 Bug Patch\n61219f3 Remove F2P Tests\nff3831d Bug Patch\n9160617 Remove F2P Tests\n586e75c Bug Patch\ncc29277 Remove F2P Tests\n49dbdd1 Bug Patch\nd20fa72 Remove F2P Tests\na99a3d0 Bug Patch\nec45dc6 Remove F2P Tests\ncb29e8a Bug Patch\na143d68 Remove F2P Tests\nfe6b8cf Bug Patch\n7feb70a Remove F2P Tests\n73bde7d Bug Patch\n4a8f1e6 Remove F2P Tests\nc161c68 Bug Patch\n797d220 Remove F2P Tests\nd0e7540 Bug Patch\n6e4ef3f Remove F2P Tests\n733d423 Bug Patch\n=====\nOn branch main\nYour branch is up to date with 'origin/main'.\n\nUntracked files:\n  (use \"git add <file>...\" to include in what will be committed)\n\t.gitkeep\n\nnothing added to commit but untracked files present (use \"git add\" to track)\n=====\n__init__.py\npy38_decorators.py\npy38_funcs.py\ntest_calc.py\ntest_colls.py\ntest_debug.py\ntest_decorators.py\ntest_decorators.py.orig\ntest_flow.py\ntest_funcmakers.py\ntest_funcolls.py\ntest_funcs.py\ntest_interface.py\ntest_objects.py\ntest_seqs.py\ntest_strings.py\ntest_tree.py\ntest_types.py\n=====\nTODO\n====\n\n- public xfunc/xfn, xpred\n- where_not?\n- invalidate/invalidate_all() to (make|silent)_lookuper?\n- decorators with optional arguments?\n\nOr not TODO\n-----------\n\n- pre_walk, post_walk\n- tree-seq\n- (log|print)_errors to optionally hide causing call\n- log_* and print_* to optionally hide args\n- padding to chunks\n- partial.func interface or (func, arg1, arg2) extended fns\n- reject*(), disjoint*() collections\n- zip_with = map(f, zip(seqs))\n- starfilter()\n- one argument select*()? other name?\n- reversed() to work with iterators\n- vector chained boolean test (like perl 6 [<])\n\n\nUnknown future\n--------------\n\n- cython implementation? separate - cyfuncy? fallback transparently?\n- funcyx?\n"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "cookiecutter__cookiecutter.b4451__BBJZMRE__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "[Bug]: read_user_choice() function not working correctly with empty options and formatting issues\n\n### Bug summary\n\nThe `read_user_choice()` function in cookiecutter has two issues:\n1. It doesn't raise ValueError when an empty options list is provided\n2. The formatting of the prompt is completely different from what's expected\n\n### Code for reproduction\n\n```python\nfrom cookiecutter.prompt import read_user_choice\n\n# This should raise ValueError but returns an empty string instead\nresult = read_user_choice('test_var', [])\nprint(f\"Result with empty options: {result}\")\n\n# This displays options in a different format than expected\noptions = ['hello', 'world', 'foo', 'bar']\nchoice = read_user_choice('varname', options)\nprint(f\"Selected: {choice}\")\n```\n\n### Actual outcome\n\n1. When passing an empty options list, the function returns an empty string instead of raising ValueError\n2. The prompt formatting is different:\n   - Shows \"Choose from 1 to 4\" instead of the expected format\n   - Doesn't use rich text formatting with bold and magenta colors\n   - Doesn't provide the choices parameter to the Prompt.ask function\n\n### Expected outcome\n\n1. The function should raise ValueError when an empty options list is provided\n2. The prompt should be formatted as:\n   ```\n   Select varname\n       [bold magenta]1[/] - [bold]hello[/]\n       [bold magenta]2[/] - [bold]world[/]\n       [bold magenta]3[/] - [bold]foo[/]\n       [bold magenta]4[/] - [bold]bar[/]\n       Choose from\n   ```\n3. The Prompt.ask function should be called with the choices parameter\n\n### Cookiecutter Version\n\nLatest\n\n### Python version\n\n3.10.16"
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository and the `read_user_choice()` implementation to identify the empty-options and prompt-formatting issues.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-cb6b65d0-da88-467e-84a5-a6c84e4d5172-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -name \"*.py\" | head -50 && cat /testbed/README.md 2>/dev/null | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-cb6b65d0-da88-467e-84a5-a6c84e4d5172-0",
+            "content": "ates.py\n/testbed/tests/test_generate_files.py\n/testbed/tests/test_get_user_config.py\n/testbed/tests/vcs/test_clone.py\n/testbed/tests/vcs/test_is_vcs_installed.py\n/testbed/tests/vcs/test_identify_repo.py\n/testbed/tests/test_cookiecutter_local_no_input.py\n/testbed/tests/test-pyshellhooks/hooks/post_gen_project.py\n/testbed/tests/test-pyshellhooks/hooks/pre_gen_project.py\n/testbed/tests/test_exceptions.py\n/testbed/tests/test_log.py\n/testbed/tests/test_cookiecutter_local_with_input.py\n/testbed/tests/conftest.py\n/testbed/tests/test_cli.py\n/testbed/tests/test_generate_file.py\n/testbed/tests/test_read_user_variable.py\n/testbed/tests/repository/test_determine_repository_should_use_local_repo.py\n/testbed/tests/repository/test_abbreviation_expansion.py\n/testbed/tests/repository/test_repository_has_cookiecutter_json.py\n<h1 align=\"center\">\n    <img alt=\"cookiecutter Logo\" width=\"200px\" src=\"https://raw.githubusercontent.com/cookiecutter/cookiecutter/3ac078356adf5a1a72042dfe72ebfa4a9cd5ef38/logo/cookiecutter_medium.png\">\n</h1>\n\n<div align=\"center\">\n\n[![pypi](https://img.shields.io/pypi/v/cookiecutter.svg)](https://pypi.org/project/cookiecutter/)\n[![python](https://img.shields.io/pypi/pyversions/cookiecutter.svg)](https://pypi.org/project/cookiecutter/)\n[![Build Status](https://github.com/cookiecutter/cookiecutter/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/cookiecutter/cookiecutter/actions)\n[![codecov](https://codecov.io/gh/cookiecutter/cookiecutter/branch/main/graphs/badge.svg?branch=main)](https://codecov.io/github/cookiecutter/cookiecutter?branch=main)\n[![discord](https://img.shields.io/badge/Discord-cookiecutter-5865F2?style=flat&logo=discord&logoColor=white)](https://discord.gg/9BrxzPKuEW)\n[![docs](https://readthedocs.org/projects/cookiecutter/badge/?version=latest)](https://readthedocs.org/projects/cookiecutter/?badge=latest)\n[![Code Quality](https://img.shields.io/scrutinizer/g/cookiecutter/cookiecutter.svg)](https://scrutinizer-ci.com/g/cookiecutter/cookiecutter/?branch=main)\n\n</div>\n\n# Cookiecutter\n\nCreate projects swiftly from **cookiecutters** (project templates) with this command-line utility. Ideal for generating Python package projects and more.\n\n- [Documentation](https://cookiecutter.readthedocs.io)\n- [GitHub](https://github.com/cookiecutter/cookiecutter)\n- [PyPI](https://pypi.org/project/cookiecutter/)\n- [License (BSD)](https://github.com/cookiecutter/cookiecutter/blob/main/LICENSE)\n\n## Installation\n\nInstall cookiecutter using pip package manager:\n```\n# pipx is strongly recommended.\npipx install cookiecutter\n\n# If pipx is not an option,\n# you can install cookiecutter in your Python user directory.\npython -m pip install --user cookiecutter\n```\n\n## Features\n\n- **Cross-Platform:** Supports Windows, Mac, and Linux.\n- **User-Friendly:** No Python knowledge required.\n- **Versatile:** Compatible with Python 3.7 to 3.12.\n- **Multi-Language Support:** Use templates in any language or markup format.\n\n### For Users\n\n#### Quick Start\n\nThe recommended way to use Cookiecutter as a command line utility is to run it with [`pipx`](https://pypa.github.io/pipx/), which can be installed with `pip install pipx`, but if you plan to use Cookiecutter programmatically, please run `pip install cookiecutter`.\n\n**Use a GitHub template**\n\n```bash\n# You'll be prompted to enter values.\n# Then it'll create your Python package in the current working directory,\n# based on those values.\n# For the sake of brevity, repos on GitHub can just use the 'gh' prefix\n$ pipx run cookiecutter gh:audreyfeldroy/cookiecutter-pypackage\n```\n\n**Use a local template**\n\n```bash\n$ pipx run cookiecutter cookiecutter-pypackage/\n```\n\n**Use it from Python**\n\n```py\nfrom cookiecutter.main import cookiecutter\n\n# Create project from the cookiecutter-pypackage/ template\ncookiecutter('cookiecutter-pypackage/')\n\n# Create project from the cookiecutter-pypackage.git repo template\ncookiecutter('gh:audreyfeldroy//cookiecutter-pypackage.git')\n```\n\n#### Detailed Usage\n\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-6d85bcb1-5c44-41d9-9729-fb37fd5f84b4-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "find /testbed -name \"*prompt*\" -o -name \"*choice*\" | head -50; echo \"====\"; ls /testbed/cookiecutter/; echo \"====\"; cat /testbed/cookiecutter/prompt.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-6d85bcb1-5c44-41d9-9729-fb37fd5f84b4-1",
+            "content": "r_variable(\n                        env, raw, cookiecutter_dict\n                    )\n                else:\n                    cookiecutter_dict[key] = read_user_yes_no(key, raw, prompts, prefix)\n            elif not isinstance(raw, dict):\n                # We are dealing with a regular variable\n                val = render_variable(env, raw, cookiecutter_dict)\n\n                if not no_input:\n                    val = read_user_variable(key, val, prompts, prefix)\n\n                cookiecutter_dict[key] = val\n        except UndefinedError as err:\n            msg = f\"Unable to render variable '{key}'\"\n            raise UndefinedVariableInTemplate(msg, err, context) from err\n\n    # Second pass; handle the dictionaries.\n    for key, raw in context['cookiecutter'].items():\n        # Skip private type dicts not to be rendered.\n        if key.startswith('_') and not key.startswith('__'):\n            continue\n\n        try:\n            if isinstance(raw, dict):\n                # We are dealing with a dict variable\n                count += 1\n                prefix = f\"  [dim][{count}/{size}][/] \"\n                val = render_variable(env, raw, cookiecutter_dict)\n\n                if not no_input and not key.startswith('__'):\n                    val = read_user_dict(key, val, prompts, prefix)\n\n                cookiecutter_dict[key] = val\n        except UndefinedError as err:\n            msg = f\"Unable to render variable '{key}'\"\n            raise UndefinedVariableInTemplate(msg, err, context) from err\n\n    return cookiecutter_dict\n\n\ndef choose_nested_template(\n    context: dict[str, Any], repo_dir: Path | str, no_input: bool = False\n) -> str:\n    \"\"\"Prompt user to select the nested template to use.\n\n    :param context: Source for field names and sample values.\n    :param repo_dir: Repository directory.\n    :param no_input: Do not prompt for user input and use only values from context.\n    :returns: Path to the selected template.\n    \"\"\"\n    cookiecutter_dict: OrderedDict[str, Any] = OrderedDict([])\n    env = create_env_with_context(context)\n    prefix = \"\"\n    prompts = context['cookiecutter'].pop('__prompts__', {})\n    key = \"templates\"\n    config = context['cookiecutter'].get(key, {})\n    if config:\n        # Pass\n        val = prompt_choice_for_template(key, config, no_input)\n        template = config[val][\"path\"]\n    else:\n        # Old style\n        key = \"template\"\n        config = context['cookiecutter'].get(key, [])\n        val = prompt_choice_for_config(\n            cookiecutter_dict, env, key, config, no_input, prompts, prefix\n        )\n        template = re.search(r'\\((.+)\\)', val).group(1)\n\n    template = Path(template) if template else None\n    if not (template and not template.is_absolute()):\n        msg = \"Illegal template path\"\n        raise ValueError(msg)\n\n    repo_dir = Path(repo_dir).resolve()\n    template_path = (repo_dir / template).resolve()\n    # Return path as string\n    return f\"{template_path}\"\n\n\ndef prompt_and_delete(path: Path | str, no_input: bool = False) -> bool:\n    \"\"\"\n    Ask user if it's okay to delete the previously-downloaded file/directory.\n\n    If yes, delete it. If no, checks to see if the old version should be\n    reused. If yes, it's reused; otherwise, Cookiecutter exits.\n\n    :param path: Previously downloaded zipfile.\n    :param no_input: Suppress prompt to delete repo and just delete it.\n    :return: True if the content was deleted\n    \"\"\"\n    # Suppress prompt if called via API\n    if no_input:\n        ok_to_delete = True\n    else:\n        question = (\n            f\"You've downloaded {path} before. Is it okay to delete and re-download it?\"\n        )\n\n        ok_to_delete = read_user_yes_no(question, 'yes')\n\n    if ok_to_delete:\n        if os.path.isdir(path):\n            rmtree(path)\n        else:\n            os.remove(path)\n        return True\n    ok_to_reuse = read_user_yes_no(\"Do you want to re-use the existing version?\", 'yes')\n\n    if ok_to_reuse:\n        return False\n\n    sys.exit()\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-f3ee86e2-09c5-4212-90ed-1afaf2717931-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "wc -l /testbed/cookiecutter/prompt.py; echo \"==== FILES ====\"; ls /testbed/cookiecutter/; echo \"==== TESTS ====\"; ls /testbed/tests/ | grep -i prompt; ls /testbed/tests/ | grep -i choice; ls /testbed/tests/ | grep -i user"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-f3ee86e2-09c5-4212-90ed-1afaf2717931-2",
+            "content": "435 /testbed/cookiecutter/prompt.py\n==== FILES ====\nVERSION.txt\n__init__.py\n__main__.py\ncli.py\nconfig.py\nenvironment.py\nexceptions.py\nextensions.py\nfind.py\ngenerate.py\nhooks.py\nlog.py\nmain.py\nprompt.py\nreplay.py\nrepository.py\nutils.py\nvcs.py\nzipfile.py\n==== TESTS ====\ntest_pre_prompt_hooks.py\ntest_prompt.py\ntest_read_user_choice.py\ntest_get_user_config.py\ntest_read_user_choice.py\ntest_read_user_dict.py\ntest_read_user_variable.py\ntest_read_user_yes_no.py\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-f5fcd7fe-3f32-475f-a4e9-b6ef41ff6425-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/cookiecutter/prompt.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-f5fcd7fe-3f32-475f-a4e9-b6ef41ff6425-3",
+            "content": "r_variable(\n                        env, raw, cookiecutter_dict\n                    )\n                else:\n                    cookiecutter_dict[key] = read_user_yes_no(key, raw, prompts, prefix)\n            elif not isinstance(raw, dict):\n                # We are dealing with a regular variable\n                val = render_variable(env, raw, cookiecutter_dict)\n\n                if not no_input:\n                    val = read_user_variable(key, val, prompts, prefix)\n\n                cookiecutter_dict[key] = val\n        except UndefinedError as err:\n            msg = f\"Unable to render variable '{key}'\"\n            raise UndefinedVariableInTemplate(msg, err, context) from err\n\n    # Second pass; handle the dictionaries.\n    for key, raw in context['cookiecutter'].items():\n        # Skip private type dicts not to be rendered.\n        if key.startswith('_') and not key.startswith('__'):\n            continue\n\n        try:\n            if isinstance(raw, dict):\n                # We are dealing with a dict variable\n                count += 1\n                prefix = f\"  [dim][{count}/{size}][/] \"\n                val = render_variable(env, raw, cookiecutter_dict)\n\n                if not no_input and not key.startswith('__'):\n                    val = read_user_dict(key, val, prompts, prefix)\n\n                cookiecutter_dict[key] = val\n        except UndefinedError as err:\n            msg = f\"Unable to render variable '{key}'\"\n            raise UndefinedVariableInTemplate(msg, err, context) from err\n\n    return cookiecutter_dict\n\n\ndef choose_nested_template(\n    context: dict[str, Any], repo_dir: Path | str, no_input: bool = False\n) -> str:\n    \"\"\"Prompt user to select the nested template to use.\n\n    :param context: Source for field names and sample values.\n    :param repo_dir: Repository directory.\n    :param no_input: Do not prompt for user input and use only values from context.\n    :returns: Path to the selected template.\n    \"\"\"\n    cookiecutter_dict: OrderedDict[str, Any] = OrderedDict([])\n    env = create_env_with_context(context)\n    prefix = \"\"\n    prompts = context['cookiecutter'].pop('__prompts__', {})\n    key = \"templates\"\n    config = context['cookiecutter'].get(key, {})\n    if config:\n        # Pass\n        val = prompt_choice_for_template(key, config, no_input)\n        template = config[val][\"path\"]\n    else:\n        # Old style\n        key = \"template\"\n        config = context['cookiecutter'].get(key, [])\n        val = prompt_choice_for_config(\n            cookiecutter_dict, env, key, config, no_input, prompts, prefix\n        )\n        template = re.search(r'\\((.+)\\)', val).group(1)\n\n    template = Path(template) if template else None\n    if not (template and not template.is_absolute()):\n        msg = \"Illegal template path\"\n        raise ValueError(msg)\n\n    repo_dir = Path(repo_dir).resolve()\n    template_path = (repo_dir / template).resolve()\n    # Return path as string\n    return f\"{template_path}\"\n\n\ndef prompt_and_delete(path: Path | str, no_input: bool = False) -> bool:\n    \"\"\"\n    Ask user if it's okay to delete the previously-downloaded file/directory.\n\n    If yes, delete it. If no, checks to see if the old version should be\n    reused. If yes, it's reused; otherwise, Cookiecutter exits.\n\n    :param path: Previously downloaded zipfile.\n    :param no_input: Suppress prompt to delete repo and just delete it.\n    :return: True if the content was deleted\n    \"\"\"\n    # Suppress prompt if called via API\n    if no_input:\n        ok_to_delete = True\n    else:\n        question = (\n            f\"You've downloaded {path} before. Is it okay to delete and re-download it?\"\n        )\n\n        ok_to_delete = read_user_yes_no(question, 'yes')\n\n    if ok_to_delete:\n        if os.path.isdir(path):\n            rmtree(path)\n        else:\n            os.remove(path)\n        return True\n    ok_to_reuse = read_user_yes_no(\"Do you want to re-use the existing version?\", 'yes')\n\n    if ok_to_reuse:\n        return False\n\n    sys.exit()\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-ba8ac8b7-3297-46f0-a874-cdc0dfd63227-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "head -n 250 /testbed/cookiecutter/prompt.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-ba8ac8b7-3297-46f0-a874-cdc0dfd63227-4",
+            "content": "d]{p}[/]\"\n                for i, p in choice_map.items()\n            )\n\n    prompt = '\\n'.join(\n        (\n            f\"{prefix}{question}\",\n            \"\\n\".join(choice_lines),\n            \"    Choose from\",\n        )\n    )\n\n    user_choice = Prompt.ask(prompt, choices=list(choices), default=next(iter(choices)))\n    return choice_map[user_choice]\n\n\nDEFAULT_DISPLAY = 'default'\n\n\ndef process_json(user_value: str):\n    \"\"\"Load user-supplied value as a JSON dict.\n\n    :param user_value: User-supplied value to load as a JSON dict\n    \"\"\"\n    try:\n        user_dict = json.loads(user_value, object_pairs_hook=OrderedDict)\n    except Exception as error:\n        # Leave it up to click to ask the user again\n        msg = 'Unable to decode to JSON.'\n        raise InvalidResponse(msg) from error\n\n    if not isinstance(user_dict, dict):\n        # Leave it up to click to ask the user again\n        msg = 'Requires JSON dict.'\n        raise InvalidResponse(msg)\n\n    return user_dict\n\n\nclass JsonPrompt(PromptBase[dict]):\n    \"\"\"A prompt that returns a dict from JSON string.\"\"\"\n\n    default = None\n    response_type = dict\n    validate_error_message = \"[prompt.invalid]  Please enter a valid JSON string\"\n\n    @staticmethod\n    def process_response(value: str) -> dict[str, Any]:\n        \"\"\"Convert choices to a dict.\"\"\"\n        return process_json(value)\n\n\ndef read_user_dict(var_name: str, default_value, prompts=None, prefix: str = \"\"):\n    \"\"\"Prompt the user to provide a dictionary of data.\n\n    :param var_name: Variable as specified in the context\n    :param default_value: Value that will be returned if no input is provided\n    :return: A Python dictionary to use in the context.\n    \"\"\"\n    if not isinstance(default_value, dict):\n        raise TypeError\n\n    question = (\n        prompts[var_name]\n        if prompts and var_name in prompts and prompts[var_name]\n        else var_name\n    )\n    return JsonPrompt.ask(\n        f\"{prefix}{question} [cyan bold]({DEFAULT_DISPLAY})[/]\",\n        default=default_value,\n        show_default=False,\n    )\n\n\n_Raw: TypeAlias = Union[bool, Dict[\"_Raw\", \"_Raw\"], List[\"_Raw\"], str, None]\n\n\ndef render_variable(\n    env: Environment,\n    raw: _Raw,\n    cookiecutter_dict: dict[str, Any],\n) -> str:\n    \"\"\"Render the next variable to be displayed in the user prompt.\n\n    Inside the prompting taken from the cookiecutter.json file, this renders\n    the next variable. For example, if a project_name is \"Peanut Butter\n    Cookie\", the repo_name could be be rendered with:\n\n        `{{ cookiecutter.project_name.replace(\" \", \"_\") }}`.\n\n    This is then presented to the user as the default.\n\n    :param Environment env: A Jinja2 Environment object.\n    :param raw: The next value to be prompted for by the user.\n    :param dict cookiecutter_dict: The current context as it's gradually\n        being populated with variables.\n    :return: The rendered value for the default variable.\n    \"\"\"\n    if raw is None or isinstance(raw, bool):\n        return raw\n    if isinstance(raw, dict):\n        return {\n            render_variable(env, k, cookiecutter_dict): render_variable(\n                env, v, cookiecutter_dict\n            )\n            for k, v in raw.items()\n        }\n    if isinstance(raw, list):\n        return [render_variable(env, v, cookiecutter_dict) for v in raw]\n    if not isinstance(raw, str):\n        raw = str(raw)\n\n    template = env.from_string(raw)\n\n    return template.render(cookiecutter=cookiecutter_dict)\n\n\ndef _prompts_from_options(options: dict) -> dict:\n    \"\"\"Process template options and return friendly prompt information.\"\"\"\n    prompts = {\"__prompt__\": \"Select a template\"}\n    for option_key, option_value in options.items():\n        title = str(option_value.get(\"title\", option_key))\n        description = option_value.get(\"description\", option_key)\n        label = title if title == description else f\"{title} ({description})\"\n        prompts[option_key] = label\n    return prompts\n\n\ndef prompt_choice_for_template(\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-544fa362-4d80-4035-8066-fc9108ca55a8-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '1,180p' /testbed/cookiecutter/prompt.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-544fa362-4d80-4035-8066-fc9108ca55a8-5",
+            "content": "e(self.validate_error_message)\n\n\ndef read_user_yes_no(var_name, default_value, prompts=None, prefix: str = \"\"):\n    \"\"\"Prompt the user to reply with 'yes' or 'no' (or equivalent values).\n\n    - These input values will be converted to ``True``:\n      \"1\", \"true\", \"t\", \"yes\", \"y\", \"on\"\n    - These input values will be converted to ``False``:\n      \"0\", \"false\", \"f\", \"no\", \"n\", \"off\"\n\n    Actual parsing done by :func:`prompt`; Check this function codebase change in\n    case of unexpected behaviour.\n\n    :param str question: Question to the user\n    :param default_value: Value that will be returned if no input happens\n    \"\"\"\n    question = (\n        prompts[var_name]\n        if prompts and var_name in prompts and prompts[var_name]\n        else var_name\n    )\n    return YesNoPrompt.ask(f\"{prefix}{question}\", default=default_value)\n\n\ndef read_repo_password(question: str) -> str:\n    \"\"\"Prompt the user to enter a password.\n\n    :param question: Question to the user\n    \"\"\"\n    return Prompt.ask(question, password=True)\n\n\ndef read_user_choice(var_name: str, options: list, prompts=None, prefix: str = \"\"):\n    \"\"\"Prompt the user to choose from several options for the given variable.\n\n    The first item will be returned if no input happens.\n\n    :param var_name: Variable as specified in the context\n    :param list options: Sequence of options that are available to select from\n    :return: Exactly one item of ``options`` that has been chosen by the user\n    \"\"\"\n    if not options:\n        raise ValueError\n\n    choice_map = OrderedDict((f'{i}', value) for i, value in enumerate(options, 1))\n    choices = choice_map.keys()\n\n    question = f\"Select {var_name}\"\n\n    choice_lines: Iterator[str] = starmap(\n        \"    [bold magenta]{}[/] - [bold]{}[/]\".format, choice_map.items()\n    )\n\n    # Handle if human-readable prompt is provided\n    if prompts and var_name in prompts:\n        if isinstance(prompts[var_name], str):\n            question = prompts[var_name]\n        else:\n            if \"__prompt__\" in prompts[var_name]:\n                question = prompts[var_name][\"__prompt__\"]\n            choice_lines = (\n                f\"    [bold magenta]{i}[/] - [bold]{prompts[var_name][p]}[/]\"\n                if p in prompts[var_name]\n                else f\"    [bold magenta]{i}[/] - [bold]{p}[/]\"\n                for i, p in choice_map.items()\n            )\n\n    prompt = '\\n'.join(\n        (\n            f\"{prefix}{question}\",\n            \"\\n\".join(choice_lines),\n            \"    Choose from\",\n        )\n    )\n\n    user_choice = Prompt.ask(prompt, choices=list(choices), default=next(iter(choices)))\n    return choice_map[user_choice]\n\n\nDEFAULT_DISPLAY = 'default'\n\n\ndef process_json(user_value: str):\n    \"\"\"Load user-supplied value as a JSON dict.\n\n    :param user_value: User-supplied value to load as a JSON dict\n    \"\"\"\n    try:\n        user_dict = json.loads(user_value, object_pairs_hook=OrderedDict)\n    except Exception as error:\n        # Leave it up to click to ask the user again\n        msg = 'Unable to decode to JSON.'\n        raise InvalidResponse(msg) from error\n\n    if not isinstance(user_dict, dict):\n        # Leave it up to click to ask the user again\n        msg = 'Requires JSON dict.'\n        raise InvalidResponse(msg)\n\n    return user_dict\n\n\nclass JsonPrompt(PromptBase[dict]):\n    \"\"\"A prompt that returns a dict from JSON string.\"\"\"\n\n    default = None\n    response_type = dict\n    validate_error_message = \"[prompt.invalid]  Please enter a valid JSON string\"\n\n    @staticmethod\n    def process_response(value: str) -> dict[str, Any]:\n        \"\"\"Convert choices to a dict.\"\"\"\n        return process_json(value)\n\n\ndef read_user_dict(var_name: str, default_value, prompts=None, prefix: str = \"\"):\n    \"\"\"Prompt the user to provide a dictionary of data.\n\n    :param var_name: Variable as specified in the context\n    :param default_value: Value that will be returned if no input is provided\n    :return: A Python dictionary to use in the context.\n    \"\"\"\n"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "schema": "octopus-lighthouse-directory-discovery-v1",
+  "before_model_outputs": true,
+  "reference_freeze": "../journal-compaction/freeze.json",
+  "claim": "Determine whether match-heavy files crowding out directory discovery contribute to the observed evidence-acquisition loop. This is a tool-contract treatment, not a larger model, budget, source-ranking rule or task-answer hint.",
+  "method_delta": "Only directory_search_format:matching_files_v1. Directory search emits each matching file path once, retaining existing traversal order, literal matching and scope. Explicit file search retains matching line content. Observation metadata and one generic solver-instruction sentence describe the changed tool contract; no other prompt wording or action schema change.",
+  "offline_evidence": "Original immutable-task tool replay confirms root query output shows only3matching files with two truncation signals, whereas all55matching files fit2191characters. Actual implemented tool returns55files at root and51under lighthouse-core (baseline5), without truncation or hit-limit saturation. Existing6000-character and100-result caps unchanged. Generic minimal fixture reproduces100hits in one file hiding a second matching file; corrected discovery exposes both. No GPU/model calls or hidden evaluator inputs used.",
+  "fixed_conditions": "Same unmerged14Bcheckpoint/tokenizer, seed17, temperature0, BF16, sameGPU9/type, max12actions,512outputtokens/action, canonical failure_aware_v3, raw/bounded reads, counted edit feedback, native chat, deliberative_v1, deduplicate_v1 journal projection, original Lighthouse image/task/evaluator. No source edits supplied to solver, new tests/selectors, learned recovery recipe or training.",
+  "model_episodes_max": 1,
+  "phase_gpu_seconds_max": 1200,
+  "training_runs_added": 0,
+  "quality_gate": "Only original official resolved=true passes quality. More visible files, novel evidence, fewer repeats or a nonempty patch are mechanisms, not PASS. No automatic multibranch or formal run.",
+  "trace_requirements": "Retain all raw proposals, observations, context and request records. Report distinct raw actions, physical submissions/rejections, raw and canonical effective known-failed repeats separately, nonempty outputs and byte-exact unique output contents, inspection novelty over turns, edits/patchbytes, verification/done, native prefill/decode and eviction/concurrency, wall costs and official grade. Compare actual trajectory with closed journal-compaction baseline; do not assume a shared prefix because the documented tool contract changes root text.",
+  "preserved_limits": "Directory discovery still stops at100results or10000visited candidates, skips symlinks/nontext/>256KiB, respects Git-root ignores, permits explicitly selected ignored subdirectories, and exposes output truncation. No new ordering/filter by language, extension, locale, task path or expected patch.",
+  "authorization_context": "Renewed autonomous same-task repair. This run follows an actual zero-model-call failure reproduction and targeted74-test gate; all previous models/recipes/episodes remain closed.",
+  "capacity": "SelectedGPU9 checked once before freeze:49140MiB total,2MiBused,0percent, no compute process. Same UUID as baseline; do not touch other users' jobs.",
+  "stop": "One terminal episode or actual execution/budget blocker. No second episode, new seed, outcome-driven code/prompt changes or closed recipe retraining. Report all negative outcomes and release exact owned resources."
+}

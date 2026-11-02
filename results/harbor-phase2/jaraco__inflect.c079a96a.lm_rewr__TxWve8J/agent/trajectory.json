@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "jaraco__inflect.c079a96a.lm_rewr__TxWve8J__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# `num()` method doesn't properly handle string inputs and type conversion\n\n## Description\n\nI discovered an issue with the `num()` method in the `inflect.engine` class. The method doesn't properly handle string inputs and doesn't maintain the expected return type.\n\nGiven the following code:\n\n```python\np = inflect.engine()\np.num('3')  # Should convert string to int\n```\n\nThe method fails to properly convert string inputs to integers. Additionally, there are issues with the return type consistency.\n\n## Steps to reproduce\n\n```python\nimport inflect\n\np = inflect.engine()\np.num()  # Should return empty string and set persistent_count to None\nprint(p.persistent_count)  # Should be None\n\n# This should convert the string to int and set persistent_count\nresult = p.num('3')\nprint(p.persistent_count)  # Should be 3 (int)\nprint(result)  # Should be '3' (string)\n\n# This should fail with BadNumValueError\ntry:\n    p.num('text')\n    print(\"Error: Should have raised BadNumValueError\")\nexcept Exception as e:\n    print(f\"Correctly raised: {type(e).__name__}\")\n```\n\nExpected output:\n```\nNone\n3\n'3'\nCorrectly raised: BadNumValueError\n```\n\nActual output:\n```\nNone\n'3'  # Not converted to int\n'3'\nError: Should have raised BadNumValueError  # No error raised\n```\n\nThe method is not properly converting string inputs to integers and is not raising the expected exception for invalid inputs. Additionally, the return value handling seems to be inconsistent with the expected behavior."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository and the `num()` method so we can fix string conversion and return-type handling.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-401a1f9e-d0f5-4944-b30e-794428783ebd-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -50 && cat /testbed/README.md 2>/dev/null | head -50"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-401a1f9e-d0f5-4944-b30e-794428783ebd-0",
+            "content": "total 120\ndrwxr-xr-x 1 root root  4096 Sep 22 18:08 .\ndrwxr-xr-x 1 root root  4096 Sep 22 18:08 ..\n-rw-r--r-- 1 root root   357 Jul 13  2025 .coveragerc\n-rw-r--r-- 1 root root   246 Jul 13  2025 .editorconfig\ndrwxr-xr-x 8 root root  4096 Jul 13  2025 .git\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 .github\n-rw-r--r-- 1 root root    68 Jul 13  2025 .gitignore\n-rw-rw-r-- 1 1005 1005     0 Sep 22 15:44 .gitkeep\n-rw-r--r-- 1 root root   150 Jul 13  2025 .pre-commit-config.yaml\n-rw-r--r-- 1 root root   334 Jul 13  2025 .readthedocs.yaml\n-rw-r--r-- 1 root root  1023 Jul 13  2025 LICENSE\n-rw-r--r-- 1 root root  7728 Jul 13  2025 NEWS.rst\n-rw-r--r-- 1 root root 23034 Jul 13  2025 README.rst\n-rw-r--r-- 1 root root   180 Jul 13  2025 SECURITY.md\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 docs\ndrwxr-xr-x 3 root root  4096 Jul 13  2025 inflect\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 inflect.egg-info\n-rw-r--r-- 1 root root   375 Jul 13  2025 mypy.ini\n-rw-r--r-- 1 root root  1694 Jul 13  2025 pyproject.toml\n-rw-r--r-- 1 root root   584 Jul 13  2025 pytest.ini\n-rw-r--r-- 1 root root   633 Jul 13  2025 ruff.toml\n-rw-r--r-- 1 root root   126 Jul 13  2025 tea.yaml\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 tests\n-rw-r--r-- 1 root root    44 Jul 13  2025 towncrier.toml\n-rw-r--r-- 1 root root  1324 Jul 13  2025 tox.ini\n/testbed/inflect/__init__.py\n/testbed/inflect/compat/py38.py\n/testbed/inflect/compat/__init__.py\n/testbed/tests/test_inflections.py\n/testbed/tests/test_classical_names.py\n/testbed/tests/test_classical_ancient.py\n/testbed/tests/test_classical_person.py\n/testbed/tests/test_pl_si.py\n/testbed/tests/test_an.py\n/testbed/tests/test_compounds.py\n/testbed/tests/test_join.py\n/testbed/tests/test_numwords.py\n/testbed/tests/test_classical_zero.py\n/testbed/tests/test_pwd.py\n/testbed/tests/test_unicode.py\n/testbed/tests/test_classical_all.py\n/testbed/tests/test_classical_herd.py\n/testbed/docs/conf.py\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-3d4605ce-4e1d-4fc8-9d47-faad0b988986-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "grep -n \"def num\\|persistent_count\\|BadNumValueError\\|class engine\" /testbed/inflect/__init__.py | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-3d4605ce-4e1d-4fc8-9d47-faad0b988986-1",
+            "content": "46: BadNumValueError\n90:class BadNumValueError(Exception):\n2071:class engine:\n2074:        self.persistent_count: Optional[int] = None\n2224:    def num(\n2237:                self.persistent_count = int(count)\n2239:                raise BadNumValueError from err\n2243:            self.persistent_count = None\n2324:        save_persistent_count = self.persistent_count\n2346:        self.persistent_count = save_persistent_count\n2670:        if count is None and self.persistent_count is not None:\n2671:            count = self.persistent_count\n3607:        if count is None and self.persistent_count is not None:\n3608:            count = self.persistent_count\n3828:    def number_to_words(  # noqa: C901\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-90565cec-4160-4fe6-93f5-67e76e31532b-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '2070,2260p' /testbed/inflect/__init__.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-90565cec-4160-4fe6-93f5-67e76e31532b-2",
+            "content": "defadj(self, singular: Optional[Word], plural: Optional[Word]) -> int:\n        \"\"\"\n        Set the adjective plural of singular to plural.\n\n        \"\"\"\n        self.checkpat(singular)\n        self.checkpatplural(plural)\n        self.pl_adj_user_defined.extend((singular, plural))\n        return 1\n\n    @typechecked\n    def defa(self, pattern: Optional[Word]) -> int:\n        \"\"\"\n        Define the indefinite article as 'a' for words matching pattern.\n\n        \"\"\"\n        self.checkpat(pattern)\n        self.A_a_user_defined.extend((pattern, \"a\"))\n        return 1\n\n    @typechecked\n    def defan(self, pattern: Optional[Word]) -> int:\n        \"\"\"\n        Define the indefinite article as 'an' for words matching pattern.\n\n        \"\"\"\n        self.checkpat(pattern)\n        self.A_a_user_defined.extend((pattern, \"an\"))\n        return 1\n\n    def checkpat(self, pattern: Optional[Word]) -> None:\n        \"\"\"\n        check for errors in a regex pattern\n        \"\"\"\n        if pattern is None:\n            return\n        try:\n            re.match(pattern, \"\")\n        except re.error as err:\n            raise BadUserDefinedPatternError(pattern) from err\n\n    def checkpatplural(self, pattern: Optional[Word]) -> None:\n        \"\"\"\n        check for errors in a regex replace pattern\n        \"\"\"\n        return\n\n    @typechecked\n    def ud_match(self, word: Word, wordlist: Sequence[Optional[Word]]) -> Optional[str]:\n        for i in range(len(wordlist) - 2, -2, -2):  # backwards through even elements\n            mo = re.search(rf\"^{wordlist[i]}$\", word, re.IGNORECASE)\n            if mo:\n                if wordlist[i + 1] is None:\n                    return None\n                pl = DOLLAR_DIGITS.sub(\n                    r\"\\\\1\", cast(Word, wordlist[i + 1])\n                )  # change $n to \\n for expand\n                return mo.expand(pl)\n        return None\n\n    def classical(self, **kwargs) -> None:\n        \"\"\"\n        turn classical mode on and off for various categories\n\n        turn on all classical modes:\n        classical()\n        classical(all=True)\n\n        turn on or off specific claassical modes:\n        e.g.\n        classical(herd=True)\n        classical(names=False)\n\n        By default all classical modes are off except names.\n\n        unknown value in args or key in kwargs raises\n        exception: UnknownClasicalModeError\n\n        \"\"\"\n        if not kwargs:\n            self.classical_dict = all_classical.copy()\n            return\n        if \"all\" in kwargs:\n            if kwargs[\"all\"]:\n                self.classical_dict = all_classical.copy()\n            else:\n                self.classical_dict = no_classical.copy()\n\n        for k, v in kwargs.items():\n            if k in def_classical:\n                self.classical_dict[k] = v\n            else:\n                raise UnknownClassicalModeError\n\n    def num(\n        self, count: Optional[int] = None, show: Optional[int] = None\n    ) -> str:  # (;$count,$show)\n        \"\"\"\n        Set the number to be used in other method calls.\n\n        Returns count.\n\n        Set show to False to return '' instead.\n\n        \"\"\"\n        if count is not None:\n            try:\n                self.persistent_count = int(count)\n            except ValueError as err:\n                raise BadNumValueError from err\n            if (show is None) or show:\n                return str(count)\n        else:\n            self.persistent_count = None\n        return \"\"\n\n    def gender(self, gender: str) -> None:\n        \"\"\"\n        set the gender for the singular of plural pronouns\n\n        can be one of:\n        'neuter'                ('they' -> 'it')\n        'feminine'              ('they' -> 'she')\n        'masculine'             ('they' -> 'he')\n        'gender-neutral'        ('they' -> 'they')\n        'feminine or masculine' ('they' -> 'she or he')\n        'masculine or feminine' ('they' -> 'he or she')\n        \"\"\"\n        if gender in singular_pronoun_genders:\n            self.thegender = gender\n        else:\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-cffc9c28-7690-4806-bd2a-243fe24a28b6-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "grep -n \"num\\|persistent_count\\|BadNumValue\" /testbed/tests/*.py | head -100; echo \"====\"; cat /testbed/pytest.ini; echo \"====\"; cat /testbed/pyproject.toml; echo \"====\"; cat /testbed/NEWS.rst | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-cffc9c28-7690-4806-bd2a-243fe24a28b6-3",
+            "content": ", wantlist=True) == [\n/testbed/tests/test_pwd.py:1027:        assert numwords(\"1234567\", wantlist=True) == [\n/testbed/tests/test_pwd.py:1032:        assert numwords(\"+10\", wantlist=True) == [\"plus\", \"ten\"]\n/testbed/tests/test_pwd.py:1033:        assert numwords(\"1234\", andword=\"\") == \"one thousand, two hundred thirty-four\"\n/testbed/tests/test_pwd.py:1035:            numwords(\"1234\", andword=\"plus\")\n/testbed/tests/test_pwd.py:1038:        assert numwords(p.ordinal(\"21\")) == \"twenty-first\"\n/testbed/tests/test_pwd.py:1039:        assert numwords(\"9\", threshold=10) == \"nine\"\n/testbed/tests/test_pwd.py:1040:        assert numwords(\"10\", threshold=10) == \"ten\"\n/testbed/tests/test_pwd.py:1041:        assert numwords(\"11\", threshold=10) == \"11\"\n/testbed/tests/test_pwd.py:1042:        assert numwords(\"1000\", threshold=10) == \"1,000\"\n====\n[pytest]\nnorecursedirs=dist build .tox .eggs\naddopts=\n\t--doctest-modules\n\t--import-mode importlib\nconsider_namespace_packages=true\nfilterwarnings=\n\t## upstream\n\n\t# Ensure ResourceWarnings are emitted\n\tdefault::ResourceWarning\n\n\t# realpython/pytest-mypy#152\n\tignore:'encoding' argument not specified::pytest_mypy\n\n\t# python/cpython#100750\n\tignore:'encoding' argument not specified::platform\n\n\t# pypa/build#615\n\tignore:'encoding' argument not specified::build.env\n\n\t# dateutil/dateutil#1284\n\tignore:datetime.datetime.utcfromtimestamp:DeprecationWarning:dateutil.tz.tz\n\n\t## end upstream\n====\n[build-system]\nrequires = [\"setuptools>=61.2\", \"setuptools_scm[toml]>=3.4.1\"]\nbuild-backend = \"setuptools.build_meta\"\n\n[project]\nname = \"inflect\"\nauthors = [\n\t{ name = \"Paul Dyson\", email = \"pwdyson@yahoo.com\" },\n]\nmaintainers = [\n\t{ name = \"Jason R. Coombs\", email = \"jaraco@jaraco.com\" },\n]\ndescription = \"Correctly generate plurals, singular nouns, ordinals, indefinite articles\" # convert numbers to words\nreadme = \"README.rst\"\nclassifiers = [\n\t\"Development Status :: 5 - Production/Stable\",\n\t\"Intended Audience :: Developers\",\n\t\"License :: OSI Approved :: MIT License\",\n\t\"Programming Language :: Python :: 3\",\n\t\"Programming Language :: Python :: 3 :: Only\",\n\t\"Natural Language :: English\",\n\t\"Operating System :: OS Independent\",\n\t\"Topic :: Software Development :: Libraries :: Python Modules\",\n\t\"Topic :: Text Processing :: Linguistic\",\n]\nrequires-python = \">=3.9\"\ndependencies = [\n\t\"more_itertools >= 8.5.0\",\n\t\"typeguard >= 4.0.1\",\n\t\"typing_extensions ; python_version<'3.9'\",\n]\nkeywords = [\n\t\"plural\",\n\t\"inflect\",\n\t\"participle\",\n]\ndynamic = [\"version\"]\n\n[project.urls]\nSource = \"https://github.com/jaraco/inflect\"\n\n[project.optional-dependencies]\ntest = [\n\t# upstream\n\t\"pytest >= 6, != 8.1.*\",\n\n\t# local\n\t\"pygments\",\n]\n\ndoc = [\n\t# upstream\n\t\"sphinx >= 3.5\",\n\t\"jaraco.packaging >= 9.3\",\n\t\"rst.linker >= 1.9\",\n\t\"furo\",\n\t\"sphinx-lint\",\n\n\t# tidelift\n\t\"jaraco.tidelift >= 1.4\",\n\n\t# local\n]\n\ncheck = [\n\t\"pytest-checkdocs >= 2.4\",\n\t\"pytest-ruff >= 0.2.1; sys_platform != 'cygwin'\",\n]\n\ncover = [\n\t\"pytest-cov\",\n]\n\nenabler = [\n\t\"pytest-enabler >= 2.2\",\n]\n\ntype = [\n\t# upstream\n\t\"pytest-mypy\",\n\n\t# local\n]\n\n\n[tool.setuptools_scm]\n\n\n[tool.pytest-enabler.mypy]\n# Disabled due to jaraco/skeleton#143\n====\nv7.5.0\n======\n\nFeatures\n--------\n\n- Updated `ast` classes for Python 3.14 compatibility. (#225)\n\n\nv7.4.0\n======\n\nFeatures\n--------\n\n- Handle a single apostrophe more gracefully. (#218)\n\n\nv7.3.1\n======\n\nBugfixes\n--------\n\n- Set minimum version of more-itertools to 8.5 (#215)\n\n\nv7.3.0\n======\n\nFeatures\n--------\n\n- Restricted typing_extensions to Python 3.8. (#211)\n\n\nv7.2.1\n======\n\nBugfixes\n--------\n\n- Refactored number_to_words toward reduced complexity.\n\n\nv7.2.0\n======\n\nFeatures\n--------\n\n- Replace pydantic with typeguard (#195)\n\n\nv7.1.0\n======\n\nFeatures\n--------\n\n- Now handle 'pair of x' in pl_sb_uninflected_complete (#188)\n\n\nv7.0.0\n======\n\nFeatures\n--------\n\n- Refine type hint for ``singular_noun`` to indicate a literal return type for ``False``. (#186)\n\n\nDeprecations and Removals\n-------------------------\n\n- Removed methods renamed in 0.2.0.\n\n\nv6.2.0\n======\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-034feddd-72f0-43c6-9a4a-cde73bc67094-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cd /testbed && python -c \"\nimport inflect\np = inflect.engine()\np.num()\nprint(repr(p.persistent_count))\nresult = p.num('3')\nprint(repr(p.persistent_count))\nprint(repr(result))\ntry:\n    p.num('text')\n    print('Error: Should have raised BadNumValueError')\nexcept Exception as e:\n    print(f'Correctly raised: {type(e).__name__}: {e}')\n\"\n"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-034feddd-72f0-43c6-9a4a-cde73bc67094-4",
+            "content": "Traceback (most recent call last):\n  File \"<string>\", line 2, in <module>\n  File \"/testbed/inflect/__init__.py\", line 80, in <module>\n    from more_itertools import windowed_complete\nModuleNotFoundError: No module named 'more_itertools'\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "The reproduction failed on a missing dependency, so I’ll inspect type checking around `num()` and install what’s needed to run the code.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-01932182-2d1c-4986-8900-d5b0bdb9f159-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '1,120p' /testbed/inflect/__init__.py; echo \"====ENGINE INIT====\"; sed -n '2071,2100p' /testbed/inflect/__init__.py; echo \"====TYPECHECKED====\"; grep -n \"typechecked\\|typeguard\" /testbed/inflect/__init__.py | head -30"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-01932182-2d1c-4986-8900-d5b0bdb9f159-5",
+            "content": "ion\n - correctly generate plurals, ordinals, indefinite articles\n - convert numbers to words\n\nCopyright (C) 2010 Paul Dyson\n\nBased upon the Perl module\n`Lingua::EN::Inflect <https://metacpan.org/pod/Lingua::EN::Inflect>`_.\n\nmethods:\n    classical inflect\n    plural plural_noun plural_verb plural_adj singular_noun no num a an\n    compare compare_nouns compare_verbs compare_adjs\n    present_participle\n    ordinal\n    number_to_words\n    join\n    defnoun defverb defadj defa defan\n\nINFLECTIONS:\n    classical inflect\n    plural plural_noun plural_verb plural_adj singular_noun compare\n    no num a an present_participle\n\nPLURALS:\n    classical inflect\n    plural plural_noun plural_verb plural_adj singular_noun no num\n    compare compare_nouns compare_verbs compare_adjs\n\nCOMPARISONS:\n    classical\n    compare compare_nouns compare_verbs compare_adjs\n\nARTICLES:\n    classical inflect num a an\n\nNUMERICAL:\n    ordinal number_to_words\n\nUSER_DEFINED:\n    defnoun defverb defadj defa defan\n\nExceptions:\n UnknownClassicalModeError\n BadNumValueError\n BadChunkingOptionError\n NumOutOfRangeError\n BadUserDefinedPatternError\n BadRcFileError\n BadGenderError\n\n\"\"\"\n\nfrom __future__ import annotations\n\nimport ast\nimport collections\nimport contextlib\nimport functools\nimport itertools\nimport re\nfrom numbers import Number\nfrom typing import (\n    TYPE_CHECKING,\n    Any,\n    Callable,\n    Dict,\n    Iterable,\n    List,\n    Literal,\n    Match,\n    Optional,\n    Sequence,\n    Tuple,\n    Union,\n    cast,\n)\n\nfrom more_itertools import windowed_complete\nfrom typeguard import typechecked\n\nfrom .compat.py38 import Annotated\n\n\nclass UnknownClassicalModeError(Exception):\n    pass\n\n\nclass BadNumValueError(Exception):\n    pass\n\n\nclass BadChunkingOptionError(Exception):\n    pass\n\n\nclass NumOutOfRangeError(Exception):\n    pass\n\n\nclass BadUserDefinedPatternError(Exception):\n    pass\n\n\nclass BadRcFileError(Exception):\n    pass\n\n\nclass BadGenderError(Exception):\n    pass\n\n\ndef enclose(s: str) -> str:\n    return f\"(?:{s})\"\n\n\ndef joinstem(cutpoint: Optional[int] = 0, words: Optional[Iterable[str]] = None) -> str:\n    \"\"\"\n    Join stem of each word in words into a string for regex.\n====ENGINE INIT====\nclass engine:\n    def __init__(self) -> None:\n        self.classical_dict = def_classical.copy()\n        self.persistent_count: Optional[int] = None\n        self.mill_count = 0\n        self.pl_sb_user_defined: List[Optional[Word]] = []\n        self.pl_v_user_defined: List[Optional[Word]] = []\n        self.pl_adj_user_defined: List[Optional[Word]] = []\n        self.si_sb_user_defined: List[Optional[Word]] = []\n        self.A_a_user_defined: List[Optional[Word]] = []\n        self.thegender = \"neuter\"\n        self.__number_args: Optional[Dict[str, str]] = None\n\n    @property\n    def _number_args(self):\n        return cast(Dict[str, str], self.__number_args)\n\n    @_number_args.setter\n    def _number_args(self, val):\n        self.__number_args = val\n\n    @typechecked\n    def defnoun(self, singular: Optional[Word], plural: Optional[Word]) -> int:\n        \"\"\"\n        Set the noun plural of singular to plural.\n\n        \"\"\"\n        self.checkpat(singular)\n        self.checkpatplural(plural)\n        self.pl_sb_user_defined.extend((singular, plural))\n====TYPECHECKED====\n81:from typeguard import typechecked\n2056:# ^-- Workaround for typeguard AST manipulation:\n2057:#     https://github.com/agronholm/typeguard/issues/353#issuecomment-1556306554\n2092:    @typechecked\n2104:    @typechecked\n2129:    @typechecked\n2140:    @typechecked\n2150:    @typechecked\n2177:    @typechecked\n2311:    @typechecked\n2388:    @typechecked\n2412:    @typechecked\n2433:    @typechecked\n2457:    @typechecked\n2478:    @typechecked\n2501:        typeguard.TypeCheckError:...is not an instance of inflect.Word\n2507:    @typechecked\n2523:    @typechecked\n2539:    @typechecked\n2555:    @typechecked\n3509:    @typechecked\n3590:    @typechecked\n3628:    @typechecked\n3647:    @typechecked\n3827:    @typechecked\n3954:    @typechecked\n"
+          }
+        ]
+      }
+    }
+  ]
+}

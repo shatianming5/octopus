@@ -1,0 +1,130 @@
+{
+  "schema": "octopus-b7-v1",
+  "source_commit": "e8ad69f76dee9f08c571b420e5fd1ec27a11f25a",
+  "protocol": {
+    "status": "cpu_implementation_frozen_gpu_validation_pending",
+    "base_commit": "ad797ff6090d41b3f45700c90e089b4f6b6337ed",
+    "model_id": "Qwen/Qwen2.5-7B-Instruct",
+    "model_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "generation_seed": 17,
+    "dtype": "bfloat16",
+    "max_model_len": 16384,
+    "max_num_seqs": 8,
+    "max_num_batched_tokens": 8192,
+    "block_size": 16,
+    "capacity_mib": [
+      1024,
+      1536
+    ],
+    "concurrency": [
+      2,
+      4
+    ],
+    "background_rate_rps": 4.0,
+    "background_request_count": 384,
+    "background_target_window_seconds": 96,
+    "background_prompt_tokens": 2048,
+    "background_output_tokens": 32,
+    "foreground_cases": 12,
+    "foreground_intended_seconds": [
+      0,
+      8,
+      16,
+      24,
+      32,
+      40,
+      48,
+      56,
+      64,
+      72,
+      80,
+      88
+    ],
+    "discovery_traffic_seed": 2501,
+    "confirmation_traffic_seeds": [
+      2601,
+      2702,
+      2803,
+      2904
+    ],
+    "max_discovery_traces": 16,
+    "max_confirmation_traces": 16,
+    "max_total_traces": 32,
+    "trace_timeout_seconds": 300,
+    "max_gpu_host_wall_seconds": 10800,
+    "background_gate_relative": 0.05,
+    "foreground_stretch_fraction": 0.1,
+    "foreground_ci": {
+      "kind": "one_sided_paired_student_t",
+      "n": 4,
+      "df": 3,
+      "critical": 2.3533634348018264
+    },
+    "background_ci": {
+      "kind": "paired_circular_moving_block",
+      "block_size": 8,
+      "resamples": 1000,
+      "seed": 17
+    },
+    "methods": [
+      "projected_apc",
+      "b6_semantic_fixed",
+      "b6_semantic_budgeted",
+      "b7_semantic_online"
+    ],
+    "projection_mode": "PREFIX_CAPSULE",
+    "foreground_branches": 4,
+    "branch_output_tokens": 512,
+    "final_output_tokens": 64,
+    "forecast": {
+      "source": "signals-completed-within-trace-stage-ewma-preparation-queue-means-v1",
+      "stage_duration": "Signals EWMA (previous + completed_duration) / 2 by visible GPU branch role",
+      "adoption": "max observed/estimated prerequisite completion + completed preparation mean + completed queue mean * max(1, visible waiting requests)",
+      "ordering": "earliest valid estimated adoption in known-key slots; stable B6 ties; unknown/cold_start/overdue slots unmoved",
+      "selection": "only additional future FREE hash-union keys under max(0,F-native_draw-|Q|)",
+      "learning_scope": "fresh per trace, completed observations only; no arrival tape, caller hints, labels, cross-trace fit, or confirmation tuning"
+    }
+  },
+  "decision": "incomplete",
+  "formal_b7_gate": false,
+  "expected_traces": 16,
+  "recorded_traces": 1,
+  "missing_trace_ids": [
+    "discovery-1024-c2-2501-b6_semantic_fixed",
+    "discovery-1024-c2-2501-b6_semantic_budgeted",
+    "discovery-1024-c2-2501-b7_semantic_online",
+    "discovery-1024-c4-2501-b6_semantic_fixed",
+    "discovery-1024-c4-2501-b6_semantic_budgeted",
+    "discovery-1024-c4-2501-b7_semantic_online",
+    "discovery-1024-c4-2501-projected_apc",
+    "discovery-1536-c2-2501-b6_semantic_budgeted",
+    "discovery-1536-c2-2501-b7_semantic_online",
+    "discovery-1536-c2-2501-projected_apc",
+    "discovery-1536-c2-2501-b6_semantic_fixed",
+    "discovery-1536-c4-2501-b7_semantic_online",
+    "discovery-1536-c4-2501-projected_apc",
+    "discovery-1536-c4-2501-b6_semantic_fixed",
+    "discovery-1536-c4-2501-b6_semantic_budgeted"
+  ],
+  "trace_outcomes": [
+    {
+      "selector": {
+        "phase": "discovery",
+        "block": 0,
+        "position": 0,
+        "method": "projected_apc",
+        "capacity_mib": 1024,
+        "concurrency": 2,
+        "background_rate_rps": 4.0,
+        "traffic_seed": 2501,
+        "trace_id": "discovery-1024-c2-2501-projected_apc"
+      },
+      "status": "invalid",
+      "errors": [
+        "RuntimeError: Ninja build failed. Ninja output:\nninja: Entering directory `/mnt/ssd1/user/.cache/flashinfer/0.6.16.post3/89/cached_ops/sampling'\n[1/4]  /usr/local/cuda/bin/nvcc --generate-dependencies-with-compile -MF /mnt/ssd1/user/.cache/flashinfer/0.6.16.post3/89/cached_ops/sampling/csrc_flashinfer_sampling_binding.cuda.o.d -DPy_LIMITED_API=0x03090000 -D_GLIBCXX_USE_CXX11_ABI=1 -I/mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/cccl/cub -I/mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/cccl/libcudacxx/include -I/mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/cccl/thrust -isystem /mnt/ssd1/user/octopus-b7-python/include/python3.12 -isystem /usr/local/cuda/include -isystem /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/tvm_ffi/include -isystem /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/tvm_ffi/include -isystem /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/include -isystem /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/csrc -isystem /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/cutlass/include -isystem /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/cutlass/tools/util/include -isystem /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/spdlog/include --compiler-options=-fPIC --expt-relaxed-constexpr -gencode=arch=compute_89,code=sm_89 -DFLASHINFER_ENABLE_FP8_E8M0 -DFLASHINFER_ENABLE_FP4_E2M1 -std=c++17 --threads=1 -use_fast_math -Xfatbin=-compress-all -DFLASHINFER_ENABLE_F16 -DFLASHINFER_ENABLE_BF16 -DFLASHINFER_ENABLE_FP8_E4M3 -DFLASHINFER_ENABLE_FP8_E5M2 -DNDEBUG -O3 -c /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/csrc/flashinfer_sampling_binding.cu -o /mnt/ssd1/user/.cache/flashinfer/0.6.16.post3/89/cached_ops/sampling/csrc_flashinfer_sampling_binding.cuda.o \nFAILED: [code=1] /mnt/ssd1/user/.cache/flashinfer/0.6.16.post3/89/cached_ops/sampling/csrc_flashinfer_sampling_binding.cuda.o \n /usr/local/cuda/bin/nvcc --generate-dependencies-with-compile -MF /mnt/ssd1/user/.cache/flashinfer/0.6.16.post3/89/cached_ops/sampling/csrc_flashinfer_sampling_binding.cuda.o.d -DPy_LIMITED_API=0x03090000 -D_GLIBCXX_USE_CXX11_ABI=1 -I/mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/cccl/cub -I/mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/cccl/libcudacxx/include -I/mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/cccl/thrust -isystem /mnt/ssd1/user/octopus-b7-python/include/python3.12 -isystem /usr/local/cuda/include -isystem /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/tvm_ffi/include -isystem /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/tvm_ffi/include -isystem /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/include -isystem /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/csrc -isystem /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/cutlass/include -isystem /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/cutlass/tools/util/include -isystem /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/spdlog/include --compiler-options=-fPIC --expt-relaxed-constexpr -gencode=arch=compute_89,code=sm_89 -DFLASHINFER_ENABLE_FP8_E8M0 -DFLASHINFER_ENABLE_FP4_E2M1 -std=c++17 --threads=1 -use_fast_math -Xfatbin=-compress-all -DFLASHINFER_ENABLE_F16 -DFLASHINFER_ENABLE_BF16 -DFLASHINFER_ENABLE_FP8_E4M3 -DFLASHINFER_ENABLE_FP8_E5M2 -DNDEBUG -O3 -c /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/csrc/flashinfer_sampling_binding.cu -o /mnt/ssd1/user/.cache/flashinfer/0.6.16.post3/89/cached_ops/sampling/csrc_flashinfer_sampling_binding.cuda.o \nIn file included from /usr/local/cuda/bin/../targets/x86_64-linux/include/cuda_runtime.h:83,\n                 from <command-line>:\n/usr/local/cuda/bin/../targets/x86_64-linux/include/crt/host_config.h:132:2: error: #error -- unsupported GNU version! gcc versions later than 11 are not supported! The nvcc flag '-allow-unsupported-compiler' can be used to override this version check; however, using an unsupported host compiler may cause compilation failure or incorrect run time execution. Use at your own risk.\n  132 | #error -- unsupported GNU version! gcc versions later than 11 are not supported! The nvcc flag '-allow-unsupported-compiler' can be used to override this version check; however, using an unsupported host compiler may cause compilation failure or incorrect run time execution. Use at your own risk.\n      |  ^~~~~\n[2/4]  /usr/local/cuda/bin/nvcc --generate-dependencies-with-compile -MF /mnt/ssd1/user/.cache/flashinfer/0.6.16.post3/89/cached_ops/sampling/csrc_sampling.cuda.o.d -DPy_LIMITED_API=0x03090000 -D_GLIBCXX_USE_CXX11_ABI=1 -I/mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/cccl/cub -I/mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/cccl/libcudacxx/include -I/mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/cccl/thrust -isystem /mnt/ssd1/user/octopus-b7-python/include/python3.12 -isystem /usr/local/cuda/include -isystem /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/tvm_ffi/include -isystem /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/tvm_ffi/include -isystem /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/include -isystem /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/csrc -isystem /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/cutlass/include -isystem /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/cutlass/tools/util/include -isystem /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/spdlog/include --compiler-options=-fPIC --expt-relaxed-constexpr -gencode=arch=compute_89,code=sm_89 -DFLASHINFER_ENABLE_FP8_E8M0 -DFLASHINFER_ENABLE_FP4_E2M1 -std=c++17 --threads=1 -use_fast_math -Xfatbin=-compress-all -DFLASHINFER_ENABLE_F16 -DFLASHINFER_ENABLE_BF16 -DFLASHINFER_ENABLE_FP8_E4M3 -DFLASHINFER_ENABLE_FP8_E5M2 -DNDEBUG -O3 -c /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/csrc/sampling.cu -o /mnt/ssd1/user/.cache/flashinfer/0.6.16.post3/89/cached_ops/sampling/csrc_sampling.cuda.o \nFAILED: [code=1] /mnt/ssd1/user/.cache/flashinfer/0.6.16.post3/89/cached_ops/sampling/csrc_sampling.cuda.o \n /usr/local/cuda/bin/nvcc --generate-dependencies-with-compile -MF /mnt/ssd1/user/.cache/flashinfer/0.6.16.post3/89/cached_ops/sampling/csrc_sampling.cuda.o.d -DPy_LIMITED_API=0x03090000 -D_GLIBCXX_USE_CXX11_ABI=1 -I/mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/cccl/cub -I/mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/cccl/libcudacxx/include -I/mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/cccl/thrust -isystem /mnt/ssd1/user/octopus-b7-python/include/python3.12 -isystem /usr/local/cuda/include -isystem /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/tvm_ffi/include -isystem /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/tvm_ffi/include -isystem /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/include -isystem /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/csrc -isystem /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/cutlass/include -isystem /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/cutlass/tools/util/include -isystem /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/spdlog/include --compiler-options=-fPIC --expt-relaxed-constexpr -gencode=arch=compute_89,code=sm_89 -DFLASHINFER_ENABLE_FP8_E8M0 -DFLASHINFER_ENABLE_FP4_E2M1 -std=c++17 --threads=1 -use_fast_math -Xfatbin=-compress-all -DFLASHINFER_ENABLE_F16 -DFLASHINFER_ENABLE_BF16 -DFLASHINFER_ENABLE_FP8_E4M3 -DFLASHINFER_ENABLE_FP8_E5M2 -DNDEBUG -O3 -c /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/csrc/sampling.cu -o /mnt/ssd1/user/.cache/flashinfer/0.6.16.post3/89/cached_ops/sampling/csrc_sampling.cuda.o \nIn file included from /usr/local/cuda/bin/../targets/x86_64-linux/include/cuda_runtime.h:83,\n                 from <command-line>:\n/usr/local/cuda/bin/../targets/x86_64-linux/include/crt/host_config.h:132:2: error: #error -- unsupported GNU version! gcc versions later than 11 are not supported! The nvcc flag '-allow-unsupported-compiler' can be used to override this version check; however, using an unsupported host compiler may cause compilation failure or incorrect run time execution. Use at your own risk.\n  132 | #error -- unsupported GNU version! gcc versions later than 11 are not supported! The nvcc flag '-allow-unsupported-compiler' can be used to override this version check; however, using an unsupported host compiler may cause compilation failure or incorrect run time execution. Use at your own risk.\n      |  ^~~~~\nIn file included from /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/cccl/libcudacxx/include/cuda/std/__cccl/architecture.h:14,\n                 from /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/cccl/libcudacxx/include/cuda/__cccl_config:14,\n                 from /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/cccl/cub/cub/config.cuh:12,\n                 from /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/cccl/cub/cub/cub.cuh:13,\n                 from /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/include/flashinfer/sampling.cuh:26,\n                 from /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/csrc/sampling.cu:16:\n/mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/cccl/libcudacxx/include/cuda/std/__cccl/compiler.h:174:4: error: #error \"CUDA versions below 12 are not supported.\" \"Define CCCL_IGNORE_DEPRECATED_CUDA_BELOW_12 to suppress this message.\"\n  174 | #  error \"CUDA versions below 12 are not supported.\" \\\n      |    ^~~~~\n[3/4]  /usr/local/cuda/bin/nvcc --generate-dependencies-with-compile -MF /mnt/ssd1/user/.cache/flashinfer/0.6.16.post3/89/cached_ops/sampling/csrc_renorm.cuda.o.d -DPy_LIMITED_API=0x03090000 -D_GLIBCXX_USE_CXX11_ABI=1 -I/mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/cccl/cub -I/mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/cccl/libcudacxx/include -I/mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/cccl/thrust -isystem /mnt/ssd1/user/octopus-b7-python/include/python3.12 -isystem /usr/local/cuda/include -isystem /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/tvm_ffi/include -isystem /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/tvm_ffi/include -isystem /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/include -isystem /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/csrc -isystem /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/cutlass/include -isystem /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/cutlass/tools/util/include -isystem /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/spdlog/include --compiler-options=-fPIC --expt-relaxed-constexpr -gencode=arch=compute_89,code=sm_89 -DFLASHINFER_ENABLE_FP8_E8M0 -DFLASHINFER_ENABLE_FP4_E2M1 -std=c++17 --threads=1 -use_fast_math -Xfatbin=-compress-all -DFLASHINFER_ENABLE_F16 -DFLASHINFER_ENABLE_BF16 -DFLASHINFER_ENABLE_FP8_E4M3 -DFLASHINFER_ENABLE_FP8_E5M2 -DNDEBUG -O3 -c /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/csrc/renorm.cu -o /mnt/ssd1/user/.cache/flashinfer/0.6.16.post3/89/cached_ops/sampling/csrc_renorm.cuda.o \nFAILED: [code=1] /mnt/ssd1/user/.cache/flashinfer/0.6.16.post3/89/cached_ops/sampling/csrc_renorm.cuda.o \n /usr/local/cuda/bin/nvcc --generate-dependencies-with-compile -MF /mnt/ssd1/user/.cache/flashinfer/0.6.16.post3/89/cached_ops/sampling/csrc_renorm.cuda.o.d -DPy_LIMITED_API=0x03090000 -D_GLIBCXX_USE_CXX11_ABI=1 -I/mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/cccl/cub -I/mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/cccl/libcudacxx/include -I/mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/cccl/thrust -isystem /mnt/ssd1/user/octopus-b7-python/include/python3.12 -isystem /usr/local/cuda/include -isystem /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/tvm_ffi/include -isystem /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/tvm_ffi/include -isystem /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/include -isystem /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/csrc -isystem /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/cutlass/include -isystem /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/cutlass/tools/util/include -isystem /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/spdlog/include --compiler-options=-fPIC --expt-relaxed-constexpr -gencode=arch=compute_89,code=sm_89 -DFLASHINFER_ENABLE_FP8_E8M0 -DFLASHINFER_ENABLE_FP4_E2M1 -std=c++17 --threads=1 -use_fast_math -Xfatbin=-compress-all -DFLASHINFER_ENABLE_F16 -DFLASHINFER_ENABLE_BF16 -DFLASHINFER_ENABLE_FP8_E4M3 -DFLASHINFER_ENABLE_FP8_E5M2 -DNDEBUG -O3 -c /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/csrc/renorm.cu -o /mnt/ssd1/user/.cache/flashinfer/0.6.16.post3/89/cached_ops/sampling/csrc_renorm.cuda.o \nIn file included from /usr/local/cuda/bin/../targets/x86_64-linux/include/cuda_runtime.h:83,\n                 from <command-line>:\n/usr/local/cuda/bin/../targets/x86_64-linux/include/crt/host_config.h:132:2: error: #error -- unsupported GNU version! gcc versions later than 11 are not supported! The nvcc flag '-allow-unsupported-compiler' can be used to override this version check; however, using an unsupported host compiler may cause compilation failure or incorrect run time execution. Use at your own risk.\n  132 | #error -- unsupported GNU version! gcc versions later than 11 are not supported! The nvcc flag '-allow-unsupported-compiler' can be used to override this version check; however, using an unsupported host compiler may cause compilation failure or incorrect run time execution. Use at your own risk.\n      |  ^~~~~\nIn file included from /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/cccl/libcudacxx/include/cuda/std/__cccl/architecture.h:14,\n                 from /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/cccl/libcudacxx/include/cuda/__cccl_config:14,\n                 from /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/cccl/libcudacxx/include/cuda/std/__internal/atomic.h:13,\n                 from /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/cccl/libcudacxx/include/cuda/std/detail/__config:14,\n                 from /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/cccl/libcudacxx/include/cuda/std/type_traits:14,\n                 from /usr/local/cuda/bin/../targets/x86_64-linux/include/cooperative_groups/details/info.h:154,\n                 from /usr/local/cuda/bin/../targets/x86_64-linux/include/cooperative_groups.h:55,\n                 from /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/include/flashinfer/air_top_p.cuh:22,\n                 from /mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/csrc/renorm.cu:16:\n/mnt/ssd1/user/octopus-b7-runtime/.venv/lib/python3.12/site-packages/flashinfer/data/cccl/libcudacxx/include/cuda/std/__cccl/compiler.h:174:4: error: #error \"CUDA versions below 12 are not supported.\" \"Define CCCL_IGNORE_DEPRECATED_CUDA_BELOW_12 to suppress this message.\"\n  174 | #  error \"CUDA versions below 12 are not supported.\" \\\n      |    ^~~~~\nninja: build stopped: subcommand failed.\n"
+      ],
+      "resource_wall_seconds": 19.84090053703403
+    }
+  ],
+  "selection": null
+}

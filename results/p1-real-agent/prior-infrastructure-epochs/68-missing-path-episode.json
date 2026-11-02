@@ -1,0 +1,73 @@
+{
+  "schema": "octopus-p1-episode-v1",
+  "source_commit": "635c3e6a17117483bcd49e6162b1123f8d72f82b",
+  "protocol": {
+    "schema": "octopus-p1-pilot-v1",
+    "dataset": "SWE-bench/SWE-bench_Verified",
+    "repositories": [
+      "django/django",
+      "sympy/sympy"
+    ],
+    "issues_per_repository": 2,
+    "methods": [
+      "projected_apc",
+      "b6_semantic_fixed"
+    ],
+    "selection_rule": "First two lexicographic instance_ids per repository from pinned official metadata; no outcomes.",
+    "model": "Qwen/Qwen2.5-7B-Instruct",
+    "model_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "vllm_version": "0.28.0",
+    "dtype": "bfloat16",
+    "max_model_len": 16384,
+    "max_num_seqs": 8,
+    "max_num_batched_tokens": 8192,
+    "block_size": 16,
+    "generation_seed": 17,
+    "gpu_memory_utilization": 0.9,
+    "kv_cache_memory_bytes": null,
+    "max_actions": 10,
+    "max_output_tokens_per_action": 512,
+    "max_root_tokens": 6144,
+    "max_journal_tokens": 8192,
+    "max_tool_output_chars": 4000,
+    "max_tool_input_chars": 12000,
+    "tool_timeout_seconds": 30,
+    "episode_timeout_seconds": 600,
+    "gpu_host_ceiling_seconds": 10800,
+    "container_cpus": 4,
+    "container_memory": "8g",
+    "container_pids": 256,
+    "container_workdir": "/testbed",
+    "container_python": "/opt/miniconda3/envs/testbed/bin/python",
+    "grading_workers": 1,
+    "grading_timeout_seconds": 1800,
+    "tool_transport": "SSH stdio; GPU runtime at the frozen endpoint, isolated Docker tools on coordinator; relay waits count in solver cost.",
+    "inference": "temperature=0, eager, synchronous, prefix caching, fresh engine per episode",
+    "claim": "Four-issue engineering pilot only; no formal noninferiority or general speedup claim."
+  },
+  "selector": {
+    "episode_id": "django__django-10097--projected_apc",
+    "instance_id": "django__django-10097",
+    "method": "projected_apc",
+    "position": 0,
+    "issue_index": 0,
+    "generation_seed": 17
+  },
+  "status": "infrastructure_failure",
+  "errors": [
+    "FileNotFoundError: [Errno 2] No such file or directory: 'ninja'"
+  ],
+  "prediction": {
+    "instance_id": "django__django-10097",
+    "model_name_or_path": "p1-projected_apc",
+    "model_patch": ""
+  },
+  "gpu_engine_scope_seconds": 8.81876652687788,
+  "gpu_engine_scope_definition": "From before engine construction through engine shutdown, including relay/tool waits; not integrated GPU-busy time.",
+  "solver_e2e_seconds": 20.436572198057547,
+  "child_process_wall_seconds": 26.219744179048575,
+  "child_started_at": "2026-09-10T18:45:06.161758+00:00",
+  "child_finished_at": "2026-09-10T18:45:32.381732+00:00",
+  "child_returncode": 0,
+  "parent_timeout": false
+}

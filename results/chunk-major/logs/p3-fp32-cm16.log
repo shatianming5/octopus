@@ -1,0 +1,9 @@
+### bench.py --fp32 --ieee --no-fsdp --no-logp --variants k1 k1s8 cm16-fp32 cm32-fp32, node-134 G7, TRITON_F32_DEFAULT=ieee
+micro-batch /mnt/disk4/user/impl-cm-p3/spool/000041~search-6806~3e9e76fc.pt: 19 rows, 187627 flat tokens, 137501 tree tokens
+[rank 0] k1; train 380.1 s, GPU peak 34.3 GiB, host peak 68.2 GiB (pinned 44.6 GiB)
+[rank 0] k1s8; train 343.7 s, GPU peak 31.1 GiB, host peak 44.8 GiB (pinned 44.6 GiB); vs k1: logp max |diff| 0.000212, grad cosine 1.000000 (smallest per tensor 1.0000)
+[rank 0] cm16-fp32: 11 chunks (plan 0.0 s), predicted host 6.5 GiB; train 315.6 s, GPU peak 37.9 GiB, host peak 9.6 GiB (pinned 6.5 GiB); vs k1: logp max |diff| 0.000105, grad cosine 1.000000 (smallest per tensor 1.0000)
+[rank0]: torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 476.00 MiB. GPU 0 has a total capacity of 47.45 GiB of which 4.19 GiB is free. Including non-PyTorch memory, this process has 42.26 GiB memory in use. Process 1846675 has 985.84 MiB memory in use. 40.00 GiB allowed; Of the alloca
+### the actor in fp32 IEEE, 2 ranks on the same micro-batch (actor_ab.py --fp32): compute_logp of k1 against cm16
+fp32 IEEE logp k1 vs cm16: max 0.0452 mean 1.54e-05 over all positions (cm16's ppo_update then ran out of the 0.85 cap)
+(no fp32 noise floor was run in this configuration and these are all positions, prompts included: not used as evidence)

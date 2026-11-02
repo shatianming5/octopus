@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "kayak__pypika.1c9646f0.lm_rewrit__je2oQ4z__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# Builder decorator breaks immutability flag\n\nWhen using the `immutable=False` flag with query builders, the query is no longer properly modified in place. This breaks the expected behavior where the same query object should be returned when immutability is disabled.\n\n## How to reproduce\n\n```python\nfrom pypika import Query, Table\n\n# Create a table\ntable = Table('my_table')\n\n# Create a query with immutability disabled\nquery0 = Query.from_(table, immutable=False)\n\n# Modify the query\nquery1 = query0.select(table.column)\n\n# Check if they're the same object\nprint(query0 is query1)  # Should be True, but now returns False\n```\n\n## Expected behavior\n\nWhen creating a query with `immutable=False`, modifications to the query should return the same object instance, not a copy.\n\n## Actual behavior\n\nEven with `immutable=False`, a deep copy of the query is always created, ignoring the immutability flag completely.\n\nThis breaks code that relies on being able to modify queries in place when immutability is disabled."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository and locate how the builder decorator handles the `immutable` flag.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-715ed9ea-f048-403c-95fb-67fa712ca40b-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -100 && cat /testbed/README.md 2>/dev/null | head -50"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-715ed9ea-f048-403c-95fb-67fa712ca40b-0",
+            "content": "total 124\ndrwxr-xr-x 1 root root  4096 Sep 22 16:12 .\ndrwxr-xr-x 1 root root  4096 Sep 22 16:12 ..\n-rw-r--r-- 1 root root    80 Jul 13  2025 .coveragerc\ndrwxr-xr-x 8 root root  4096 Jul 13  2025 .git\n-rw-r--r-- 1 root root   864 Jul 13  2025 .gitignore\n-rw-rw-r-- 1 1005 1005     0 Sep 22 15:44 .gitkeep\n-rw-r--r-- 1 root root   589 Jul 13  2025 .pre-commit-config.yaml\n-rw-r--r-- 1 root root    26 Jul 13  2025 CODEOWNERS\n-rw-r--r-- 1 root root  3225 Jul 13  2025 CONTRIBUTING.rst\n-rw-r--r-- 1 root root 11356 Jul 13  2025 LICENSE.txt\n-rw-r--r-- 1 root root    44 Jul 13  2025 MANIFEST.in\n-rw-r--r-- 1 root root   661 Jul 13  2025 Makefile\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 PyPika.egg-info\n-rw-r--r-- 1 root root 40103 Jul 13  2025 README.rst\ndrwxr-xr-x 3 root root  4096 Jul 13  2025 docs\ndrwxr-xr-x 4 root root  4096 Jul 13  2025 pypika\n-rw-r--r-- 1 root root   390 Jul 13  2025 pyproject.toml\n-rw-r--r-- 1 root root   199 Jul 13  2025 requirements-dev.txt\n-rw-r--r-- 1 root root   317 Jul 13  2025 setup.cfg\n-rw-r--r-- 1 root root  2638 Jul 13  2025 setup.py\n-rw-r--r-- 1 root root   257 Jul 13  2025 tox.ini\n/testbed/pypika/analytics.py\n/testbed/pypika/functions.py\n/testbed/pypika/__init__.py\n/testbed/pypika/tests/test_data_types.py\n/testbed/pypika/tests/test_custom_functions.py\n/testbed/pypika/tests/test_inserts.py\n/testbed/pypika/tests/test_formats.py\n/testbed/pypika/tests/dialects/test_vertica.py\n/testbed/pypika/tests/dialects/__init__.py\n/testbed/pypika/tests/dialects/test_mssql.py\n/testbed/pypika/tests/dialects/test_clickhouse.py\n/testbed/pypika/tests/dialects/test_sqllite.py\n/testbed/pypika/tests/dialects/test_oracle.py\n/testbed/pypika/tests/dialects/test_postgresql.py\n/testbed/pypika/tests/dialects/test_snowflake.py\n/testbed/pypika/tests/dialects/test_mysql.py\n/testbed/pypika/tests/test_create.py\n/testbed/pypika/tests/test_functions.py\n/testbed/pypika/tests/test_internals.py\n/testbed/pypika/tests/test_analytic_queries.py\n/testbed/pypika/tests/__init__.py\n/testbed/pypika/tests/test_terms.py\n/testbed/pypika/tests/test_groupby_modifiers.py\n/testbed/pypika/tests/test_tables.py\n/testbed/pypika/tests/test_query.py\n/testbed/pypika/tests/test_drop.py\n/testbed/pypika/tests/test_immutability.py\n/testbed/pypika/tests/test_date_math.py\n/testbed/pypika/tests/test_deletes.py\n/testbed/pypika/tests/test_criterions.py\n/testbed/pypika/tests/test_negation.py\n/testbed/pypika/tests/test_utils.py\n/testbed/pypika/tests/test_tuples.py\n/testbed/pypika/tests/test_pseudocolumns.py\n/testbed/pypika/tests/test_joins.py\n/testbed/pypika/tests/clickhouse/test_condition.py\n/testbed/pypika/tests/clickhouse/__init__.py\n/testbed/pypika/tests/clickhouse/test_type_conversion.py\n/testbed/pypika/tests/clickhouse/test_search_string.py\n/testbed/pypika/tests/clickhouse/test_nullable_arg.py\n/testbed/pypika/tests/clickhouse/test_dates_and_times.py\n/testbed/pypika/tests/clickhouse/test_array.py\n/testbed/pypika/tests/test_selects.py\n/testbed/pypika/tests/test_aggregate.py\n/testbed/pypika/tests/test_updates.py\n/testbed/pypika/tests/test_parameter.py\n/testbed/pypika/queries.py\n/testbed/pypika/pseudocolumns.py\n/testbed/pypika/enums.py\n/testbed/pypika/utils.py\n/testbed/pypika/dialects.py\n/testbed/pypika/clickhouse/nullable_arg.py\n/testbed/pypika/clickhouse/__init__.py\n/testbed/pypika/clickhouse/condition.py\n/testbed/pypika/clickhouse/search_string.py\n/testbed/pypika/clickhouse/dates_and_times.py\n/testbed/pypika/clickhouse/type_conversion.py\n/testbed/pypika/clickhouse/array.py\n/testbed/pypika/terms.py\n/testbed/setup.py\n/testbed/docs/conf.py\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-4981a2bc-51bd-4196-a3dc-7f493bbad379-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/pypika/utils.py && echo \"==== IMMUTABILITY TESTS ====\" && cat /testbed/pypika/tests/test_immutability.py && echo \"==== GIT LOG ====\" && cd /testbed && git log --oneline -20 && echo \"==== GIT STATUS ====\" && git status && echo \"==== DIFF ====\" && git diff HEAD && echo \"==== RECENT COMMITS ====\" && git log -5 --format=\"%H %s\""
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-4981a2bc-51bd-4196-a3dc-7f493bbad379-1",
+            "content": "able_a.bar)\n\n        self.assertIsNot(query_a, query_b)\n        self.assertNotEqual(str(query_a), str(query_b))\n\n    def test_groupby_returns_new_query_instance(self):\n        query_a = Query.from_(self.table_a).select(self.table_a.foo).groupby(self.table_a.foo)\n        query_b = query_a.groupby(self.table_a.bar)\n\n        self.assertIsNot(query_a, query_b)\n        self.assertNotEqual(str(query_a), str(query_b))\n\n    def test_orderby_return_new_query_instance(self):\n        query_a = Query.from_(self.table_a).select(self.table_a.foo).orderby(self.table_a.foo)\n        query_b = query_a.orderby(self.table_a.bar)\n\n        self.assertIsNot(query_a, query_b)\n        self.assertNotEqual(str(query_a), str(query_b))\n\n    def test_join_return_new_query_instance(self):\n        base = Query.from_(self.table_a).select(self.table_a.foo)\n        query_a = base.join(self.table_b).on(self.table_a.foo == self.table_b.bar).select(self.table_b.bar)\n        query_b = query_a.join(self.table_c).on(self.table_a.foo == self.table_c.baz).select(self.table_c.baz)\n\n        self.assertIsNot(query_a, query_b)\n        self.assertNotEqual(str(query_a), str(query_b))\n\n    def test_use_index_return_new_query_instance(self):\n        query_a = Query.from_(self.table_a).select(self.table_a.foo).use_index('idx1')\n        query_b = query_a.use_index('idx2')\n\n        self.assertIsNot(query_a, query_b)\n        self.assertNotEqual(str(query_a), str(query_b))\n\n    def test_force_index_return_new_query_instance(self):\n        query_a = Query.from_(self.table_a).select(self.table_a.foo).force_index('idx1')\n        query_b = query_a.force_index('idx2')\n\n        self.assertIsNot(query_a, query_b)\n        self.assertNotEqual(str(query_a), str(query_b))\n\n    def test_with_return_new_query_instance(self):\n        alias_1 = Query.from_(self.table_a).select(self.table_a.foo)\n        alias_2 = Query.from_(self.table_b).select(self.table_b.bar)\n        query_a = Query.from_(AliasedQuery('a1')).select('foo').with_(alias_1, 'a1')\n        query_b = query_a.with_(alias_2, 'a2')\n\n        self.assertIsNot(query_a, query_b)\n        self.assertNotEqual(str(query_a), str(query_b))\n\n    def test_insert_into_return_new_query_instance(self):\n        query_a = Query.into(self.table_a).insert('foo1')\n        query_b = query_a.insert('foo2')\n\n        self.assertIsNot(query_a, query_b)\n        self.assertNotEqual(str(query_a), str(query_b))\n\n    def test_replace_into_return_new_query_instance(self):\n        query_a = Query.into(self.table_a).replace('foo')\n        query_b = query_a.replace('bar')\n\n        self.assertIsNot(query_a, query_b)\n        self.assertNotEqual(str(query_a), str(query_b))\n\n    def test_update_set_return_new_query_instance(self):\n        query_a = Query.update(self.table_a).set(self.table_a.foo, 'foo')\n        query_b = query_a.set(self.table_a.bar, 'bar')\n\n        self.assertIsNot(query_a, query_b)\n        self.assertNotEqual(str(query_a), str(query_b))\n\n    def test_queries_after_join(self):\n        query1 = Query.from_(self.table_a).select(self.table_a.foo)\n        query2 = query1.join(self.table_b).on(self.table_a.foo == self.table_b.bar).select(self.table_b.buz)\n\n        self.assertEqual('SELECT \"foo\" FROM \"a\"', str(query1))\n        self.assertEqual(\n            'SELECT \"a\".\"foo\",\"b\".\"buz\" FROM \"a\" JOIN \"b\" ON \"a\".\"foo\"=\"b\".\"bar\"',\n            str(query2),\n        )\n\n    def test_immutable_kwarg_on_query_builder_disables_immutability(self):\n        query0 = Query.from_(self.table_a, immutable=False)\n        query1 = query0.select(self.table_a.foo)\n        self.assertIs(query0, query1)\n==== GIT LOG ====\n6a742f1 Initial commit\n==== GIT STATUS ====\nOn branch main\nYour branch is up to date with 'origin/main'.\n\nUntracked files:\n  (use \"git add <file>...\" to include in what will be committed)\n\t.gitkeep\n\nnothing added to commit but untracked files present (use \"git add\" to track)\n==== DIFF ====\n==== RECENT COMMITS ====\n6a742f12bfa386994289ec8b75824663d8ee4b15 Initial commit\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-db0c751b-5c73-4378-8540-b3e55d9b6381-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/pypika/utils.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-db0c751b-5c73-4378-8540-b3e55d9b6381-2",
+            "content": "from typing import Any, Callable, List, Optional, Type, TypeVar\n\n__author__ = \"Timothy Heys\"\n__email__ = \"theys@kayak.com\"\n\n\nclass QueryException(Exception):\n    pass\n\n\nclass GroupingException(Exception):\n    pass\n\n\nclass CaseException(Exception):\n    pass\n\n\nclass JoinException(Exception):\n    pass\n\n\nclass SetOperationException(Exception):\n    pass\n\n\nclass RollupException(Exception):\n    pass\n\n\nclass DialectNotSupported(Exception):\n    pass\n\n\nclass FunctionException(Exception):\n    pass\n\n\nC = TypeVar(\"C\")\n\n\ndef builder(func: C) -> C:\n    \"\"\"\n    Decorator for wrapper \"builder\" functions.  These are functions on the Query class or other classes used for\n    building queries which mutate the query and return self.  To make the build functions immutable, this decorator is\n    used which will deepcopy the current instance.  This decorator will return the return value of the inner function\n    or the new copy of the instance.  The inner function does not need to return self.\n    \"\"\"\n    import copy\n\n    def _copy(self, *args, **kwargs):\n        self_copy = copy.copy(self) if getattr(self, \"immutable\", True) else self\n        result = func(self_copy, *args, **kwargs)\n\n        # Return self if the inner function returns None.  This way the inner function can return something\n        # different (for example when creating joins, a different builder is returned).\n        if result is None:\n            return self_copy\n\n        return result\n\n    return _copy\n\n\ndef ignore_copy(func: Callable) -> Callable:\n    \"\"\"\n    Decorator for wrapping the __getattr__ function for classes that are copied via deepcopy.  This prevents infinite\n    recursion caused by deepcopy looking for magic functions in the class. Any class implementing __getattr__ that is\n    meant to be deepcopy'd should use this decorator.\n\n    deepcopy is used by pypika in builder functions (decorated by @builder) to make the results immutable.  Any data\n    model type class (stored in the Query instance) is copied.\n    \"\"\"\n\n    def _getattr(self, name):\n        if name in [\n            \"__copy__\",\n            \"__deepcopy__\",\n            \"__getstate__\",\n            \"__setstate__\",\n            \"__getnewargs__\",\n        ]:\n            raise AttributeError(\"'%s' object has no attribute '%s'\" % (self.__class__.__name__, name))\n\n        return func(self, name)\n\n    return _getattr\n\n\ndef resolve_is_aggregate(values: List[Optional[bool]]) -> Optional[bool]:\n    \"\"\"\n    Resolves the is_aggregate flag for an expression that contains multiple terms.  This works like a voter system,\n    each term votes True or False or abstains with None.\n\n    :param values: A list of booleans (or None) for each term in the expression\n    :return: If all values are True or None, True is returned.  If all values are None, None is returned. Otherwise,\n        False is returned.\n    \"\"\"\n    result = [x for x in values if x is not None]\n    if result:\n        return all(result)\n    return None\n\n\ndef format_quotes(value: Any, quote_char: Optional[str]) -> str:\n    return \"{quote}{value}{quote}\".format(value=value, quote=quote_char or \"\")\n\n\ndef format_alias_sql(\n    sql: str,\n    alias: Optional[str],\n    quote_char: Optional[str] = None,\n    alias_quote_char: Optional[str] = None,\n    as_keyword: bool = False,\n    **kwargs: Any,\n) -> str:\n    if alias is None:\n        return sql\n    return \"{sql}{_as}{alias}\".format(\n        sql=sql, _as=' AS ' if as_keyword else ' ', alias=format_quotes(alias, alias_quote_char or quote_char)\n    )\n\n\ndef validate(*args: Any, exc: Optional[Exception] = None, type: Optional[Type] = None) -> None:\n    if type is not None:\n        for arg in args:\n            if not isinstance(arg, type):\n                raise exc\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll reproduce the issue and inspect how queries set and use the immutability flag.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-51f5bfbf-9c82-48b1-9e2c-d1b5ec21afc2-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cd /testbed && python -c \"\nfrom pypika import Query, Table\ntable = Table('my_table')\nquery0 = Query.from_(table, immutable=False)\nquery1 = query0.select(table.column)\nprint('query0 is query1:', query0 is query1)\nprint('query0.immutable:', getattr(query0, 'immutable', 'MISSING'))\nprint(type(query0))\n\""
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-51f5bfbf-9c82-48b1-9e2c-d1b5ec21afc2-3",
+            "content": "query0 is query1: True\nquery0.immutable: False\n<class 'pypika.queries.QueryBuilder'>\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-09c2bd49-2dfd-41e2-b210-a22ba50d6a8c-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cd /testbed && python -c \"\nimport inspect\nfrom pypika import Query\nprint(inspect.getsource(Query.from_))\n\" && echo \"==== QUERIES.PY builder related ====\" && grep -n \"immutable\\|@builder\\|def from_\\|def select\\|deepcopy\\|copy.copy\" /testbed/pypika/queries.py | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-09c2bd49-2dfd-41e2-b210-a22ba50d6a8c-4",
+            "content": "    @classmethod\n    def from_(cls, table: Union[Selectable, str], **kwargs: Any) -> \"QueryBuilder\":\n        \"\"\"\n        Query builder entry point.  Initializes query building and sets the table to select from.  When using this\n        function, the query becomes a SELECT query.\n\n        :param table:\n            Type: Table or str\n\n            An instance of a Table object or a string table name.\n\n        :return: QueryBuilder\n        \"\"\"\n        return cls._builder(**kwargs).from_(table)\n\n==== QUERIES.PY builder related ====\n40:    @builder\n164:    @builder\n172:    @builder\n209:    def select(self, *terms: Union[int, float, str, bool, Term, Field]) -> \"QueryBuilder\":\n352:    This class is immutable.\n369:    def from_(cls, table: Union[Selectable, str], **kwargs: Any) -> \"QueryBuilder\":\n479:    def select(cls, *terms: Union[int, float, str, bool, Term], **kwargs: Any) -> \"QueryBuilder\":\n568:    @builder\n579:    @builder\n583:    @builder\n587:    @builder\n591:    @builder\n595:    @builder\n599:    @builder\n603:    @builder\n712:        immutable: bool = True,\n763:        self.immutable = immutable\n783:    @builder\n784:    def from_(self, selectable: Union[Selectable, Query, str]) -> \"QueryBuilder\":\n810:    @builder\n847:    @builder\n852:    @builder\n862:    @builder\n863:    def select(self, *terms: Any) -> \"QueryBuilder\":\n874:    @builder\n881:    @builder\n888:    @builder\n901:    @builder\n906:    @builder\n911:    @builder\n919:    @builder\n927:    @builder\n931:    @builder\n935:    @builder\n939:    @builder\n949:    @builder\n962:    @builder\n972:    @builder\n982:    @builder\n986:    @builder\n1012:    @builder\n1019:    @builder\n1066:    @builder\n1070:    @builder\n1074:    @builder\n1078:    @builder\n1082:    @builder\n1086:    @builder\n1090:    @builder\n1094:    @builder\n1108:    @builder\n1676:    @builder\n1718:    @builder\n1750:    @builder\n1800:    @builder\n1819:    @builder\n1829:    @builder\n1839:    @builder\n1849:    @builder\n1875:    @builder\n1896:    @builder\n1911:    @builder\n1931:    @builder\n1982:    @builder\n2004:    @builder\n2126:    @builder\n2130:    @builder\n2139:    @builder\n2143:    @builder\n2153:    @builder\n2157:    @builder\n2202:    @builder\n2207:    @builder\n2212:    @builder\n2216:    @builder\n2220:    @builder\n2224:    @builder\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-09ff2a78-5bd4-4fe7-8957-8344fece63e0-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '340,800p' /testbed/pypika/queries.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-09ff2a78-5bd4-4fe7-8957-8344fece63e0-5",
+            "content": "     for field, directionality in self._orderbys:\n            term = (\n                format_quotes(field.alias, quote_char)\n                if field.alias and field.alias in selected_aliases\n                else field.get_sql(quote_char=quote_char, **kwargs)\n            )\n\n            clauses.append(\n                \"{term} {orient}\".format(term=term, orient=directionality.value) if directionality is not None else term\n            )\n\n        return \" ORDER BY {orderby}\".format(orderby=\",\".join(clauses))\n\n    def _offset_sql(self) -> str:\n        return \" OFFSET {offset}\".format(offset=self._offset)\n\n    def _limit_sql(self) -> str:\n        return \" LIMIT {limit}\".format(limit=self._limit)\n\n\nclass QueryBuilder(Selectable, Term):\n    \"\"\"\n    Query Builder is the main class in pypika which stores the state of a query and offers functions which allow the\n    state to be branched immutably.\n    \"\"\"\n\n    QUOTE_CHAR = '\"'\n    SECONDARY_QUOTE_CHAR = \"'\"\n    ALIAS_QUOTE_CHAR = None\n    QUERY_ALIAS_QUOTE_CHAR = None\n    QUERY_CLS = Query\n\n    def __init__(\n        self,\n        dialect: Optional[Dialects] = None,\n        wrap_set_operation_queries: bool = True,\n        wrapper_cls: Type[ValueWrapper] = ValueWrapper,\n        immutable: bool = True,\n        as_keyword: bool = False,\n    ):\n        super().__init__(None)\n\n        self._from = []\n        self._insert_table = None\n        self._update_table = None\n        self._delete_from = False\n        self._replace = False\n\n        self._with = []\n        self._selects = []\n        self._force_indexes = []\n        self._use_indexes = []\n        self._columns = []\n        self._values = []\n        self._distinct = False\n        self._ignore = False\n\n        self._for_update = False\n\n        self._wheres = None\n        self._prewheres = None\n        self._groupbys = []\n        self._with_totals = False\n        self._havings = None\n        self._orderbys = []\n        self._joins = []\n        self._unions = []\n        self._using = []\n\n        self._limit = None\n        self._offset = None\n\n        self._updates = []\n\n        self._select_star = False\n        self._select_star_tables = set()\n        self._mysql_rollup = False\n        self._select_into = False\n\n        self._subquery_count = 0\n        self._foreign_table = False\n\n        self.dialect = dialect\n        self.as_keyword = as_keyword\n        self.wrap_set_operation_queries = wrap_set_operation_queries\n\n        self._wrapper_cls = wrapper_cls\n\n        self.immutable = immutable\n\n    def __copy__(self) -> \"QueryBuilder\":\n        newone = type(self).__new__(type(self))\n        newone.__dict__.update(self.__dict__)\n        newone._select_star_tables = copy(self._select_star_tables)\n        newone._from = copy(self._from)\n        newone._with = copy(self._with)\n        newone._selects = copy(self._selects)\n        newone._columns = copy(self._columns)\n        newone._values = copy(self._values)\n        newone._groupbys = copy(self._groupbys)\n        newone._orderbys = copy(self._orderbys)\n        newone._joins = copy(self._joins)\n        newone._unions = copy(self._unions)\n        newone._updates = copy(self._updates)\n        newone._force_indexes = copy(self._force_indexes)\n        newone._use_indexes = copy(self._use_indexes)\n        return newone\n\n    @builder\n    def from_(self, selectable: Union[Selectable, Query, str]) -> \"QueryBuilder\":\n        \"\"\"\n        Adds a table to the query. This function can only be called once and will raise an AttributeError if called a\n        second time.\n\n        :param selectable:\n            Type: ``Table``, ``Query``, or ``str``\n\n            When a ``str`` is passed, a table with the name matching the ``str`` value is used.\n\n        :returns\n            A copy of the query with the table added.\n        \"\"\"\n\n        self._from.append(Table(selectable) if isinstance(selectable, str) else selectable)\n\n        if isinstance(selectable, (QueryBuilder, _SetOperation)) and selectable.alias is None:\n"
+          }
+        ]
+      }
+    }
+  ]
+}

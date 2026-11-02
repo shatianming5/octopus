@@ -1,0 +1,2967 @@
+{
+  "cohort": "e2e-5202",
+  "decision": "TRACE_COMPLETE",
+  "environment": {
+    "cuda_visible_devices": "GPU-3e940a5a-a24d-b615-dc69-df141ced7af0",
+    "device_name": "NVIDIA GeForce RTX 4090 D",
+    "device_uuid": "3e940a5a-a24d-b615-dc69-df141ced7af0",
+    "effective_engine_config": {
+      "admission_calibration_id": null,
+      "async_scheduling": false,
+      "block_size": 16,
+      "dtype": "torch.bfloat16",
+      "enable_chunked_prefill": true,
+      "enable_prefix_caching": true,
+      "enforce_eager": true,
+      "kv_cache_memory_bytes": 235798528,
+      "max_model_len": 4096,
+      "max_num_batched_tokens": 512,
+      "max_num_seqs": 2,
+      "retention_implementation": "b6_queue_aware-local-queued-definite-prefix-per-draw-no-lease",
+      "retention_policy": "b6_queue_aware",
+      "structured_outputs_backend": "xgrammar",
+      "structured_outputs_disable_any_whitespace": true,
+      "upstream_vllm_tag_commit": "2cf0a6915ce544dc493a0990f2ea38d81601128a"
+    },
+    "kv_allocated_capacity_bytes": 235798528,
+    "kv_block_bytes": 917504,
+    "model_id": "Qwen/Qwen2.5-7B-Instruct",
+    "model_revision": null,
+    "semantic_value_cost": {
+      "formula": "W_D(t)=D*t+t*(t+1)/2",
+      "hidden_size": 3584,
+      "units": "analytic normalized prefill-work proxy; not measured FLOPs or seconds"
+    },
+    "tokenizer_revision": null,
+    "vllm_version": "0.28.0"
+  },
+  "input_sha256": "ab3f239182eabcb75a3a875565edbc8c439b86c249739745f807136b2a4f7b5a",
+  "merged_weights": {
+    "adapter_sha256": "afbaddcb5387cbd084c58efeb596b0be0091664ebf75445b8bd038d8c63cc4d3",
+    "dtype": "bfloat16",
+    "merge_seconds": 14.19881481397897,
+    "model_path": "merged-qwen-lora",
+    "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "training_runs": 0
+  },
+  "method": "structural",
+  "rows": [
+    {
+      "bg_seconds": 0.730961355031468,
+      "candidate_materialization": {
+        "cp-04d11b5a6916b7d0": {
+          "output_token_ids": [
+            32462
+          ],
+          "prompt_sha256": "6763e5ea870d23515cbc55c9d1b062454c460fac1dec5847884a57bc6c0aa827"
+        },
+        "cp-82a03791b385cc94": {
+          "output_token_ids": [
+            32462
+          ],
+          "prompt_sha256": "3a782f1f599380480ca9c14d99c409e0c2ee2dc37a2379ed08772d47e5dae49d"
+        }
+      },
+      "choice": null,
+      "choice_response": null,
+      "continuation_text": "[[2, 0], [3, 8]]",
+      "decision_id": "d-7bc9e77c7d809d3a",
+      "expected_checkpoint": "cp-82a03791b385cc94",
+      "family": "matrix_multiplication",
+      "fg_e2e_seconds": 1.026728630065918,
+      "final_pool": {
+        "active_blocks": 0,
+        "cold_free_blocks": 1,
+        "free_blocks": 256,
+        "request_owned_blocks": 0,
+        "retention_only_blocks": 0,
+        "shared_request_retention_blocks": 0,
+        "total_blocks": 256,
+        "warm_cached_blocks": 255
+      },
+      "goal_index": 1,
+      "metrics": {
+        "candidate-0": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 690681.067230906,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "candidate-1": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2032,
+          "adopted_prefix_tokens": 16,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 690681.304014097,
+          "inherited_tokens": 16,
+          "last_scheduled_event": [
+            0,
+            1552,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              16,
+              528
+            ],
+            [
+              528,
+              1040
+            ],
+            [
+              1040,
+              1552
+            ],
+            [
+              1552,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "continuation": {
+          "actual_decode_tokens": 12,
+          "actual_prefill_tokens": 48,
+          "adopted_prefix_tokens": 2048,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": 2048,
+          "consumer_id": "request:branch-8b21cc9dcb4447a492bfe192588ffaf6-bc31c85a",
+          "enqueued_at": 690681.767057091,
+          "finish_status": "FINISHED_STOPPED",
+          "first_scheduled_at": 690681.768286216,
+          "inherited_tokens": 2048,
+          "last_scheduled_event": [
+            0,
+            2107,
+            2108
+          ],
+          "parent_checkpoint_id": "checkpoint-a271b2c16409482484d99790e33c0a8f",
+          "preemptions": 0,
+          "prompt_tokens": 2096,
+          "scheduled_ranges": [
+            [
+              2048,
+              2096
+            ],
+            [
+              2096,
+              2097
+            ],
+            [
+              2097,
+              2098
+            ],
+            [
+              2098,
+              2099
+            ],
+            [
+              2099,
+              2100
+            ],
+            [
+              2100,
+              2101
+            ],
+            [
+              2101,
+              2102
+            ],
+            [
+              2102,
+              2103
+            ],
+            [
+              2103,
+              2104
+            ],
+            [
+              2104,
+              2105
+            ],
+            [
+              2105,
+              2106
+            ],
+            [
+              2106,
+              2107
+            ],
+            [
+              2107,
+              2108
+            ]
+          ],
+          "selected_parent_tokens": 2049
+        },
+        "pressure": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 690681.540606126,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        }
+      },
+      "minimum_continuation_prefill": 48,
+      "native_after": {
+        "cp-04d11b5a6916b7d0": 16,
+        "cp-82a03791b385cc94": 2048
+      },
+      "native_before": {
+        "cp-04d11b5a6916b7d0": 2048,
+        "cp-82a03791b385cc94": 2048
+      },
+      "quality_pass": true,
+      "selection_correct": null
+    },
+    {
+      "bg_seconds": 0.7132088060025126,
+      "candidate_materialization": {
+        "cp-9ff07a1acd478b8e": {
+          "output_token_ids": [
+            32462
+          ],
+          "prompt_sha256": "615cd35e2854ac970b09f99885f02c0911ee73c36edb0dc8b4c43b26cd0ad22e"
+        },
+        "cp-fdb166f2e468d0a5": {
+          "output_token_ids": [
+            32462
+          ],
+          "prompt_sha256": "53e8d6f23b614f76b5775aab29c34e69549875c0b403d75a2f75e489d0d807e4"
+        }
+      },
+      "choice": null,
+      "choice_response": null,
+      "continuation_text": "7",
+      "decision_id": "d-b9f2ddf20a3ca5a4",
+      "expected_checkpoint": "cp-fdb166f2e468d0a5",
+      "family": "polynomial_orientation",
+      "fg_e2e_seconds": 0.7648962209932506,
+      "final_pool": {
+        "active_blocks": 0,
+        "cold_free_blocks": 1,
+        "free_blocks": 256,
+        "request_owned_blocks": 0,
+        "retention_only_blocks": 0,
+        "shared_request_retention_blocks": 0,
+        "total_blocks": 256,
+        "warm_cached_blocks": 255
+      },
+      "goal_index": 0,
+      "metrics": {
+        "candidate-0": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 690682.076601624,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "candidate-1": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2032,
+          "adopted_prefix_tokens": 16,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 690682.314662237,
+          "inherited_tokens": 16,
+          "last_scheduled_event": [
+            0,
+            1552,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              16,
+              528
+            ],
+            [
+              528,
+              1040
+            ],
+            [
+              1040,
+              1552
+            ],
+            [
+              1552,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "continuation": {
+          "actual_decode_tokens": 1,
+          "actual_prefill_tokens": 35,
+          "adopted_prefix_tokens": 2048,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": 2048,
+          "consumer_id": "request:branch-34af507cddec46c89f99748719d91658-ba78e4a8",
+          "enqueued_at": 690682.776148772,
+          "finish_status": "FINISHED_STOPPED",
+          "first_scheduled_at": 690682.776941496,
+          "inherited_tokens": 2048,
+          "last_scheduled_event": [
+            0,
+            2083,
+            2084
+          ],
+          "parent_checkpoint_id": "checkpoint-3eaf8a66f14445a48babc8e44ab3ec60",
+          "preemptions": 0,
+          "prompt_tokens": 2083,
+          "scheduled_ranges": [
+            [
+              2048,
+              2083
+            ],
+            [
+              2083,
+              2084
+            ]
+          ],
+          "selected_parent_tokens": 2049
+        },
+        "pressure": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 690682.552142619,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        }
+      },
+      "minimum_continuation_prefill": 35,
+      "native_after": {
+        "cp-9ff07a1acd478b8e": 16,
+        "cp-fdb166f2e468d0a5": 2048
+      },
+      "native_before": {
+        "cp-9ff07a1acd478b8e": 2048,
+        "cp-fdb166f2e468d0a5": 2048
+      },
+      "quality_pass": false,
+      "selection_correct": null
+    },
+    {
+      "bg_seconds": 0.718397694057785,
+      "candidate_materialization": {
+        "cp-590d1df754d0d419": {
+          "output_token_ids": [
+            32462
+          ],
+          "prompt_sha256": "96a449beafad523dcc5f713d3bc468a9cc00da71ffcae6fc4a3ed18ef9af6c3d"
+        },
+        "cp-76c43ca545f363a4": {
+          "output_token_ids": [
+            32462
+          ],
+          "prompt_sha256": "31c40acc843b6ac88750df147872191947e1f216d6ecaf214d0d59682a277e24"
+        }
+      },
+      "choice": null,
+      "choice_response": null,
+      "continuation_text": "0.5",
+      "decision_id": "d-61c2ce0b5dfc5e8e",
+      "expected_checkpoint": "cp-590d1df754d0d419",
+      "family": "covariance_estimator",
+      "fg_e2e_seconds": 1.062416085973382,
+      "final_pool": {
+        "active_blocks": 0,
+        "cold_free_blocks": 1,
+        "free_blocks": 256,
+        "request_owned_blocks": 0,
+        "retention_only_blocks": 0,
+        "shared_request_retention_blocks": 0,
+        "total_blocks": 256,
+        "warm_cached_blocks": 255
+      },
+      "goal_index": 1,
+      "metrics": {
+        "candidate-0": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 690682.847310479,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "candidate-1": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2032,
+          "adopted_prefix_tokens": 16,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 690683.086508946,
+          "inherited_tokens": 16,
+          "last_scheduled_event": [
+            0,
+            1552,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              16,
+              528
+            ],
+            [
+              528,
+              1040
+            ],
+            [
+              1040,
+              1552
+            ],
+            [
+              1552,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "continuation": {
+          "actual_decode_tokens": 3,
+          "actual_prefill_tokens": 2067,
+          "adopted_prefix_tokens": 16,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": 2048,
+          "consumer_id": "request:branch-0cc75d081e7149f5a8e6bf56473125e3-866a0d68",
+          "enqueued_at": 690683.547165676,
+          "finish_status": "FINISHED_STOPPED",
+          "first_scheduled_at": 690683.547614978,
+          "inherited_tokens": 16,
+          "last_scheduled_event": [
+            0,
+            2085,
+            2086
+          ],
+          "parent_checkpoint_id": "checkpoint-d580f8a9c437488b9e243f2844714c86",
+          "preemptions": 0,
+          "prompt_tokens": 2083,
+          "scheduled_ranges": [
+            [
+              16,
+              528
+            ],
+            [
+              528,
+              1040
+            ],
+            [
+              1040,
+              1552
+            ],
+            [
+              1552,
+              2064
+            ],
+            [
+              2064,
+              2083
+            ],
+            [
+              2083,
+              2084
+            ],
+            [
+              2084,
+              2085
+            ],
+            [
+              2085,
+              2086
+            ]
+          ],
+          "selected_parent_tokens": 2049
+        },
+        "pressure": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 690683.323128042,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        }
+      },
+      "minimum_continuation_prefill": 35,
+      "native_after": {
+        "cp-590d1df754d0d419": 16,
+        "cp-76c43ca545f363a4": 2048
+      },
+      "native_before": {
+        "cp-590d1df754d0d419": 2048,
+        "cp-76c43ca545f363a4": 2048
+      },
+      "quality_pass": false,
+      "selection_correct": null
+    },
+    {
+      "bg_seconds": 0.7205776480259374,
+      "candidate_materialization": {
+        "cp-811750fd8c5d33e0": {
+          "output_token_ids": [
+            32462
+          ],
+          "prompt_sha256": "cc605d5b32c4ebe0f0d0aae794a38569143be1d3723d21b0a8cfa3abc289585d"
+        },
+        "cp-cf698d2c2cfb32ed": {
+          "output_token_ids": [
+            32462
+          ],
+          "prompt_sha256": "6e4f94ac4457d7f5b660e8b54be3d3121a21f910308afa80364a565eeda9c6be"
+        }
+      },
+      "choice": null,
+      "choice_response": null,
+      "continuation_text": "[(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]",
+      "decision_id": "d-57371f3507bd5a8c",
+      "expected_checkpoint": "cp-811750fd8c5d33e0",
+      "family": "lattice_connectivity",
+      "fg_e2e_seconds": 1.6385446219937876,
+      "final_pool": {
+        "active_blocks": 0,
+        "cold_free_blocks": 1,
+        "free_blocks": 256,
+        "request_owned_blocks": 0,
+        "retention_only_blocks": 0,
+        "shared_request_retention_blocks": 0,
+        "total_blocks": 256,
+        "warm_cached_blocks": 255
+      },
+      "goal_index": 1,
+      "metrics": {
+        "candidate-0": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 690683.910796519,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "candidate-1": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2032,
+          "adopted_prefix_tokens": 16,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 690684.151665501,
+          "inherited_tokens": 16,
+          "last_scheduled_event": [
+            0,
+            1552,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              16,
+              528
+            ],
+            [
+              528,
+              1040
+            ],
+            [
+              1040,
+              1552
+            ],
+            [
+              1552,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "continuation": {
+          "actual_decode_tokens": 49,
+          "actual_prefill_tokens": 28,
+          "adopted_prefix_tokens": 2048,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": 2048,
+          "consumer_id": "request:branch-a2846bf77c934cf7832381b532b949e8-a54ed090",
+          "enqueued_at": 690684.61273675,
+          "finish_status": "FINISHED_STOPPED",
+          "first_scheduled_at": 690684.613515363,
+          "inherited_tokens": 2048,
+          "last_scheduled_event": [
+            0,
+            2124,
+            2125
+          ],
+          "parent_checkpoint_id": "checkpoint-b966efb8ae6846c8818b6e84cefb5817",
+          "preemptions": 0,
+          "prompt_tokens": 2076,
+          "scheduled_ranges": [
+            [
+              2048,
+              2076
+            ],
+            [
+              2076,
+              2077
+            ],
+            [
+              2077,
+              2078
+            ],
+            [
+              2078,
+              2079
+            ],
+            [
+              2079,
+              2080
+            ],
+            [
+              2080,
+              2081
+            ],
+            [
+              2081,
+              2082
+            ],
+            [
+              2082,
+              2083
+            ],
+            [
+              2083,
+              2084
+            ],
+            [
+              2084,
+              2085
+            ],
+            [
+              2085,
+              2086
+            ],
+            [
+              2086,
+              2087
+            ],
+            [
+              2087,
+              2088
+            ],
+            [
+              2088,
+              2089
+            ],
+            [
+              2089,
+              2090
+            ],
+            [
+              2090,
+              2091
+            ],
+            [
+              2091,
+              2092
+            ],
+            [
+              2092,
+              2093
+            ],
+            [
+              2093,
+              2094
+            ],
+            [
+              2094,
+              2095
+            ],
+            [
+              2095,
+              2096
+            ],
+            [
+              2096,
+              2097
+            ],
+            [
+              2097,
+              2098
+            ],
+            [
+              2098,
+              2099
+            ],
+            [
+              2099,
+              2100
+            ],
+            [
+              2100,
+              2101
+            ],
+            [
+              2101,
+              2102
+            ],
+            [
+              2102,
+              2103
+            ],
+            [
+              2103,
+              2104
+            ],
+            [
+              2104,
+              2105
+            ],
+            [
+              2105,
+              2106
+            ],
+            [
+              2106,
+              2107
+            ],
+            [
+              2107,
+              2108
+            ],
+            [
+              2108,
+              2109
+            ],
+            [
+              2109,
+              2110
+            ],
+            [
+              2110,
+              2111
+            ],
+            [
+              2111,
+              2112
+            ],
+            [
+              2112,
+              2113
+            ],
+            [
+              2113,
+              2114
+            ],
+            [
+              2114,
+              2115
+            ],
+            [
+              2115,
+              2116
+            ],
+            [
+              2116,
+              2117
+            ],
+            [
+              2117,
+              2118
+            ],
+            [
+              2118,
+              2119
+            ],
+            [
+              2119,
+              2120
+            ],
+            [
+              2120,
+              2121
+            ],
+            [
+              2121,
+              2122
+            ],
+            [
+              2122,
+              2123
+            ],
+            [
+              2123,
+              2124
+            ],
+            [
+              2124,
+              2125
+            ]
+          ],
+          "selected_parent_tokens": 2049
+        },
+        "pressure": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 690684.388975139,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        }
+      },
+      "minimum_continuation_prefill": 28,
+      "native_after": {
+        "cp-811750fd8c5d33e0": 2048,
+        "cp-cf698d2c2cfb32ed": 16
+      },
+      "native_before": {
+        "cp-811750fd8c5d33e0": 2048,
+        "cp-cf698d2c2cfb32ed": 2048
+      },
+      "quality_pass": true,
+      "selection_correct": null
+    },
+    {
+      "bg_seconds": 0.7123632049188018,
+      "candidate_materialization": {
+        "cp-82f2789c69b248ef": {
+          "output_token_ids": [
+            16250
+          ],
+          "prompt_sha256": "06e11e71e74d18e07ad105d532531c686e90d302adf55c000b5e3188e0f4029e"
+        },
+        "cp-d027a31b9cba6be2": {
+          "output_token_ids": [
+            32462
+          ],
+          "prompt_sha256": "53461137ab6da442ec31256264158bc5d2524bd62f78198d3afe5c805dec2e4c"
+        }
+      },
+      "choice": null,
+      "choice_response": null,
+      "continuation_text": "4098",
+      "decision_id": "d-d74d8b1ead24ee86",
+      "expected_checkpoint": "cp-d027a31b9cba6be2",
+      "family": "byte_significance",
+      "fg_e2e_seconds": 1.0650608069263399,
+      "final_pool": {
+        "active_blocks": 0,
+        "cold_free_blocks": 1,
+        "free_blocks": 256,
+        "request_owned_blocks": 0,
+        "retention_only_blocks": 0,
+        "shared_request_retention_blocks": 0,
+        "total_blocks": 256,
+        "warm_cached_blocks": 255
+      },
+      "goal_index": 1,
+      "metrics": {
+        "candidate-0": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 690685.542863974,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "candidate-1": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2032,
+          "adopted_prefix_tokens": 16,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 690685.783593042,
+          "inherited_tokens": 16,
+          "last_scheduled_event": [
+            0,
+            1552,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              16,
+              528
+            ],
+            [
+              528,
+              1040
+            ],
+            [
+              1040,
+              1552
+            ],
+            [
+              1552,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "continuation": {
+          "actual_decode_tokens": 4,
+          "actual_prefill_tokens": 2062,
+          "adopted_prefix_tokens": 16,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": 2048,
+          "consumer_id": "request:branch-5d50602129f140d7a8fd89e22663a82b-89a113a0",
+          "enqueued_at": 690686.244309763,
+          "finish_status": "FINISHED_STOPPED",
+          "first_scheduled_at": 690686.244772985,
+          "inherited_tokens": 16,
+          "last_scheduled_event": [
+            0,
+            2081,
+            2082
+          ],
+          "parent_checkpoint_id": "checkpoint-d0ca4a6de4c441769c6b76e4db6eda63",
+          "preemptions": 0,
+          "prompt_tokens": 2078,
+          "scheduled_ranges": [
+            [
+              16,
+              528
+            ],
+            [
+              528,
+              1040
+            ],
+            [
+              1040,
+              1552
+            ],
+            [
+              1552,
+              2064
+            ],
+            [
+              2064,
+              2078
+            ],
+            [
+              2078,
+              2079
+            ],
+            [
+              2079,
+              2080
+            ],
+            [
+              2080,
+              2081
+            ],
+            [
+              2081,
+              2082
+            ]
+          ],
+          "selected_parent_tokens": 2049
+        },
+        "pressure": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 690686.020821046,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        }
+      },
+      "minimum_continuation_prefill": 30,
+      "native_after": {
+        "cp-82f2789c69b248ef": 2048,
+        "cp-d027a31b9cba6be2": 16
+      },
+      "native_before": {
+        "cp-82f2789c69b248ef": 2048,
+        "cp-d027a31b9cba6be2": 2048
+      },
+      "quality_pass": false,
+      "selection_correct": null
+    },
+    {
+      "bg_seconds": 0.7129256019834429,
+      "candidate_materialization": {
+        "cp-0a211d4c976fdde1": {
+          "output_token_ids": [
+            32462
+          ],
+          "prompt_sha256": "8c02c03f41af8b91808faba59e8b3c47f86d9cf330a2c8d8b8618a3f9e8f60ac"
+        },
+        "cp-7b5f3df56fd4a2c2": {
+          "output_token_ids": [
+            32462
+          ],
+          "prompt_sha256": "b0e886718fcc4ad0a9399d1bfa36c6534e4318df05f7edd0fdc0dcdc826a23f9"
+        }
+      },
+      "choice": null,
+      "choice_response": null,
+      "continuation_text": "[1, 3, 5]",
+      "decision_id": "d-00bcee5b3779be74",
+      "expected_checkpoint": "cp-7b5f3df56fd4a2c2",
+      "family": "quadrature_rule",
+      "fg_e2e_seconds": 1.1735736979171634,
+      "final_pool": {
+        "active_blocks": 0,
+        "cold_free_blocks": 1,
+        "free_blocks": 256,
+        "request_owned_blocks": 0,
+        "retention_only_blocks": 0,
+        "shared_request_retention_blocks": 0,
+        "total_blocks": 256,
+        "warm_cached_blocks": 255
+      },
+      "goal_index": 1,
+      "metrics": {
+        "candidate-0": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 690686.609775419,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "candidate-1": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2032,
+          "adopted_prefix_tokens": 16,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 690686.848909429,
+          "inherited_tokens": 16,
+          "last_scheduled_event": [
+            0,
+            1552,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              16,
+              528
+            ],
+            [
+              528,
+              1040
+            ],
+            [
+              1040,
+              1552
+            ],
+            [
+              1552,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "continuation": {
+          "actual_decode_tokens": 9,
+          "actual_prefill_tokens": 2067,
+          "adopted_prefix_tokens": 16,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": 2048,
+          "consumer_id": "request:branch-661e5b40fe5d419da11299bde2686015-b9cc77a0",
+          "enqueued_at": 690687.310749951,
+          "finish_status": "FINISHED_STOPPED",
+          "first_scheduled_at": 690687.311202913,
+          "inherited_tokens": 16,
+          "last_scheduled_event": [
+            0,
+            2091,
+            2092
+          ],
+          "parent_checkpoint_id": "checkpoint-8cdaa7f12fe14d2d90cd8b90bdef501b",
+          "preemptions": 0,
+          "prompt_tokens": 2083,
+          "scheduled_ranges": [
+            [
+              16,
+              528
+            ],
+            [
+              528,
+              1040
+            ],
+            [
+              1040,
+              1552
+            ],
+            [
+              1552,
+              2064
+            ],
+            [
+              2064,
+              2083
+            ],
+            [
+              2083,
+              2084
+            ],
+            [
+              2084,
+              2085
+            ],
+            [
+              2085,
+              2086
+            ],
+            [
+              2086,
+              2087
+            ],
+            [
+              2087,
+              2088
+            ],
+            [
+              2088,
+              2089
+            ],
+            [
+              2089,
+              2090
+            ],
+            [
+              2090,
+              2091
+            ],
+            [
+              2091,
+              2092
+            ]
+          ],
+          "selected_parent_tokens": 2049
+        },
+        "pressure": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 690687.087449787,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        }
+      },
+      "minimum_continuation_prefill": 35,
+      "native_after": {
+        "cp-0a211d4c976fdde1": 2048,
+        "cp-7b5f3df56fd4a2c2": 16
+      },
+      "native_before": {
+        "cp-0a211d4c976fdde1": 2048,
+        "cp-7b5f3df56fd4a2c2": 2048
+      },
+      "quality_pass": false,
+      "selection_correct": null
+    },
+    {
+      "bg_seconds": 0.7128280370961875,
+      "candidate_materialization": {
+        "cp-04d11b5a6916b7d0": {
+          "output_token_ids": [
+            32462
+          ],
+          "prompt_sha256": "4e5d7872230e4c6a4511ccd8c3e7852e42a71ac970a04548a07e99e31fc55517"
+        },
+        "cp-82a03791b385cc94": {
+          "output_token_ids": [
+            32462
+          ],
+          "prompt_sha256": "a4a88b0b7f47ad9c92e92afcf5659bf0db70eaa59886a0e7e0f5faabad2a7d6f"
+        }
+      },
+      "choice": null,
+      "choice_response": null,
+      "continuation_text": "[[4, 4], [8, 8]]",
+      "decision_id": "d-1a70887379b402ba",
+      "expected_checkpoint": "cp-04d11b5a6916b7d0",
+      "family": "matrix_multiplication",
+      "fg_e2e_seconds": 1.1934318210696802,
+      "final_pool": {
+        "active_blocks": 0,
+        "cold_free_blocks": 1,
+        "free_blocks": 256,
+        "request_owned_blocks": 0,
+        "retention_only_blocks": 0,
+        "shared_request_retention_blocks": 0,
+        "total_blocks": 256,
+        "warm_cached_blocks": 255
+      },
+      "goal_index": 0,
+      "metrics": {
+        "candidate-0": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 690687.783259386,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "candidate-1": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2032,
+          "adopted_prefix_tokens": 16,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 690688.022443755,
+          "inherited_tokens": 16,
+          "last_scheduled_event": [
+            0,
+            1552,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              16,
+              528
+            ],
+            [
+              528,
+              1040
+            ],
+            [
+              1040,
+              1552
+            ],
+            [
+              1552,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "continuation": {
+          "actual_decode_tokens": 12,
+          "actual_prefill_tokens": 2080,
+          "adopted_prefix_tokens": 16,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": 2048,
+          "consumer_id": "request:branch-80e051a01b72421baa2e663f6ada42a8-83a7d48b",
+          "enqueued_at": 690688.48550866,
+          "finish_status": "FINISHED_STOPPED",
+          "first_scheduled_at": 690688.485951651,
+          "inherited_tokens": 16,
+          "last_scheduled_event": [
+            0,
+            2107,
+            2108
+          ],
+          "parent_checkpoint_id": "checkpoint-0bc0f1a5ff514e2ca4b577d4efab2fc3",
+          "preemptions": 0,
+          "prompt_tokens": 2096,
+          "scheduled_ranges": [
+            [
+              16,
+              528
+            ],
+            [
+              528,
+              1040
+            ],
+            [
+              1040,
+              1552
+            ],
+            [
+              1552,
+              2064
+            ],
+            [
+              2064,
+              2096
+            ],
+            [
+              2096,
+              2097
+            ],
+            [
+              2097,
+              2098
+            ],
+            [
+              2098,
+              2099
+            ],
+            [
+              2099,
+              2100
+            ],
+            [
+              2100,
+              2101
+            ],
+            [
+              2101,
+              2102
+            ],
+            [
+              2102,
+              2103
+            ],
+            [
+              2103,
+              2104
+            ],
+            [
+              2104,
+              2105
+            ],
+            [
+              2105,
+              2106
+            ],
+            [
+              2106,
+              2107
+            ],
+            [
+              2107,
+              2108
+            ]
+          ],
+          "selected_parent_tokens": 2049
+        },
+        "pressure": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 690688.260411659,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        }
+      },
+      "minimum_continuation_prefill": 48,
+      "native_after": {
+        "cp-04d11b5a6916b7d0": 16,
+        "cp-82a03791b385cc94": 2048
+      },
+      "native_before": {
+        "cp-04d11b5a6916b7d0": 2048,
+        "cp-82a03791b385cc94": 2048
+      },
+      "quality_pass": false,
+      "selection_correct": null
+    },
+    {
+      "bg_seconds": 0.7110062829451635,
+      "candidate_materialization": {
+        "cp-590d1df754d0d419": {
+          "output_token_ids": [
+            32462
+          ],
+          "prompt_sha256": "e45b7f75dc0084a3e7c4ecead08b625e5e3cd24c1adf20776db2bf309c409c3b"
+        },
+        "cp-76c43ca545f363a4": {
+          "output_token_ids": [
+            32462
+          ],
+          "prompt_sha256": "7f31ba6f0580e6e8b9b25004d2df6ee2457468a15dfcfc07583cf62ea1040146"
+        }
+      },
+      "choice": null,
+      "choice_response": null,
+      "continuation_text": "0.5",
+      "decision_id": "d-5060e506ff8045b3",
+      "expected_checkpoint": "cp-76c43ca545f363a4",
+      "family": "covariance_estimator",
+      "fg_e2e_seconds": 0.8100575410062447,
+      "final_pool": {
+        "active_blocks": 0,
+        "cold_free_blocks": 1,
+        "free_blocks": 256,
+        "request_owned_blocks": 0,
+        "retention_only_blocks": 0,
+        "shared_request_retention_blocks": 0,
+        "total_blocks": 256,
+        "warm_cached_blocks": 255
+      },
+      "goal_index": 0,
+      "metrics": {
+        "candidate-0": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 690688.978303774,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "candidate-1": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2032,
+          "adopted_prefix_tokens": 16,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 690689.216976009,
+          "inherited_tokens": 16,
+          "last_scheduled_event": [
+            0,
+            1552,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              16,
+              528
+            ],
+            [
+              528,
+              1040
+            ],
+            [
+              1040,
+              1552
+            ],
+            [
+              1552,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "continuation": {
+          "actual_decode_tokens": 3,
+          "actual_prefill_tokens": 35,
+          "adopted_prefix_tokens": 2048,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": 2048,
+          "consumer_id": "request:branch-b072f1dcc0ad4b689141b50cff27c9f1-80df1d19",
+          "enqueued_at": 690689.677932041,
+          "finish_status": "FINISHED_STOPPED",
+          "first_scheduled_at": 690689.678752844,
+          "inherited_tokens": 2048,
+          "last_scheduled_event": [
+            0,
+            2085,
+            2086
+          ],
+          "parent_checkpoint_id": "checkpoint-b72c65945ace47cc90d836a2fc5e5a84",
+          "preemptions": 0,
+          "prompt_tokens": 2083,
+          "scheduled_ranges": [
+            [
+              2048,
+              2083
+            ],
+            [
+              2083,
+              2084
+            ],
+            [
+              2084,
+              2085
+            ],
+            [
+              2085,
+              2086
+            ]
+          ],
+          "selected_parent_tokens": 2049
+        },
+        "pressure": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 690689.454117198,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        }
+      },
+      "minimum_continuation_prefill": 35,
+      "native_after": {
+        "cp-590d1df754d0d419": 16,
+        "cp-76c43ca545f363a4": 2048
+      },
+      "native_before": {
+        "cp-590d1df754d0d419": 2048,
+        "cp-76c43ca545f363a4": 2048
+      },
+      "quality_pass": false,
+      "selection_correct": null
+    },
+    {
+      "bg_seconds": 0.7194446850335225,
+      "candidate_materialization": {
+        "cp-0a211d4c976fdde1": {
+          "output_token_ids": [
+            32462
+          ],
+          "prompt_sha256": "91d52a01c805dcfc5d258e498de926471cf6a473523b193d054c8531ca573311"
+        },
+        "cp-7b5f3df56fd4a2c2": {
+          "output_token_ids": [
+            32462
+          ],
+          "prompt_sha256": "9ff5cb75c87772c72473fa0a360b2c961b09ef674d56fb8afa90b0ba301051d2"
+        }
+      },
+      "choice": null,
+      "choice_response": null,
+      "continuation_text": "[1, 3]",
+      "decision_id": "d-61c4f6a4ebe9b1d7",
+      "expected_checkpoint": "cp-0a211d4c976fdde1",
+      "family": "quadrature_rule",
+      "fg_e2e_seconds": 0.8758113490184769,
+      "final_pool": {
+        "active_blocks": 0,
+        "cold_free_blocks": 1,
+        "free_blocks": 256,
+        "request_owned_blocks": 0,
+        "retention_only_blocks": 0,
+        "shared_request_retention_blocks": 0,
+        "total_blocks": 256,
+        "warm_cached_blocks": 255
+      },
+      "goal_index": 0,
+      "metrics": {
+        "candidate-0": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 690689.795550545,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "candidate-1": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2032,
+          "adopted_prefix_tokens": 16,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 690690.034741111,
+          "inherited_tokens": 16,
+          "last_scheduled_event": [
+            0,
+            1552,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              16,
+              528
+            ],
+            [
+              528,
+              1040
+            ],
+            [
+              1040,
+              1552
+            ],
+            [
+              1552,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "continuation": {
+          "actual_decode_tokens": 6,
+          "actual_prefill_tokens": 35,
+          "adopted_prefix_tokens": 2048,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": 2048,
+          "consumer_id": "request:branch-441fd12c7be2486c9ddc41479e7e266e-b9896c84",
+          "enqueued_at": 690690.497590608,
+          "finish_status": "FINISHED_STOPPED",
+          "first_scheduled_at": 690690.498504642,
+          "inherited_tokens": 2048,
+          "last_scheduled_event": [
+            0,
+            2088,
+            2089
+          ],
+          "parent_checkpoint_id": "checkpoint-1cd03603d61649e8b71e7b001206280b",
+          "preemptions": 0,
+          "prompt_tokens": 2083,
+          "scheduled_ranges": [
+            [
+              2048,
+              2083
+            ],
+            [
+              2083,
+              2084
+            ],
+            [
+              2084,
+              2085
+            ],
+            [
+              2085,
+              2086
+            ],
+            [
+              2086,
+              2087
+            ],
+            [
+              2087,
+              2088
+            ],
+            [
+              2088,
+              2089
+            ]
+          ],
+          "selected_parent_tokens": 2049
+        },
+        "pressure": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 690690.272473131,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        }
+      },
+      "minimum_continuation_prefill": 35,
+      "native_after": {
+        "cp-0a211d4c976fdde1": 2048,
+        "cp-7b5f3df56fd4a2c2": 16
+      },
+      "native_before": {
+        "cp-0a211d4c976fdde1": 2048,
+        "cp-7b5f3df56fd4a2c2": 2048
+      },
+      "quality_pass": false,
+      "selection_correct": null
+    },
+    {
+      "bg_seconds": 0.7146540710236877,
+      "candidate_materialization": {
+        "cp-82f2789c69b248ef": {
+          "output_token_ids": [
+            16250
+          ],
+          "prompt_sha256": "062a57f2b303c3e2d5e2c242025028426e52624586de2b97b6f760d848b6dfc5"
+        },
+        "cp-d027a31b9cba6be2": {
+          "output_token_ids": [
+            32462
+          ],
+          "prompt_sha256": "c7bce746a97b15343813b7e0c9a25d010421484ac26ce467b47370cc9f0334c3"
+        }
+      },
+      "choice": null,
+      "choice_response": null,
+      "continuation_text": "4098",
+      "decision_id": "d-7bf5ab3b1d01fb49",
+      "expected_checkpoint": "cp-82f2789c69b248ef",
+      "family": "byte_significance",
+      "fg_e2e_seconds": 0.8307027879636735,
+      "final_pool": {
+        "active_blocks": 0,
+        "cold_free_blocks": 1,
+        "free_blocks": 256,
+        "request_owned_blocks": 0,
+        "retention_only_blocks": 0,
+        "shared_request_retention_blocks": 0,
+        "total_blocks": 256,
+        "warm_cached_blocks": 255
+      },
+      "goal_index": 0,
+      "metrics": {
+        "candidate-0": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 690690.665169398,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "candidate-1": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2032,
+          "adopted_prefix_tokens": 16,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 690690.903554719,
+          "inherited_tokens": 16,
+          "last_scheduled_event": [
+            0,
+            1552,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              16,
+              528
+            ],
+            [
+              528,
+              1040
+            ],
+            [
+              1040,
+              1552
+            ],
+            [
+              1552,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "continuation": {
+          "actual_decode_tokens": 4,
+          "actual_prefill_tokens": 30,
+          "adopted_prefix_tokens": 2048,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": 2048,
+          "consumer_id": "request:branch-c25a249237184fd994ebd0986b1d54f1-9e6eaa48",
+          "enqueued_at": 690691.369304745,
+          "finish_status": "FINISHED_STOPPED",
+          "first_scheduled_at": 690691.370115608,
+          "inherited_tokens": 2048,
+          "last_scheduled_event": [
+            0,
+            2081,
+            2082
+          ],
+          "parent_checkpoint_id": "checkpoint-36f9c0b0b79045c9a44e8ff7f15dc6a5",
+          "preemptions": 0,
+          "prompt_tokens": 2078,
+          "scheduled_ranges": [
+            [
+              2048,
+              2078
+            ],
+            [
+              2078,
+              2079
+            ],
+            [
+              2079,
+              2080
+            ],
+            [
+              2080,
+              2081
+            ],
+            [
+              2081,
+              2082
+            ]
+          ],
+          "selected_parent_tokens": 2049
+        },
+        "pressure": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 690691.145550424,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        }
+      },
+      "minimum_continuation_prefill": 30,
+      "native_after": {
+        "cp-82f2789c69b248ef": 2048,
+        "cp-d027a31b9cba6be2": 16
+      },
+      "native_before": {
+        "cp-82f2789c69b248ef": 2048,
+        "cp-d027a31b9cba6be2": 2048
+      },
+      "quality_pass": false,
+      "selection_correct": null
+    },
+    {
+      "bg_seconds": 0.7110030399635434,
+      "candidate_materialization": {
+        "cp-811750fd8c5d33e0": {
+          "output_token_ids": [
+            32462
+          ],
+          "prompt_sha256": "358b9eafed75fd2037f1b60425cec19e20220790568113dd80596fb712ab3d53"
+        },
+        "cp-cf698d2c2cfb32ed": {
+          "output_token_ids": [
+            39814
+          ],
+          "prompt_sha256": "5dce511e7a49413f4a40be97531410804912c165b732e615973b61169e7fe11d"
+        }
+      },
+      "choice": null,
+      "choice_response": null,
+      "continuation_text": "[(-1, 0), (0, -1), (0, 1), (1, 0)]",
+      "decision_id": "d-1557098977c9843d",
+      "expected_checkpoint": "cp-cf698d2c2cfb32ed",
+      "family": "lattice_connectivity",
+      "fg_e2e_seconds": 1.45264833397232,
+      "final_pool": {
+        "active_blocks": 0,
+        "cold_free_blocks": 1,
+        "free_blocks": 256,
+        "request_owned_blocks": 0,
+        "retention_only_blocks": 0,
+        "shared_request_retention_blocks": 0,
+        "total_blocks": 256,
+        "warm_cached_blocks": 255
+      },
+      "goal_index": 0,
+      "metrics": {
+        "candidate-0": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 690691.497275601,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "candidate-1": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2032,
+          "adopted_prefix_tokens": 16,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 690691.735868521,
+          "inherited_tokens": 16,
+          "last_scheduled_event": [
+            0,
+            1552,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              16,
+              528
+            ],
+            [
+              528,
+              1040
+            ],
+            [
+              1040,
+              1552
+            ],
+            [
+              1552,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "continuation": {
+          "actual_decode_tokens": 25,
+          "actual_prefill_tokens": 2060,
+          "adopted_prefix_tokens": 16,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": 2048,
+          "consumer_id": "request:branch-d3f665cd37714e9086e257b33a712563-962032e7",
+          "enqueued_at": 690692.197763159,
+          "finish_status": "FINISHED_STOPPED",
+          "first_scheduled_at": 690692.1982215,
+          "inherited_tokens": 16,
+          "last_scheduled_event": [
+            0,
+            2100,
+            2101
+          ],
+          "parent_checkpoint_id": "checkpoint-01475cdcca6a480f939fd81a2c8609f6",
+          "preemptions": 0,
+          "prompt_tokens": 2076,
+          "scheduled_ranges": [
+            [
+              16,
+              528
+            ],
+            [
+              528,
+              1040
+            ],
+            [
+              1040,
+              1552
+            ],
+            [
+              1552,
+              2064
+            ],
+            [
+              2064,
+              2076
+            ],
+            [
+              2076,
+              2077
+            ],
+            [
+              2077,
+              2078
+            ],
+            [
+              2078,
+              2079
+            ],
+            [
+              2079,
+              2080
+            ],
+            [
+              2080,
+              2081
+            ],
+            [
+              2081,
+              2082
+            ],
+            [
+              2082,
+              2083
+            ],
+            [
+              2083,
+              2084
+            ],
+            [
+              2084,
+              2085
+            ],
+            [
+              2085,
+              2086
+            ],
+            [
+              2086,
+              2087
+            ],
+            [
+              2087,
+              2088
+            ],
+            [
+              2088,
+              2089
+            ],
+            [
+              2089,
+              2090
+            ],
+            [
+              2090,
+              2091
+            ],
+            [
+              2091,
+              2092
+            ],
+            [
+              2092,
+              2093
+            ],
+            [
+              2093,
+              2094
+            ],
+            [
+              2094,
+              2095
+            ],
+            [
+              2095,
+              2096
+            ],
+            [
+              2096,
+              2097
+            ],
+            [
+              2097,
+              2098
+            ],
+            [
+              2098,
+              2099
+            ],
+            [
+              2099,
+              2100
+            ],
+            [
+              2100,
+              2101
+            ]
+          ],
+          "selected_parent_tokens": 2049
+        },
+        "pressure": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 690691.973449267,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        }
+      },
+      "minimum_continuation_prefill": 28,
+      "native_after": {
+        "cp-811750fd8c5d33e0": 2048,
+        "cp-cf698d2c2cfb32ed": 16
+      },
+      "native_before": {
+        "cp-811750fd8c5d33e0": 2048,
+        "cp-cf698d2c2cfb32ed": 2048
+      },
+      "quality_pass": true,
+      "selection_correct": null
+    },
+    {
+      "bg_seconds": 0.7132466940674931,
+      "candidate_materialization": {
+        "cp-9ff07a1acd478b8e": {
+          "output_token_ids": [
+            32462
+          ],
+          "prompt_sha256": "ac9e07d73265ad82194d29499f04833c6bc8275e524732db50b2046cfdb0474d"
+        },
+        "cp-fdb166f2e468d0a5": {
+          "output_token_ids": [
+            32462
+          ],
+          "prompt_sha256": "36b5fad6a45ba8859624f38ed4521fe7278ed0372d2cd78e575b5fd377674eba"
+        }
+      },
+      "choice": null,
+      "choice_response": null,
+      "continuation_text": "7",
+      "decision_id": "d-9a5de0dc47ece783",
+      "expected_checkpoint": "cp-9ff07a1acd478b8e",
+      "family": "polynomial_orientation",
+      "fg_e2e_seconds": 1.0106840220978484,
+      "final_pool": {
+        "active_blocks": 0,
+        "cold_free_blocks": 1,
+        "free_blocks": 256,
+        "request_owned_blocks": 0,
+        "retention_only_blocks": 0,
+        "shared_request_retention_blocks": 0,
+        "total_blocks": 256,
+        "warm_cached_blocks": 255
+      },
+      "goal_index": 1,
+      "metrics": {
+        "candidate-0": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 690692.95103664,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "candidate-1": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2032,
+          "adopted_prefix_tokens": 16,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 690693.191205475,
+          "inherited_tokens": 16,
+          "last_scheduled_event": [
+            0,
+            1552,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              16,
+              528
+            ],
+            [
+              528,
+              1040
+            ],
+            [
+              1040,
+              1552
+            ],
+            [
+              1552,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "continuation": {
+          "actual_decode_tokens": 1,
+          "actual_prefill_tokens": 2067,
+          "adopted_prefix_tokens": 16,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": 2048,
+          "consumer_id": "request:branch-07e932c8d0eb4c7c8ad53d993499ca26-ad86eb34",
+          "enqueued_at": 690693.65372981,
+          "finish_status": "FINISHED_STOPPED",
+          "first_scheduled_at": 690693.654229092,
+          "inherited_tokens": 16,
+          "last_scheduled_event": [
+            0,
+            2083,
+            2084
+          ],
+          "parent_checkpoint_id": "checkpoint-04f34faf4c5b4bd19433ab38055f96c7",
+          "preemptions": 0,
+          "prompt_tokens": 2083,
+          "scheduled_ranges": [
+            [
+              16,
+              528
+            ],
+            [
+              528,
+              1040
+            ],
+            [
+              1040,
+              1552
+            ],
+            [
+              1552,
+              2064
+            ],
+            [
+              2064,
+              2083
+            ],
+            [
+              2083,
+              2084
+            ]
+          ],
+          "selected_parent_tokens": 2049
+        },
+        "pressure": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 690693.429588812,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        }
+      },
+      "minimum_continuation_prefill": 35,
+      "native_after": {
+        "cp-9ff07a1acd478b8e": 16,
+        "cp-fdb166f2e468d0a5": 2048
+      },
+      "native_before": {
+        "cp-9ff07a1acd478b8e": 2048,
+        "cp-fdb166f2e468d0a5": 2048
+      },
+      "quality_pass": false,
+      "selection_correct": null
+    }
+  ],
+  "schema": "octopus-utility-v3-gpu-trace-v1"
+}

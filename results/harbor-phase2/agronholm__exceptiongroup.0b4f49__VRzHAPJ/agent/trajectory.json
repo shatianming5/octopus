@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "agronholm__exceptiongroup.0b4f49__VRzHAPJ__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# NameError suggestions not working correctly\n\nI noticed that when I have a typo in a variable name, the error message doesn't suggest similar variable names that might be what I intended to use.\n\n## Description\n\nWhen I try to use a variable that doesn't exist, I expect to get a helpful suggestion for a similar variable name that does exist in the current scope. This used to work, but now it seems broken.\n\n## Steps to reproduce\n\nHere's a simple example that demonstrates the issue:\n\n```python\n# Define a variable\nfilter = \"some value\"\n\n# Try to use a similar but non-existent variable\nfolder  # This should suggest \"filter\" but doesn't\n```\n\nWhen running this code, I get a plain NameError without any helpful suggestions like \"Did you mean 'filter'?\".\n\nThe same issue happens with attribute errors too - no suggestions are provided for similar attribute names when I make a typo.\n\nThis makes debugging more difficult, especially in larger codebases where typos are common."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository to understand how NameError suggestions currently work and why they fail.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-824ccecf-8708-4e7b-8424-53f00c6fb4c1-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.md\" -o -name \"*.txt\" -o -name \"setup.py\" -o -name \"pyproject.toml\" -o -name \"setup.cfg\" | head -50"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-824ccecf-8708-4e7b-8424-53f00c6fb4c1-0",
+            "content": "total 56\ndrwxr-xr-x 1 root root 4096 Sep 22 16:24 .\ndrwxr-xr-x 1 root root 4096 Sep 22 16:24 ..\ndrwxr-xr-x 8 root root 4096 Jul 12  2025 .git\ndrwxr-xr-x 3 root root 4096 Jul 12  2025 .github\n-rw-r--r-- 1 root root  174 Jul 12  2025 .gitignore\n-rw-rw-r-- 1 1005 1005    0 Sep 22 15:44 .gitkeep\n-rw-r--r-- 1 root root  633 Jul 12  2025 .pre-commit-config.yaml\n-rw-r--r-- 1 root root 4968 Jul 12  2025 CHANGES.rst\n-rw-r--r-- 1 root root 3704 Jul 12  2025 LICENSE\n-rw-r--r-- 1 root root 5829 Jul 12  2025 README.rst\n-rw-r--r-- 1 root root 2630 Jul 12  2025 pyproject.toml\ndrwxr-xr-x 3 root root 4096 Jul 12  2025 src\ndrwxr-xr-x 2 root root 4096 Jul 12  2025 tests\n/testbed/pyproject.toml\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-3d526c2c-beca-484f-afbd-970c26e1b4b2-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/README.rst; echo \"====\"; cat /testbed/pyproject.toml; echo \"====\"; ls -la /testbed/src /testbed/tests; echo \"====\"; cat /testbed/CHANGES.rst | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-3d526c2c-beca-484f-afbd-970c26e1b4b2-1",
+            "content": "\"\"\n====\n/testbed/src:\ntotal 12\ndrwxr-xr-x 3 root root 4096 Jul 12  2025 .\ndrwxr-xr-x 1 root root 4096 Sep 22 16:24 ..\ndrwxr-xr-x 2 root root 4096 Jul 12  2025 exceptiongroup\n\n/testbed/tests:\ntotal 96\ndrwxr-xr-x 2 root root  4096 Jul 12  2025 .\ndrwxr-xr-x 1 root root  4096 Sep 22 16:24 ..\n-rw-r--r-- 1 root root     0 Jul 12  2025 __init__.py\n-rw-r--r-- 1 root root   466 Jul 12  2025 apport_excepthook.py\n-rw-r--r-- 1 root root  1025 Jul 12  2025 check_types.py\n-rw-r--r-- 1 root root    84 Jul 12  2025 conftest.py\n-rw-r--r-- 1 root root  1925 Jul 12  2025 test_apport_monkeypatching.py\n-rw-r--r-- 1 root root  7163 Jul 12  2025 test_catch.py\n-rw-r--r-- 1 root root  5958 Jul 12  2025 test_catch_py311.py\n-rw-r--r-- 1 root root 31247 Jul 12  2025 test_exceptions.py\n-rw-r--r-- 1 root root 19274 Jul 12  2025 test_formatting.py\n-rw-r--r-- 1 root root   442 Jul 12  2025 test_suppress.py\n====\nVersion history\n===============\n\nThis library adheres to `Semantic Versioning 2.0 <http://semver.org/>`_.\n\n**1.2.2**\n\n- Removed an ``assert`` in ``exceptiongroup._formatting`` that caused compatibility\n  issues with Sentry (`#123 <https://github.com/agronholm/exceptiongroup/issues/123>`_)\n\n**1.2.1**\n\n- Updated the copying of ``__notes__`` to match CPython behavior (PR by CF Bolz-Tereick)\n- Corrected the type annotation of the exception handler callback to accept a\n  ``BaseExceptionGroup`` instead of ``BaseException``\n- Fixed type errors on Python < 3.10 and the type annotation of ``suppress()``\n  (PR by John Litborn)\n\n**1.2.0**\n\n- Added special monkeypatching if `Apport <https://github.com/canonical/apport>`_ has\n  overridden ``sys.excepthook`` so it will format exception groups correctly\n  (PR by John Litborn)\n- Added a backport of ``contextlib.suppress()`` from Python 3.12.1 which also handles\n  suppressing exceptions inside exception groups\n- Fixed bare ``raise`` in a handler reraising the original naked exception rather than\n  an exception group which is what is raised when you do a ``raise`` in an ``except*``\n  handler\n\n**1.1.3**\n\n- ``catch()`` now raises a ``TypeError`` if passed an async exception handler instead of\n  just giving a ``RuntimeWarning`` about the coroutine never being awaited. (#66, PR by\n  John Litborn)\n- Fixed plain ``raise`` statement in an exception handler callback to work like a\n  ``raise`` in an ``except*`` block\n- Fixed new exception group not being chained to the original exception when raising an\n  exception group from exceptions raised in handler callbacks\n- Fixed type annotations of the ``derive()``, ``subgroup()`` and ``split()`` methods to\n  match the ones in typeshed\n\n**1.1.2**\n\n- Changed handling of exceptions in exception group handler callbacks to not wrap a\n  single exception in an exception group, as per\n  `CPython issue 103590 <https://github.com/python/cpython/issues/103590>`_\n\n**1.1.1**\n\n- Worked around\n  `CPython issue #98778 <https://github.com/python/cpython/issues/98778>`_,\n  ``urllib.error.HTTPError(..., fp=None)`` raises ``KeyError`` on unknown attribute\n  access, on affected Python versions. (PR by Zac Hatfield-Dodds)\n\n**1.1.0**\n\n- Backported upstream fix for gh-99553 (custom subclasses of ``BaseExceptionGroup`` that\n  also inherit from ``Exception`` should not be able to wrap base exceptions)\n- Moved all initialization code to ``__new__()`` (thus matching Python 3.11 behavior)\n\n**1.0.4**\n\n- Fixed regression introduced in v1.0.3 where the code computing the suggestions would\n  assume that both the ``obj`` attribute of ``AttributeError`` is always available, even\n  though this is only true from Python 3.10 onwards\n  (#43; PR by Carl Friedrich Bolz-Tereick)\n\n**1.0.3**\n\n- Fixed monkey patching breaking suggestions (on a ``NameError`` or ``AttributeError``)\n  on Python 3.10 (#41; PR by Carl Friedrich Bolz-Tereick)\n\n**1.0.2**\n\n- Updated type annotations to match the ones in ``typeshed``\n\n**1.0.1**\n\n- Fixed formatted traceback missing exceptions beyond 2 nesting levels of\n  ``__context__`` or ``__cause__``\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-e4721d6b-b2d3-4311-bd4d-94c4544a937a-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed/src/exceptiongroup; echo \"====\"; cat /testbed/pyproject.toml"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-e4721d6b-b2d3-4311-bd4d-94c4544a937a-2",
+            "content": "total 64\ndrwxr-xr-x 2 root root  4096 Jul 12  2025 .\ndrwxr-xr-x 3 root root  4096 Jul 12  2025 ..\n-rw-r--r-- 1 root root  1049 Jul 12  2025 __init__.py\n-rw-r--r-- 1 root root  4680 Jul 12  2025 _catch.py\n-rw-r--r-- 1 root root 11144 Jul 12  2025 _exceptions.py\n-rw-r--r-- 1 root root 20938 Jul 12  2025 _formatting.py\n-rw-r--r-- 1 root root  1772 Jul 12  2025 _suppress.py\n-rw-r--r-- 1 root root   521 Jul 12  2025 _version.py\n-rw-r--r-- 1 root root     0 Jul 12  2025 py.typed\n====\n[build-system]\nrequires = [\"flit_scm\"]\nbuild-backend = \"flit_scm:buildapi\"\n\n[project]\nname = \"exceptiongroup\"\ndescription = \"Backport of PEP 654 (exception groups)\"\nreadme = \"README.rst\"\nclassifiers = [\n    \"Development Status :: 5 - Production/Stable\",\n    \"Intended Audience :: Developers\",\n    \"License :: OSI Approved :: MIT License\",\n    \"Programming Language :: Python\",\n    \"Programming Language :: Python :: 3 :: Only\",\n    \"Typing :: Typed\"\n]\nauthors = [{name = \"Alex Grönholm\", email = \"alex.gronholm@nextday.fi\"}]\nlicense = {file = \"LICENSE\"}\nrequires-python = \">=3.7\"\ndynamic = [\"version\"]\n\n[project.urls]\nChangelog = \"https://github.com/agronholm/exceptiongroup/blob/main/CHANGES.rst\"\n\"Source code\" = \"https://github.com/agronholm/exceptiongroup\"\n\"Issue Tracker\" = \"https://github.com/agronholm/exceptiongroup/issues\"\n\n[project.optional-dependencies]\ntest = [\n    \"pytest >= 6\"\n]\n\n[tool.flit.sdist]\ninclude = [\n    \"CHANGES.rst\",\n    \"tests\",\n]\nexclude = [\n    \".github/*\",\n    \".gitignore\",\n    \".pre-commit-config.yaml\"\n]\n\n[tool.setuptools_scm]\nversion_scheme = \"post-release\"\nlocal_scheme = \"dirty-tag\"\nwrite_to = \"src/exceptiongroup/_version.py\"\n\n[tool.ruff.lint]\nextend-select = [\n    \"I\",            # isort\n    \"ISC\",          # flake8-implicit-str-concat\n    \"PGH\",          # pygrep-hooks\n    \"RUF100\",       # unused noqa (yesqa)\n    \"UP\",           # pyupgrade\n    \"W\",            # pycodestyle warnings\n]\n\n[tool.ruff.lint.pyupgrade]\n# Preserve types, even if a file imports `from __future__ import annotations`.\nkeep-runtime-typing = true\n\n[tool.ruff.lint.isort]\nknown-first-party = [\"exceptiongroup\"]\n\n[tool.pytest.ini_options]\naddopts = \"-rsx --tb=short --strict-config --strict-markers\"\ntestpaths = [\"tests\"]\n\n[tool.coverage.run]\nsource = [\"exceptiongroup\"]\nrelative_files = true\n\n[tool.coverage.report]\nexclude_also = [\n    \"if TYPE_CHECKING:\",\n    \"@overload\",\n]\n\n[tool.pyright]\n# for type tests, the code itself isn't type checked in CI\nreportUnnecessaryTypeIgnoreComment = true\n\n[tool.mypy]\n# for type tests, the code itself isn't type checked in CI\nwarn_unused_ignores = true\n\n[tool.tox]\nlegacy_tox_ini = \"\"\"\n[tox]\nenvlist = py37, py38, py39, py310, py311, py312, py313, pypy3\nlabels =\n    typing = py{310,311,312}-typing\nskip_missing_interpreters = true\nminversion = 4.0\n\n[testenv]\nextras = test\ncommands = python -m pytest {posargs}\npackage = editable\nusedevelop = true\n\n[testenv:{py37-,py38-,py39-,py310-,py311-,py312-,}typing]\ndeps =\n    pyright\n    mypy\ncommands =\n    pyright --verifytypes exceptiongroup\n    pyright tests/check_types.py\n    mypy tests/check_types.py\nusedevelop = true\n\"\"\"\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "The changelog mentions NameError/AttributeError suggestions; I'll inspect the formatting code and related tests next.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-c94be466-0700-4bd7-935f-e17662c8165f-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/src/exceptiongroup/_formatting.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-c94be466-0700-4bd7-935f-e17662c8165f-3",
+            "content": "NDIDATE_ITEMS = 750\n_MAX_STRING_SIZE = 40\n_MOVE_COST = 2\n_CASE_COST = 1\n_SENTINEL = object()\n\n\ndef _substitution_cost(ch_a, ch_b):\n    if ch_a == ch_b:\n        return 0\n    if ch_a.lower() == ch_b.lower():\n        return _CASE_COST\n    return _MOVE_COST\n\n\ndef _compute_suggestion_error(exc_value, tb):\n    wrong_name = getattr(exc_value, \"name\", None)\n    if wrong_name is None or not isinstance(wrong_name, str):\n        return None\n    if isinstance(exc_value, AttributeError):\n        obj = getattr(exc_value, \"obj\", _SENTINEL)\n        if obj is _SENTINEL:\n            return None\n        obj = exc_value.obj\n        try:\n            d = dir(obj)\n        except Exception:\n            return None\n    else:\n        assert isinstance(exc_value, NameError)\n        # find most recent frame\n        if tb is None:\n            return None\n        while tb.tb_next is not None:\n            tb = tb.tb_next\n        frame = tb.tb_frame\n\n        d = list(frame.f_locals) + list(frame.f_globals) + list(frame.f_builtins)\n    if len(d) > _MAX_CANDIDATE_ITEMS:\n        return None\n    wrong_name_len = len(wrong_name)\n    if wrong_name_len > _MAX_STRING_SIZE:\n        return None\n    best_distance = wrong_name_len\n    suggestion = None\n    for possible_name in d:\n        if possible_name == wrong_name:\n            # A missing attribute is \"found\". Don't suggest it (see GH-88821).\n            continue\n        # No more than 1/3 of the involved characters should need changed.\n        max_distance = (len(possible_name) + wrong_name_len + 3) * _MOVE_COST // 6\n        # Don't take matches we've already beaten.\n        max_distance = min(max_distance, best_distance - 1)\n        current_distance = _levenshtein_distance(\n            wrong_name, possible_name, max_distance\n        )\n        if current_distance > max_distance:\n            continue\n        if not suggestion or current_distance < best_distance:\n            suggestion = possible_name\n            best_distance = current_distance\n    return suggestion\n\n\ndef _levenshtein_distance(a, b, max_cost):\n    # A Python implementation of Python/suggestions.c:levenshtein_distance.\n\n    # Both strings are the same\n    if a == b:\n        return 0\n\n    # Trim away common affixes\n    pre = 0\n    while a[pre:] and b[pre:] and a[pre] == b[pre]:\n        pre += 1\n    a = a[pre:]\n    b = b[pre:]\n    post = 0\n    while a[: post or None] and b[: post or None] and a[post - 1] == b[post - 1]:\n        post -= 1\n    a = a[: post or None]\n    b = b[: post or None]\n    if not a or not b:\n        return _MOVE_COST * (len(a) + len(b))\n    if len(a) > _MAX_STRING_SIZE or len(b) > _MAX_STRING_SIZE:\n        return max_cost + 1\n\n    # Prefer shorter buffer\n    if len(b) < len(a):\n        a, b = b, a\n\n    # Quick fail when a match is impossible\n    if (len(b) - len(a)) * _MOVE_COST > max_cost:\n        return max_cost + 1\n\n    # Instead of producing the whole traditional len(a)-by-len(b)\n    # matrix, we can update just one row in place.\n    # Initialize the buffer row\n    row = list(range(_MOVE_COST, _MOVE_COST * (len(a) + 1), _MOVE_COST))\n\n    result = 0\n    for bindex in range(len(b)):\n        bchar = b[bindex]\n        distance = result = bindex * _MOVE_COST\n        minimum = sys.maxsize\n        for index in range(len(a)):\n            # 1) Previous distance in this row is cost(b[:b_index], a[:index])\n            substitute = distance + _substitution_cost(bchar, a[index])\n            # 2) cost(b[:b_index], a[:index+1]) from previous row\n            distance = row[index]\n            # 3) existing result is cost(b[:b_index+1], a[index])\n\n            insert_delete = min(result, distance) + _MOVE_COST\n            result = min(insert_delete, substitute)\n\n            # cost(b[:b_index+1], a[:index+1])\n            row[index] = result\n            if result < minimum:\n                minimum = result\n        if minimum > max_cost:\n            # Everything in this row is too big, so bail early.\n            return max_cost + 1\n    return result\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-1eeadae8-7c2e-4e40-a883-6b45a761ead9-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "wc -l /testbed/src/exceptiongroup/_formatting.py; echo \"====\"; head -n 200 /testbed/src/exceptiongroup/_formatting.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-1eeadae8-7c2e-4e40-a883-6b45a761ead9-4",
+            "content": "_line\n        self._str = _safe_string(exc_value, \"exception\")\n        try:\n            self.__notes__ = getattr(exc_value, \"__notes__\", None)\n        except KeyError:\n            # Workaround for https://github.com/python/cpython/issues/98778 on Python\n            # <= 3.9, and some 3.10 and 3.11 patch versions.\n            HTTPError = getattr(sys.modules.get(\"urllib.error\", None), \"HTTPError\", ())\n            if sys.version_info[:2] <= (3, 11) and isinstance(exc_value, HTTPError):\n                self.__notes__ = None\n            else:\n                raise\n\n        if exc_type and issubclass(exc_type, SyntaxError):\n            # Handle SyntaxError's specially\n            self.filename = exc_value.filename\n            lno = exc_value.lineno\n            self.lineno = str(lno) if lno is not None else None\n            self.text = exc_value.text\n            self.offset = exc_value.offset\n            self.msg = exc_value.msg\n            if sys.version_info >= (3, 10):\n                end_lno = exc_value.end_lineno\n                self.end_lineno = str(end_lno) if end_lno is not None else None\n                self.end_offset = exc_value.end_offset\n        elif (\n            exc_type\n            and issubclass(exc_type, (NameError, AttributeError))\n            and getattr(exc_value, \"name\", None) is not None\n        ):\n            suggestion = _compute_suggestion_error(exc_value, exc_traceback)\n            if suggestion:\n                self._str += f\". Did you mean: '{suggestion}'?\"\n\n        if lookup_lines:\n            # Force all lines in the stack to be loaded\n            for frame in self.stack:\n                frame.line\n\n        self.__suppress_context__ = (\n            exc_value.__suppress_context__ if exc_value is not None else False\n        )\n\n        # Convert __cause__ and __context__ to `TracebackExceptions`s, use a\n        # queue to avoid recursion (only the top-level call gets _seen == None)\n        if not is_recursive_call:\n            queue = [(self, exc_value)]\n            while queue:\n                te, e = queue.pop()\n\n                if e and e.__cause__ is not None and id(e.__cause__) not in _seen:\n                    cause = PatchedTracebackException(\n                        type(e.__cause__),\n                        e.__cause__,\n                        e.__cause__.__traceback__,\n                        limit=limit,\n                        lookup_lines=lookup_lines,\n                        capture_locals=capture_locals,\n                        _seen=_seen,\n                    )\n                else:\n                    cause = None\n\n                if compact:\n                    need_context = (\n                        cause is None and e is not None and not e.__suppress_context__\n                    )\n                else:\n                    need_context = True\n                if (\n                    e\n                    and e.__context__ is not None\n                    and need_context\n                    and id(e.__context__) not in _seen\n                ):\n                    context = PatchedTracebackException(\n                        type(e.__context__),\n                        e.__context__,\n                        e.__context__.__traceback__,\n                        limit=limit,\n                        lookup_lines=lookup_lines,\n                        capture_locals=capture_locals,\n                        _seen=_seen,\n                    )\n                else:\n                    context = None\n\n                # Capture each of the exceptions in the ExceptionGroup along with each\n                # of their causes and contexts\n                if e and isinstance(e, BaseExceptionGroup):\n                    exceptions = []\n                    for exc in e.exceptions:\n                        texc = PatchedTracebackException(\n                            type(exc),\n                            exc,\n                            exc.__traceback__,\n                            lookup_lines=lookup_lines,\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-cbc5314c-e3ee-4f02-b0c4-0877b1cf462b-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/tests/test_formatting.py; echo \"====GIT====\"; cd /testbed && git log --oneline -20; echo \"====STATUS====\"; git status; echo \"====BRANCH====\"; git branch -a | head -30"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-cbc5314c-e3ee-4f02-b0c4-0877b1cf462b-5",
+            "content": ".modules[\"exceptiongroup\"]\n        del sys.modules[\"exceptiongroup._formatting\"]\n        monkeypatch.setattr(sys, \"excepthook\", lambda *args: sys.__excepthook__(*args))\n\n    from exceptiongroup import print_exception\n\n    try:\n        [].attend\n    except AttributeError as e:\n        eg = ExceptionGroup(\"a\", [e])\n        print_exception(eg)\n        output = capsys.readouterr().err\n        assert \"Did you mean\" in output and \"'append'?\" in output\n\n\ndef test_bug_suggestions_attributeerror_no_obj(\n    patched: bool, monkeypatch: MonkeyPatch, capsys: CaptureFixture\n) -> None:\n    if not patched:\n        # Block monkey patching, then force the module to be re-imported\n        del sys.modules[\"traceback\"]\n        del sys.modules[\"exceptiongroup\"]\n        del sys.modules[\"exceptiongroup._formatting\"]\n        monkeypatch.setattr(sys, \"excepthook\", lambda *args: sys.__excepthook__(*args))\n\n    from exceptiongroup import print_exception\n\n    class NamedAttributeError(AttributeError):\n        def __init__(self, name: str) -> None:\n            self.name: str = name\n\n    try:\n        raise NamedAttributeError(name=\"mykey\")\n    except AttributeError as e:\n        print_exception(e)  # does not crash\n        output = capsys.readouterr().err\n        assert \"NamedAttributeError\" in output\n\n\ndef test_works_around_httperror_bug():\n    # See https://github.com/python/cpython/issues/98778 in Python <= 3.9\n    err = HTTPError(\"url\", 405, \"METHOD NOT ALLOWED\", None, None)\n    traceback.TracebackException(type(err), err, None)\n====GIT====\n2afba2e Initial commit\n====STATUS====\nOn branch main\nYour branch is up to date with 'origin/main'.\n\nUntracked files:\n  (use \"git add <file>...\" to include in what will be committed)\n\t.gitkeep\n\nnothing added to commit but untracked files present (use \"git add\" to track)\n====BRANCH====\n* main\n  remotes/origin/HEAD -> origin/main\n  remotes/origin/agronholm__exceptiongroup.0b4f4937.combine_file__5f69j6zc\n  remotes/origin/agronholm__exceptiongroup.0b4f4937.combine_file__74zzufuj\n  remotes/origin/agronholm__exceptiongroup.0b4f4937.combine_file__ap097ezd\n  remotes/origin/agronholm__exceptiongroup.0b4f4937.combine_file__bld28s29\n  remotes/origin/agronholm__exceptiongroup.0b4f4937.combine_file__e14uhohy\n  remotes/origin/agronholm__exceptiongroup.0b4f4937.combine_file__f9ib0lv6\n  remotes/origin/agronholm__exceptiongroup.0b4f4937.combine_file__i0w4anf7\n  remotes/origin/agronholm__exceptiongroup.0b4f4937.combine_file__leti1lvr\n  remotes/origin/agronholm__exceptiongroup.0b4f4937.combine_file__m8abag3k\n  remotes/origin/agronholm__exceptiongroup.0b4f4937.combine_file__mw63j2hd\n  remotes/origin/agronholm__exceptiongroup.0b4f4937.combine_file__s0m5ibx3\n  remotes/origin/agronholm__exceptiongroup.0b4f4937.combine_file__t37j7eav\n  remotes/origin/agronholm__exceptiongroup.0b4f4937.combine_file__t8u2uac6\n  remotes/origin/agronholm__exceptiongroup.0b4f4937.combine_module__0oguvz02\n  remotes/origin/agronholm__exceptiongroup.0b4f4937.combine_module__1bpeot65\n  remotes/origin/agronholm__exceptiongroup.0b4f4937.combine_module__1ebqjjwn\n  remotes/origin/agronholm__exceptiongroup.0b4f4937.combine_module__3hhws1dx\n  remotes/origin/agronholm__exceptiongroup.0b4f4937.combine_module__4sbjqbad\n  remotes/origin/agronholm__exceptiongroup.0b4f4937.combine_module__5kl4mgpe\n  remotes/origin/agronholm__exceptiongroup.0b4f4937.combine_module__6vp5bpr2\n  remotes/origin/agronholm__exceptiongroup.0b4f4937.combine_module__9iwyt81o\n  remotes/origin/agronholm__exceptiongroup.0b4f4937.combine_module__9lvhskem\n  remotes/origin/agronholm__exceptiongroup.0b4f4937.combine_module__9pv57301\n  remotes/origin/agronholm__exceptiongroup.0b4f4937.combine_module__a6ta2od9\n  remotes/origin/agronholm__exceptiongroup.0b4f4937.combine_module__akqsiy9t\n  remotes/origin/agronholm__exceptiongroup.0b4f4937.combine_module__b3u244k8\n  remotes/origin/agronholm__exceptiongroup.0b4f4937.combine_module__b5drlb83\n  remotes/origin/agronholm__exceptiongroup.0b4f4937.combine_module__dy8wk66i\n"
+          }
+        ]
+      }
+    }
+  ]
+}

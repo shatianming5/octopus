@@ -1,0 +1,66 @@
+{
+  "kind": "native_cpu_test",
+  "base_commit": "68972da8647367662987760d10d2d0e06b0b58c5",
+  "base_note": "origin/main squash merge of PR #4; tree identical to prior e7dd58d checkout",
+  "branch": "feat/semantic-control-repair",
+  "completed_plan_ids": [
+    "sc-contract",
+    "sc-consumers",
+    "sc-readiness",
+    "sc-free-preference",
+    "sc-ledger",
+    "sc-cpu-gates",
+    "sc-cpu-delivery"
+  ],
+  "native_validation": {
+    "host": "user@198.51.100.10:20068",
+    "source_directory": "/mnt/disk2/user/octopus-semantic-control-repair-cf84f9d8",
+    "python": "/mnt/disk2/user/octopus-contention/.venv/bin/python",
+    "vllm_version": "0.28.0",
+    "command": "CUDA_VISIBLE_DEVICES='' OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONPATH=src /mnt/disk2/user/octopus-contention/.venv/bin/python -m pytest -q tests/test_admission.py tests/test_admission_runtime.py tests/test_admission_benchmark.py tests/test_contention.py tests/test_queue_retention.py tests/test_admission_native.py tests/test_semantic_consumers.py tests/test_vllm_lifecycle.py --junitxml=native-cpu.xml",
+    "passed": 71,
+    "failed": 0,
+    "skipped": 0,
+    "pytest_seconds": 7.54,
+    "warnings": "14 existing torch.jit.script_method deprecation warnings",
+    "junit_artifact": "results/semantic-control-repair/native-cpu.xml",
+    "native_allocator": "real pinned KVCacheManager; no allocator mock",
+    "engine_boundary": "public wiring test substitutes engine submission only; no LLMEngine or model is created",
+    "dependencies_installed": false
+  },
+  "local_validation": {
+    "command": "CUDA_VISIBLE_DEVICES='' OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 PYTHONPATH=src .venv/bin/python -m pytest -q tests/test_admission.py tests/test_admission_runtime.py tests/test_admission_benchmark.py tests/test_contention.py",
+    "passed": 37,
+    "skipped": 5,
+    "skip_reason": "vLLM unavailable locally; all five cases subsequently passed in the remote 71-test gate",
+    "pytest_seconds": 0.48
+  },
+  "audit": {
+    "command": "CUDA_VISIBLE_DEVICES='' OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 PYTHONPATH=src .venv/bin/python -m benchmarks.semantic_audit --output results/semantic-control-repair/trace-audit.json",
+    "artifact": "results/semantic-control-repair/trace-audit.json",
+    "existing_traces": 6,
+    "paired_seeds": [101, 202, 303],
+    "matched_requests_per_pair": 124,
+    "seed101": {
+      "no_future_consumer_first_predicted_benefit_seconds": 0.08000613122008163,
+      "no_future_consumer_first_retention_window_seconds": 0.22985193692147732,
+      "no_future_consumer_actual_gpu_submissions": 0,
+      "fast_tool_process_seconds": 0.02862657094374299,
+      "fast_commit_enqueued": 1.2551198799628764,
+      "fast_commit_first_scheduled": 2.0281561149749905,
+      "background_089_ttft_delta_seconds": 3.6127186650410295,
+      "background_089_enqueue_delta_seconds": 0.013328175991773605,
+      "background_089_engine_queue_delta_seconds": 3.603128937073052,
+      "background_089_schedule_to_first_token_delta_seconds": -0.0037384480237960815,
+      "zero_reclaim_drops": 2,
+      "task_2_start_delay_delta_seconds": 3.681041011121124,
+      "task_2_own_service_delta_seconds": 0.02118123392574489
+    },
+    "limits": "Diagnostic old-timing audit only. Legacy adoption/range metrics and realized counterfactual savings remain unknown. Clock bridge is approximate and audit-only."
+  },
+  "gpu_performance_validated": false,
+  "five_percent_slo_validated": false,
+  "independent_held_out_evidence": false,
+  "old_results_modified": false,
+  "blocker": null
+}

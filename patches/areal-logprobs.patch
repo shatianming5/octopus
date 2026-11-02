@@ -1,0 +1,201 @@
+--- a/areal/api/io_struct.py
++++ b/areal/api/io_struct.py
+@@ -66,6 +66,7 @@
+     input_tokens: list[int] = field(default_factory=list)
+     output_tokens: list[int] = field(default_factory=list)
+     output_logprobs: list[float] = field(default_factory=list)
++    output_top_logprobs: list | None = None
+     output_versions: list[int] = field(default_factory=list)
+     stop_reason: Literal["length", "stop", "tool_calls", "abort"] = "stop"
+     # tokenizer is used for encode-decode in the inference engine
+@@ -332,6 +333,7 @@
+     # speculative_algorithm is enabled; read from response meta_info).
+     spec_accept_rate: float | None = None
+     spec_accept_length: float | None = None
++    output_top_logprobs: list | None = None
+ 
+     def __post_init__(self) -> None:
+         if len(self.output_tokens) != len(self.output_logprobs):
+--- a/areal/engine/sglang_remote.py
++++ b/areal/engine/sglang_remote.py
+@@ -90,6 +90,9 @@
+             "return_logprob": True,
+             "stream": False,
+         }
++        n_top = int((req.metadata or {}).get("top_logprobs_num") or 0)
++        if n_top > 0:
++            payload["top_logprobs_num"] = n_top
+ 
+         # Add return_routed_experts to payload if set
+         if req.metadata.get("return_routed_experts", False):
+@@ -142,6 +145,7 @@
+ 
+         output_tokens = [x[1] for x in meta_info["output_token_logprobs"]]
+         output_logprobs = [x[0] for x in meta_info["output_token_logprobs"]]
++        output_top_logprobs = meta_info.get("output_top_logprobs")
+ 
+         return HttpGenerationResult(
+             output_tokens=output_tokens,
+@@ -150,6 +154,7 @@
+             routed_experts=routed_experts,
+             spec_accept_rate=spec_accept_rate,
+             spec_accept_length=spec_accept_length,
++            output_top_logprobs=output_top_logprobs,
+         )
+ 
+     def build_score_request(
+--- a/areal/experimental/openai/client.py
++++ b/areal/experimental/openai/client.py
+@@ -25,7 +25,11 @@
+     ChatCompletionToolMessageParam,
+     ChatCompletionToolParam,
+ )
+-from openai.types.chat.chat_completion import Choice
++from openai.types.chat.chat_completion import Choice, ChoiceLogprobs
++from openai.types.chat.chat_completion_token_logprob import (
++    ChatCompletionTokenLogprob,
++    TopLogprob,
++)
+ from openai.types.chat.chat_completion_chunk import Choice as ChunkChoice
+ from openai.types.chat.chat_completion_chunk import (
+     ChoiceDelta,
+@@ -873,6 +877,41 @@
+     )
+ 
+ 
++
++def _openai_choice_logprobs(response: "ModelResponse") -> ChoiceLogprobs | None:
++    """OpenAI choices[0].logprobs from SGLang output_token_logprobs / output_top_logprobs."""
++    tops = getattr(response, "output_top_logprobs", None)
++    if tops is None:
++        return None
++    tokenizer = response.tokenizer
++    content: list[ChatCompletionTokenLogprob] = []
++    for i, (tid, lp) in enumerate(zip(response.output_tokens, response.output_logprobs)):
++        token = tokenizer.decode([tid]) if tokenizer is not None else str(tid)
++        top_items: list[TopLogprob] = []
++        row = tops[i] if i < len(tops) and tops[i] is not None else []
++        for item in row:
++            if isinstance(item, dict):
++                t = str(item.get("token") or item.get("text") or "")
++                p = float(item["logprob"])
++            else:
++                p = float(item[0])
++                if len(item) > 2 and item[2] is not None:
++                    t = str(item[2])
++                elif tokenizer is not None:
++                    t = tokenizer.decode([int(item[1])])
++                else:
++                    t = str(item[1])
++            raw = list(t.encode("utf-8"))
++            top_items.append(TopLogprob(token=t, logprob=p, bytes=raw))
++        raw = list(token.encode("utf-8"))
++        content.append(
++            ChatCompletionTokenLogprob(
++                token=token, logprob=float(lp), bytes=raw, top_logprobs=top_items
++            )
++        )
++    return ChoiceLogprobs(content=content)
++
++
+ class AsyncCompletionsWithReward(BaseAsyncCompletions):
+     """Extended AsyncCompletions that adds caching and reward functionality."""
+ 
+@@ -942,7 +981,7 @@
+                 Choice(
+                     finish_reason=response.stop_reason,
+                     index=0,
+-                    logprobs=None,  # For simplicity
++                    logprobs=_openai_choice_logprobs(response),
+                     message=output_message,
+                 )
+             ],
+@@ -980,6 +1019,8 @@
+         tools: Iterable[ChatCompletionToolParam] | NotGiven = NOT_GIVEN,
+         top_k: int | None | NotGiven = NOT_GIVEN,
+         top_p: float | None | NotGiven = NOT_GIVEN,
++        logprobs: bool | None | NotGiven = NOT_GIVEN,
++        top_logprobs: int | None | NotGiven = NOT_GIVEN,
+         extra_body: Body | None = None,
+         areal_cache: InteractionCache | None = None,
+         processor_cache: ProcessorCallCache | None = None,
+@@ -1007,6 +1048,8 @@
+         tools: Iterable[ChatCompletionToolParam] | NotGiven = NOT_GIVEN,
+         top_k: int | None | NotGiven = NOT_GIVEN,
+         top_p: float | None | NotGiven = NOT_GIVEN,
++        logprobs: bool | None | NotGiven = NOT_GIVEN,
++        top_logprobs: int | None | NotGiven = NOT_GIVEN,
+         extra_body: Body | None = None,
+         areal_cache: InteractionCache | None = None,
+         processor_cache: ProcessorCallCache | None = None,
+@@ -1033,6 +1076,8 @@
+         tools: Iterable[ChatCompletionToolParam] | NotGiven = NOT_GIVEN,
+         top_k: int | None | NotGiven = NOT_GIVEN,
+         top_p: float | None | NotGiven = NOT_GIVEN,
++        logprobs: bool | None | NotGiven = NOT_GIVEN,
++        top_logprobs: int | None | NotGiven = NOT_GIVEN,
+         extra_body: Body | None = None,
+         areal_cache: InteractionCache | None = None,
+         processor_cache: ProcessorCallCache | None = None,
+@@ -1236,6 +1281,15 @@
+             image_data=image_data if has_images else None,
+             vision_msg_vllm=([vision_messages_for_vllm] if has_images else None),
+         )
++        if not is_omitted(logprobs) and logprobs:
++            n_top = (
++                5
++                if is_omitted(top_logprobs) or top_logprobs is None
++                else int(top_logprobs)
++            )
++            md = dict(model_request.metadata or {})
++            md["top_logprobs_num"] = n_top
++            model_request.metadata = md
+ 
+         # Call inference engine
+         response = await self.engine.agenerate(model_request)
+--- a/areal/experimental/openai/proxy/proxy_rollout_server.py
++++ b/areal/experimental/openai/proxy/proxy_rollout_server.py
+@@ -937,8 +937,9 @@
+         kwargs["extra_body"] = extra_body
+ 
+     dropped_args = []
++    keep_openai_logprobs = {"logprobs", "top_logprobs"}
+     for k, v in kwargs.items():
+-        if k not in areal_client_allowed_args:
++        if k not in areal_client_allowed_args and k not in keep_openai_logprobs:
+             dropped_args.append((k, v))
+ 
+     for k, _ in dropped_args:
+--- a/areal/infra/remote_inf_engine.py
++++ b/areal/infra/remote_inf_engine.py
+@@ -1084,8 +1084,10 @@
+         start_time = time.perf_counter()
+         accumulated_output_tokens = []
+         accumulated_output_logprobs = []
++        accumulated_output_top_logprobs: list = []
+         accumulated_versions = []
+         accumulated_routed_experts: list[np.ndarray] = []
++        saw_top_logprobs = False
+ 
+         # A single "rid" shares the same server to allow KV cache reuse
+         if req.rid in self.rid_to_address:
+@@ -1162,6 +1164,9 @@
+             # Update accumulated outputs
+             accumulated_output_tokens.extend(gen_result.output_tokens)
+             accumulated_output_logprobs.extend(gen_result.output_logprobs)
++            if gen_result.output_top_logprobs is not None:
++                accumulated_output_top_logprobs.extend(gen_result.output_top_logprobs)
++                saw_top_logprobs = True
+             accumulated_versions.extend(
+                 [request_version] * len(gen_result.output_tokens)
+             )
+@@ -1212,6 +1217,9 @@
+             input_images=req.image_data,
+             output_tokens=accumulated_output_tokens,
+             output_logprobs=accumulated_output_logprobs,
++            output_top_logprobs=(
++                accumulated_output_top_logprobs if saw_top_logprobs else None
++            ),
+             output_versions=accumulated_versions,
+             stop_reason=stop_reason,
+             latency=latency,

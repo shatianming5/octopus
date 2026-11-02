@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "rubik__radon.54b88e58.lm_rewrite__dve5Egb__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# Markdown output format changed in `dict_to_md` function\n\nI noticed that the markdown output format has changed in the latest version. The table structure is completely different from what it was before.\n\n## Steps to Reproduce\n\n```python\nfrom radon.cli.tools import dict_to_md\n\n# Example data\nresults = {\n    'example.py': [\n        {\n            'name': 'example_function',\n            'classname': None,\n            'complexity': 5,\n            'rank': 'A',\n            'lineno': 10,\n            'endline': 20,\n            'type': 'function'\n        },\n        {\n            'name': 'method_example',\n            'classname': 'ExampleClass',\n            'complexity': 8,\n            'rank': 'B',\n            'lineno': 25,\n            'endline': 35,\n            'type': 'method'\n        }\n    ]\n}\n\n# Generate markdown\nmd_output = dict_to_md(results)\nprint(md_output)\n```\n\n## Current Output\n\nThe current output has a completely different format with headers for each file and a different table structure:\n\n```\n# Cyclomatic Complexity\n\n## example.py\n\n| Name | Complexity | Rank | Line | EndLine | Type |\n| ---- | ---------- | ---- | ---- | ------- | ---- |\n| example_function | 5 | A | 10 | 20 | function |\n| ExampleClass.method_example | 8 | B | 25 | 35 | method |\n\n```\n\n## Expected Output\n\nThe expected output should be a single table with all files and their metrics:\n\n```\n| Filename | Name | Type | Start:End Line | Complexity | Classification |\n| -------- | ---- | ---- | -------------- | ---------- | -------------- |\n| example.py | example_function | F | 10:20 | 5 | A |\n| example.py | ExampleClass.method_example | M | 25:35 | 8 | B |\n```\n\nThis change breaks backward compatibility for any tools or scripts that might be parsing the markdown output."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository and the `dict_to_md` function to see how the markdown table format changed.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-1a224b24-d2bc-44b6-b0df-b2024b6ab361-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -50 && cat /testbed/README.md 2>/dev/null | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-1a224b24-d2bc-44b6-b0df-b2024b6ab361-0",
+            "content": "total 168\ndrwxr-xr-x 1 root root  4096 Sep 22 16:36 .\ndrwxr-xr-x 1 root root  4096 Sep 22 16:36 ..\n-rw-r--r-- 1 root root   195 Jul 14  2025 .codeclimate.yml\ndrwxr-xr-x 8 root root  4096 Jul 14  2025 .git\n-rw-r--r-- 1 root root    34 Jul 14  2025 .gitattributes\n-rw-r--r-- 1 root root   139 Jul 14  2025 .gitignore\n-rw-rw-r-- 1 1005 1005     0 Sep 22 15:44 .gitkeep\n-rw-r--r-- 1 root root   105 Jul 14  2025 .readthedocs.yaml\n-rw-r--r-- 1 root root   267 Jul 14  2025 .travis.yml\n-rw-r--r-- 1 root root  7839 Jul 14  2025 CHANGELOG\n-rw-r--r-- 1 root root   521 Jul 14  2025 Dockerfile\n-rw-r--r-- 1 root root  1064 Jul 14  2025 LICENSE\n-rw-r--r-- 1 root root   213 Jul 14  2025 MANIFEST.in\n-rw-r--r-- 1 root root   888 Jul 14  2025 Makefile\n-rw-r--r-- 1 root root   208 Jul 14  2025 Pipfile\n-rw-r--r-- 1 root root  8689 Jul 14  2025 Pipfile.lock\n-rw-r--r-- 1 root root  6797 Jul 14  2025 README.rst\n-rw-r--r-- 1 root root   549 Jul 14  2025 SECURITY.md\n-rwxr-xr-x 1 root root  1637 Jul 14  2025 codeclimate-radon\ndrwxr-xr-x 4 root root  4096 Jul 14  2025 docs\n-rw-r--r-- 1 root root 39338 Jul 14  2025 poetry.lock\n-rw-r--r-- 1 root root  7353 Jul 14  2025 pylintrc\n-rw-r--r-- 1 root root   796 Jul 14  2025 pyproject.toml\ndrwxr-xr-x 5 root root  4096 Jul 14  2025 radon\n-rw-r--r-- 1 root root    91 Jul 14  2025 requirements.txt\n-rw-r--r-- 1 root root    20 Jul 14  2025 setup.cfg\n-rw-r--r-- 1 root root  2108 Jul 14  2025 setup.py\n-rw-r--r-- 1 root root   113 Jul 14  2025 test_requirements.txt\n-rw-r--r-- 1 root root   192 Jul 14  2025 tox.ini\n/testbed/setup.py\n/testbed/radon/contrib/flake8.py\n/testbed/radon/contrib/__init__.py\n/testbed/radon/__main__.py\n/testbed/radon/__init__.py\n/testbed/radon/tests/test_cli_harvest.py\n/testbed/radon/tests/test_complexity_utils.py\n/testbed/radon/tests/test_raw.py\n/testbed/radon/tests/test_ipynb.py\n/testbed/radon/tests/data/__init__.py\n/testbed/radon/tests/data/py3unicode.py\n/testbed/radon/tests/data/no_encoding.py\n/testbed/radon/tests/__init__.py\n/testbed/radon/tests/test_other_metrics.py\n/testbed/radon/tests/run.py\n/testbed/radon/tests/conftest.py\n/testbed/radon/tests/test_cli.py\n/testbed/radon/tests/test_cli_colors.py\n/testbed/radon/tests/test_cli_tools.py\n/testbed/radon/tests/test_complexity_visitor.py\n/testbed/radon/tests/test_halstead.py\n/testbed/radon/metrics.py\n/testbed/radon/cli/__init__.py\n/testbed/radon/cli/colors.py\n/testbed/radon/cli/harvest.py\n/testbed/radon/cli/tools.py\n/testbed/radon/visitors.py\n/testbed/radon/complexity.py\n/testbed/radon/raw.py\n/testbed/docs/conf.py\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-dc9573f4-b95a-4759-8708-6ede58bc3d4f-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/radon/cli/tools.py && echo \"===== TESTS =====\" && cat /testbed/radon/tests/test_cli_tools.py && echo \"===== CHANGELOG =====\" && cat /testbed/CHANGELOG | head -100"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-dc9573f4-b95a-4759-8708-6ede58bc3d4f-1",
+            "content": "        '@<!F!>F __R__12:0 f1 - <|C|>C (14)__R__',\n        '@<!F!>F __R__12:0 f2 - <|D|>D (22)__R__',\n        '@<!F!>F __R__12:0 f3 - <|E|>E (32)__R__',\n        '@<!F!>F __R__12:0 f4 - <|F|>F (41)__R__',\n    ]\n    res_noshow = ['{0}__R__'.format(r[: r.index('(') - 1]) for r in res]\n\n    assert tools.cc_to_terminal(results, False, 'A', 'F', False) == (\n        res_noshow,\n        120,\n        6,\n    )\n    assert tools.cc_to_terminal(results, True, 'A', 'F', False) == (\n        res,\n        120,\n        6,\n    )\n    assert tools.cc_to_terminal(results, True, 'A', 'D', False) == (\n        res[:-2],\n        47,\n        4,\n    )\n    assert tools.cc_to_terminal(results, False, 'A', 'D', False) == (\n        res_noshow[:-2],\n        47,\n        4,\n    )\n    assert tools.cc_to_terminal(results, True, 'C', 'F', False) == (\n        res[2:],\n        109,\n        4,\n    )\n    assert tools.cc_to_terminal(results, True, 'B', 'E', False) == (\n        res[1:-1],\n        75,\n        4,\n    )\n    assert tools.cc_to_terminal(results, True, 'B', 'F', True) == (\n        res[1:],\n        120,\n        6,\n    )\n===== CHANGELOG =====\n6.0.1 (Mar 26, 2023)\n--------------------\n\n- Prevent tomllib error when the `toml` module is not available\n\n6.0.0 (Mar 26, 2023)\n--------------------\n\n- Fix typo in changelog, by @cclauss: #229\n- Add support for `match` pattern in Python 3.10+, by @DolajoCZ: #227\n- Fix typo in Markdown export, reported by @huornlmj: #231\n- Remove unnecessary \"future\" dependency, by @mgorny: #234\n- Add `pyproject.toml` support, by @ajslater: #236\n- Allow Mando v0.7.1, by @ajslater: #237\n- Fix HCHarvester JSON results format, by @benabel: #240\n\n5.1.0 (Aug 08, 2021)\n--------------------\n\n- Allow forcing colored output on/off, thanks @msabramo: #218\n- Synchronize trove classifiers with tested versions, thanks @D3X: #222\n\n5.0.1 (Jun 08, 2021)\n--------------------\n\n- Drop support for flake8 < 3.x (removes `flake8-polyfill` dependency), by\n  @joxl: #219\n\n4.5.2 (May 23, 2021)\n--------------------\n\n- Add back `flake8-polyfill` dependency because conditional extra does not work\n  as intended, reported by @joxl: #217\n\n4.5.1 (May 09, 2021)\n--------------------\n\n- Fix CC calculation for try-except-else blocks with multiple statements,\n  thanks @justWerns: #212\n- Fix CC type field in Markdown output, thanks @4l1fe: #213\n\n4.5.0 (Mar 09, 2021)\n--------------------\n\n- Add ``--md`` option to ``cc`` command to export results as Markdown (thanks\n  to @kanekotic): #205\n- Add async function support to Halstead visitor (thanks to @rharish101): #208\n\n4.4.0 (Mar 07, 2021)\n--------------------\n\n- Use utf-8 as the default encoding on Python 3.0+: #203\n- Allow custom config file path through the RADONCFG env var: #207\n\n4.3.2 (Sep 18, 2020)\n--------------------\n\n- Move `Flake8Checker` to separate, isolated module (thanks to @tribals): #200\n\n4.3.1 (Sep 12, 2020)\n--------------------\n\n- Separate `flake8-polyfill` to extra requirements (thanks to @tribals): #189\n\n4.2.0 (Jan 28, 2020)\n--------------------\n\n- Fix for Python 2.7 (thanks to @edwinelisia): #191\n- Pin Colorama to different versions depending on the Python version (thanks to\n  @douardda): #193\n\n4.1.0 (Jan 28, 2020)\n--------------------\n\n- Support Python 3.8 (thanks to @brnsnt): #185\n\n4.0.0 (Sep 19, 2019)\n--------------------\n\n- Support file configuration overrides, thanks @tonybaloney: #179\n- Add support for analyzing Jupyter notebooks, thanks @tonybaloney: #181\n\n3.0.1 (Feb 03, 2019)\n--------------------\n\n- Automatically exclude binary files, instead of producing an error: #166\n\n3.0.0 (Jan 26, 2019)\n--------------------\n\n- Include files with no extension but a Python shebang (thanks @hawkeyej): #155\n- Fix calculation of total complexity for classes: #156\n- Update Colorama dependency to avoid conflicts with pytest: #164\n- Fix raw metrics, which were completely broken\n\n2.4.0 (Oct 11, 2018)\n--------------------\n\n- Add a `__main__` module (thanks @douardda): #153\n- Add --output-file option (thanks @douardda): #154\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-4b41687b-1794-4621-ae4a-8d611c0a8634-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/radon/cli/tools.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-4b41687b-1794-4621-ae4a-8d611c0a8634-2",
+            "content": "  *ranked* is the rank given by the `~radon.complexity.rank` function. If\n    *show_complexity* is True, then the complexity score is added alongside.\n    '''\n    letter_colored = LETTERS_COLORS[block.letter] + block.letter\n    rank_colored = RANKS_COLORS[ranked] + ranked\n    compl = '' if not show_complexity else ' ({0})'.format(block.complexity)\n    return TEMPLATE.format(\n        BRIGHT,\n        letter_colored,\n        block.lineno,\n        block.col_offset,\n        block.fullname,\n        rank_colored,\n        compl,\n        reset=RESET,\n    )\n\n\ndef format_cc_issue(\n    path,\n    description,\n    content,\n    category,\n    beginline,\n    endline,\n    remediation_points,\n    fingerprint,\n):\n    '''Return properly formatted Code Climate issue json.'''\n    issue = {\n        'type': 'issue',\n        'check_name': 'Complexity',\n        'description': description,\n        'content': {'body': content,},\n        'categories': [category],\n        'fingerprint': fingerprint,\n        'location': {\n            'path': path,\n            'lines': {'begin': beginline, 'end': endline,},\n        },\n        'remediation_points': remediation_points,\n    }\n    return json.dumps(issue)\n\n\ndef get_remediation_points(complexity, grade_threshold):\n    '''Calculate quantity of remediation work needed to reduce complexity to grade\n    threshold permitted.'''\n    grade_to_max_permitted_cc = {\n        'B': 5,\n        'C': 10,\n        'D': 20,\n        'E': 30,\n        'F': 40,\n    }\n\n    threshold = grade_to_max_permitted_cc.get(grade_threshold, 5)\n\n    if complexity and complexity > threshold:\n        return 1000000 + 100000 * (complexity - threshold)\n    else:\n        return 0\n\n\ndef get_content():\n    '''Return explanation string for Code Climate issue document.'''\n    content = [\n        '##Cyclomatic Complexity',\n        'Cyclomatic Complexity corresponds to the number of decisions '\n        'a block of code contains plus 1. This number (also called '\n        'McCabe number) is equal to the number of linearly independent '\n        'paths through the code. This number can be used as a guide '\n        'when testing conditional logic in blocks.\\n',\n        'Radon analyzes the AST tree of a Python program to compute '\n        'Cyclomatic Complexity. Statements have the following effects '\n        'on Cyclomatic Complexity:\\n\\n',\n        '| Construct | Effect on CC | Reasoning |',\n        '| --------- | ------------ | --------- |',\n        '| if | +1 | An *if* statement is a single decision. |',\n        '| elif| +1| The *elif* statement adds another decision. |',\n        '| else| +0| The *else* statement does not cause a new '\n        'decision. The decision is at the *if*. |',\n        '| for| +1| There is a decision at the start of the loop. |',\n        '| while| +1| There is a decision at the *while* statement. |',\n        '| except| +1| Each *except* branch adds a new conditional '\n        'path of execution. |',\n        '| finally| +0| The finally block is unconditionally ' 'executed. |',\n        '| with| +1| The *with* statement roughly corresponds to a '\n        'try/except block (see PEP 343 for details). |',\n        '| assert| +1| The *assert* statement internally roughly '\n        'equals a conditional statement. |',\n        '| Comprehension| +1| A list/set/dict comprehension of '\n        'generator expression is equivalent to a for loop. |',\n        '| Boolean Operator| +1| Every boolean operator (and, or) '\n        'adds a decision point. |\\n',\n        'Source: http://radon.readthedocs.org/en/latest/intro.html',\n    ]\n    return '\\n'.join(content)\n\n\ndef get_fingerprint(path, additional_parts):\n    '''Return fingerprint string for Code Climate issue document.'''\n    m = hashlib.md5()\n    parts = [path, 'Complexity'] + additional_parts\n    key = '|'.join(parts)\n    m.update(key.encode('utf-8'))\n    return m.hexdigest()\n\n\ndef strip_ipython(code):\n    return '\\n'.join(\n        [line for line in code.split('\\n') if not line.startswith('%')]\n    )\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-82afb607-c77c-46f9-9b9d-8d550eea8786-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "wc -l /testbed/radon/cli/tools.py && grep -n \"dict_to_md\\|def \" /testbed/radon/cli/tools.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-82afb607-c77c-46f9-9b9d-8d550eea8786-3",
+            "content": "597 /testbed/radon/cli/tools.py\n35:    def _open(path):\n75:        def _get_normal_name(orig_enc):\n89:        def detect_encoding(readline):\n117:            def read_or_stop():\n123:            def find_cookie(line):\n188:        def _open_function(filename, encoding=None):\n215:    def _open(path):\n226:def _is_python_file(filename):\n244:def iter_filenames(paths, exclude=None, ignore=None):\n272:def explore_directories(start, exclude, ignore):\n286:def filter_out(strings, patterns):\n293:def cc_to_dict(obj):\n297:    def get_type(obj):\n318:def raw_to_dict(obj):\n329:def dict_to_xml(results):\n353:def dict_to_md(results):\n380:def dict_to_codeclimate_issues(results, threshold='B'):\n449:def cc_to_terminal(results, show_complexity, min, max, total_average):\n482:def _format_line(block, ranked, show_complexity=False):\n503:def format_cc_issue(\n530:def get_remediation_points(complexity, grade_threshold):\n549:def get_content():\n585:def get_fingerprint(path, additional_parts):\n594:def strip_ipython(code):\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-d817edfd-09dd-42d8-b97c-6eae18e91ffa-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '293,380p' /testbed/radon/cli/tools.py && echo \"===== TEST FILE =====\" && cat /testbed/radon/tests/test_cli_tools.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-d817edfd-09dd-42d8-b97c-6eae18e91ffa-4",
+            "content": "categories': ['Complexity'],\n                'remediation_points': 1100000,\n                'fingerprint': 'afbe2b8d9a57fde5f3235ec97e7a22e1',\n            }\n        ),\n        json.dumps(\n            {\n                'description': 'Cyclomatic complexity is too high in class Classname. (8)',\n                'check_name': 'Complexity',\n                'content': {'body': tools.get_content()},\n                'location': {\n                    'path': 'filename',\n                    'lines': {'begin': 17, 'end': 29},\n                },\n                'type': 'issue',\n                'categories': ['Complexity'],\n                'remediation_points': 1300000,\n                'fingerprint': '8caecbb525375d825b95c23bc8f881d7',\n            }\n        ),\n    ]\n\n    actual_sorted = []\n    for i in actual_results:\n        actual_sorted.append(json.loads(i))\n\n    expected_sorted = []\n    for i in expected_results:\n        expected_sorted.append(json.loads(i))\n\n    assert actual_sorted == expected_sorted\n\n\nCC_TO_TERMINAL_CASES = [\n    Class(\n        name='Classname',\n        lineno=17,\n        col_offset=0,\n        endline=29,\n        methods=[\n            Function(\n                name='meth',\n                lineno=19,\n                col_offset=4,\n                endline=26,\n                is_method=True,\n                classname='Classname',\n                closures=[],\n                complexity=4,\n            )\n        ],\n        inner_classes=[],\n        real_complexity=4,\n    ),\n    Function(\n        name='meth',\n        lineno=19,\n        col_offset=4,\n        endline=26,\n        is_method=True,\n        classname='Classname',\n        closures=[],\n        complexity=7,\n    ),\n    Function(\n        name='f1',\n        lineno=12,\n        col_offset=0,\n        endline=16,\n        is_method=False,\n        classname=None,\n        closures=[],\n        complexity=14,\n    ),\n    Function(\n        name='f2',\n        lineno=12,\n        col_offset=0,\n        endline=16,\n        is_method=False,\n        classname=None,\n        closures=[],\n        complexity=22,\n    ),\n    Function(\n        name='f3',\n        lineno=12,\n        col_offset=0,\n        endline=16,\n        is_method=False,\n        classname=None,\n        closures=[],\n        complexity=32,\n    ),\n    Function(\n        name='f4',\n        lineno=12,\n        col_offset=0,\n        endline=16,\n        is_method=False,\n        classname=None,\n        closures=[],\n        complexity=41,\n    ),\n]\n\n\ndef test_cc_to_terminal():\n    # do the patching\n    tools.LETTERS_COLORS = dict((l, '<!{0}!>'.format(l)) for l in 'FMC')\n    tools.RANKS_COLORS = dict((r, '<|{0}|>'.format(r)) for r in 'ABCDEF')\n    tools.BRIGHT = '@'\n    tools.RESET = '__R__'\n\n    results = CC_TO_TERMINAL_CASES\n    res = [\n        '@<!C!>C __R__17:0 Classname - <|A|>A (4)__R__',\n        '@<!M!>M __R__19:4 Classname.meth - <|B|>B (7)__R__',\n        '@<!F!>F __R__12:0 f1 - <|C|>C (14)__R__',\n        '@<!F!>F __R__12:0 f2 - <|D|>D (22)__R__',\n        '@<!F!>F __R__12:0 f3 - <|E|>E (32)__R__',\n        '@<!F!>F __R__12:0 f4 - <|F|>F (41)__R__',\n    ]\n    res_noshow = ['{0}__R__'.format(r[: r.index('(') - 1]) for r in res]\n\n    assert tools.cc_to_terminal(results, False, 'A', 'F', False) == (\n        res_noshow,\n        120,\n        6,\n    )\n    assert tools.cc_to_terminal(results, True, 'A', 'F', False) == (\n        res,\n        120,\n        6,\n    )\n    assert tools.cc_to_terminal(results, True, 'A', 'D', False) == (\n        res[:-2],\n        47,\n        4,\n    )\n    assert tools.cc_to_terminal(results, False, 'A', 'D', False) == (\n        res_noshow[:-2],\n        47,\n        4,\n    )\n    assert tools.cc_to_terminal(results, True, 'C', 'F', False) == (\n        res[2:],\n        109,\n        4,\n    )\n    assert tools.cc_to_terminal(results, True, 'B', 'E', False) == (\n        res[1:-1],\n        75,\n        4,\n    )\n    assert tools.cc_to_terminal(results, True, 'B', 'F', True) == (\n        res[1:],\n        120,\n        6,\n    )\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-25527964-e6c5-42ce-b802-1d11461e1329-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '329,380p' /testbed/radon/cli/tools.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-25527964-e6c5-42ce-b802-1d11461e1329-5",
+            "content": "def dict_to_xml(results):\n    '''Convert a dictionary holding CC analysis result into a string containing\n    xml.'''\n    ccm = et.Element('ccm')\n    for filename, blocks in results.items():\n        for block in blocks:\n            metric = et.SubElement(ccm, 'metric')\n            et.SubElement(metric, 'complexity').text = str(block['complexity'])\n\n            unit = et.SubElement(metric, 'unit')\n            name = block['name']\n            if 'classname' in block:\n                name = '{0}.{1}'.format(block['classname'], block['name'])\n            unit.text = name\n\n            et.SubElement(metric, 'classification').text = block['rank']\n            et.SubElement(metric, 'file').text = filename\n            et.SubElement(metric, 'startLineNumber').text = str(\n                block['lineno']\n            )\n            et.SubElement(metric, 'endLineNumber').text = str(block['endline'])\n    return et.tostring(ccm).decode('utf-8')\n\n\ndef dict_to_md(results):\n    md_string = '''\n| Filename | Name | Type | Start:End Line | Complexity | Classification |\n| -------- | ---- | ---- | -------------- | ---------- | -------------- |\n'''\n    type_letter_map = {'class': 'C',\n                       'method': 'M',\n                       'function': 'F'}\n    for filename, blocks in results.items():\n        for block in blocks:\n            raw_classname = block.get(\"classname\")\n            raw_name = block.get(\"name\")\n            name = \"{}.{}\".format(\n                raw_classname,\n                raw_name) if raw_classname else block[\"name\"]\n            type = type_letter_map[block[\"type\"]]\n            md_string += \"| {} | {} | {} | {}:{} | {} | {} |\\n\".format(\n                filename,\n                name,\n                type,\n                block[\"lineno\"],\n                block[\"endline\"],\n                block[\"complexity\"],\n                block[\"rank\"])\n    return md_string\n\n\ndef dict_to_codeclimate_issues(results, threshold='B'):\n"
+          }
+        ]
+      }
+    }
+  ]
+}

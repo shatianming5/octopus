@@ -1,0 +1,26 @@
+2026-10-14 07:29:13 coordinator: first start aborted (node-138 sshd dropped the serve handshake, MaxStartups); relaunch on code-a941eea with ssh retries
+2026-10-14 07:31:18 watchdog v2 up: trial bundle-e8f, steps 53, memory limit 385G, stall 7200s, crash trigger on 'Training failed'
+2026-10-14 09:56:24 coordinator: stop after step 10 to release node-183, node-134, node-136 (user); resume same trial on node-138 only
+2026-10-14 10:00:18 watchdog v2 up: trial bundle-e8f, steps 53, memory limit 385G, stall 7200s, crash trigger on 'Training failed'
+2026-10-14 10:29:38 coordinator: stop now (user: only node-94 + node-138, fastest split): 94 0-3 rollout + 4-7 train, 138 rollout; resume same trial
+2026-10-14 10:32:00 watchdog v2 up: trial bundle-e8f, steps 53, memory limit 385G, stall 7200s, crash trigger on 'Training failed'
+2026-10-14 11:49:25 coordinator: step 13 rollout wait 0s, train 806s + recompute 169s: training-bound; switch to 5 train (94: 3-7) + 3 SGLang (94: 0-2) + node-138 (user OK); resume same trial
+2026-10-14 11:52:16 watchdog v2 up: trial bundle-e8f, steps 53, memory limit 385G, stall 7200s, crash trigger on 'Training failed'
+2026-10-14 13:26:31 coordinator: stop after 'Train step 16/240 done' to deploy PR #69 DP balance (code-f0cdea8, user OK); resume same trial
+2026-10-14 13:29:59 watchdog v2 up: trial bundle-e8f, steps 53, memory limit 385G, stall 7200s, crash trigger on 'Training failed'
+2026-10-14 14:02:07 CRASH #1 (update_weights timeout=0, repeats=0): (AReaL) 20261014-14:01:45.237 RLTrainer ERROR: Training failed with exception: Failed to call method 'compute_advantages' on worker 'actor/1': Engine method 'co
+2026-10-14 14:02:07 STOP (training failed) last: Train step 16/240 done
+2026-10-14 14:04:34 RESUME rc=0 (after training failed #1), trial bundle-e8f
+2026-10-14 14:42:43 CRASH #2 (update_weights timeout=0, repeats=0): (AReaL) 20261014-14:42:06.333 RLTrainer ERROR: Training failed with exception: Failed to call method 'compute_advantages' on worker 'actor/0': Engine method 'co
+2026-10-14 14:42:43 STOP (training failed) last: Train step 16/240 done
+2026-10-14 14:45:08 RESUME rc=0 (after training failed #2), trial bundle-e8f
+2026-10-14 15:23:17 CRASH #3 (update_weights timeout=0, repeats=0): (AReaL) 20261014-15:23:15.425 RLTrainer ERROR: Training failed with exception: Failed to call method 'compute_advantages' on worker 'actor/4': Engine method 'co
+2026-10-14 15:23:17 STOP (training failed) last: Train step 16/240 done
+2026-10-14 15:25:49 RESUME rc=0 (after training failed #3), trial bundle-e8f
+2026-10-14 15:30:53 coordinator: ROLLBACK code-f0cdea8 -> code-a941eea (PR #69 crashes in compute_advantages: 'Trainer logprobs, rollout logprobs, and mask must match', 3 crashes since 13:31); resume same trial
+2026-10-14 15:33:21 watchdog v2 up: trial bundle-e8f, steps 53, memory limit 385G, stall 7200s, crash trigger on 'Training failed'
+2026-10-14 20:51:34 coordinator: stop after 'Train step 30/240 done' to deploy PR #69 fixed (code-c8acbdc, user OK); guard: first crash rolls back
+2026-10-14 20:54:35 watchdog v2 up: trial bundle-e8f, steps 53, memory limit 385G, stall 7200s, crash trigger on 'Training failed'
+2026-10-15 02:41:32 DONE: step 53 of 53
+2026-10-15 02:41:52 STOP (done, release GPUs) last: Train step 53/240 done
+2026-10-15 02:43:27 released: 1 MiB 1 MiB 1 MiB 1 MiB 1 MiB 1 MiB 1 MiB 1 MiB 

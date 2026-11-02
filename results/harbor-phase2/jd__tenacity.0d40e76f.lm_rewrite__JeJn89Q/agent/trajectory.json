@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "jd__tenacity.0d40e76f.lm_rewrite__JeJn89Q__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# after_log function in tenacity logs unexpected output\n\n## Description\n\nThe `after_log` function in tenacity is not working correctly when logging the finished attempt. When using this function, it adds unexpected information to the log output that wasn't there before.\n\n## How to reproduce:\n\nCreate a simple script that uses the `after_log` function:\n\n```python\nimport logging\nimport tenacity\nfrom tenacity import after_log\n\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\n@tenacity.retry(\n    stop=tenacity.stop_after_attempt(3),\n    after=after_log(logger, logging.INFO)\n)\ndef my_function():\n    raise ValueError(\"Something went wrong\")\n\ntry:\n    my_function()\nexcept tenacity.RetryError:\n    pass\n```\n\n### Expected output:\nThe log should only contain information about the function call, time, and attempt number:\n```\nINFO:__main__:Finished call to 'my_function' after 0.000(s), this was the 1st time calling it.\n```\n\n### Actual output:\nThe log contains additional information about the exception or return value:\n```\nINFO:__main__:Finished call to 'my_function' after 0.000(s), this was the 1st time calling it. Call raised ValueError: Something went wrong\n```\n\nThis additional information about the exception or return value is not expected and breaks backward compatibility with existing code that might be parsing these log messages."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository and the `after_log` implementation to find why extra exception/return info is being logged.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-71e54184-237d-4fd2-b7a4-454b40a994eb-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -50 && cat /testbed/README.md 2>/dev/null | head -50"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-71e54184-237d-4fd2-b7a4-454b40a994eb-0",
+            "content": "total 80\ndrwxr-xr-x 1 root root  4096 Sep 22 16:39 .\ndrwxr-xr-x 1 root root  4096 Sep 22 16:39 ..\n-rw-r--r-- 1 root root   294 Jul 13  2025 .editorconfig\ndrwxr-xr-x 8 root root  4096 Jul 13  2025 .git\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 .github\n-rw-r--r-- 1 root root    92 Jul 13  2025 .gitignore\n-rw-rw-r-- 1 1005 1005     0 Sep 22 15:44 .gitkeep\n-rw-r--r-- 1 root root  1097 Jul 13  2025 .mergify.yml\n-rw-r--r-- 1 root root   102 Jul 13  2025 .readthedocs.yml\n-rw-r--r-- 1 root root 11357 Jul 13  2025 LICENSE\nlrwxrwxrwx 1 root root    20 Jul 13  2025 README.rst -> doc/source/index.rst\ndrwxr-xr-x 3 root root  4096 Jul 13  2025 doc\n-rw-r--r-- 1 root root   641 Jul 13  2025 pyproject.toml\ndrwxr-xr-x 3 root root  4096 Jul 13  2025 releasenotes\n-rw-r--r-- 1 root root    41 Jul 13  2025 reno.yaml\n-rw-r--r-- 1 root root  1201 Jul 13  2025 setup.cfg\n-rw-r--r-- 1 root root   674 Jul 13  2025 setup.py\ndrwxr-xr-x 3 root root  4096 Jul 13  2025 tenacity\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 tests\n-rw-r--r-- 1 root root   698 Jul 13  2025 tox.ini\n/testbed/tenacity/_utils.py\n/testbed/tenacity/__init__.py\n/testbed/tenacity/retry.py\n/testbed/tenacity/stop.py\n/testbed/tenacity/before_sleep.py\n/testbed/tenacity/after.py\n/testbed/tenacity/wait.py\n/testbed/tenacity/nap.py\n/testbed/tenacity/before.py\n/testbed/tenacity/tornadoweb.py\n/testbed/tenacity/asyncio/__init__.py\n/testbed/tenacity/asyncio/retry.py\n/testbed/tests/__init__.py\n/testbed/tests/test_tornado.py\n/testbed/tests/test_tenacity.py\n/testbed/tests/test_issue_478.py\n/testbed/tests/test_utils.py\n/testbed/tests/test_asyncio.py\n/testbed/tests/test_after.py\n/testbed/setup.py\n/testbed/doc/source/conf.py\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-17caba67-0f87-4519-ab49-506916e527dc-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/tenacity/after.py && echo \"==== TESTS ====\" && cat /testbed/tests/test_after.py && echo \"==== GIT LOG ====\" && git -C /testbed log --oneline -20 && echo \"==== GIT STATUS ====\" && git -C /testbed status && echo \"==== GIT DIFF ====\" && git -C /testbed log --all --oneline | head -30"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-17caba67-0f87-4519-ab49-506916e527dc-1",
+            "content": ":\n            # NOTE(sileht): can't really happen, but we must please mypy\n            fn_name = \"<unknown>\"\n        else:\n            fn_name = _utils.get_callback_name(retry_state.fn)\n        logger.log(\n            log_level,\n            f\"Finished call to '{fn_name}' \"\n            f\"after {sec_format % retry_state.seconds_since_start}(s), \"\n            f\"this was the {_utils.to_ordinal(retry_state.attempt_number)} time calling it.\",\n        )\n\n    return log_it\n==== TESTS ====\n# mypy: disable-error-code=\"no-untyped-def,no-untyped-call\"\nimport logging\nimport random\nimport unittest.mock\n\nfrom tenacity import _utils  # noqa\nfrom tenacity import after_log\n\nfrom . import test_tenacity\n\n\nclass TestAfterLogFormat(unittest.TestCase):\n    def setUp(self) -> None:\n        self.log_level = random.choice(\n            (\n                logging.DEBUG,\n                logging.INFO,\n                logging.WARNING,\n                logging.ERROR,\n                logging.CRITICAL,\n            )\n        )\n        self.previous_attempt_number = random.randint(1, 512)\n\n    def test_01_default(self):\n        \"\"\"Test log formatting.\"\"\"\n        log = unittest.mock.MagicMock(spec=\"logging.Logger.log\")\n        logger = unittest.mock.MagicMock(spec=\"logging.Logger\", log=log)\n\n        sec_format = \"%0.3f\"\n        delay_since_first_attempt = 0.1\n\n        retry_state = test_tenacity.make_retry_state(\n            self.previous_attempt_number, delay_since_first_attempt\n        )\n        fun = after_log(\n            logger=logger, log_level=self.log_level\n        )  # use default sec_format\n        fun(retry_state)\n        fn_name = (\n            \"<unknown>\"\n            if retry_state.fn is None\n            else _utils.get_callback_name(retry_state.fn)\n        )\n        log.assert_called_once_with(\n            self.log_level,\n            f\"Finished call to '{fn_name}' \"\n            f\"after {sec_format % retry_state.seconds_since_start}(s), \"\n            f\"this was the {_utils.to_ordinal(retry_state.attempt_number)} time calling it.\",\n        )\n\n    def test_02_custom_sec_format(self):\n        \"\"\"Test log formatting with custom int format..\"\"\"\n        log = unittest.mock.MagicMock(spec=\"logging.Logger.log\")\n        logger = unittest.mock.MagicMock(spec=\"logging.Logger\", log=log)\n\n        sec_format = \"%.1f\"\n        delay_since_first_attempt = 0.1\n\n        retry_state = test_tenacity.make_retry_state(\n            self.previous_attempt_number, delay_since_first_attempt\n        )\n        fun = after_log(logger=logger, log_level=self.log_level, sec_format=sec_format)\n        fun(retry_state)\n        fn_name = (\n            \"<unknown>\"\n            if retry_state.fn is None\n            else _utils.get_callback_name(retry_state.fn)\n        )\n        log.assert_called_once_with(\n            self.log_level,\n            f\"Finished call to '{fn_name}' \"\n            f\"after {sec_format % retry_state.seconds_since_start}(s), \"\n            f\"this was the {_utils.to_ordinal(retry_state.attempt_number)} time calling it.\",\n        )\n==== GIT LOG ====\n88214ad Initial commit\n==== GIT STATUS ====\nOn branch main\nYour branch is up to date with 'origin/main'.\n\nUntracked files:\n  (use \"git add <file>...\" to include in what will be committed)\n\t.gitkeep\n\nnothing added to commit but untracked files present (use \"git add\" to track)\n==== GIT DIFF ====\n3c4f784 Remove F2P Tests\n3a890f4 Bug Patch\naa8e5e2 Remove F2P Tests\n2b55ed2 Bug Patch\nd75eb41 Remove F2P Tests\n4757030 Bug Patch\n3297ce0 Remove F2P Tests\n273d574 Bug Patch\nefa4fff Remove F2P Tests\n8eaa0c6 Bug Patch\n58ac0b5 Remove F2P Tests\na714eff Bug Patch\n6f1e1ab Remove F2P Tests\nf4de6db Bug Patch\n2b95f8b Remove F2P Tests\n0ba8750 Bug Patch\neb621e5 Remove F2P Tests\nb90dabc Bug Patch\naff5ce4 Remove F2P Tests\n8a0c6a0 Bug Patch\ncbf47c1 Remove F2P Tests\n5bf4192 Bug Patch\naa808de Remove F2P Tests\n23415d1 Bug Patch\n33b3821 Remove F2P Tests\ne00bf1e Bug Patch\n6bcf67e Remove F2P Tests\n9b3c76d Bug Patch\n85ff32b Remove F2P Tests\n2f6c6cd Bug Patch\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-01182181-761a-4d51-8fcd-c6f971d46210-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/tenacity/after.py && echo \"==== INIT ====\" && cat /testbed/tenacity/__init__.py && echo \"==== UTILS ====\" && cat /testbed/tenacity/_utils.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-01182181-761a-4d51-8fcd-c6f971d46210-2",
+            "content": "ype\",\n    \"retry_if_exception_cause_type\",\n    \"retry_if_not_exception_type\",\n    \"retry_if_not_result\",\n    \"retry_if_result\",\n    \"retry_never\",\n    \"retry_unless_exception_type\",\n    \"retry_if_exception_message\",\n    \"retry_if_not_exception_message\",\n    \"sleep\",\n    \"sleep_using_event\",\n    \"stop_after_attempt\",\n    \"stop_after_delay\",\n    \"stop_before_delay\",\n    \"stop_all\",\n    \"stop_any\",\n    \"stop_never\",\n    \"stop_when_event_set\",\n    \"wait_chain\",\n    \"wait_combine\",\n    \"wait_exponential\",\n    \"wait_fixed\",\n    \"wait_incrementing\",\n    \"wait_none\",\n    \"wait_random\",\n    \"wait_random_exponential\",\n    \"wait_full_jitter\",\n    \"wait_exponential_jitter\",\n    \"before_log\",\n    \"before_nothing\",\n    \"after_log\",\n    \"after_nothing\",\n    \"before_sleep_log\",\n    \"before_sleep_nothing\",\n    \"retry\",\n    \"WrappedFn\",\n    \"TryAgain\",\n    \"NO_RESULT\",\n    \"DoAttempt\",\n    \"DoSleep\",\n    \"BaseAction\",\n    \"RetryAction\",\n    \"RetryError\",\n    \"AttemptManager\",\n    \"BaseRetrying\",\n    \"Retrying\",\n    \"Future\",\n    \"RetryCallState\",\n    \"AsyncRetrying\",\n]\n==== UTILS ====\n# Copyright 2016 Julien Danjou\n# Copyright 2016 Joshua Harlow\n# Copyright 2013-2014 Ray Holder\n#\n# Licensed under the Apache License, Version 2.0 (the \"License\");\n# you may not use this file except in compliance with the License.\n# You may obtain a copy of the License at\n#\n# http://www.apache.org/licenses/LICENSE-2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License for the specific language governing permissions and\n# limitations under the License.\nimport functools\nimport inspect\nimport sys\nimport typing\nfrom datetime import timedelta\n\n\n# sys.maxsize:\n# An integer giving the maximum value a variable of type Py_ssize_t can take.\nMAX_WAIT = sys.maxsize / 2\n\n\ndef find_ordinal(pos_num: int) -> str:\n    # See: https://en.wikipedia.org/wiki/English_numerals#Ordinal_numbers\n    if pos_num == 0:\n        return \"th\"\n    elif pos_num == 1:\n        return \"st\"\n    elif pos_num == 2:\n        return \"nd\"\n    elif pos_num == 3:\n        return \"rd\"\n    elif 4 <= pos_num <= 20:\n        return \"th\"\n    else:\n        return find_ordinal(pos_num % 10)\n\n\ndef to_ordinal(pos_num: int) -> str:\n    return f\"{pos_num}{find_ordinal(pos_num)}\"\n\n\ndef get_callback_name(cb: typing.Callable[..., typing.Any]) -> str:\n    \"\"\"Get a callback fully-qualified name.\n\n    If no name can be produced ``repr(cb)`` is called and returned.\n    \"\"\"\n    segments = []\n    try:\n        segments.append(cb.__qualname__)\n    except AttributeError:\n        try:\n            segments.append(cb.__name__)\n        except AttributeError:\n            pass\n    if not segments:\n        return repr(cb)\n    else:\n        try:\n            # When running under sphinx it appears this can be none?\n            if cb.__module__:\n                segments.insert(0, cb.__module__)\n        except AttributeError:\n            pass\n        return \".\".join(segments)\n\n\ntime_unit_type = typing.Union[int, float, timedelta]\n\n\ndef to_seconds(time_unit: time_unit_type) -> float:\n    return float(\n        time_unit.total_seconds() if isinstance(time_unit, timedelta) else time_unit\n    )\n\n\ndef is_coroutine_callable(call: typing.Callable[..., typing.Any]) -> bool:\n    if inspect.isclass(call):\n        return False\n    if inspect.iscoroutinefunction(call):\n        return True\n    partial_call = isinstance(call, functools.partial) and call.func\n    dunder_call = partial_call or getattr(call, \"__call__\", None)\n    return inspect.iscoroutinefunction(dunder_call)\n\n\ndef wrap_to_async_func(\n    call: typing.Callable[..., typing.Any],\n) -> typing.Callable[..., typing.Awaitable[typing.Any]]:\n    if is_coroutine_callable(call):\n        return call\n\n    async def inner(*args: typing.Any, **kwargs: typing.Any) -> typing.Any:\n        return call(*args, **kwargs)\n\n    return inner\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-50ea878a-870a-458f-9825-9774945fcccd-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "wc -l /testbed/tenacity/after.py /testbed/tenacity/before.py /testbed/tenacity/before_sleep.py && echo \"==== AFTER.PY ====\" && cat -A /testbed/tenacity/after.py && echo \"==== BEFORE.PY ====\" && cat /testbed/tenacity/before.py && echo \"==== BEFORE_SLEEP.PY ====\" && cat /testbed/tenacity/before_sleep.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-50ea878a-870a-458f-9825-9774945fcccd-3",
+            "content": " calling it.\",$\n        )$\n$\n    return log_it$\n==== BEFORE.PY ====\n# Copyright 2016 Julien Danjou\n# Copyright 2016 Joshua Harlow\n# Copyright 2013-2014 Ray Holder\n#\n# Licensed under the Apache License, Version 2.0 (the \"License\");\n# you may not use this file except in compliance with the License.\n# You may obtain a copy of the License at\n#\n# http://www.apache.org/licenses/LICENSE-2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License for the specific language governing permissions and\n# limitations under the License.\n\nimport typing\n\nfrom tenacity import _utils\n\nif typing.TYPE_CHECKING:\n    import logging\n\n    from tenacity import RetryCallState\n\n\ndef before_nothing(retry_state: \"RetryCallState\") -> None:\n    \"\"\"Before call strategy that does nothing.\"\"\"\n\n\ndef before_log(\n    logger: \"logging.Logger\", log_level: int\n) -> typing.Callable[[\"RetryCallState\"], None]:\n    \"\"\"Before call strategy that logs to some logger the attempt.\"\"\"\n\n    def log_it(retry_state: \"RetryCallState\") -> None:\n        if retry_state.fn is None:\n            # NOTE(sileht): can't really happen, but we must please mypy\n            fn_name = \"<unknown>\"\n        else:\n            fn_name = _utils.get_callback_name(retry_state.fn)\n        logger.log(\n            log_level,\n            f\"Starting call to '{fn_name}', \"\n            f\"this is the {_utils.to_ordinal(retry_state.attempt_number)} time calling it.\",\n        )\n\n    return log_it\n==== BEFORE_SLEEP.PY ====\n# Copyright 2016 Julien Danjou\n# Copyright 2016 Joshua Harlow\n# Copyright 2013-2014 Ray Holder\n#\n# Licensed under the Apache License, Version 2.0 (the \"License\");\n# you may not use this file except in compliance with the License.\n# You may obtain a copy of the License at\n#\n# http://www.apache.org/licenses/LICENSE-2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License for the specific language governing permissions and\n# limitations under the License.\n\nimport typing\n\nfrom tenacity import _utils\n\nif typing.TYPE_CHECKING:\n    import logging\n\n    from tenacity import RetryCallState\n\n\ndef before_sleep_nothing(retry_state: \"RetryCallState\") -> None:\n    \"\"\"Before sleep strategy that does nothing.\"\"\"\n\n\ndef before_sleep_log(\n    logger: \"logging.Logger\",\n    log_level: int,\n    exc_info: bool = False,\n) -> typing.Callable[[\"RetryCallState\"], None]:\n    \"\"\"Before sleep strategy that logs to some logger the attempt.\"\"\"\n\n    def log_it(retry_state: \"RetryCallState\") -> None:\n        local_exc_info: BaseException | bool | None\n\n        if retry_state.outcome is None:\n            raise RuntimeError(\"log_it() called before outcome was set\")\n\n        if retry_state.next_action is None:\n            raise RuntimeError(\"log_it() called before next_action was set\")\n\n        if retry_state.outcome.failed:\n            ex = retry_state.outcome.exception()\n            verb, value = \"raised\", f\"{ex.__class__.__name__}: {ex}\"\n\n            if exc_info:\n                local_exc_info = retry_state.outcome.exception()\n            else:\n                local_exc_info = False\n        else:\n            verb, value = \"returned\", retry_state.outcome.result()\n            local_exc_info = False  # exc_info does not apply when no exception\n\n        if retry_state.fn is None:\n            # NOTE(sileht): can't really happen, but we must please mypy\n            fn_name = \"<unknown>\"\n        else:\n            fn_name = _utils.get_callback_name(retry_state.fn)\n\n        logger.log(\n            log_level,\n            f\"Retrying {fn_name} \"\n            f\"in {retry_state.next_action.sleep} seconds as it {verb} {value}.\",\n            exc_info=local_exc_info,\n        )\n\n    return log_it\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-fe0b6bfb-8ae7-44bd-ac40-3ac19507203a-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "python3 -c \"\nwith open('/testbed/tenacity/after.py') as f:\n    content = f.read()\nprint(repr(content[:2000]))\nprint('---LEN---', len(content))\nprint('---LINES---', content.count(chr(10)))\n\""
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-fe0b6bfb-8ae7-44bd-ac40-3ac19507203a-4",
+            "content": "'# Copyright 2016 Julien Danjou\\n# Copyright 2016 Joshua Harlow\\n# Copyright 2013-2014 Ray Holder\\n#\\n# Licensed under the Apache License, Version 2.0 (the \"License\");\\n# you may not use this file except in compliance with the License.\\n# You may obtain a copy of the License at\\n#\\n# http://www.apache.org/licenses/LICENSE-2.0\\n#\\n# Unless required by applicable law or agreed to in writing, software\\n# distributed under the License is distributed on an \"AS IS\" BASIS,\\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\\n# See the License for the specific language governing permissions and\\n# limitations under the License.\\n\\nimport typing\\n\\nfrom tenacity import _utils\\n\\nif typing.TYPE_CHECKING:\\n    import logging\\n\\n    from tenacity import RetryCallState\\n\\n\\ndef after_nothing(retry_state: \"RetryCallState\") -> None:\\n    \"\"\"After call strategy that does nothing.\"\"\"\\n\\n\\ndef after_log(\\n    logger: \"logging.Logger\",\\n    log_level: int,\\n    sec_format: str = \"%0.3f\",\\n) -> typing.Callable[[\"RetryCallState\"], None]:\\n    \"\"\"After call strategy that logs to some logger the finished attempt.\"\"\"\\n\\n    def log_it(retry_state: \"RetryCallState\") -> None:\\n        if retry_state.fn is None:\\n            # NOTE(sileht): can\\'t really happen, but we must please mypy\\n            fn_name = \"<unknown>\"\\n        else:\\n            fn_name = _utils.get_callback_name(retry_state.fn)\\n        logger.log(\\n            log_level,\\n            f\"Finished call to \\'{fn_name}\\' \"\\n            f\"after {sec_format % retry_state.seconds_since_start}(s), \"\\n            f\"this was the {_utils.to_ordinal(retry_state.attempt_number)} time calling it.\",\\n        )\\n\\n    return log_it\\n'\n---LEN--- 1658\n---LINES--- 51\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "The current `after_log` already looks like the expected format. I'll check git history and other related code to locate the extra exception/return logging.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-c48770e8-d2ae-4bb4-9b0d-695760253a88-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "git -C /testbed log --all --oneline -- tenacity/after.py && echo \"==== BRANCHES ====\" && git -C /testbed branch -a && echo \"==== SHOW AFTER FROM OTHER COMMITS ====\" && git -C /testbed log --all --oneline | head -5 && echo \"==== INIT after_log related ====\" && grep -n \"after_log\\|after_nothing\\|Call raised\\|Finished call\" -r /testbed --include=\"*.py\" --include=\"*.rst\""
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-c48770e8-d2ae-4bb4-9b0d-695760253a88-5",
+            "content": "origin/jd__tenacity.0d40e76f.func_basic__xuxrcvn4\n  remotes/origin/jd__tenacity.0d40e76f.func_basic__yv7tqq9l\n  remotes/origin/jd__tenacity.0d40e76f.func_pm_class_rm_funcs__ayw9xqf7\n  remotes/origin/jd__tenacity.0d40e76f.func_pm_ctrl_invert_if__ih08kqze\n  remotes/origin/jd__tenacity.0d40e76f.func_pm_ctrl_invert_if__ipm7o2gf\n  remotes/origin/jd__tenacity.0d40e76f.func_pm_ctrl_invert_if__p67w1cck\n  remotes/origin/jd__tenacity.0d40e76f.func_pm_ctrl_invert_if__tv8qotg5\n  remotes/origin/jd__tenacity.0d40e76f.func_pm_ctrl_invert_if__wwden9d5\n  remotes/origin/jd__tenacity.0d40e76f.func_pm_ctrl_shuffle__2xahl087\n  remotes/origin/jd__tenacity.0d40e76f.func_pm_ctrl_shuffle__3ljvivv1\n  remotes/origin/jd__tenacity.0d40e76f.func_pm_ctrl_shuffle__6vzkm0lh\n  remotes/origin/jd__tenacity.0d40e76f.func_pm_ctrl_shuffle__ct54v4gk\n  remotes/origin/jd__tenacity.0d40e76f.func_pm_ctrl_shuffle__d3jm9ipb\n  remotes/origin/jd__tenacity.0d40e76f.func_pm_ctrl_shuffle__eb0rs32j\n  remotes/origin/jd__tenacity.0d40e76f.func_pm_ctrl_shuffle__hyoug7wl\n  remotes/origin/jd__tenacity.0d40e76f.func_pm_ctrl_shuffle__ied06l4m\n  remotes/origin/jd__tenacity.0d40e76f.func_pm_ctrl_shuffle__ld25mubm\n  remotes/origin/jd__tenacity.0d40e76f.func_pm_ctrl_shuffle__ni48riat\n  remotes/origin/jd__tenacity.0d40e76f.func_pm_ctrl_shuffle__ny0tmyi3\n  remotes/origin/jd__tenacity.0d40e76f.func_pm_ctrl_shuffle__qhd71msz\n  remotes/origin/jd__tenacity.0d40e76f.func_pm_ctrl_shuffle__x5mvcunm\n  remotes/origin/jd__tenacity.0d40e76f.lm_rewrite__0kf0yphx\n  remotes/origin/jd__tenacity.0d40e76f.lm_rewrite__0siuyh3e\n  remotes/origin/jd__tenacity.0d40e76f.lm_rewrite__17y1km6x\n  remotes/origin/jd__tenacity.0d40e76f.lm_rewrite__3rty13vw\n  remotes/origin/jd__tenacity.0d40e76f.lm_rewrite__d09ethos\n  remotes/origin/jd__tenacity.0d40e76f.lm_rewrite__h8rtl9ii\n  remotes/origin/jd__tenacity.0d40e76f.lm_rewrite__mc25garo\n  remotes/origin/jd__tenacity.0d40e76f.lm_rewrite__md3042lx\n  remotes/origin/jd__tenacity.0d40e76f.lm_rewrite__nrufeeyo\n  remotes/origin/jd__tenacity.0d40e76f.lm_rewrite__xbzswi9a\n  remotes/origin/jd__tenacity.0d40e76f.lm_rewrite__z0ij0hwj\n  remotes/origin/jd__tenacity.0d40e76f.pr_384\n  remotes/origin/jd__tenacity.0d40e76f.pr_390\n  remotes/origin/jd__tenacity.0d40e76f.pr_406\n  remotes/origin/jd__tenacity.0d40e76f.pr_425\n  remotes/origin/jd__tenacity.0d40e76f.pr_434\n  remotes/origin/jd__tenacity.0d40e76f.pr_437\n  remotes/origin/jd__tenacity.0d40e76f.pr_451\n  remotes/origin/jd__tenacity.0d40e76f.pr_479\n  remotes/origin/jd__tenacity.0d40e76f.pr_484\n  remotes/origin/main\n==== SHOW AFTER FROM OTHER COMMITS ====\n3c4f784 Remove F2P Tests\n3a890f4 Bug Patch\naa8e5e2 Remove F2P Tests\n2b55ed2 Bug Patch\nd75eb41 Remove F2P Tests\n==== INIT after_log related ====\n/testbed/tenacity/__init__.py:76:from .after import after_log  # noqa\n/testbed/tenacity/__init__.py:77:from .after import after_nothing  # noqa\n/testbed/tenacity/__init__.py:224:        after: t.Callable[[\"RetryCallState\"], None] = after_nothing,\n/testbed/tenacity/__init__.py:613:    ] = after_nothing,\n/testbed/tenacity/__init__.py:701:    \"after_log\",\n/testbed/tenacity/__init__.py:702:    \"after_nothing\",\n/testbed/tenacity/after.py:27:def after_nothing(retry_state: \"RetryCallState\") -> None:\n/testbed/tenacity/after.py:31:def after_log(\n/testbed/tenacity/after.py:46:            f\"Finished call to '{fn_name}' \"\n/testbed/tenacity/asyncio/__init__.py:29:from tenacity import after_nothing\n/testbed/tenacity/asyncio/__init__.py:81:        ] = after_nothing,\n/testbed/tests/test_after.py:7:from tenacity import after_log\n/testbed/tests/test_after.py:36:        fun = after_log(\n/testbed/tests/test_after.py:47:            f\"Finished call to '{fn_name}' \"\n/testbed/tests/test_after.py:63:        fun = after_log(logger=logger, log_level=self.log_level, sec_format=sec_format)\n/testbed/tests/test_after.py:72:            f\"Finished call to '{fn_name}' \"\n/testbed/doc/source/index.rst:338:    @retry(stop=stop_after_attempt(3), after=after_log(logger, logging.DEBUG))\n"
+          }
+        ]
+      }
+    }
+  ]
+}

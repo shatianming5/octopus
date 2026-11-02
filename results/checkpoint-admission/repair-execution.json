@@ -1,0 +1,89 @@
+{
+  "status": "complete",
+  "completion_gate_met": true,
+  "source_parent_commit": "3681d70",
+  "initial_main_trace_attempts_complete": 81,
+  "real_tool_repairs_complete": 9,
+  "controlled_repair_traces_complete": 27,
+  "controlled_repair_triples_complete": 9,
+  "controlled_repair_partial_triples": 0,
+  "all_main_and_repair_attempts_complete": 117,
+  "all_main_and_repair_process_attempts": 119,
+  "primary_controlled_traces": 72,
+  "primary_real_tool_traces": 9,
+  "primary_total": 81,
+  "primary_tasks_correct": 324,
+  "primary_tasks_total": 324,
+  "superseded_real_tool_traces": 9,
+  "superseded_controlled_queue_lease_traces": 9,
+  "completed_additional_fresh_paired_controls": 18,
+  "remaining_real_tool_selector_repairs": 0,
+  "remaining_primary_replacements": 0,
+  "remaining_paired_trace_attempts": 0,
+  "remaining_blocks": [],
+  "gpu_lifecycle_status": "complete: both real GPU preemption variants passed, exit 0",
+  "gpu_lifecycle_artifact": "repair-device/gpu6-stress-junit.xml",
+  "replacement_device_cost_calibration": {
+    "new_independent_measurements": 12,
+    "tight_512_mib_measurements": 6,
+    "roomy_2g_measurements": 6,
+    "held_out_outcomes_used": false
+  },
+  "budget": {
+    "frozen_seconds": 10800,
+    "initial_main_seconds": 7812.835415124893,
+    "real_tool_repair_seconds": 623.1152446269989,
+    "controlled_repair_seconds": 2400.208206176758,
+    "cumulative_seconds": 10836.15886592865,
+    "trace_boundary_overrun_seconds": 36.15886592865,
+    "rule": "Budget checked before each trace. The last already-started trace completed its triple, then no next block was launched; the configured budget was not increased."
+  },
+  "completion_supplement": {
+    "artifact": "paired-repair-controlled-supplement.json",
+    "authorized_selector_limit": 6,
+    "launched_selectors": 6,
+    "completed_selectors": 6,
+    "process_attempts": 8,
+    "failed_infrastructure_attempts": 2,
+    "accepted_trace_seconds": 436.71597385406494,
+    "actual_extra_seconds": 522.6017701625824,
+    "original_budget_cumulative_seconds": 10836.15886592865,
+    "combined_accounted_seconds": 11358.760636091232,
+    "rule": "The original 10,800-second ledger remains frozen. This separate trace-count supplement authorized only the six pre-specified missing selectors; failed attempts remain recorded."
+  },
+  "resource": {
+    "host": "7443-5x4090-68",
+    "original_controlled_gpu_uuid": "GPU-7879fd32-ec29-b6a1-6cf4-725d454a8170",
+    "replacement_gpu_uuid": "GPU-aa7be32a-43d1-b13e-45dd-ef46033f7631",
+    "replacement_physical_index": 6,
+    "final_memory_mib": 3,
+    "final_gpu_utilization_percent": 0,
+    "final_compute_apps": 0
+  },
+  "owned_running_processes": 0,
+  "supervisors": {
+    "real_tool": {
+      "agent_id": "d3696aeb-577a-4da2-8f42-7317cfc09a9d",
+      "agent_status": "idle",
+      "experiment_status": "complete",
+      "artifact": "paired-repair-real_tool-execution.json"
+    },
+    "controlled": {
+      "agent_id": "a6616536-7d8c-43e7-b0fd-c1d42c2cdc0c",
+      "agent_status": "idle",
+      "experiment_status": "complete",
+      "artifact": "paired-repair-controlled-execution.json",
+      "completion_supplement_artifact": "paired-repair-controlled-supplement.json"
+    }
+  },
+  "process_cleanup": "GPU6 stress and calibration exited 0. Nine real-tool repairs and all nine controlled repair triples completed. Two supplemental infrastructure failures were preserved and rerun without changing selectors. GPU6 ended at 3 MiB/0% with no compute app or owned admission process. GPU3's unrelated occupant was not killed or waited on during replacement-device execution.",
+  "queue_implementation": "local-ready-waiting-free-lru-no-reservation",
+  "scientific_decision": {
+    "outcome": "no_go",
+    "gds_warranted": false,
+    "reason": "Correct repaired real-tool evidence fails the fixed 5% background gate at seed 101 (D95 36.49%, one-sided upper 41.02%) and the three-seed paired foreground interval does not establish improvement. Agent minus queue is +1.647 seconds on average with an interval spanning zero."
+  },
+  "blocker": null,
+  "next_action": "No additional GDS, seed, model, calibration or GPU run is warranted under the approved minimal plan.",
+  "parent_plan_update_needed": "Resolved: primary evidence is 81/81 with 324/324 correct tasks, the frozen decision is no-go, GDS was not warranted, and delivery/cleanup are complete."
+}

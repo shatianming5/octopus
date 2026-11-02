@@ -1,0 +1,97 @@
+{
+  "actions": {
+    "action_types": {
+      "invalid_decision": 10,
+      "list": 1,
+      "view": 39
+    },
+    "controller_actions": 50,
+    "edits": 0,
+    "failed_actions": 50,
+    "finish": 0,
+    "physical_tool_actions": 1,
+    "raw_model_requests": 50,
+    "source_inspections": 0,
+    "successful_actions": 0,
+    "tests": 0,
+    "unchanged_state_rejections": 39,
+    "unique_failed_actions": 11
+  },
+  "active_gpu_sample": {
+    "active_process": {
+      "command": "timeout --signal=KILL 1070 /home/user/octopus-lighthouse-agent7-directory-view-v1-20260916/runtime/python -m benchmarks.lighthouse_quality _relay",
+      "pid": 3855274
+    },
+    "gpu_index": 0,
+    "gpu_uuid": "GPU-c5792743-87d0-80a0-8a3e-876d31e854d9",
+    "host": "7443-5x4090-68",
+    "memory_used_mib": 42944,
+    "note": "The sample was taken during the active model process after weights occupied the selected GPU; instantaneous compute utilization was between decode bursts.",
+    "power_draw_watts": 141.07,
+    "sampled_at": "2026-09-16T14:12:10Z",
+    "schema": "octopus-directory-view-active-gpu-sample-v1",
+    "utilization_percent": 0
+  },
+  "directory_contract": {
+    "decisive_trace": "The first request guessed /testbed/GoogleChrome/lighthouse and failed. All later valid view/list requests repeated that non-root resource and were rejected by state-scoped path recovery; the model never requested '.', so the repaired directory producer emitted no listing.",
+    "default_view_requests": 2,
+    "list_requests": 1,
+    "producer_contract_exercised_successfully": false,
+    "ranged_view_requests": 37,
+    "real_paths_revealed": [],
+    "root_directory_requests": 0,
+    "successful_directory_requests": 0
+  },
+  "native": {
+    "actual_decode_tokens": 2187,
+    "actual_prefill_tokens": 118437,
+    "adopted_prefix_tokens": 67424,
+    "allocation_rejections": 0,
+    "cache_evictions": 0,
+    "capsule_tokens": 9591,
+    "max_actual_decode_tokens": 120,
+    "max_actual_prefill_tokens": 2899,
+    "max_prompt_tokens": 4275,
+    "max_simultaneous_scheduler_requests": 1,
+    "preemptions": 0,
+    "request_records": 50,
+    "selected_parent_tokens": 66591,
+    "terminal_pool": {
+      "active_blocks": 0,
+      "cold_free_blocks": 24281,
+      "free_blocks": 31790,
+      "request_owned_blocks": 0,
+      "retention_only_blocks": 0,
+      "shared_request_retention_blocks": 0,
+      "total_blocks": 31790,
+      "warm_cached_blocks": 7509
+    }
+  },
+  "quality": {
+    "decision": "QUALITY_FAIL",
+    "official_fail_to_pass": {
+      "lighthouse-core/test/audits/dobetterweb/js-libraries-test.js": "FAILED"
+    },
+    "official_resolved": false,
+    "patch_bytes": 0,
+    "stop_reason": "action_limit"
+  },
+  "schema": "octopus-directory-view-quality-metrics-v1",
+  "timing_seconds": {
+    "child_process_wall": 98.29481891682371,
+    "gpu_engine_scope": 80.62094123801216,
+    "official_grading": 9.53145649121143,
+    "runner_wall": 113,
+    "solver_e2e": 82.68255112878978,
+    "solver_parent": 98.43222152302042
+  },
+  "validation": {
+    "capsule_present_in_every_context": true,
+    "feedback_records_complete": true,
+    "initial_empty_capsule_tokens": 36,
+    "initial_input_exact": true,
+    "initial_prompt_ids_sha256": "6d48c58c5b2db8626606cfe89ec34bae27d8ffdf5e5cc69f18c5610b27773998",
+    "initial_prompt_tokens": 1493,
+    "limits_valid": true
+  }
+}

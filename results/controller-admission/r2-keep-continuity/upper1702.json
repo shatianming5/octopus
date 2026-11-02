@@ -1,0 +1,120 @@
+{
+  "schema": "octopus-r2-keep-continuity-terminal-v1",
+  "status": "STOP_MATCHED_BG_GATE_FAILED",
+  "library_source": "7c0aa2c",
+  "native_source": "e869df19b30c36f07864be65baad7f789ff73325",
+  "workload_seed": 1702,
+  "native_blocks": 10752,
+  "capacity_bytes": 9865003008,
+  "work": {
+    "original_fixed_FG_saved_tokens": 33888,
+    "candidate_FG_saved_tokens": 31376,
+    "saved_fraction": 0.9258734655335222,
+    "at_least_75_percent": true,
+    "candidate_FG_parent_recompute": 2512,
+    "candidate_BG_body_recompute": 944,
+    "matched_blanket_BG_body_recompute": 0,
+    "matched_BG_gate_pass": false,
+    "candidate_total_prompt_tokens": {
+      "foreground": 37042,
+      "background": 1985010,
+      "total": 2022052
+    },
+    "blanket_total_prompt_tokens": {
+      "foreground": 37986,
+      "background": 1984066,
+      "total": 2022052
+    },
+    "interpretation": "Relative to matched blanket,944 fewer FG tokens are exchanged for944 more BG tokens. Equal total token work is not equal FLOPs or runtime."
+  },
+  "exposure": {
+    "candidate_protected_block_seconds": 482316.51582104014,
+    "blanket_protected_block_seconds": 614817.6093391068,
+    "change_percent": -21.551284723366603,
+    "candidate_no_saving_block_seconds_each_APC_queue": 2783.94017091766,
+    "blanket_no_saving_block_seconds_each_APC_queue": 141004.8485343128,
+    "postdecision_omission_block_seconds": 4283.54037371953,
+    "positive_commitment_omission_block_seconds": 2322.953795821406,
+    "same_state_blanket_victim_difference_draws": 10,
+    "limit": "Recorded-clock conditional endpoint integration, not recovered actual live serving exposure."
+  },
+  "native_decisions": {
+    "binding_draws": 4,
+    "ranking_draws": 0,
+    "resolved_selected_copy_occurrences": 836,
+    "other_DROP_selected_copy_occurrences": 0,
+    "hard_demoted_selected_copy_occurrences": 216,
+    "native_forced_still_preferred_occurrences": 0,
+    "hard_selected_by_attempt": [
+      {"attempt_id": 971, "blocks": 59, "kind": "BG"},
+      {"attempt_id": 1241, "blocks": 130, "kind": "FG"},
+      {"attempt_id": 1242, "blocks": 27, "kind": "FG"}
+    ],
+    "attribution_correction": "Old forecast-selected victims having zero hard-demotion metadata did not prove all positive preferences would fit native room. Continuity removes forecast ranking, but59BG and157FG blocks are now selected after genuine native hard projection."
+  },
+  "prospective": {
+    "initial_units": 2954,
+    "initial_KEEP": 2954,
+    "initial_DROP": 0,
+    "support_episodes": 6124,
+    "pending_history_KEEP": {
+      "episodes": 836,
+      "later_uses": 777,
+      "later_hits": 777,
+      "blanket_reference_benefit_tokens": 12432,
+      "blanket_reference_exposure": 43103.03224435565,
+      "mean_episode_density": 0.2854996289813555,
+      "pooled_episode_density": 0.2884251838599585
+    },
+    "pending_history_DROP": {
+      "episodes": 59,
+      "later_uses": 59,
+      "later_hits": 0,
+      "blanket_reference_benefit_tokens": 944,
+      "blanket_reference_exposure": 441.68283760990016,
+      "mean_episode_density": 2.1372802373493007,
+      "pooled_episode_density": 2.1372802373493007
+    },
+    "resolved_history_DROP": {
+      "episodes": 836,
+      "later_uses": 0,
+      "blanket_reference_benefit_tokens": 0,
+      "blanket_reference_exposure": 138871.06134603918
+    },
+    "observed_history_events_equal_to_blanket": false,
+    "limits": "Each arm learns from its own cached adoptions; histories need not stay numerically equal after different misses. Initial labels still contain no DROP comparison. State-interval semantic benefit excludes queued/held handoff uses; complete full/prior/onward references remain in raw output and must not be replaced by interval-only zero. Pending DROP density exceeds KEEP; no R2-B causal-ranking pass."
+  },
+  "validation": {
+    "native_red_cases": 2,
+    "native_red_seconds": 6.17,
+    "focused_native_passed": 24,
+    "focused_native_seconds": 6.33,
+    "deprecation_warnings": 14,
+    "outcome_processing_CPU_seconds": 58.172564794,
+    "serialization_CPU_seconds": 0.7918464950000015,
+    "old_native_source_unchanged": true
+  },
+  "artifacts": {
+    "local_archive_root": "/home/ubuntu/experiments/octopus/r2-keep-continuity-20260912-1e12c6",
+    "local_outcome_bytes": 27257646,
+    "archived_outcome_matches_summary": true,
+    "remote_root": "/mnt/disk2/user/octopus-contention/r2-keep-continuity-20260912-1e12c6",
+    "full_outcome": "evidence/upper1702-next_reuse.json",
+    "source_bundle": "evidence/continuity-source.bundle",
+    "native_red": "evidence/native-red.txt",
+    "initial_gate_with_old_expectations": "evidence/native-gate.txt",
+    "native_green": "evidence/native-green.txt",
+    "outcome_log": "evidence/outcome.log",
+    "plan": "analysis-plan.json",
+    "exact_command": "run-upper1702.sh"
+  },
+  "stop": {
+    "new_conditional_outcomes": 1,
+    "new_control_outcomes": 0,
+    "lower_point_outcomes": 0,
+    "GPU_runs": 0,
+    "serving_integration": false,
+    "owned_running_jobs": 0,
+    "full_R1_R4_complete": false
+  }
+}

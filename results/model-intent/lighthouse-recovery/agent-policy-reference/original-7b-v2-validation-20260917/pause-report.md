@@ -1,0 +1,7 @@
+# PAUSED_FOR_REPLAN
+
+- **scope/status:** `original-7b-v2-validation-20260917` / `PAUSED_FOR_REPLAN`. The one authorized episode had already reached a valid terminal state before the pause; no process was interrupted and no new model request, evaluation, training, deployment, or next stage was started after the pause.
+- **used result:** 24 completed model requests; solver `complete`, stop reason `no_progress`; 22 views followed by two plain messages; zero reproducer calls, zero product changes, empty patch, and mechanism failure. The unchanged official evaluation had already completed with `resolved=false`.
+- **processes/containers:** local runner PID `2486160` start ticks `127879819` completed; sampled task-owned engine PID `171420` on `GPU-f0e105ce-3965-e444-e4ae-0b8511bed250` completed; actor container `051aa78e8210b2a542d779e622405a2faca2fa438b985d40a9f4074aad777a1b` is absent.
+- **cleanup/budget:** selected GPU cleanup was already verified at 1 MiB used / 48,519 MiB free with no compute application. Charged phase time is 334.934521 seconds; 865.065479 seconds remain. Exact source deployment, model assets, checkpoints, compressed trace/log, grade, and prior terminal evidence are preserved.
+- **replan boundary:** do not restart or resume this episode, issue more model requests, reinterpret a partial run, or enter training automatically. Keep this worker available for explicit plan revision.

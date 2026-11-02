@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "sloria__environs.73c372df.lm_rew__9VvAvPe__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "Django cache URL error message is not preserved\n\nDescription\n\nWhen using the `dj_cache_url` parser with an invalid cache URL, the error message is not preserved correctly. The original error message from django-cache-url is replaced with a generic \"Not a valid cache URL\" message.\n\nFor example:\n\n```python\nfrom environs import Env\n\nenv = Env()\n# Set an invalid cache URL\nos.environ['CACHE_URL'] = 'invalid://'\n\n# This will eventually fail with a generic error message\nenv.dj_cache_url('CACHE_URL')\nenv.seal()  # Raises EnvValidationError with \"Not a valid cache URL\"\n```\n\nThe error message should include the specific reason why the URL is invalid (e.g., \"Unknown backend: 'invalid'\") instead of the generic message.\n\nHow to reproduce:\n\n1. Set an environment variable with an invalid cache URL format\n2. Try to parse it with `env.dj_cache_url()`\n3. Call `env.seal()`\n4. The error message is generic instead of showing the specific validation error\n\nThis makes debugging more difficult since the user doesn't get the actual reason why their cache URL is invalid."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository structure and locate how `dj_cache_url` handles invalid URLs so we can preserve the original error message.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-1e8cc4b2-6ee2-4615-962d-632cf00e90e6-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" -o -name \"*.md\" -o -name \"*.toml\" -o -name \"*.cfg\" -o -name \"setup*\" | head -100"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-1e8cc4b2-6ee2-4615-962d-632cf00e90e6-0",
+            "content": "total 84\ndrwxr-xr-x 1 root root  4096 Sep 22 17:51 .\ndrwxr-xr-x 1 root root  4096 Sep 22 17:51 ..\ndrwxr-xr-x 8 root root  4096 Jul 14  2025 .git\ndrwxr-xr-x 2 root root  4096 Jul 14  2025 .github\n-rw-r--r-- 1 root root   501 Jul 14  2025 .gitignore\n-rw-rw-r-- 1 1005 1005     0 Sep 22 15:44 .gitkeep\n-rw-r--r-- 1 root root   571 Jul 14  2025 .pre-commit-config.yaml\n-rw-r--r-- 1 root root 15409 Jul 14  2025 CHANGELOG.md\n-rw-r--r-- 1 root root   506 Jul 14  2025 CONTRIBUTING.md\n-rw-r--r-- 1 root root  1047 Jul 14  2025 LICENSE\n-rw-r--r-- 1 root root 12654 Jul 14  2025 README.md\ndrwxr-xr-x 2 root root  4096 Jul 14  2025 examples\n-rw-r--r-- 1 root root  1898 Jul 14  2025 pyproject.toml\ndrwxr-xr-x 3 root root  4096 Jul 14  2025 src\ndrwxr-xr-x 4 root root  4096 Jul 14  2025 tests\n-rw-r--r-- 1 root root   943 Jul 14  2025 tox.ini\n/testbed/CHANGELOG.md\n/testbed/src/environs/__init__.py\n/testbed/src/environs/types.py\n/testbed/CONTRIBUTING.md\n/testbed/pyproject.toml\n/testbed/tests/mypy_test_cases/env.py\n/testbed/tests/test_environs.py\n/testbed/README.md\n/testbed/examples/django_example.py\n/testbed/examples/deferred_validation_example.py\n/testbed/examples/marshmallow_example.py\n/testbed/examples/prefix_example.py\n/testbed/examples/validation_example.py\n/testbed/examples/plugin_example.py\n/testbed/examples/simple_example.py\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-7bc45358-ba88-475d-9dd4-c6b657e0987c-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/src/environs/__init__.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-7bc45358-ba88-475d-9dd4-c6b657e0987c-1",
+            "content": "\n            )\n        self.__custom_parsers__[name] = _func2method(func, method_name=name)\n        return None\n\n    def parser_for(\n        self, name: _StrType\n    ) -> typing.Callable[[typing.Callable], typing.Callable]:\n        \"\"\"Decorator that registers a new parser method with the name ``name``.\n        The decorated function must receive the input value for an environment variable.\n        \"\"\"\n\n        def decorator(func: typing.Callable) -> typing.Callable:\n            self.add_parser(name, func)\n            return func\n\n        return decorator\n\n    def add_parser_from_field(self, name: _StrType, field_cls: type[ma.fields.Field]):\n        \"\"\"Register a new parser method with name ``name``,\n        given a marshmallow ``Field``.\n        \"\"\"\n        self.__custom_parsers__[name] = _field2method(field_cls, method_name=name)\n\n    def dump(self) -> typing.Mapping[_StrType, typing.Any]:\n        \"\"\"Dump parsed environment variables to a dictionary of simple data types\n        (numbers and strings).\n        \"\"\"\n        schema = ma.Schema.from_dict(self._fields)()\n        return schema.dump(self._values)\n\n    def _get_from_environ(\n        self, key: _StrType, default: typing.Any, *, proxied: _BoolType = False\n    ) -> tuple[_StrType, typing.Any, _StrType | None]:\n        \"\"\"Access a value from os.environ. Handles proxied variables,\n        e.g. SMTP_LOGIN={{MAILGUN_LOGIN}}.\n\n        Returns a tuple (envvar_key, envvar_value, proxied_key). The ``envvar_key``\n        will be different from the passed key for proxied variables. proxied_key\n        will be None if the envvar isn't proxied.\n\n        The ``proxied`` flag is recursively passed if a proxy lookup is required\n        to get a proxy env key.\n        \"\"\"\n        env_key = self._get_key(key, omit_prefix=proxied)\n        value = os.environ.get(env_key, default)\n        if hasattr(value, \"strip\"):\n            expand_match = self.expand_vars and _EXPANDED_VAR_PATTERN.match(value)\n            if expand_match:  # Full match expand_vars - special case keep default\n                proxied_key: _StrType = expand_match.groups()[0]\n                subs_default: _StrType | None = expand_match.groups()[1]\n                if subs_default is not None:\n                    default = subs_default[2:]\n                elif (\n                    value == default\n                ):  # if we have used default, don't use it recursively\n                    default = ma.missing\n                return (\n                    key,\n                    self._get_from_environ(proxied_key, default, proxied=True)[1],\n                    proxied_key,\n                )\n            expand_search = self.expand_vars and _EXPANDED_VAR_PATTERN.search(value)\n            if (\n                expand_search\n            ):  # Multiple or in text match expand_vars - General case - default lost\n                return self._expand_vars(env_key, value)\n            # Remove escaped $\n            if self.expand_vars and r\"\\$\" in value:\n                value = value.replace(r\"\\$\", \"$\")\n        return env_key, value, None\n\n    def _expand_vars(self, parsed_key, value):\n        ret = \"\"\n        prev_start = 0\n        for match in _EXPANDED_VAR_PATTERN.finditer(value):\n            env_key = match.group(1)\n            env_default = match.group(2)\n            if env_default is None:\n                env_default = ma.missing\n            else:\n                env_default = env_default[2:]  # trim ':-' from default\n            _, env_value, _ = self._get_from_environ(env_key, env_default, proxied=True)\n            if env_value is ma.missing:\n                return parsed_key, env_value, env_key\n            ret += value[prev_start : match.start()] + env_value\n            prev_start = match.end()\n        ret += value[prev_start:]\n\n        return parsed_key, ret, env_key\n\n    def _get_key(self, key: _StrType, *, omit_prefix: _BoolType = False) -> _StrType:\n        return self._prefix + key if self._prefix and not omit_prefix else key\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-3f7b8911-7964-4633-b05f-f964c34f2bae-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "wc -l /testbed/src/environs/__init__.py && cat /testbed/src/environs/__init__.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-3f7b8911-7964-4633-b05f-f964c34f2bae-2",
+            "content": "\n            )\n        self.__custom_parsers__[name] = _func2method(func, method_name=name)\n        return None\n\n    def parser_for(\n        self, name: _StrType\n    ) -> typing.Callable[[typing.Callable], typing.Callable]:\n        \"\"\"Decorator that registers a new parser method with the name ``name``.\n        The decorated function must receive the input value for an environment variable.\n        \"\"\"\n\n        def decorator(func: typing.Callable) -> typing.Callable:\n            self.add_parser(name, func)\n            return func\n\n        return decorator\n\n    def add_parser_from_field(self, name: _StrType, field_cls: type[ma.fields.Field]):\n        \"\"\"Register a new parser method with name ``name``,\n        given a marshmallow ``Field``.\n        \"\"\"\n        self.__custom_parsers__[name] = _field2method(field_cls, method_name=name)\n\n    def dump(self) -> typing.Mapping[_StrType, typing.Any]:\n        \"\"\"Dump parsed environment variables to a dictionary of simple data types\n        (numbers and strings).\n        \"\"\"\n        schema = ma.Schema.from_dict(self._fields)()\n        return schema.dump(self._values)\n\n    def _get_from_environ(\n        self, key: _StrType, default: typing.Any, *, proxied: _BoolType = False\n    ) -> tuple[_StrType, typing.Any, _StrType | None]:\n        \"\"\"Access a value from os.environ. Handles proxied variables,\n        e.g. SMTP_LOGIN={{MAILGUN_LOGIN}}.\n\n        Returns a tuple (envvar_key, envvar_value, proxied_key). The ``envvar_key``\n        will be different from the passed key for proxied variables. proxied_key\n        will be None if the envvar isn't proxied.\n\n        The ``proxied`` flag is recursively passed if a proxy lookup is required\n        to get a proxy env key.\n        \"\"\"\n        env_key = self._get_key(key, omit_prefix=proxied)\n        value = os.environ.get(env_key, default)\n        if hasattr(value, \"strip\"):\n            expand_match = self.expand_vars and _EXPANDED_VAR_PATTERN.match(value)\n            if expand_match:  # Full match expand_vars - special case keep default\n                proxied_key: _StrType = expand_match.groups()[0]\n                subs_default: _StrType | None = expand_match.groups()[1]\n                if subs_default is not None:\n                    default = subs_default[2:]\n                elif (\n                    value == default\n                ):  # if we have used default, don't use it recursively\n                    default = ma.missing\n                return (\n                    key,\n                    self._get_from_environ(proxied_key, default, proxied=True)[1],\n                    proxied_key,\n                )\n            expand_search = self.expand_vars and _EXPANDED_VAR_PATTERN.search(value)\n            if (\n                expand_search\n            ):  # Multiple or in text match expand_vars - General case - default lost\n                return self._expand_vars(env_key, value)\n            # Remove escaped $\n            if self.expand_vars and r\"\\$\" in value:\n                value = value.replace(r\"\\$\", \"$\")\n        return env_key, value, None\n\n    def _expand_vars(self, parsed_key, value):\n        ret = \"\"\n        prev_start = 0\n        for match in _EXPANDED_VAR_PATTERN.finditer(value):\n            env_key = match.group(1)\n            env_default = match.group(2)\n            if env_default is None:\n                env_default = ma.missing\n            else:\n                env_default = env_default[2:]  # trim ':-' from default\n            _, env_value, _ = self._get_from_environ(env_key, env_default, proxied=True)\n            if env_value is ma.missing:\n                return parsed_key, env_value, env_key\n            ret += value[prev_start : match.start()] + env_value\n            prev_start = match.end()\n        ret += value[prev_start:]\n\n        return parsed_key, ret, env_key\n\n    def _get_key(self, key: _StrType, *, omit_prefix: _BoolType = False) -> _StrType:\n        return self._prefix + key if self._prefix and not omit_prefix else key\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-de354b8d-ff00-4eaf-a7c6-d73f78e85755-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "python3 -c \"\nwith open('/testbed/src/environs/__init__.py') as f:\n    content = f.read()\nprint(len(content))\nprint('---')\nprint(content[:8000])\n\""
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-de354b8d-ff00-4eaf-a7c6-d73f78e85755-3",
+            "content": "     validate=validate,\n            required=required,\n            allow_none=allow_none,\n            load_default=default,\n            error_messages=error_messages,\n            metadata=metadata,\n        )\n        preprocess_kwargs = {\n            name: kwargs.pop(name) for name in preprocess_kwarg_names if name in kwargs\n        }\n        if isinstance(field_or_factory, type) and issubclass(\n            field_or_factory, ma.fields.Field\n        ):\n            field = field_or_factory(**field_kwargs, **kwargs)\n        else:\n            parsed_subcast = _make_subcast_field(subcast) if subcast else ma.fields.Raw\n            field = typing.cast(FieldFactory, field_or_factory)(\n                subcast=parsed_subcast, **field_kwargs\n            )\n        parsed_key, value, proxied_key = self._get_from_environ(\n            name, field.load_default\n        )\n        self._fields[parsed_key] = field\n        source_key = proxied_key or parsed_key\n        if value is ma.missing:\n            if self.eager:\n                raise EnvError(\n                    f'Environment variable \"{proxied_key or parsed_key}\" not set'\n                )\n            else:\n                self._errors[parsed_key].append(\"Environment variable not set.\")\n                return None\n        try:\n            if preprocess:\n                value = preprocess(value, **preprocess_kwargs)\n            value = field.deserialize(value)\n        except ma.ValidationError as error:\n            if self.eager:\n                raise EnvValidationError(\n                    f'Environment variable \"{source_key}\" invalid: {error.args[0]}',\n                    error.messages,\n                ) from error\n            self._errors[parsed_key].extend(error.messages)\n        else:\n            self._values[parsed_key] = value\n        return typing.cast(typing.Optional[_T], value)\n\n    method.__name__ = method_name\n    return method\n\n\ndef _func2method(func: typing.Callable[..., _T], method_name: str) -> typing.Any:\n    def method(\n        self: Env,\n        name: str,\n        default: typing.Any = ma.missing,\n        **kwargs,\n    ) -> _T | None:\n        if self._sealed:\n            raise EnvSealedError(\n                \"Env has already been sealed. New values cannot be parsed.\"\n            )\n        parsed_key, raw_value, proxied_key = self._get_from_environ(name, default)\n        self._fields[parsed_key] = ma.fields.Raw()\n        source_key = proxied_key or parsed_key\n        if raw_value is ma.missing:\n            if self.eager:\n                raise EnvError(\n                    f'Environment variable \"{proxied_key or parsed_key}\" not set'\n                )\n            else:\n                self._errors[parsed_key].append(\"Environment variable not set.\")\n                return None\n        if raw_value or raw_value == \"\":\n            value = raw_value\n        else:\n            value = None\n        try:\n            value = func(raw_value, **kwargs)\n        except (EnvError, ma.ValidationError) as error:\n            messages = (\n                error.messages\n                if isinstance(error, ma.ValidationError)\n                else [error.args[0]]\n            )\n            if self.eager:\n                raise EnvValidationError(\n                    f'Environment variable \"{source_key}\" invalid: {error.args[0]}',\n                    messages,\n                ) from error\n            self._errors[parsed_key].extend(messages)\n        else:\n            self._values[parsed_key] = value\n        return typing.cast(typing.Optional[_T], value)\n\n    method.__name__ = method_name\n    return method\n\n\ndef _make_subcast_field(\n    subcast: Subcast,\n) -> type[ma.fields.Field]:\n    if isinstance(subcast, type) and subcast in ma.Schema.TYPE_MAPPING:\n        inner_field = ma.Schema.TYPE_MAPPING[subcast]\n    elif isinstance(subcast, type) and issubclass(subcast, ma.fields.Field):\n        inner_field = subcast\n    elif callable(subcast):\n\n        class SubcastField(ma.fields.Field):\n            \n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-2727439a-5b61-4597-9a66-95bd6105d8bc-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "python3 -c \"\nwith open('/testbed/src/environs/__init__.py') as f:\n    content = f.read()\nprint(content)\n\""
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-2727439a-5b61-4597-9a66-95bd6105d8bc-4",
+            "content": "            )\n        self.__custom_parsers__[name] = _func2method(func, method_name=name)\n        return None\n\n    def parser_for(\n        self, name: _StrType\n    ) -> typing.Callable[[typing.Callable], typing.Callable]:\n        \"\"\"Decorator that registers a new parser method with the name ``name``.\n        The decorated function must receive the input value for an environment variable.\n        \"\"\"\n\n        def decorator(func: typing.Callable) -> typing.Callable:\n            self.add_parser(name, func)\n            return func\n\n        return decorator\n\n    def add_parser_from_field(self, name: _StrType, field_cls: type[ma.fields.Field]):\n        \"\"\"Register a new parser method with name ``name``,\n        given a marshmallow ``Field``.\n        \"\"\"\n        self.__custom_parsers__[name] = _field2method(field_cls, method_name=name)\n\n    def dump(self) -> typing.Mapping[_StrType, typing.Any]:\n        \"\"\"Dump parsed environment variables to a dictionary of simple data types\n        (numbers and strings).\n        \"\"\"\n        schema = ma.Schema.from_dict(self._fields)()\n        return schema.dump(self._values)\n\n    def _get_from_environ(\n        self, key: _StrType, default: typing.Any, *, proxied: _BoolType = False\n    ) -> tuple[_StrType, typing.Any, _StrType | None]:\n        \"\"\"Access a value from os.environ. Handles proxied variables,\n        e.g. SMTP_LOGIN={{MAILGUN_LOGIN}}.\n\n        Returns a tuple (envvar_key, envvar_value, proxied_key). The ``envvar_key``\n        will be different from the passed key for proxied variables. proxied_key\n        will be None if the envvar isn't proxied.\n\n        The ``proxied`` flag is recursively passed if a proxy lookup is required\n        to get a proxy env key.\n        \"\"\"\n        env_key = self._get_key(key, omit_prefix=proxied)\n        value = os.environ.get(env_key, default)\n        if hasattr(value, \"strip\"):\n            expand_match = self.expand_vars and _EXPANDED_VAR_PATTERN.match(value)\n            if expand_match:  # Full match expand_vars - special case keep default\n                proxied_key: _StrType = expand_match.groups()[0]\n                subs_default: _StrType | None = expand_match.groups()[1]\n                if subs_default is not None:\n                    default = subs_default[2:]\n                elif (\n                    value == default\n                ):  # if we have used default, don't use it recursively\n                    default = ma.missing\n                return (\n                    key,\n                    self._get_from_environ(proxied_key, default, proxied=True)[1],\n                    proxied_key,\n                )\n            expand_search = self.expand_vars and _EXPANDED_VAR_PATTERN.search(value)\n            if (\n                expand_search\n            ):  # Multiple or in text match expand_vars - General case - default lost\n                return self._expand_vars(env_key, value)\n            # Remove escaped $\n            if self.expand_vars and r\"\\$\" in value:\n                value = value.replace(r\"\\$\", \"$\")\n        return env_key, value, None\n\n    def _expand_vars(self, parsed_key, value):\n        ret = \"\"\n        prev_start = 0\n        for match in _EXPANDED_VAR_PATTERN.finditer(value):\n            env_key = match.group(1)\n            env_default = match.group(2)\n            if env_default is None:\n                env_default = ma.missing\n            else:\n                env_default = env_default[2:]  # trim ':-' from default\n            _, env_value, _ = self._get_from_environ(env_key, env_default, proxied=True)\n            if env_value is ma.missing:\n                return parsed_key, env_value, env_key\n            ret += value[prev_start : match.start()] + env_value\n            prev_start = match.end()\n        ret += value[prev_start:]\n\n        return parsed_key, ret, env_key\n\n    def _get_key(self, key: _StrType, *, omit_prefix: _BoolType = False) -> _StrType:\n        return self._prefix + key if self._prefix and not omit_prefix else key\n\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-0c59c9b5-4b3c-4eca-b9b7-2b5b91cce869-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '1,400p' /testbed/src/environs/__init__.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-0c59c9b5-4b3c-4eca-b9b7-2b5b91cce869-5",
+            "content": "ubcast_values)(**kwargs)\n    else:\n        subcast_values_instance = ma.fields.Raw()\n\n    return {\n        subcast_keys_instance.deserialize(\n            key.strip()\n        ): subcast_values_instance.deserialize(val.strip())\n        for key, val in (item.split(\"=\", 1) for item in value.split(delimiter) if value)\n    }\n\n\ndef _preprocess_json(value: str | typing.Mapping | list, **kwargs):\n    try:\n        if isinstance(value, str):\n            return pyjson.loads(value)\n        elif isinstance(value, dict) or isinstance(value, list) or value is None:\n            return value\n        else:\n            raise ma.ValidationError(\"Not valid JSON.\")\n    except pyjson.JSONDecodeError as error:\n        raise ma.ValidationError(\"Not valid JSON.\") from error\n\n\ndef _enum_parser(value, type: type[EnumT], ignore_case: bool = False) -> EnumT:\n    if isinstance(value, type):\n        return value\n\n    invalid_exc = ma.ValidationError(f\"Not a valid '{type.__name__}' enum.\")\n\n    if not ignore_case:\n        try:\n            return type[value]\n        except KeyError as error:\n            raise invalid_exc from error\n\n    for enum_value in type:\n        if enum_value.name.lower() == value.lower():\n            return enum_value\n\n    raise invalid_exc\n\n\ndef _dj_db_url_parser(value: str, **kwargs) -> DBConfig:\n    try:\n        import dj_database_url\n    except ImportError as error:\n        raise RuntimeError(\n            \"The dj_db_url parser requires the dj-database-url package. \"\n            \"You can install it with: pip install dj-database-url\"\n        ) from error\n    try:\n        return dj_database_url.parse(value, **kwargs)\n    except Exception as error:\n        raise ma.ValidationError(\"Not a valid database URL.\") from error\n\n\ndef _dj_email_url_parser(value: str, **kwargs) -> dict:\n    try:\n        import dj_email_url\n    except ImportError as error:\n        raise RuntimeError(\n            \"The dj_email_url parser requires the dj-email-url package. \"\n            \"You can install it with: pip install dj-email-url\"\n        ) from error\n    try:\n        return dj_email_url.parse(value, **kwargs)\n    except Exception as error:\n        raise ma.ValidationError(\"Not a valid email URL.\") from error\n\n\ndef _dj_cache_url_parser(value: str, **kwargs) -> dict:\n    try:\n        import django_cache_url\n    except ImportError as error:\n        raise RuntimeError(\n            \"The dj_cache_url parser requires the django-cache-url package. \"\n            \"You can install it with: pip install django-cache-url\"\n        ) from error\n    try:\n        return django_cache_url.parse(value, **kwargs)\n    except Exception as error:\n        # django_cache_url may raise Exception(\"Unknown backend...\")\n        #   so use that error message in the validation error\n        raise ma.ValidationError(error.args[0]) from error\n\n\nclass _URLField(ma.fields.Url):\n    def _serialize(self, value: ParseResult, *args, **kwargs) -> str:  # type: ignore[override]\n        return value.geturl()\n\n    # Override deserialize rather than _deserialize because we need\n    # to call urlparse *after* validation has occurred\n    def deserialize(  # type: ignore[override]\n        self,\n        value: typing.Any,\n        attr: str | None = None,\n        data: typing.Mapping[str, typing.Any] | None = None,\n        **kwargs,\n    ) -> ParseResult:\n        ret = typing.cast(str, super().deserialize(value, attr, data, **kwargs))\n        return urlparse(ret)\n\n\n# TODO: Change to ma.fields.Field[Path] after dropping marshmallow 3 support\nclass _PathField(ma.fields.Field):\n    def _serialize(self, value: Path | None, *args, **kwargs) -> str | None:\n        if value is None:\n            return None\n        return str(value)\n\n    def _deserialize(self, value, *args, **kwargs) -> Path:\n        if isinstance(value, Path):\n            return value\n        ret = super()._deserialize(value, *args, **kwargs)\n        return Path(ret)\n\n\nclass _LogLevelField(ma.fields.Integer):\n    def _format_num(self, value) -> int:\n"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,556 @@
+{
+  "schema": "octopus-selector-native-cpu-profile-v1",
+  "gpu_execution": false,
+  "fixture_kind": "synthetic native queue states at recorded E2 median dimensions; not trace replay",
+  "measured_e2_reference": "seed1601 fixed: free median30436.5, draw median114, future median2118, queued median0",
+  "free_blocks": 30436,
+  "draw_blocks": 114,
+  "protected_future_blocks": 2118,
+  "provider_scope": "constant input snapshots; real provider cost remains separate in GPU evidence",
+  "results": [
+    {
+      "policy": "apc",
+      "median_draw_seconds": 5.479902029037476e-06,
+      "samples_seconds": [
+        8.470145985484123e-06,
+        7.270835340023041e-06,
+        6.241025403141975e-06,
+        5.929963663220406e-06,
+        5.631009116768837e-06,
+        5.669891834259033e-06,
+        5.559995770454407e-06,
+        5.490146577358246e-06,
+        5.470123142004013e-06,
+        5.419831722974777e-06,
+        5.451031029224396e-06,
+        5.4300762712955475e-06,
+        5.349982529878616e-06,
+        5.381181836128235e-06,
+        5.620066076517105e-06,
+        5.660112947225571e-06,
+        5.400041118264198e-06,
+        5.3998082876205444e-06,
+        5.400041118264198e-06,
+        5.559995770454407e-06,
+        5.609821528196335e-06,
+        5.509937182068825e-06,
+        5.3800176829099655e-06,
+        5.499925464391708e-06,
+        5.520880222320557e-06,
+        5.410052835941315e-06,
+        5.469890311360359e-06,
+        5.440087988972664e-06,
+        5.380949005484581e-06,
+        5.361158400774002e-06,
+        5.479902029037476e-06
+      ],
+      "hash_reads_one_draw": 0,
+      "selected_and_remaining_lru_verified": true,
+      "profile_scope": "five popleft_n + append_n calls; setup and equivalence checking excluded",
+      "functions": [
+        {
+          "file": "kv_cache_utils.py",
+          "line": 274,
+          "function": "popleft_n",
+          "calls": 5,
+          "self_seconds": 7.480400000000001e-05,
+          "cumulative_seconds": 0.00011752600000000001
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'append' of 'list' objects>",
+          "calls": 570,
+          "self_seconds": 4.2722e-05,
+          "cumulative_seconds": 4.2722e-05
+        },
+        {
+          "file": "kv_cache_utils.py",
+          "line": 371,
+          "function": "append_n",
+          "calls": 5,
+          "self_seconds": 1.4879000000000001e-05,
+          "cumulative_seconds": 1.562e-05
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'disable' of '_lsprof.Profiler' objects>",
+          "calls": 1,
+          "self_seconds": 9.75e-06,
+          "cumulative_seconds": 9.75e-06
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method builtins.len>",
+          "calls": 10,
+          "self_seconds": 7.410000000000001e-07,
+          "cumulative_seconds": 7.410000000000001e-07
+        }
+      ]
+    },
+    {
+      "policy": "queue",
+      "median_draw_seconds": 7.067294791340828e-05,
+      "samples_seconds": [
+        0.0001057949848473072,
+        7.917499169707298e-05,
+        0.00020315987057983875,
+        7.241405546665192e-05,
+        7.577380165457726e-05,
+        7.142382673919201e-05,
+        7.411418482661247e-05,
+        9.868503548204899e-05,
+        6.584404036402702e-05,
+        6.825290620326996e-05,
+        6.941286846995354e-05,
+        7.067294791340828e-05,
+        6.932299584150314e-05,
+        9.844498708844185e-05,
+        7.296400144696236e-05,
+        6.991298869252205e-05,
+        6.906385533511639e-05,
+        6.81739766150713e-05,
+        7.078377529978752e-05,
+        9.559490717947483e-05,
+        7.011322304606438e-05,
+        7.0593087002635e-05,
+        6.965408101677895e-05,
+        6.801402196288109e-05,
+        6.838398985564709e-05,
+        9.0824905782938e-05,
+        6.963405758142471e-05,
+        7.055397145450115e-05,
+        7.843389175832272e-05,
+        6.956304423511028e-05,
+        9.382492862641811e-05
+      ],
+      "hash_reads_one_draw": 342,
+      "selected_and_remaining_lru_verified": true,
+      "profile_scope": "five popleft_n + append_n calls; setup and equivalence checking excluded",
+      "functions": [
+        {
+          "file": "queue_retention.py",
+          "line": 135,
+          "function": "popleft_n",
+          "calls": 5,
+          "self_seconds": 0.000185111,
+          "cumulative_seconds": 0.001127612
+        },
+        {
+          "file": "queue_retention.py",
+          "line": 175,
+          "function": "encode",
+          "calls": 35,
+          "self_seconds": 0.00018822,
+          "cumulative_seconds": 0.00046163400000000005
+        },
+        {
+          "file": "queue_retention.py",
+          "line": 47,
+          "function": "_select_blocks",
+          "calls": 5,
+          "self_seconds": 0.00024073300000000003,
+          "cumulative_seconds": 0.00036798900000000004
+        },
+        {
+          "file": "queue_retention.py",
+          "line": 184,
+          "function": "<genexpr>",
+          "calls": 575,
+          "self_seconds": 0.00010738200000000001,
+          "cumulative_seconds": 0.000137612
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'hex' of 'bytes' objects>",
+          "calls": 570,
+          "self_seconds": 9.906800000000001e-05,
+          "cumulative_seconds": 9.906800000000001e-05
+        },
+        {
+          "file": "kv_cache_utils.py",
+          "line": 141,
+          "function": "block_hash",
+          "calls": 1710,
+          "self_seconds": 8.698500000000001e-05,
+          "cumulative_seconds": 8.698500000000001e-05
+        },
+        {
+          "file": "kv_cache_utils.py",
+          "line": 307,
+          "function": "remove",
+          "calls": 570,
+          "self_seconds": 6.9751e-05,
+          "cumulative_seconds": 6.9751e-05
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'append' of 'list' objects>",
+          "calls": 575,
+          "self_seconds": 5.7498000000000004e-05,
+          "cumulative_seconds": 5.7498000000000004e-05
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method builtins.len>",
+          "calls": 605,
+          "self_seconds": 4.2118000000000006e-05,
+          "cumulative_seconds": 4.2118000000000006e-05
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method builtins.isinstance>",
+          "calls": 570,
+          "self_seconds": 3.6734000000000004e-05,
+          "cumulative_seconds": 3.6734000000000004e-05
+        },
+        {
+          "file": "kv_cache_utils.py",
+          "line": 371,
+          "function": "append_n",
+          "calls": 5,
+          "self_seconds": 1.4561000000000002e-05,
+          "cumulative_seconds": 1.5571e-05
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'disable' of '_lsprof.Profiler' objects>",
+          "calls": 1,
+          "self_seconds": 1.2461000000000001e-05,
+          "cumulative_seconds": 1.2461000000000001e-05
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method builtins.sorted>",
+          "calls": 25,
+          "self_seconds": 6.740000000000001e-06,
+          "cumulative_seconds": 6.740000000000001e-06
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method fromkeys>",
+          "calls": 5,
+          "self_seconds": 2.03e-06,
+          "cumulative_seconds": 2.46e-06
+        }
+      ]
+    },
+    {
+      "policy": "fixed",
+      "median_draw_seconds": 0.0021760680247098207,
+      "samples_seconds": [
+        0.002270082011818886,
+        0.0023839280474931,
+        0.00215043593198061,
+        0.002427399856969714,
+        0.002101062797009945,
+        0.0022084189113229513,
+        0.002121163997799158,
+        0.002177627058699727,
+        0.0020929030142724514,
+        0.00220399908721447,
+        0.0021028141491115093,
+        0.0021760680247098207,
+        0.002098382916301489,
+        0.002418820047751069,
+        0.0021426849998533726,
+        0.0021976979915052652,
+        0.0020911728497594595,
+        0.0021273039747029543,
+        0.00208744197152555,
+        0.002130975015461445,
+        0.002177888061851263,
+        0.0020961230620741844,
+        0.002180547919124365,
+        0.002318704966455698,
+        0.002180547919124365,
+        0.0020920520182698965,
+        0.0021773669868707657,
+        0.0020946532022207975,
+        0.002183397999033332,
+        0.002091973088681698,
+        0.0021788468584418297
+      ],
+      "hash_reads_one_draw": 4578,
+      "selected_and_remaining_lru_verified": true,
+      "profile_scope": "five popleft_n + append_n calls; setup and equivalence checking excluded",
+      "functions": [
+        {
+          "file": "queue_retention.py",
+          "line": 135,
+          "function": "popleft_n",
+          "calls": 5,
+          "self_seconds": 0.0011887730000000002,
+          "cumulative_seconds": 0.026787554
+        },
+        {
+          "file": "queue_retention.py",
+          "line": 175,
+          "function": "encode",
+          "calls": 35,
+          "self_seconds": 0.005584773,
+          "cumulative_seconds": 0.010527458
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method fromkeys>",
+          "calls": 5,
+          "self_seconds": 0.001091269,
+          "cumulative_seconds": 0.0071285440000000005
+        },
+        {
+          "file": "queue_retention.py",
+          "line": 47,
+          "function": "_select_blocks",
+          "calls": 5,
+          "self_seconds": 0.004102667,
+          "cumulative_seconds": 0.00630376
+        },
+        {
+          "file": "queue_retention.py",
+          "line": 150,
+          "function": "<genexpr>",
+          "calls": 10595,
+          "self_seconds": 0.0019075200000000002,
+          "cumulative_seconds": 0.006037275000000001
+        },
+        {
+          "file": "queue_retention.py",
+          "line": 123,
+          "function": "_is_free_key",
+          "calls": 10590,
+          "self_seconds": 0.002971385,
+          "cumulative_seconds": 0.004129755000000001
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'hex' of 'bytes' objects>",
+          "calls": 21750,
+          "self_seconds": 0.0036559390000000004,
+          "cumulative_seconds": 0.0036559390000000004
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method builtins.sorted>",
+          "calls": 25,
+          "self_seconds": 0.001534711,
+          "cumulative_seconds": 0.001534711
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method builtins.len>",
+          "calls": 21785,
+          "self_seconds": 0.0013402680000000001,
+          "cumulative_seconds": 0.0013402680000000001
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method builtins.isinstance>",
+          "calls": 21750,
+          "self_seconds": 0.001141531,
+          "cumulative_seconds": 0.001141531
+        },
+        {
+          "file": "kv_cache_utils.py",
+          "line": 141,
+          "function": "block_hash",
+          "calls": 22890,
+          "self_seconds": 0.001095276,
+          "cumulative_seconds": 0.001095276
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'append' of 'list' objects>",
+          "calls": 11165,
+          "self_seconds": 0.0009826490000000002,
+          "cumulative_seconds": 0.0009826490000000002
+        },
+        {
+          "file": "queue_retention.py",
+          "line": 184,
+          "function": "<genexpr>",
+          "calls": 575,
+          "self_seconds": 0.000115321,
+          "cumulative_seconds": 0.000145215
+        },
+        {
+          "file": "kv_cache_utils.py",
+          "line": 307,
+          "function": "remove",
+          "calls": 570,
+          "self_seconds": 6.9301e-05,
+          "cumulative_seconds": 6.9301e-05
+        }
+      ]
+    },
+    {
+      "policy": "budgeted",
+      "median_draw_seconds": 0.0018270988948643208,
+      "samples_seconds": [
+        0.002547997049987316,
+        0.0018038270063698292,
+        0.001891962019726634,
+        0.0017904569394886494,
+        0.001876401947811246,
+        0.0018422501161694527,
+        0.0018270988948643208,
+        0.0017971869092434645,
+        0.0018172680865973234,
+        0.0017916059587150812,
+        0.0018268190324306488,
+        0.0018795810174196959,
+        0.0017848960123956203,
+        0.001885981997475028,
+        0.0017898669466376305,
+        0.001930143916979432,
+        0.001797376899048686,
+        0.0019236428197473288,
+        0.0018015769310295582,
+        0.0018888420891016722,
+        0.0017915158532559872,
+        0.0018760811071842909,
+        0.0018001880962401628,
+        0.001862201141193509,
+        0.001786055974662304,
+        0.0018638400360941887,
+        0.0017902071122080088,
+        0.0018769409507513046,
+        0.0017791958525776863,
+        0.0018828511238098145,
+        0.00205887109041214
+      ],
+      "hash_reads_one_draw": 4578,
+      "selected_and_remaining_lru_verified": true,
+      "profile_scope": "five popleft_n + append_n calls; setup and equivalence checking excluded",
+      "functions": [
+        {
+          "file": "queue_retention.py",
+          "line": 135,
+          "function": "popleft_n",
+          "calls": 5,
+          "self_seconds": 0.001217039,
+          "cumulative_seconds": 0.027370556
+        },
+        {
+          "file": "queue_retention.py",
+          "line": 175,
+          "function": "encode",
+          "calls": 35,
+          "self_seconds": 0.005807906000000001,
+          "cumulative_seconds": 0.010650074
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method fromkeys>",
+          "calls": 5,
+          "self_seconds": 0.001126162,
+          "cumulative_seconds": 0.007314785000000001
+        },
+        {
+          "file": "queue_retention.py",
+          "line": 47,
+          "function": "_select_blocks",
+          "calls": 5,
+          "self_seconds": 0.004209728,
+          "cumulative_seconds": 0.006475299
+        },
+        {
+          "file": "queue_retention.py",
+          "line": 150,
+          "function": "<genexpr>",
+          "calls": 10595,
+          "self_seconds": 0.001951253,
+          "cumulative_seconds": 0.006188623000000001
+        },
+        {
+          "file": "queue_retention.py",
+          "line": 123,
+          "function": "_is_free_key",
+          "calls": 10590,
+          "self_seconds": 0.0030457410000000002,
+          "cumulative_seconds": 0.00423737
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'hex' of 'bytes' objects>",
+          "calls": 21750,
+          "self_seconds": 0.0035326690000000004,
+          "cumulative_seconds": 0.0035326690000000004
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method builtins.sorted>",
+          "calls": 25,
+          "self_seconds": 0.001606309,
+          "cumulative_seconds": 0.001606309
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method builtins.len>",
+          "calls": 21790,
+          "self_seconds": 0.0013761300000000001,
+          "cumulative_seconds": 0.0013761300000000001
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method builtins.isinstance>",
+          "calls": 21750,
+          "self_seconds": 0.001169375,
+          "cumulative_seconds": 0.001169375
+        },
+        {
+          "file": "kv_cache_utils.py",
+          "line": 141,
+          "function": "block_hash",
+          "calls": 22890,
+          "self_seconds": 0.0011187500000000002,
+          "cumulative_seconds": 0.0011187500000000002
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'append' of 'list' objects>",
+          "calls": 11165,
+          "self_seconds": 0.001022457,
+          "cumulative_seconds": 0.001022457
+        },
+        {
+          "file": "queue_retention.py",
+          "line": 184,
+          "function": "<genexpr>",
+          "calls": 575,
+          "self_seconds": 0.00010963100000000001,
+          "cumulative_seconds": 0.00014012400000000002
+        },
+        {
+          "file": "kv_cache_utils.py",
+          "line": 307,
+          "function": "remove",
+          "calls": 570,
+          "self_seconds": 7.094700000000001e-05,
+          "cumulative_seconds": 7.094700000000001e-05
+        }
+      ]
+    }
+  ]
+}

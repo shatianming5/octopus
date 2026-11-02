@@ -1,0 +1,1320 @@
+{
+  "acceptance": false,
+  "accuracy": 0.8671875,
+  "baseline_accuracy": 0.5,
+  "decision": "LEARNED_7B_ROUTE_NO_GO",
+  "flip_consistency": 0.75,
+  "flip_pairs": 64,
+  "gain_percentage_points": 36.71875,
+  "groups": [
+    {
+      "accuracy": 1.0,
+      "family": "quantile_interpolation",
+      "goal_index": 0,
+      "views": 8
+    },
+    {
+      "accuracy": 0.5,
+      "family": "quantile_interpolation",
+      "goal_index": 1,
+      "views": 8
+    },
+    {
+      "accuracy": 1.0,
+      "family": "sorted_insertion",
+      "goal_index": 0,
+      "views": 8
+    },
+    {
+      "accuracy": 1.0,
+      "family": "sorted_insertion",
+      "goal_index": 1,
+      "views": 8
+    },
+    {
+      "accuracy": 0.875,
+      "family": "elapsed_span",
+      "goal_index": 0,
+      "views": 8
+    },
+    {
+      "accuracy": 0.875,
+      "family": "elapsed_span",
+      "goal_index": 1,
+      "views": 8
+    },
+    {
+      "accuracy": 1.0,
+      "family": "text_units",
+      "goal_index": 0,
+      "views": 8
+    },
+    {
+      "accuracy": 1.0,
+      "family": "text_units",
+      "goal_index": 1,
+      "views": 8
+    },
+    {
+      "accuracy": 1.0,
+      "family": "tied_rank",
+      "goal_index": 0,
+      "views": 8
+    },
+    {
+      "accuracy": 0.5,
+      "family": "tied_rank",
+      "goal_index": 1,
+      "views": 8
+    },
+    {
+      "accuracy": 1.0,
+      "family": "bag_difference",
+      "goal_index": 0,
+      "views": 8
+    },
+    {
+      "accuracy": 1.0,
+      "family": "bag_difference",
+      "goal_index": 1,
+      "views": 8
+    },
+    {
+      "accuracy": 0.625,
+      "family": "ring_rotation",
+      "goal_index": 0,
+      "views": 8
+    },
+    {
+      "accuracy": 0.5,
+      "family": "ring_rotation",
+      "goal_index": 1,
+      "views": 8
+    },
+    {
+      "accuracy": 1.0,
+      "family": "retry_schedule",
+      "goal_index": 0,
+      "views": 8
+    },
+    {
+      "accuracy": 1.0,
+      "family": "retry_schedule",
+      "goal_index": 1,
+      "views": 8
+    }
+  ],
+  "input_sha256": "8638991bd87d4b2441f164fca1a08e836affbb53414a961ea97b580fa36b1e53",
+  "invalid": 1,
+  "invalid_model_answers_count_as_wrong": true,
+  "metric_gates": {
+    "accuracy_at_least_80_percent": true,
+    "flip_consistency_at_least_80_percent": false,
+    "gain_at_least_25_percentage_points": true,
+    "recall_at_one_at_least_80_percent": true
+  },
+  "producer": {
+    "adapter_sha256": "afbaddcb5387cbd084c58efeb596b0be0091664ebf75445b8bd038d8c63cc4d3",
+    "checkpoint_selection": "final_epoch_only",
+    "freeze_sha256": "6dc98ed92efcbf5eaa47b19901e0633c036b9cff7c29382c9ef16e70cd7f75a5",
+    "kind": "model",
+    "model": "Qwen/Qwen2.5-7B-Instruct",
+    "output_schema": "checkpoint-choice-v1",
+    "recipe": {
+      "alpha": 16,
+      "attention": "sdpa",
+      "dropout": 0.0,
+      "effective_global_batch": 16,
+      "epochs": 2,
+      "gradient_accumulation": 8,
+      "gradient_checkpointing": true,
+      "inference_backend": "transformers_peft_greedy_without_grammar",
+      "learning_rate": 0.0002,
+      "lr_schedule": "constant",
+      "max_grad_norm": 1.0,
+      "max_new_tokens": 64,
+      "max_seq_length": 1024,
+      "microbatch": 2,
+      "model": "Qwen/Qwen2.5-7B-Instruct",
+      "optimizer": "adamw_torch",
+      "precision": "bfloat16",
+      "rank": 8,
+      "response_retries": 0,
+      "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "seed": 17,
+      "selection": "final_epoch_only",
+      "supervision": "assistant_choice_tokens_only",
+      "target_modules": [
+        "q_proj",
+        "v_proj"
+      ],
+      "temperature": 0,
+      "weight_decay": 0.0,
+      "world_size": 1
+    },
+    "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "split": "test"
+  },
+  "recall_at_one": 0.8671875,
+  "rows": [
+    {
+      "baseline_correct": 1,
+      "choice": "cp-4d1b3b96ef063947",
+      "correct": 1,
+      "decision_id": "test-d-fe7d13d334d4da9d",
+      "family": "quantile_interpolation",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-4d1b3b96ef063947",
+      "correct": 1,
+      "decision_id": "test-d-bb746e653334d64c",
+      "family": "quantile_interpolation",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-726da004384f9518",
+      "correct": 1,
+      "decision_id": "test-d-6c4728a881519295",
+      "family": "quantile_interpolation",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-726da004384f9518",
+      "correct": 1,
+      "decision_id": "test-d-e2760cafd668c863",
+      "family": "quantile_interpolation",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-4d1b3b96ef063947",
+      "correct": 0,
+      "decision_id": "test-d-b2cf506fd8913178",
+      "family": "quantile_interpolation",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-726da004384f9518",
+      "correct": 1,
+      "decision_id": "test-d-84275d9ea2b59527",
+      "family": "quantile_interpolation",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-726da004384f9518",
+      "correct": 0,
+      "decision_id": "test-d-0bb85e511cfae9c2",
+      "family": "quantile_interpolation",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-4d1b3b96ef063947",
+      "correct": 1,
+      "decision_id": "test-d-8962fcddd0aea027",
+      "family": "quantile_interpolation",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-3aab6c7c4b33957e",
+      "correct": 1,
+      "decision_id": "test-d-ec088efd5e981b56",
+      "family": "sorted_insertion",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-3aab6c7c4b33957e",
+      "correct": 1,
+      "decision_id": "test-d-53b0156f2bc53cb0",
+      "family": "sorted_insertion",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-79b8bb2f0101d2b6",
+      "correct": 1,
+      "decision_id": "test-d-886b48d6c0c0eb2c",
+      "family": "sorted_insertion",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-79b8bb2f0101d2b6",
+      "correct": 1,
+      "decision_id": "test-d-f3607f1dc5310570",
+      "family": "sorted_insertion",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-79b8bb2f0101d2b6",
+      "correct": 1,
+      "decision_id": "test-d-2006741c8a0a3073",
+      "family": "sorted_insertion",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-79b8bb2f0101d2b6",
+      "correct": 1,
+      "decision_id": "test-d-dd3944c704d5b82b",
+      "family": "sorted_insertion",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-3aab6c7c4b33957e",
+      "correct": 1,
+      "decision_id": "test-d-a5c3a0a84c366c89",
+      "family": "sorted_insertion",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-3aab6c7c4b33957e",
+      "correct": 1,
+      "decision_id": "test-d-310ef1fdd5786269",
+      "family": "sorted_insertion",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-127f09015fd3216f",
+      "correct": 1,
+      "decision_id": "test-d-ec103f019747a2a0",
+      "family": "elapsed_span",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-127f09015fd3216f",
+      "correct": 1,
+      "decision_id": "test-d-6e9fc9b13c3e5740",
+      "family": "elapsed_span",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-4b9fdc3444685b94",
+      "correct": 1,
+      "decision_id": "test-d-e373751e22b25464",
+      "family": "elapsed_span",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-4b9fdc3444685b94",
+      "correct": 1,
+      "decision_id": "test-d-ed25452047f568ba",
+      "family": "elapsed_span",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-4b9fdc3444685b94",
+      "correct": 1,
+      "decision_id": "test-d-20a5235d51020130",
+      "family": "elapsed_span",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-4b9fdc3444685b94",
+      "correct": 1,
+      "decision_id": "test-d-ed3730b4799dfea4",
+      "family": "elapsed_span",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-127f09015fd3216f",
+      "correct": 1,
+      "decision_id": "test-d-9f116f0223127664",
+      "family": "elapsed_span",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-127f09015fd3216f",
+      "correct": 1,
+      "decision_id": "test-d-a59df4c990a53191",
+      "family": "elapsed_span",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-8e5dc9982ce46fcc",
+      "correct": 1,
+      "decision_id": "test-d-4069dc4db63a2290",
+      "family": "text_units",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-8e5dc9982ce46fcc",
+      "correct": 1,
+      "decision_id": "test-d-ce295f65cce00013",
+      "family": "text_units",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-c74413d9321b3dec",
+      "correct": 1,
+      "decision_id": "test-d-9d8761aec4beb9e4",
+      "family": "text_units",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-c74413d9321b3dec",
+      "correct": 1,
+      "decision_id": "test-d-f7a5736f37ced9b6",
+      "family": "text_units",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-c74413d9321b3dec",
+      "correct": 1,
+      "decision_id": "test-d-a81b31e89f989c76",
+      "family": "text_units",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-c74413d9321b3dec",
+      "correct": 1,
+      "decision_id": "test-d-c06663e26d33ea7a",
+      "family": "text_units",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-8e5dc9982ce46fcc",
+      "correct": 1,
+      "decision_id": "test-d-2d7eb0d9b54c2a40",
+      "family": "text_units",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-8e5dc9982ce46fcc",
+      "correct": 1,
+      "decision_id": "test-d-c9f71e546b6ba08c",
+      "family": "text_units",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-baffefc4c781c23e",
+      "correct": 1,
+      "decision_id": "test-d-7954cbe2ceb424ab",
+      "family": "tied_rank",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-baffefc4c781c23e",
+      "correct": 1,
+      "decision_id": "test-d-6c05acfec4c8eba5",
+      "family": "tied_rank",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-c3f2242000798299",
+      "correct": 1,
+      "decision_id": "test-d-ec3333fcc7252cd8",
+      "family": "tied_rank",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-c3f2242000798299",
+      "correct": 1,
+      "decision_id": "test-d-11b453c12324ab60",
+      "family": "tied_rank",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-baffefc4c781c23e",
+      "correct": 0,
+      "decision_id": "test-d-f29e7bb8a218a7d3",
+      "family": "tied_rank",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-c3f2242000798299",
+      "correct": 1,
+      "decision_id": "test-d-ae0fe30a579e6eb9",
+      "family": "tied_rank",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-c3f2242000798299",
+      "correct": 0,
+      "decision_id": "test-d-4452d03d4ad1d35f",
+      "family": "tied_rank",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-baffefc4c781c23e",
+      "correct": 1,
+      "decision_id": "test-d-95f2325ac58e75ac",
+      "family": "tied_rank",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-036c38af74f7a790",
+      "correct": 1,
+      "decision_id": "test-d-36b37c8d1f999c25",
+      "family": "bag_difference",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-036c38af74f7a790",
+      "correct": 1,
+      "decision_id": "test-d-cc8c13c2c0c872b6",
+      "family": "bag_difference",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-f57e4c70815cf8d0",
+      "correct": 1,
+      "decision_id": "test-d-8436e5a7e0f03a81",
+      "family": "bag_difference",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-f57e4c70815cf8d0",
+      "correct": 1,
+      "decision_id": "test-d-61af080e8aab8b00",
+      "family": "bag_difference",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-f57e4c70815cf8d0",
+      "correct": 1,
+      "decision_id": "test-d-37a26badcaac341b",
+      "family": "bag_difference",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-f57e4c70815cf8d0",
+      "correct": 1,
+      "decision_id": "test-d-20b312d57cb9c855",
+      "family": "bag_difference",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-036c38af74f7a790",
+      "correct": 1,
+      "decision_id": "test-d-8f5b60a442b3b793",
+      "family": "bag_difference",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-036c38af74f7a790",
+      "correct": 1,
+      "decision_id": "test-d-6cdb24e5f43943ec",
+      "family": "bag_difference",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-3f8f3f56610e0390",
+      "correct": 1,
+      "decision_id": "test-d-ad914300f25165a7",
+      "family": "ring_rotation",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-882f291a1f594328",
+      "correct": 0,
+      "decision_id": "test-d-d517b1102200654e",
+      "family": "ring_rotation",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-882f291a1f594328",
+      "correct": 1,
+      "decision_id": "test-d-390f334c09d1dbf9",
+      "family": "ring_rotation",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-3f8f3f56610e0390",
+      "correct": 0,
+      "decision_id": "test-d-591207203d2e974d",
+      "family": "ring_rotation",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-3f8f3f56610e0390",
+      "correct": 0,
+      "decision_id": "test-d-4f323ea519308bf8",
+      "family": "ring_rotation",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-882f291a1f594328",
+      "correct": 1,
+      "decision_id": "test-d-1f0e3c164fe03ff8",
+      "family": "ring_rotation",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-882f291a1f594328",
+      "correct": 0,
+      "decision_id": "test-d-9a44e107fe75e8ed",
+      "family": "ring_rotation",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-3f8f3f56610e0390",
+      "correct": 1,
+      "decision_id": "test-d-7b40c794d5892e6f",
+      "family": "ring_rotation",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-a934272ef422b883",
+      "correct": 1,
+      "decision_id": "test-d-135f9289fd9f0fae",
+      "family": "retry_schedule",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-a934272ef422b883",
+      "correct": 1,
+      "decision_id": "test-d-de7b63f9833252ad",
+      "family": "retry_schedule",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-ac79b23777d9d1c6",
+      "correct": 1,
+      "decision_id": "test-d-fdce1fc18bec5d1c",
+      "family": "retry_schedule",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-ac79b23777d9d1c6",
+      "correct": 1,
+      "decision_id": "test-d-0ee8c13715245d73",
+      "family": "retry_schedule",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-ac79b23777d9d1c6",
+      "correct": 1,
+      "decision_id": "test-d-08d00652d7eb138a",
+      "family": "retry_schedule",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-ac79b23777d9d1c6",
+      "correct": 1,
+      "decision_id": "test-d-7eab38438ae73e1f",
+      "family": "retry_schedule",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-a934272ef422b883",
+      "correct": 1,
+      "decision_id": "test-d-7640885fc2745a6a",
+      "family": "retry_schedule",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-a934272ef422b883",
+      "correct": 1,
+      "decision_id": "test-d-621fd90eda021b8a",
+      "family": "retry_schedule",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-0e235563b7c7402a",
+      "correct": 1,
+      "decision_id": "test-d-4931a214529709e9",
+      "family": "quantile_interpolation",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-0e235563b7c7402a",
+      "correct": 1,
+      "decision_id": "test-d-60dd4805aba67a5c",
+      "family": "quantile_interpolation",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-1226c039d9f2a331",
+      "correct": 1,
+      "decision_id": "test-d-1b2070db3f1f9c2f",
+      "family": "quantile_interpolation",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-1226c039d9f2a331",
+      "correct": 1,
+      "decision_id": "test-d-5771190f7c166df9",
+      "family": "quantile_interpolation",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-0e235563b7c7402a",
+      "correct": 0,
+      "decision_id": "test-d-fb20e28c2644ca01",
+      "family": "quantile_interpolation",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-1226c039d9f2a331",
+      "correct": 1,
+      "decision_id": "test-d-1e724e60909c6f8d",
+      "family": "quantile_interpolation",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-1226c039d9f2a331",
+      "correct": 0,
+      "decision_id": "test-d-89517882f6bde7ec",
+      "family": "quantile_interpolation",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-0e235563b7c7402a",
+      "correct": 1,
+      "decision_id": "test-d-01340c515e2d8325",
+      "family": "quantile_interpolation",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-27fbea7e4918491c",
+      "correct": 1,
+      "decision_id": "test-d-7e71bafd51339567",
+      "family": "sorted_insertion",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-27fbea7e4918491c",
+      "correct": 1,
+      "decision_id": "test-d-ca44f87b72df6ba5",
+      "family": "sorted_insertion",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-79b73557d88c54d1",
+      "correct": 1,
+      "decision_id": "test-d-891f97409a762655",
+      "family": "sorted_insertion",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-79b73557d88c54d1",
+      "correct": 1,
+      "decision_id": "test-d-1bbd4f803b4cc05d",
+      "family": "sorted_insertion",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-79b73557d88c54d1",
+      "correct": 1,
+      "decision_id": "test-d-96fed498eac7b6e3",
+      "family": "sorted_insertion",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-79b73557d88c54d1",
+      "correct": 1,
+      "decision_id": "test-d-67384c6270d7a480",
+      "family": "sorted_insertion",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-27fbea7e4918491c",
+      "correct": 1,
+      "decision_id": "test-d-d27c38813e99ee4c",
+      "family": "sorted_insertion",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-27fbea7e4918491c",
+      "correct": 1,
+      "decision_id": "test-d-5452a57d55e1c1f0",
+      "family": "sorted_insertion",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-a9cc31e21827640e",
+      "correct": 1,
+      "decision_id": "test-d-8085387ff8fe6deb",
+      "family": "elapsed_span",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-a9cc31e21827640e",
+      "correct": 1,
+      "decision_id": "test-d-c0d2c3649f9a46a2",
+      "family": "elapsed_span",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-b6d557f181881ec1",
+      "correct": 1,
+      "decision_id": "test-d-6159e83a58842995",
+      "family": "elapsed_span",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": null,
+      "correct": 0,
+      "decision_id": "test-d-40a7fe2d28b266aa",
+      "error": "choice must name a known checkpoint",
+      "family": "elapsed_span",
+      "goal_index": 0,
+      "status": "invalid"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-b6d557f181881ec1",
+      "correct": 1,
+      "decision_id": "test-d-f1923985d89281dd",
+      "family": "elapsed_span",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-b6d557f181881ec1",
+      "correct": 1,
+      "decision_id": "test-d-19cc659733e88e4e",
+      "family": "elapsed_span",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-a9cc31e21827640e",
+      "correct": 1,
+      "decision_id": "test-d-0e1ae1a8a55c8b0e",
+      "family": "elapsed_span",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-b6d557f181881ec1",
+      "correct": 0,
+      "decision_id": "test-d-582bea632274e5d7",
+      "family": "elapsed_span",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-4029951fa4a7e9ae",
+      "correct": 1,
+      "decision_id": "test-d-4eeb6d1673f39aaa",
+      "family": "text_units",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-4029951fa4a7e9ae",
+      "correct": 1,
+      "decision_id": "test-d-3c03da233ef33c2d",
+      "family": "text_units",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-90388fc35f90d325",
+      "correct": 1,
+      "decision_id": "test-d-75bae78d6b1e8ebf",
+      "family": "text_units",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-90388fc35f90d325",
+      "correct": 1,
+      "decision_id": "test-d-dd6ac9d0b0f06c23",
+      "family": "text_units",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-90388fc35f90d325",
+      "correct": 1,
+      "decision_id": "test-d-824633fd26f1a04e",
+      "family": "text_units",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-90388fc35f90d325",
+      "correct": 1,
+      "decision_id": "test-d-8a60c1934eb925bb",
+      "family": "text_units",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-4029951fa4a7e9ae",
+      "correct": 1,
+      "decision_id": "test-d-e02ef441063c64eb",
+      "family": "text_units",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-4029951fa4a7e9ae",
+      "correct": 1,
+      "decision_id": "test-d-2d1853382ab44fc1",
+      "family": "text_units",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-44137229f91d381c",
+      "correct": 1,
+      "decision_id": "test-d-18f2b37bcc01419f",
+      "family": "tied_rank",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-44137229f91d381c",
+      "correct": 1,
+      "decision_id": "test-d-c03848e2d96fca79",
+      "family": "tied_rank",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-f5afe2fd3ab781b7",
+      "correct": 1,
+      "decision_id": "test-d-fb97682079f41c4c",
+      "family": "tied_rank",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-f5afe2fd3ab781b7",
+      "correct": 1,
+      "decision_id": "test-d-62a154da4e5d6167",
+      "family": "tied_rank",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-44137229f91d381c",
+      "correct": 0,
+      "decision_id": "test-d-9f731e89d8fe4eae",
+      "family": "tied_rank",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-f5afe2fd3ab781b7",
+      "correct": 1,
+      "decision_id": "test-d-8fee2994f8a4ac5e",
+      "family": "tied_rank",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-f5afe2fd3ab781b7",
+      "correct": 0,
+      "decision_id": "test-d-6b160bcf0cd192bd",
+      "family": "tied_rank",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-44137229f91d381c",
+      "correct": 1,
+      "decision_id": "test-d-6afaeaf30d36423e",
+      "family": "tied_rank",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-79eec8acf55f693e",
+      "correct": 1,
+      "decision_id": "test-d-46a0d8992a0d5680",
+      "family": "bag_difference",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-79eec8acf55f693e",
+      "correct": 1,
+      "decision_id": "test-d-1ceaf69fd9ec5461",
+      "family": "bag_difference",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-b2d5bf7e6f30c782",
+      "correct": 1,
+      "decision_id": "test-d-cbd660df4354dea0",
+      "family": "bag_difference",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-b2d5bf7e6f30c782",
+      "correct": 1,
+      "decision_id": "test-d-a350f1a5d3b77f6e",
+      "family": "bag_difference",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-b2d5bf7e6f30c782",
+      "correct": 1,
+      "decision_id": "test-d-b8fba2f8ea896b7d",
+      "family": "bag_difference",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-b2d5bf7e6f30c782",
+      "correct": 1,
+      "decision_id": "test-d-0c5d2f1974f5e788",
+      "family": "bag_difference",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-79eec8acf55f693e",
+      "correct": 1,
+      "decision_id": "test-d-ae25006564b18f7c",
+      "family": "bag_difference",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-79eec8acf55f693e",
+      "correct": 1,
+      "decision_id": "test-d-66431d340de5c97a",
+      "family": "bag_difference",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-5dda18a580619642",
+      "correct": 1,
+      "decision_id": "test-d-c800090989d27841",
+      "family": "ring_rotation",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-5dda18a580619642",
+      "correct": 1,
+      "decision_id": "test-d-ca098b4c6a296f38",
+      "family": "ring_rotation",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-e4bea3974b0657ea",
+      "correct": 1,
+      "decision_id": "test-d-26ba8daf9f19987d",
+      "family": "ring_rotation",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-5dda18a580619642",
+      "correct": 0,
+      "decision_id": "test-d-e3aeb8d8db309ef4",
+      "family": "ring_rotation",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-5dda18a580619642",
+      "correct": 0,
+      "decision_id": "test-d-0d2a106db5312d6c",
+      "family": "ring_rotation",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-e4bea3974b0657ea",
+      "correct": 1,
+      "decision_id": "test-d-9098c342bb20df19",
+      "family": "ring_rotation",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-e4bea3974b0657ea",
+      "correct": 0,
+      "decision_id": "test-d-44e55d24891bfc0e",
+      "family": "ring_rotation",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-5dda18a580619642",
+      "correct": 1,
+      "decision_id": "test-d-d1e7733c9b1df4c1",
+      "family": "ring_rotation",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-a43ef1b993622578",
+      "correct": 1,
+      "decision_id": "test-d-7bf866e51b5897f4",
+      "family": "retry_schedule",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-a43ef1b993622578",
+      "correct": 1,
+      "decision_id": "test-d-f5e491bbe8637aeb",
+      "family": "retry_schedule",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-a4d607c7a8cfc12e",
+      "correct": 1,
+      "decision_id": "test-d-8326d2ae993c8324",
+      "family": "retry_schedule",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-a4d607c7a8cfc12e",
+      "correct": 1,
+      "decision_id": "test-d-63c41b8e361ebbee",
+      "family": "retry_schedule",
+      "goal_index": 0,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-a4d607c7a8cfc12e",
+      "correct": 1,
+      "decision_id": "test-d-55058601f9fad8ac",
+      "family": "retry_schedule",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 0,
+      "choice": "cp-a4d607c7a8cfc12e",
+      "correct": 1,
+      "decision_id": "test-d-3ead9ef2901db81d",
+      "family": "retry_schedule",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-a43ef1b993622578",
+      "correct": 1,
+      "decision_id": "test-d-13b3087b67d8924a",
+      "family": "retry_schedule",
+      "goal_index": 1,
+      "status": "complete"
+    },
+    {
+      "baseline_correct": 1,
+      "choice": "cp-a43ef1b993622578",
+      "correct": 1,
+      "decision_id": "test-d-d12ee83fc3e8d351",
+      "family": "retry_schedule",
+      "goal_index": 1,
+      "status": "complete"
+    }
+  ],
+  "schema": "octopus-direct-choice-score-v1",
+  "scope": "new authored held-out diagnostic families; not native work or serving evidence",
+  "semantic_goals": 16,
+  "split": "test",
+  "stage": "2",
+  "views": 128
+}

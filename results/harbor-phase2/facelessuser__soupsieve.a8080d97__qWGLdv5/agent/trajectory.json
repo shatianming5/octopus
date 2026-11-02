@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "facelessuser__soupsieve.a8080d97__qWGLdv5__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# :lang(en) selector doesn't work correctly with iframes\n\n## Description\n\nI found a bug with the `:lang(en)` selector when used with elements inside an iframe. The selector doesn't correctly identify elements with a specific language inside an iframe when the parent element has a different language.\n\nHere's a simple example to reproduce the issue:\n\n```html\n<html>\n<body>\n<div lang=\"de-DE\">\n    <p id=\"1\"></p>\n    <iframe>\n        <html>\n        <body>\n        <p id=\"2\"></p>\n        <p id=\"3\" lang=\"en-US\"></p>\n        </body>\n        </html>\n    </iframe>\n</div>\n</body>\n</html>\n```\n\nWhen I try to select `p:lang(en)`, it doesn't correctly find the paragraph with id=\"3\" inside the iframe that has the English language set.\n\nThe issue seems to be related to how the parent element is handled when traversing through an iframe. Instead of properly isolating the iframe content, it's inheriting the language from the parent div with lang=\"de-DE\".\n\nThis is causing problems in my application where I need to select elements with specific languages across iframe boundaries."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository structure and locate how `:lang()` is implemented with iframes.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-019893df-aef0-4641-85ac-82cde8513ce2-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && echo \"====\" && find /testbed -maxdepth 3 -type f | head -100"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-019893df-aef0-4641-85ac-82cde8513ce2-0",
+            "content": "/testbed/.git/hooks/pre-applypatch.sample\n/testbed/.git/hooks/applypatch-msg.sample\n/testbed/.git/hooks/push-to-checkout.sample\n/testbed/.git/hooks/post-update.sample\n/testbed/.git/hooks/update.sample\n/testbed/.git/hooks/pre-commit.sample\n/testbed/.git/hooks/prepare-commit-msg.sample\n/testbed/.git/hooks/pre-rebase.sample\n/testbed/.git/hooks/pre-receive.sample\n/testbed/.git/hooks/pre-push.sample\n/testbed/.git/hooks/fsmonitor-watchman.sample\n/testbed/.git/hooks/commit-msg.sample\n/testbed/.git/hooks/pre-merge-commit.sample\n/testbed/.git/description\n/testbed/.git/index\n/testbed/.git/logs/HEAD\n/testbed/.git/HEAD\n/testbed/.git/config\n/testbed/.git/info/exclude\n/testbed/hatch_build.py\n/testbed/tests/test_level2/test_first_child.py\n/testbed/tests/test_level2/test_universal_type.py\n/testbed/tests/test_level2/test_hover.py\n/testbed/tests/test_level2/test_focus.py\n/testbed/tests/test_level2/__init__.py\n/testbed/tests/test_level2/test_attribute.py\n/testbed/tests/test_level2/test_next_sibling.py\n/testbed/tests/test_level2/test_child.py\n/testbed/tests/test_level2/test_lang.py\n/testbed/tests/test_nesting_1/__init__.py\n/testbed/tests/test_nesting_1/test_amp.py\n/testbed/tests/__init__.py\n/testbed/tests/test_level3/test_only_of_type.py\n/testbed/tests/test_level3/test_nth_of_type.py\n/testbed/tests/test_level3/test_disabled.py\n/testbed/tests/test_level3/test_checked.py\n/testbed/tests/test_level3/test_target.py\n/testbed/tests/test_level3/__init__.py\n/testbed/tests/test_level3/test_enabled.py\n/testbed/tests/test_level3/test_last_child.py\n/testbed/tests/test_level3/test_first_of_type.py\n/testbed/tests/test_level3/test_only_child.py\n/testbed/tests/test_level3/test_nth_last_of_type.py\n/testbed/tests/test_level3/test_subsequent_sibling.py\n/testbed/tests/test_level3/test_nth_child.py\n/testbed/tests/test_level3/test_not.py\n/testbed/tests/test_level3/test_last_of_type.py\n/testbed/tests/test_level3/test_empty.py\n/testbed/tests/test_level3/test_attribute.py\n/testbed/tests/test_level3/test_root.py\n/testbed/tests/test_level3/test_namespace.py\n/testbed/tests/test_level3/test_nth_last_child.py\n/testbed/tests/test_api.py\n/testbed/tests/test_level4/test_past.py\n/testbed/tests/test_level4/test_scope.py\n/testbed/tests/test_level4/test_out_of_range.py\n/testbed/tests/test_level4/test_optional.py\n/testbed/tests/test_level4/test_where.py\n/testbed/tests/test_level4/test_indeterminate.py\n/testbed/tests/test_level4/test_focus_within.py\n/testbed/tests/test_level4/test_defined.py\n/testbed/tests/test_level4/test_future.py\n/testbed/tests/test_level4/test_focus_visible.py\n/testbed/tests/test_level4/__init__.py\n/testbed/tests/test_level4/test_read_write.py\n/testbed/tests/test_level4/test_default.py\n/testbed/tests/test_level4/test_dir.py\n/testbed/tests/test_level4/test_paused.py\n/testbed/tests/test_level4/test_host.py\n/testbed/tests/test_level4/test_placeholder_shown.py\n/testbed/tests/test_level4/test_in_range.py\n/testbed/tests/test_level4/test_local_link.py\n/testbed/tests/test_level4/test_matches.py\n/testbed/tests/test_level4/test_required.py\n/testbed/tests/test_level4/test_nth_child.py\n/testbed/tests/test_level4/test_any_link.py\n/testbed/tests/test_level4/test_not.py\n/testbed/tests/test_level4/test_playing.py\n/testbed/tests/test_level4/test_current.py\n/testbed/tests/test_level4/test_read_only.py\n/testbed/tests/test_level4/test_has.py\n/testbed/tests/test_level4/test_target_within.py\n/testbed/tests/test_level4/test_user_invalid.py\n/testbed/tests/test_level4/test_attribute.py\n/testbed/tests/test_level4/test_is.py\n/testbed/tests/test_level4/test_host_context.py\n/testbed/tests/test_level4/test_nth_last_child.py\n/testbed/tests/test_level4/test_lang.py\n/testbed/tests/test_versions.py\n/testbed/tests/test_bs4_cases.py\n/testbed/tests/util.py\n/testbed/tests/test_level1/test_type.py\n/testbed/tests/test_level1/test_comments.py\n/testbed/tests/test_level1/test_at_rule.py\n/testbed/tests/test_level1/__init__.py\n/testbed/tests/test_level1/test_active.py\n/testbed/tests/test_level1/test_class.py\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-fb96c008-cd0f-4981-82a9-72824f3eec60-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && echo \"==== SRC ====\" && find /testbed -type d -not -path '*/.git*' | head -50 && echo \"==== PY FILES ====\" && find /testbed -name \"*.py\" -not -path '*/.git*' | head -80 && echo \"==== README ====\" && cat /testbed/README.md 2>/dev/null | head -80 && echo \"==== PYPROJECT ====\" && cat /testbed/pyproject.toml 2>/dev/null | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-fb96c008-cd0f-4981-82a9-72824f3eec60-1",
+            "content": "y designed to be used with [Beautiful Soup 4][bs4]. It aims to provide selecting,\nmatching, and filtering using modern CSS selectors. Soup Sieve currently provides selectors from the CSS level 1\nspecifications up through the latest CSS level 4 drafts and beyond (though some are not yet implemented).\n\nSoup Sieve was written with the intent to replace Beautiful Soup's builtin select feature, and as of Beautiful Soup\nversion 4.7.0, it now is :confetti_ball:. Soup Sieve can also be imported in order to use its API directly for\nmore controlled, specialized parsing.\n\nSoup Sieve has implemented most of the CSS selectors up through the latest CSS draft specifications, though there are a\nnumber that don't make sense in a non-browser environment. Selectors that cannot provide meaningful functionality simply\ndo not match anything. Some of the supported selectors are:\n\n- `.classes`\n- `#ids`\n- `[attributes=value]`\n- `parent child`\n- `parent > child`\n- `sibling ~ sibling`\n- `sibling + sibling`\n- `:not(element.class, element2.class)`\n- `:is(element.class, element2.class)`\n- `parent:has(> child)`\n- and [many more](https://facelessuser.github.io/soupsieve/selectors/)\n\n\n## Installation\n\nYou must have Beautiful Soup already installed:\n\n```\npip install beautifulsoup4\n```\n\nIn most cases, assuming you've installed version 4.7.0, that should be all you need to do, but if you've installed via\nsome alternative method, and Soup Sieve is not automatically installed, you can install it directly:\n\n```\npip install soupsieve\n```\n\nIf you want to manually install it from source, first ensure that [`build`](https://pypi.org/project/build/) is\ninstalled:\n\n```\npip install build\n```\n\nThen navigate to the root of the project and build the wheel and install (replacing `<ver>` with the current version):\n\n```\npython -m build -w\npip install dist/soupsieve-<ver>-py3-none-any.whl\n```\n\n## Documentation\n\nDocumentation is found here: https://facelessuser.github.io/soupsieve/.\n\n## License\n\nMIT\n\n[bs4]: https://beautiful-soup-4.readthedocs.io/en/latest/#\n\n[github-ci-image]: https://github.com/facelessuser/soupsieve/workflows/build/badge.svg?branch=master&event=push\n[github-ci-link]: https://github.com/facelessuser/soupsieve/actions?query=workflow%3Abuild+branch%3Amaster\n[codecov-image]: https://img.shields.io/codecov/c/github/facelessuser/soupsieve/master.svg?logo=codecov&logoColor=aaaaaa&labelColor=333333\n[codecov-link]: https://codecov.io/github/facelessuser/soupsieve\n==== PYPROJECT ====\n[build-system]\nrequires = [\n    \"hatchling>=0.21.1\",\n]\nbuild-backend = \"hatchling.build\"\n\n[project]\nname = \"soupsieve\"\ndescription = \"A modern CSS selector implementation for Beautiful Soup.\"\nreadme = \"README.md\"\nlicense = \"MIT\"\nrequires-python = \">=3.8\"\nauthors = [\n    { name = \"Isaac Muse\", email = \"Isaac.Muse@gmail.com\" },\n]\nkeywords = [\n    \"CSS\",\n    \"HTML\",\n    \"XML\",\n    \"selector\",\n    \"filter\",\n    \"query\",\n    \"soup\"\n]\ndynamic = [\n    \"classifiers\",\n    \"version\",\n]\n\n[project.urls]\nHomepage = \"https://github.com/facelessuser/soupsieve\"\n\n[tool.hatch.version]\nsource = \"code\"\npath = \"soupsieve/__meta__.py\"\n\n[tool.hatch.build.targets.wheel]\ninclude = [\n    \"/soupsieve\",\n]\n\n[tool.hatch.build.targets.sdist]\ninclude = [\n    \"/docs/src/markdown/**/*.md\",\n    \"/docs/src/markdown/**/*.gif\",\n    \"/docs/src/markdown/**/*.png\",\n    \"/docs/src/markdown/dictionary/*.txt\",\n    \"/docs/theme/**/*.css\",\n    \"/docs/theme/**/*.js\",\n    \"/docs/theme/**/*.html\",\n    \"/requirements/*.txt\",\n    \"/soupsieve/**/*.py\",\n    \"/soupsieve/py.typed\",\n    \"/tests/**/*.py\",\n    \"/.pyspelling.yml\",\n    \"/.coveragerc\",\n    \"/mkdocs.yml\"\n]\n\n[tool.mypy]\nfiles = [\n    \"soupsieve\"\n]\nstrict = true\nshow_error_codes = true\n\n[tool.hatch.metadata.hooks.custom]\n\n[tool.ruff]\nline-length = 120\n\nlint.select = [\n    \"A\",    # flake8-builtins\n    \"B\",    # flake8-bugbear\n    \"D\",    # pydocstyle\n    \"C4\",   # flake8-comprehensions\n    \"N\",    # pep8-naming\n    \"E\",    # pycodestyle\n    \"F\",    # pyflakes\n    \"PGH\",  # pygrep-hooks\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-0c21790b-dc03-4a17-99ab-a9303b1ef3b9-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "find /testbed/soupsieve -type f && echo \"==== LANG TESTS ====\" && cat /testbed/tests/test_level2/test_lang.py && echo \"==== LEVEL4 LANG ====\" && cat /testbed/tests/test_level4/test_lang.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-0c21790b-dc03-4a17-99ab-a9303b1ef3b9-2",
+            "content": "\n        markup = \"\"\"\n        <!DOCTYPE html>\n        <html>\n        <head>\n        <meta http-equiv=\"content-language\" content=\"en-US\">\n        </head>\n        <body>\n        <div>\n            <p id=\"1\"></p>\n        </div>\n        <div>\n            <p id=\"2\"></p>\n        </div>\n        </body>\n        \"\"\"\n\n        self.assert_selector(\n            markup,\n            \"p:lang('*-US')\",\n            ['1', '2'],\n            flags=util.HTML\n        )\n\n    def test_xml_style_language_in_html5(self):\n        \"\"\"Test XML style language when out of HTML5 namespace.\"\"\"\n\n        markup = \"\"\"\n        <math xml:lang=\"en\">\n            <mtext id=\"1\"></mtext>\n        </math>\n        <div xml:lang=\"en\">\n            <mtext id=\"2\"></mtext>\n        </div>\n        \"\"\"\n\n        self.assert_selector(\n            markup,\n            \"mtext:lang(en)\",\n            ['1'],\n            flags=util.HTML5\n        )\n\n    def test_xml_style_language(self):\n        \"\"\"Test XML style language.\"\"\"\n\n        # XML style language\n        markup = \"\"\"\n        <?xml version=\"1.0\" encoding=\"UTF-8\"?>\n        <html>\n        <head>\n        </head>\n        <body>\n        <div xml:lang=\"de-DE\">\n            <p id=\"1\"></p>\n        </div>\n        <div xml:lang=\"de-DE-1996\">\n            <p id=\"2\"></p>\n        </div>\n        <div xml:lang=\"de-Latn-DE\">\n            <p id=\"3\"></p>\n        </div>\n        <div xml:lang=\"de-Latf-DE\">\n            <p id=\"4\"></p>\n        </div>\n        <div xml:lang=\"de-Latn-DE-1996\">\n            <p id=\"5\"></p>\n        </div>\n        <p id=\"6\" xml:lang=\"de-DE\"></p>\n        </body>\n        </html>\n        \"\"\"\n\n        self.assert_selector(\n            markup,\n            \"p:lang(de-DE)\",\n            ['1', '2', '3', '4', '5', '6'],\n            flags=util.XML\n        )\n\n    def test_language_in_xhtml(self):\n        \"\"\"Test language in XHTML.\"\"\"\n\n        markup = \"\"\"\n        <?xml version=\"1.0\" encoding=\"UTF-8\"?>\n        <!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\"\n            \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\n        <html lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\">\n        <head>\n        </head>\n        <body>\n        <div lang=\"de-DE\" xml:lang=\"de-DE\">\n            <p id=\"1\"></p>\n        </div>\n        <div lang=\"de-DE-1996\" xml:lang=\"de-DE-1996\">\n            <p id=\"2\"></p>\n        </div>\n        <div lang=\"de-Latn-DE\" xml:lang=\"de-Latn-DE\">\n            <p id=\"3\"></p>\n        </div>\n        <div lang=\"de-Latf-DE\" xml:lang=\"de-Latf-DE\">\n            <p id=\"4\"></p>\n        </div>\n        <div lang=\"de-Latn-DE-1996\" xml:lang=\"de-Latn-DE-1996\">\n            <p id=\"5\"></p>\n        </div>\n        <p id=\"6\" lang=\"de-DE\" xml:lang=\"de-DE\"></p>\n        </body>\n        </html>\n        \"\"\"\n\n        self.assert_selector(\n            markup,\n            \"p:lang(de-DE)\",\n            ['1', '2', '3', '4', '5', '6'],\n            flags=util.XML\n        )\n\n    def test_language_in_xhtml_without_html_style_lang(self):\n        \"\"\"\n        Test language in XHTML.\n\n        HTML namespace elements must use HTML style language.\n        \"\"\"\n\n        # XHTML language: `lang`\n        markup = \"\"\"\n        <?xml version=\"1.0\" encoding=\"UTF-8\"?>\n        <!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\"\n            \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\n        <html lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\">\n        <head>\n        </head>\n        <body>\n        <div xml:lang=\"de-DE\">\n            <p id=\"1\"></p>\n        </div>\n        <div xml:lang=\"de-DE-1996\">\n            <p id=\"2\"></p>\n        </div>\n        <div xml:lang=\"de-Latn-DE\">\n            <p id=\"3\"></p>\n        </div>\n        <div xml:lang=\"de-Latf-DE\">\n            <p id=\"4\"></p>\n        </div>\n        <div xml:lang=\"de-Latn-DE-1996\">\n            <p id=\"5\"></p>\n        </div>\n        <p id=\"6\" xml:lang=\"de-DE\"></p>\n        </body>\n        </html>\n        \"\"\"\n\n        self.assert_selector(\n            markup,\n            \"p:lang(de-DE)\",\n            [],\n            flags=util.XHTML\n        )\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-d022cbe8-4d83-49aa-b1ff-d934f3a523b7-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed/soupsieve && echo \"====\" && cat /testbed/soupsieve/__init__.py | head -50"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-d022cbe8-4d83-49aa-b1ff-d934f3a523b7-3",
+            "content": "total 156\ndrwxr-xr-x 3 root root  4096 Jul 12  2025 .\ndrwxr-xr-x 1 root root  4096 Sep 22 16:49 ..\n-rw-r--r-- 1 root root  4599 Jul 12  2025 __init__.py\n-rw-r--r-- 1 root root  6766 Jul 12  2025 __meta__.py\ndrwxr-xr-x 2 root root  4096 Jul 12  2025 __pycache__\n-rw-r--r-- 1 root root 57960 Jul 12  2025 css_match.py\n-rw-r--r-- 1 root root 46573 Jul 12  2025 css_parser.py\n-rw-r--r-- 1 root root 10192 Jul 12  2025 css_types.py\n-rw-r--r-- 1 root root  4033 Jul 12  2025 pretty.py\n-rw-r--r-- 1 root root     0 Jul 12  2025 py.typed\n-rw-r--r-- 1 root root  3352 Jul 12  2025 util.py\n====\n\"\"\"\nSoup Sieve.\n\nA CSS selector filter for BeautifulSoup4.\n\nMIT License\n\nCopyright (c) 2018 Isaac Muse\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n\"\"\"\nfrom __future__ import annotations\nfrom .__meta__ import __version__, __version_info__  # noqa: F401\nfrom . import css_parser as cp\nfrom . import css_match as cm\nfrom . import css_types as ct\nfrom .util import DEBUG, SelectorSyntaxError  # noqa: F401\nimport bs4  # type: ignore[import-untyped]\nfrom typing import Any, Iterator, Iterable\n\n__all__ = (\n    'DEBUG', 'SelectorSyntaxError', 'SoupSieve',\n    'closest', 'compile', 'filter', 'iselect',\n    'match', 'select', 'select_one'\n)\n\nSoupSieve = cm.SoupSieve\n\n\ndef compile(  # noqa: A001\n    pattern: str,\n    namespaces: dict[str, str] | None = None,\n    flags: int = 0,\n    *,\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-3769ac30-338f-4cb9-9191-ebf5cc1aa5ac-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "rg -n \"lang|iframe|iframe\" /testbed/soupsieve --type py | head -150"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-3769ac30-338f-4cb9-9191-ebf5cc1aa5ac-4",
+            "content": "bash: line 1: rg: command not found\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-bb79678c-829f-4a2c-b205-21e3fa359492-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "grep -n -i \"lang\\|iframe\" /testbed/soupsieve/*.py | head -200"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-bb79678c-829f-4a2c-b205-21e3fa359492-5",
+            "content": "_match.py:1225:                    if found_lang is not None:\n/testbed/soupsieve/css_match.py:1227:                if found_lang is None:\n/testbed/soupsieve/css_match.py:1228:                    self.cached_meta_lang.append((cast(str, root), ''))\n/testbed/soupsieve/css_match.py:1230:        # If we determined a language, compare.\n/testbed/soupsieve/css_match.py:1231:        if found_lang is not None:\n/testbed/soupsieve/css_match.py:1232:            for patterns in langs:\n/testbed/soupsieve/css_match.py:1235:                    if self.extended_language_filter(pattern, cast(str, found_lang)):\n/testbed/soupsieve/css_match.py:1274:                value = ''.join(node for node in self.get_contents(el, no_iframe=True) if self.is_content_string(node))\n/testbed/soupsieve/css_match.py:1287:            return self.match_dir(self.get_parent(el, no_iframe=True), directionality)\n/testbed/soupsieve/css_match.py:1296:            return self.match_dir(self.get_parent(el, no_iframe=True), directionality)\n/testbed/soupsieve/css_match.py:1299:        return self.match_dir(self.get_parent(el, no_iframe=True), directionality)\n/testbed/soupsieve/css_match.py:1389:            iframe_restrict = self.iframe_restrict\n/testbed/soupsieve/css_match.py:1391:            self.iframe_restrict = True\n/testbed/soupsieve/css_match.py:1431:                # Verify language patterns\n/testbed/soupsieve/css_match.py:1432:                if selector.lang and not self.match_lang(el, selector.lang):\n/testbed/soupsieve/css_match.py:1459:            self.iframe_restrict = iframe_restrict\n/testbed/soupsieve/css_parser.py:83:    ':lang',\n/testbed/soupsieve/css_parser.py:148:# Pseudo class language (`:lang(\"*-de\", en)`)\n/testbed/soupsieve/css_parser.py:149:PAT_PSEUDO_LANG = fr'{PAT_PSEUDO_CLASS_SPECIAL}(?P<values>{VALUE}(?:{WSC}*,{WSC}*{VALUE})*){WSC}*\\)'\n/testbed/soupsieve/css_parser.py:371:        self.lang = kwargs.get('lang', [])  # type: list[ct.SelectorLang]\n/testbed/soupsieve/css_parser.py:401:                tuple(self.lang),\n/testbed/soupsieve/css_parser.py:411:            f'rel_type={self.rel_type!r}, contains={self.contains!r}, lang={self.lang!r}, flags={self.flags!r}, '\n/testbed/soupsieve/css_parser.py:433:                (\"pseudo_lang\", (':lang',), PAT_PSEUDO_LANG, SelectorPattern),\n/testbed/soupsieve/css_parser.py:882:    def parse_pseudo_lang(self, sel: _Selector, m: Match[str], has_selector: bool) -> bool:\n/testbed/soupsieve/css_parser.py:883:        \"\"\"Parse pseudo language.\"\"\"\n/testbed/soupsieve/css_parser.py:898:        sel.lang.append(ct.SelectorLang(patterns))\n/testbed/soupsieve/css_parser.py:989:                elif key == 'pseudo_lang':\n/testbed/soupsieve/css_parser.py:990:                    has_selector = self.parse_pseudo_lang(sel, m, has_selector)\n/testbed/soupsieve/css_types.py:14:    'SelectorLang',\n/testbed/soupsieve/css_types.py:188:        'relation', 'rel_type', 'contains', 'lang', 'flags', '_hash'\n/testbed/soupsieve/css_types.py:200:    lang: tuple[SelectorLang, ...]\n/testbed/soupsieve/css_types.py:214:        lang: tuple[SelectorLang, ...],\n/testbed/soupsieve/css_types.py:229:            lang=lang,\n/testbed/soupsieve/css_types.py:323:class SelectorLang(Immutable):\n/testbed/soupsieve/css_types.py:324:    \"\"\"Selector language rules.\"\"\"\n/testbed/soupsieve/css_types.py:326:    __slots__ = (\"languages\", \"_hash\",)\n/testbed/soupsieve/css_types.py:328:    languages: tuple[str, ...]\n/testbed/soupsieve/css_types.py:330:    def __init__(self, languages: Iterable[str]):\n/testbed/soupsieve/css_types.py:333:        super().__init__(languages=tuple(languages))\n/testbed/soupsieve/css_types.py:338:        return iter(self.languages)\n/testbed/soupsieve/css_types.py:343:        return len(self.languages)\n/testbed/soupsieve/css_types.py:348:        return self.languages[index]\n/testbed/soupsieve/css_types.py:406:pickle_register(SelectorLang)\n/testbed/soupsieve/pretty.py:54:                        lang=(),\n/testbed/soupsieve/pretty.py:61:            lang=(),\n"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "scanny__python-pptx.278b47b1.lm__JqsD8yL__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "Data labels not displaying correctly in charts\n\nDescription\n\nWhen adding data labels to charts, they don't appear in the correct order or position. I've noticed that when I try to add multiple data labels with specific indices, some labels are missing or appear in the wrong position.\n\nFor example, if I create a chart and try to add data labels with specific indices (like 0, 2, 5), the labels don't appear in the expected positions. This seems to happen when adding data labels that should be inserted between existing labels.\n\nI've tried creating a simple bar chart with 6 data points and adding labels to specific points, but the labels either don't show up or appear in unexpected positions. This makes it impossible to properly label specific data points in a chart."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll start by inspecting the repository structure and locating the chart data-label code.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-90283463-762e-446c-b833-dc72b841f2f2-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && echo \"====\" && find /testbed -type f -name \"*.py\" -o -name \"*.md\" -o -name \"*.txt\" -o -name \"*.toml\" -o -name \"*.cfg\" | head -100"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-90283463-762e-446c-b833-dc72b841f2f2-0",
+            "content": "rw-r--r--  1 root root    61 Jul 14  2025 requirements-dev.txt\n-rw-r--r--  1 root root    68 Jul 14  2025 requirements-docs.txt\n-rw-r--r--  1 root root   101 Jul 14  2025 requirements-test.txt\n-rw-r--r--  1 root root   111 Jul 14  2025 requirements.txt\ndrwxr-xr-x  7 root root  4096 Jul 14  2025 spec\ndrwxr-xr-x  4 root root  4096 Jul 14  2025 src\ndrwxr-xr-x 12 root root  4096 Jul 14  2025 tests\n-rw-r--r--  1 root root   166 Jul 14  2025 tox.ini\ndrwxr-xr-x  4 root root  4096 Jul 14  2025 typings\n====\n/testbed/src/python_pptx.egg-info/SOURCES.txt\n/testbed/src/python_pptx.egg-info/dependency_links.txt\n/testbed/src/python_pptx.egg-info/top_level.txt\n/testbed/src/python_pptx.egg-info/requires.txt\n/testbed/src/pptx/slide.py\n/testbed/src/pptx/text/fonts.py\n/testbed/src/pptx/text/text.py\n/testbed/src/pptx/text/layout.py\n/testbed/src/pptx/text/__init__.py\n/testbed/src/pptx/api.py\n/testbed/src/pptx/enum/shapes.py\n/testbed/src/pptx/enum/text.py\n/testbed/src/pptx/enum/dml.py\n/testbed/src/pptx/enum/__init__.py\n/testbed/src/pptx/enum/chart.py\n/testbed/src/pptx/enum/base.py\n/testbed/src/pptx/enum/lang.py\n/testbed/src/pptx/enum/action.py\n/testbed/src/pptx/oxml/slide.py\n/testbed/src/pptx/oxml/text.py\n/testbed/src/pptx/oxml/simpletypes.py\n/testbed/src/pptx/oxml/coreprops.py\n/testbed/src/pptx/oxml/__init__.py\n/testbed/src/pptx/oxml/dml/fill.py\n/testbed/src/pptx/oxml/dml/line.py\n/testbed/src/pptx/oxml/dml/__init__.py\n/testbed/src/pptx/oxml/dml/color.py\n/testbed/src/pptx/oxml/chart/series.py\n/testbed/src/pptx/oxml/chart/__init__.py\n/testbed/src/pptx/oxml/chart/shared.py\n/testbed/src/pptx/oxml/chart/chart.py\n/testbed/src/pptx/oxml/chart/marker.py\n/testbed/src/pptx/oxml/chart/datalabel.py\n/testbed/src/pptx/oxml/chart/axis.py\n/testbed/src/pptx/oxml/chart/legend.py\n/testbed/src/pptx/oxml/chart/plot.py\n/testbed/src/pptx/oxml/table.py\n/testbed/src/pptx/oxml/presentation.py\n/testbed/src/pptx/oxml/xmlchemy.py\n/testbed/src/pptx/oxml/theme.py\n/testbed/src/pptx/oxml/shapes/picture.py\n/testbed/src/pptx/oxml/shapes/__init__.py\n/testbed/src/pptx/oxml/shapes/groupshape.py\n/testbed/src/pptx/oxml/shapes/shared.py\n/testbed/src/pptx/oxml/shapes/autoshape.py\n/testbed/src/pptx/oxml/shapes/connector.py\n/testbed/src/pptx/oxml/shapes/graphfrm.py\n/testbed/src/pptx/oxml/action.py\n/testbed/src/pptx/oxml/ns.py\n/testbed/src/pptx/__init__.py\n/testbed/src/pptx/dml/fill.py\n/testbed/src/pptx/dml/line.py\n/testbed/src/pptx/dml/__init__.py\n/testbed/src/pptx/dml/effect.py\n/testbed/src/pptx/dml/chtfmt.py\n/testbed/src/pptx/dml/color.py\n/testbed/src/pptx/chart/series.py\n/testbed/src/pptx/chart/category.py\n/testbed/src/pptx/chart/xmlwriter.py\n/testbed/src/pptx/chart/point.py\n/testbed/src/pptx/chart/__init__.py\n/testbed/src/pptx/chart/chart.py\n/testbed/src/pptx/chart/marker.py\n/testbed/src/pptx/chart/datalabel.py\n/testbed/src/pptx/chart/axis.py\n/testbed/src/pptx/chart/data.py\n/testbed/src/pptx/chart/legend.py\n/testbed/src/pptx/chart/plot.py\n/testbed/src/pptx/chart/xlsx.py\n/testbed/src/pptx/table.py\n/testbed/src/pptx/presentation.py\n/testbed/src/pptx/shared.py\n/testbed/src/pptx/package.py\n/testbed/src/pptx/media.py\n/testbed/src/pptx/spec.py\n/testbed/src/pptx/types.py\n/testbed/src/pptx/shapes/placeholder.py\n/testbed/src/pptx/shapes/picture.py\n/testbed/src/pptx/shapes/freeform.py\n/testbed/src/pptx/shapes/__init__.py\n/testbed/src/pptx/shapes/shapetree.py\n/testbed/src/pptx/shapes/base.py\n/testbed/src/pptx/shapes/autoshape.py\n/testbed/src/pptx/shapes/connector.py\n/testbed/src/pptx/shapes/graphfrm.py\n/testbed/src/pptx/shapes/group.py\n/testbed/src/pptx/action.py\n/testbed/src/pptx/parts/embeddedpackage.py\n/testbed/src/pptx/parts/slide.py\n/testbed/src/pptx/parts/image.py\n/testbed/src/pptx/parts/coreprops.py\n/testbed/src/pptx/parts/__init__.py\n/testbed/src/pptx/parts/presentation.py\n/testbed/src/pptx/parts/chart.py\n/testbed/src/pptx/parts/media.py\n/testbed/src/pptx/util.py\n/testbed/src/pptx/opc/oxml.py\n/testbed/src/pptx/opc/packuri.py\n/testbed/src/pptx/opc/__init__.py\n/testbed/src/pptx/opc/shared.py\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-5b6cf58b-be9c-4eb5-9715-98d9f4892d49-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/src/pptx/chart/datalabel.py && echo \"======== OXML ========\" && cat /testbed/src/pptx/oxml/chart/datalabel.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-5b6cf58b-be9c-4eb5-9715-98d9f4892d49-1",
+            "content": "ent specifying properties for a set of data labels.\"\"\"\n\n    _tag_seq = (\n        \"c:dLbl\",\n        \"c:numFmt\",\n        \"c:spPr\",\n        \"c:txPr\",\n        \"c:dLblPos\",\n        \"c:showLegendKey\",\n        \"c:showVal\",\n        \"c:showCatName\",\n        \"c:showSerName\",\n        \"c:showPercent\",\n        \"c:showBubbleSize\",\n        \"c:separator\",\n        \"c:showLeaderLines\",\n        \"c:leaderLines\",\n        \"c:extLst\",\n    )\n    dLbl = ZeroOrMore(\"c:dLbl\", successors=_tag_seq[1:])\n    numFmt = ZeroOrOne(\"c:numFmt\", successors=_tag_seq[2:])\n    txPr = ZeroOrOne(\"c:txPr\", successors=_tag_seq[4:])\n    dLblPos = ZeroOrOne(\"c:dLblPos\", successors=_tag_seq[5:])\n    showLegendKey = ZeroOrOne(\"c:showLegendKey\", successors=_tag_seq[6:])\n    showVal = ZeroOrOne(\"c:showVal\", successors=_tag_seq[7:])\n    showCatName = ZeroOrOne(\"c:showCatName\", successors=_tag_seq[8:])\n    showSerName = ZeroOrOne(\"c:showSerName\", successors=_tag_seq[9:])\n    showPercent = ZeroOrOne(\"c:showPercent\", successors=_tag_seq[10:])\n    del _tag_seq\n\n    @property\n    def defRPr(self):\n        \"\"\"\n        ``<a:defRPr>`` great-great-grandchild element, added with its\n        ancestors if not present.\n        \"\"\"\n        txPr = self.get_or_add_txPr()\n        defRPr = txPr.defRPr\n        return defRPr\n\n    def get_dLbl_for_point(self, idx):\n        \"\"\"\n        Return the `c:dLbl` child representing the label for the data point\n        at index *idx*.\n        \"\"\"\n        matches = self.xpath('c:dLbl[c:idx[@val=\"%d\"]]' % idx)\n        if matches:\n            return matches[0]\n        return None\n\n    def get_or_add_dLbl_for_point(self, idx):\n        \"\"\"\n        Return the `c:dLbl` element representing the label of the point at\n        index *idx*.\n        \"\"\"\n        matches = self.xpath('c:dLbl[c:idx[@val=\"%d\"]]' % idx)\n        if matches:\n            return matches[0]\n        return self._insert_dLbl_in_sequence(idx)\n\n    @classmethod\n    def new_dLbls(cls):\n        \"\"\"Return a newly created \"loose\" `c:dLbls` element.\"\"\"\n        return parse_xml(\n            \"<c:dLbls %s>\\n\"\n            '  <c:showLegendKey val=\"0\"/>\\n'\n            '  <c:showVal val=\"0\"/>\\n'\n            '  <c:showCatName val=\"0\"/>\\n'\n            '  <c:showSerName val=\"0\"/>\\n'\n            '  <c:showPercent val=\"0\"/>\\n'\n            '  <c:showBubbleSize val=\"0\"/>\\n'\n            '  <c:showLeaderLines val=\"1\"/>\\n'\n            \"</c:dLbls>\" % nsdecls(\"c\")\n        )\n\n    def _insert_dLbl_in_sequence(self, idx):\n        \"\"\"\n        Return a newly created `c:dLbl` element having `c:idx` child of *idx*\n        and inserted in numeric sequence among the `c:dLbl` children of this\n        element.\n        \"\"\"\n        new_dLbl = self._new_dLbl()\n        new_dLbl.idx.val = idx\n\n        dLbl = None\n        for dLbl in self.dLbl_lst:\n            if dLbl.idx_val > idx:\n                dLbl.addprevious(new_dLbl)\n                return new_dLbl\n        if dLbl is not None:\n            dLbl.addnext(new_dLbl)\n        else:\n            self.insert(0, new_dLbl)\n        return new_dLbl\n\n    def _new_dLbl(self):\n        return CT_DLbl.new_dLbl()\n\n    def _new_showCatName(self):\n        \"\"\"Return a new `c:showCatName` with value initialized.\n\n        This method is called by the metaclass-generated code whenever a new\n        `c:showCatName` element is required. In this case, it defaults to\n        `val=true`, which is not what we need so we override to make val\n        explicitly False.\n        \"\"\"\n        return parse_xml('<c:showCatName %s val=\"0\"/>' % nsdecls(\"c\"))\n\n    def _new_showLegendKey(self):\n        return parse_xml('<c:showLegendKey %s val=\"0\"/>' % nsdecls(\"c\"))\n\n    def _new_showPercent(self):\n        return parse_xml('<c:showPercent %s val=\"0\"/>' % nsdecls(\"c\"))\n\n    def _new_showSerName(self):\n        return parse_xml('<c:showSerName %s val=\"0\"/>' % nsdecls(\"c\"))\n\n    def _new_showVal(self):\n        return parse_xml('<c:showVal %s val=\"0\"/>' % nsdecls(\"c\"))\n\n    def _new_txPr(self):\n        return CT_TextBody.new_txPr()\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-0c831576-1d69-46be-8f42-b3371710d684-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/src/pptx/chart/datalabel.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-0c831576-1d69-46be-8f42-b3371710d684-2",
+            "content": "rame.paragraphs[0]\n        return paragraph.font\n\n    @property\n    def has_text_frame(self):\n        \"\"\"\n        Return |True| if this data label has a text frame (implying it has\n        custom data label text), and |False| otherwise. Assigning |True|\n        causes a text frame to be added if not already present. Assigning\n        |False| causes any existing text frame to be removed along with any\n        text contained in the text frame.\n        \"\"\"\n        dLbl = self._dLbl\n        if dLbl is None:\n            return False\n        if dLbl.xpath(\"c:tx/c:rich\"):\n            return True\n        return False\n\n    @has_text_frame.setter\n    def has_text_frame(self, value):\n        if bool(value) is True:\n            self._get_or_add_tx_rich()\n        else:\n            self._remove_tx_rich()\n\n    @property\n    def position(self):\n        \"\"\"\n        Read/write :ref:`XlDataLabelPosition` member specifying the position\n        of this data label with respect to its data point, or |None| if no\n        position is specified. Assigning |None| causes PowerPoint to choose\n        the default position, which varies by chart type.\n        \"\"\"\n        dLbl = self._dLbl\n        if dLbl is None:\n            return None\n        dLblPos = dLbl.dLblPos\n        if dLblPos is None:\n            return None\n        return dLblPos.val\n\n    @position.setter\n    def position(self, value):\n        if value is None:\n            dLbl = self._dLbl\n            if dLbl is None:\n                return\n            dLbl._remove_dLblPos()\n            return\n        dLbl = self._get_or_add_dLbl()\n        dLbl.get_or_add_dLblPos().val = value\n\n    @property\n    def text_frame(self):\n        \"\"\"\n        |TextFrame| instance for this data label, containing the text of the\n        data label and providing access to its text formatting properties.\n        \"\"\"\n        rich = self._get_or_add_rich()\n        return TextFrame(rich, self)\n\n    @property\n    def _dLbl(self):\n        \"\"\"\n        Return the |CT_DLbl| instance referring specifically to this\n        individual data label (having the same index value), or |None| if not\n        present.\n        \"\"\"\n        return self._ser.get_dLbl(self._idx)\n\n    def _get_or_add_dLbl(self):\n        \"\"\"\n        The ``CT_DLbl`` instance referring specifically to this individual\n        data label, newly created if not yet present in the XML.\n        \"\"\"\n        return self._ser.get_or_add_dLbl(self._idx)\n\n    def _get_or_add_rich(self):\n        \"\"\"\n        Return the `c:rich` element representing the text frame for this data\n        label, newly created with its ancestors if not present.\n        \"\"\"\n        dLbl = self._get_or_add_dLbl()\n\n        # having a c:spPr or c:txPr when a c:tx is present causes the \"can't\n        # save\" bug on bubble charts. Remove c:spPr and c:txPr when present.\n        dLbl._remove_spPr()\n        dLbl._remove_txPr()\n\n        return dLbl.get_or_add_rich()\n\n    def _get_or_add_tx_rich(self):\n        \"\"\"\n        Return the `c:tx` element for this data label, with its `c:rich`\n        child and descendants, newly created if not yet present.\n        \"\"\"\n        dLbl = self._get_or_add_dLbl()\n\n        # having a c:spPr or c:txPr when a c:tx is present causes the \"can't\n        # save\" bug on bubble charts. Remove c:spPr and c:txPr when present.\n        dLbl._remove_spPr()\n        dLbl._remove_txPr()\n\n        return dLbl.get_or_add_tx_rich()\n\n    def _get_or_add_txPr(self):\n        \"\"\"Return the `c:txPr` element for this data label.\n\n        The `c:txPr` element and its parent `c:dLbl` element are created if\n        not yet present.\n        \"\"\"\n        dLbl = self._get_or_add_dLbl()\n        return dLbl.get_or_add_txPr()\n\n    def _remove_tx_rich(self):\n        \"\"\"\n        Remove any `c:tx/c:rich` child of the `c:dLbl` element for this data\n        label. Do nothing if that element is not present.\n        \"\"\"\n        dLbl = self._dLbl\n        if dLbl is None:\n            return\n        dLbl.remove_tx_rich()\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-cf7e4ee3-f18a-424d-810a-130a068b079b-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "wc -l /testbed/src/pptx/chart/datalabel.py /testbed/src/pptx/oxml/chart/datalabel.py /testbed/src/pptx/chart/point.py /testbed/src/pptx/chart/series.py /testbed/src/pptx/oxml/chart/series.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-cf7e4ee3-f18a-424d-810a-130a068b079b-3",
+            "content": "  288 /testbed/src/pptx/chart/datalabel.py\n  252 /testbed/src/pptx/oxml/chart/datalabel.py\n  101 /testbed/src/pptx/chart/point.py\n  258 /testbed/src/pptx/chart/series.py\n  254 /testbed/src/pptx/oxml/chart/series.py\n 1153 total\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-8ae4e571-60fb-43f1-893c-26ff79b0452e-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls /testbed/tests && echo \"====\" && find /testbed/tests -name \"*datalabel*\" -o -name \"*dLbl*\" -o -name \"*label*\" | head -50 && echo \"==== GIT ====\" && cd /testbed && git log --oneline -20 && git status && ls /testbed/.git 2>/dev/null | head"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-8ae4e571-60fb-43f1-893c-26ff79b0452e-4",
+            "content": "__init__.py\nchart\ndml\nenum\nopc\noxml\nparts\nshapes\ntest_action.py\ntest_api.py\ntest_files\ntest_media.py\ntest_package.py\ntest_presentation.py\ntest_shared.py\ntest_slide.py\ntest_table.py\ntest_util.py\ntext\nunitdata.py\nunitutil\n====\n/testbed/tests/test_files/snippets/cat-labels.txt\n/testbed/tests/chart/test_datalabel.py\n==== GIT ====\n55cbb3d0 Initial commit\nOn branch main\nYour branch is up to date with 'origin/main'.\n\nUntracked files:\n  (use \"git add <file>...\" to include in what will be committed)\n\t.gitkeep\n\nnothing added to commit but untracked files present (use \"git add\" to track)\nHEAD\nbranches\nconfig\ndescription\nhooks\nindex\ninfo\nlogs\nobjects\npacked-refs\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-8420a791-88ca-442f-b2b0-68237e5ac13d-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/tests/chart/test_datalabel.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-8420a791-88ca-442f-b2b0-68237e5ac13d-5",
+            "content": "     (\n                \"c:dLbls/c:dLblPos{val=inBase}\",\n                XL_LABEL_POSITION.OUTSIDE_END,\n                \"c:dLbls/c:dLblPos{val=outEnd}\",\n            ),\n            (\"c:dLbls/c:dLblPos{val=inBase}\", None, \"c:dLbls\"),\n            (\"c:dLbls\", None, \"c:dLbls\"),\n        ]\n    )\n    def position_set_fixture(self, request):\n        dLbls_cxml, new_value, expected_dLbls_cxml = request.param\n        data_labels = DataLabels(element(dLbls_cxml))\n        expected_xml = xml(expected_dLbls_cxml)\n        return data_labels, new_value, expected_xml\n\n    @pytest.fixture(\n        params=[\n            (\"c:dLbls\", False),\n            (\"c:dLbls/c:showSerName{val=0}\", False),\n            (\"c:dLbls/c:showSerName{val=1}\", True),\n            (\"c:dLbls/c:showSerName{val=true}\", True),\n            (\"c:dLbls/c:showSerName\", True),\n        ]\n    )\n    def sername_get_fixture(self, request):\n        dLbls_cxml, expected_value = request.param\n        dLbls = element(dLbls_cxml)\n        return dLbls, expected_value\n\n    @pytest.fixture(\n        params=[\n            (\"c:dLbls\", False, \"c:dLbls/c:showSerName{val=0}\"),\n            (\"c:dLbls\", True, \"c:dLbls/c:showSerName{val=1}\"),\n            (\"c:dLbls/c:showSerName\", False, \"c:dLbls/c:showSerName{val=0}\"),\n            (\"c:dLbls/c:showSerName{val=0}\", False, \"c:dLbls/c:showSerName{val=0}\"),\n            (\"c:dLbls/c:showSerName{val=0}\", True, \"c:dLbls/c:showSerName{val=1}\"),\n            (\"c:dLbls/c:showSerName{val=1}\", False, \"c:dLbls/c:showSerName{val=0}\"),\n        ]\n    )\n    def sername_set_fixture(self, request):\n        dLbls_cxml, new_value, expected_dLbls_cxml = request.param\n        dLbls = element(dLbls_cxml)\n        expected_dLbls_xml = xml(expected_dLbls_cxml)\n        return dLbls, new_value, expected_dLbls_xml\n\n    @pytest.fixture(\n        params=[\n            (\n                \"c:dLbls{a:b=c}\",\n                \"c:dLbls{a:b=c}/c:txPr/(a:bodyPr,a:lstStyle,a:p/a:pPr/a:defRPr)\",\n            ),\n            (\n                \"c:dLbls{a:b=c}/c:txPr/(a:bodyPr,a:p)\",\n                \"c:dLbls{a:b=c}/c:txPr/(a:bodyPr,a:p/a:pPr/a:defRPr)\",\n            ),\n            (\n                \"c:dLbls{a:b=c}/c:txPr/(a:bodyPr,a:p/a:pPr)\",\n                \"c:dLbls{a:b=c}/c:txPr/(a:bodyPr,a:p/a:pPr/a:defRPr)\",\n            ),\n        ]\n    )\n    def txPr_fixture(self, request):\n        dLbls_cxml, expected_cxml = request.param\n        data_labels = DataLabels(element(dLbls_cxml))\n        expected_xml = xml(expected_cxml)\n        return data_labels, expected_xml\n\n    @pytest.fixture(\n        params=[\n            (\"c:dLbls\", False),\n            (\"c:dLbls/c:showVal{val=0}\", False),\n            (\"c:dLbls/c:showVal{val=1}\", True),\n            (\"c:dLbls/c:showVal{val=true}\", True),\n            (\"c:dLbls/c:showVal\", True),\n        ]\n    )\n    def value_get_fixture(self, request):\n        dLbls_cxml, expected_value = request.param\n        dLbls = element(dLbls_cxml)\n        return dLbls, expected_value\n\n    @pytest.fixture(\n        params=[\n            (\"c:dLbls\", False, \"c:dLbls/c:showVal{val=0}\"),\n            (\"c:dLbls\", True, \"c:dLbls/c:showVal{val=1}\"),\n            (\"c:dLbls/c:showVal\", False, \"c:dLbls/c:showVal{val=0}\"),\n            (\"c:dLbls/c:showVal{val=0}\", False, \"c:dLbls/c:showVal{val=0}\"),\n            (\"c:dLbls/c:showVal{val=0}\", True, \"c:dLbls/c:showVal{val=1}\"),\n            (\"c:dLbls/c:showVal{val=1}\", False, \"c:dLbls/c:showVal{val=0}\"),\n        ]\n    )\n    def value_set_fixture(self, request):\n        dLbls_cxml, new_value, expected_dLbls_cxml = request.param\n        dLbls = element(dLbls_cxml)\n        expected_dLbls_xml = xml(expected_dLbls_cxml)\n        return dLbls, new_value, expected_dLbls_xml\n\n    # fixture components ---------------------------------------------\n\n    @pytest.fixture\n    def Font_(self, request, font_):\n        return class_mock(request, \"pptx.chart.datalabel.Font\", return_value=font_)\n\n    @pytest.fixture\n    def font_(self, request):\n        return instance_mock(request, Font)\n"
+          }
+        ]
+      }
+    }
+  ]
+}

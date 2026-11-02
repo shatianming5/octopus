@@ -1,0 +1,45 @@
+{
+  "c1_status": "passed: 11 state/native/GPU cases, including cold-prefill references for aligned and nonaligned forks, cancellation/release, the round barrier, and the public three-branch Brain continuation demo",
+  "environment": {
+    "device": "NVIDIA A100-SXM-64GB",
+    "driver": "565.57.01",
+    "python": "3.12.13",
+    "torch": "2.13.0+cu129",
+    "torchaudio": "2.11.0+cu129",
+    "torchcodec": "0.16.0+cu129",
+    "torchvision": "0.28.0+cu129",
+    "vllm": "0.28.0+cu129",
+    "vllm_release_commit": "2cf0a6915ce544dc493a0990f2ea38d81601128a"
+  },
+  "model": {
+    "id": "Qwen/Qwen2.5-7B-Instruct",
+    "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "dtype": "bfloat16"
+  },
+  "physical_gpu_indices": {
+    "runtime_and_retention_and_native_sentinel": 0,
+    "branching_smoke": 2,
+    "final_correctness": 2
+  },
+  "semantic_implementation_commit": "485cfea",
+  "protocol_changes": [
+    "The official vLLM cu129 wheel's unqualified dependencies initially resolved CUDA 13 builds that driver 565 could not load. Torch, TorchVision, TorchAudio, and TorchCodec were pinned to their official cu129 builds without changing vLLM.",
+    "The host could not reliably reach Hugging Face during engine creation, so all runs loaded the already complete cached snapshot at revision a09a35458c702b33eeacc393d103063234e8bc28. The logical model and tokenizer identity did not change.",
+    "The 512 MiB retention engine uses max_model_len=8192 for both APC and Octopus because vLLM rejects max_model_len=32768 with that capacity. Every retention request remains below 8192 tokens; the workload and fixed KV capacity are unchanged.",
+    "Two pre-result administrative launches were discarded and their files removed before acceptance: one carried an incorrect expanded commit label, and one would have inherited the matched in-process setting for the native-default sentinel.",
+    "The public API demo exposed whitespace-only truncated JSON and model-generated duplicate commit IDs. The runtime now uses native XGrammar compact JSON, assigns commit IDs itself, and explicitly hands control back to the Brain. All three semantic benchmark methods use the same compact-JSON setting; no token budget, task, model, or weight changed.",
+    "Only the 36 semantic-task records were regenerated to include reducer, serialization, and continuation-tokenization time in completion_seconds. An equivalent idle A100 on the same host (GPU 2) was used because GPUs 0 and 1 had been occupied by other work. The 54 runtime, 6 retention, and 3 native-default sentinel records are unchanged."
+  ],
+  "record_counts": {
+    "branching_tasks": 36,
+    "native_default_sentinel_waves": 3,
+    "retention_scenarios": 6,
+    "runtime_waves": 54
+  },
+  "tests": [
+    {
+      "command": "CUDA_VISIBLE_DEVICES=2 PYTHONPATH=src ../.venv/bin/python -m pytest -q --tb=short tests/test_state.py tests/test_vllm_lifecycle.py tests/test_gpu_fork.py",
+      "outcome": "11 passed"
+    }
+  ]
+}

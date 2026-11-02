@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "alecthomas__voluptuous.a7a55f83.__ySZxCM8__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "SomeOf validator doesn't enforce parameter requirements\n\nDescription\n\nWhen creating a SomeOf validator without specifying either min_valid or max_valid parameters, the validator should raise an AssertionError. However, this validation check appears to be missing in the current implementation.\n\nFor example, the following code should raise an AssertionError but doesn't:\n\n```python\nfrom voluptuous import SomeOf\n\n# This should fail with an AssertionError but doesn't\nvalidator = SomeOf(validators=[])\n```\n\nAccording to the documentation and expected behavior, when using SomeOf, you should specify at least one of min_valid and max_valid parameters. Without this validation, users might create invalid validators that don't behave as expected.\n\nAdditionally, there appears to be a change in the default behavior. Previously, min_valid defaulted to 0 when not specified, but now it seems to default to 1, which could break existing code that relies on the previous behavior.\n\nTo reproduce:\n1. Create a SomeOf validator without specifying min_valid or max_valid\n2. Observe that no AssertionError is raised\n3. Try to use the validator and notice unexpected behavior"
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository and the SomeOf validator implementation to locate the missing parameter check.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-f41018d7-2d09-422f-8498-0966e93ba954-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -50 && cat /testbed/README.md 2>/dev/null | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-f41018d7-2d09-422f-8498-0966e93ba954-0",
+            "content": "\n-rw-r--r-- 1 root root   358 Jul 12  2025 pyproject.toml\n-rw-r--r-- 1 root root   281 Jul 12  2025 renovate.json5\n-rw-r--r-- 1 root root  1213 Jul 12  2025 setup.py\n-rw-r--r-- 1 root root   749 Jul 12  2025 tox.ini\ndrwxr-xr-x 4 root root  4096 Jul 12  2025 voluptuous\ndrwxr-xr-x 2 root root  4096 Jul 12  2025 voluptuous.egg-info\n/testbed/setup.py\n/testbed/voluptuous/__init__.py\n/testbed/voluptuous/validators.py\n/testbed/voluptuous/tests/__init__.py\n/testbed/voluptuous/tests/tests.py\n/testbed/voluptuous/schema_builder.py\n/testbed/voluptuous/humanize.py\n/testbed/voluptuous/error.py\n/testbed/voluptuous/util.py\n\n# CONTRIBUTIONS ONLY\n\n**What does this mean?** I do not have time to fix issues myself. The only way fixes or new features will be added is by people submitting PRs.\n\n**Current status:** Voluptuous is largely feature stable. There hasn't been a need to add new features in a while, but there are some bugs that should be fixed.\n\n**Why?** I no longer use Voluptuous personally (in fact I no longer regularly write Python code). Rather than leave the project in a limbo of people filing issues and wondering why they're not being worked on, I believe this notice will more clearly set expectations.\n\n# Voluptuous is a Python data validation library\n\n[![image](https://img.shields.io/pypi/v/voluptuous.svg)](https://python.org/pypi/voluptuous)\n[![image](https://img.shields.io/pypi/l/voluptuous.svg)](https://python.org/pypi/voluptuous)\n[![image](https://img.shields.io/pypi/pyversions/voluptuous.svg)](https://python.org/pypi/voluptuous)\n[![Test status](https://github.com/alecthomas/voluptuous/actions/workflows/tests.yml/badge.svg)](https://github.com/alecthomas/voluptuous/actions/workflows/tests.yml)\n[![Coverage status](https://coveralls.io/repos/github/alecthomas/voluptuous/badge.svg?branch=master)](https://coveralls.io/github/alecthomas/voluptuous?branch=master)\n[![Gitter chat](https://badges.gitter.im/alecthomas.svg)](https://gitter.im/alecthomas/Lobby)\n\nVoluptuous, *despite* the name, is a Python data validation library. It\nis primarily intended for validating data coming into Python as JSON,\nYAML, etc.\n\nIt has three goals:\n\n1. Simplicity.\n2. Support for complex data structures.\n3. Provide useful error messages.\n\n## Contact\n\nVoluptuous now has a mailing list! Send a mail to\n[<voluptuous@librelist.com>](mailto:voluptuous@librelist.com) to subscribe. Instructions\nwill follow.\n\nYou can also contact me directly via [email](mailto:alec@swapoff.org) or\n[Twitter](https://twitter.com/alecthomas).\n\nTo file a bug, create a [new issue](https://github.com/alecthomas/voluptuous/issues/new) on GitHub with a short example of how to replicate the issue.\n\n## Documentation\n\nThe documentation is provided [here](http://alecthomas.github.io/voluptuous/).\n\n## Contribution to Documentation\n\nDocumentation is built using `Sphinx`. You can install it by\n\n    pip install -r requirements.txt\n\nFor building `sphinx-apidoc` from scratch you need to set PYTHONPATH to `voluptuous/voluptuous` repository.\n\nThe documentation is provided [here.](http://alecthomas.github.io/voluptuous/)\n\n## Changelog\n\nSee [CHANGELOG.md](https://github.com/alecthomas/voluptuous/blob/master/CHANGELOG.md).\n\n## Why use Voluptuous over another validation library?\n\n**Validators are simple callables:**\nNo need to subclass anything, just use a function.\n\n**Errors are simple exceptions:**\nA validator can just `raise Invalid(msg)` and expect the user to get\nuseful messages.\n\n**Schemas are basic Python data structures:**\nShould your data be a dictionary of integer keys to strings?\n`{int: str}` does what you expect. List of integers, floats or\nstrings? `[int, float, str]`.\n\n**Designed from the ground up for validating more than just forms:**\nNested data structures are treated in the same way as any other\ntype. Need a list of dictionaries? `[{}]`\n\n**Consistency:**\nTypes in the schema are checked as types. Values are compared as\nvalues. Callables are called to validate. Simple.\n\n## Show me an example\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-291c913e-a910-4c5f-977a-724158134ad8-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "rg -n \"SomeOf\" /testbed --type py && echo \"==== validators.py SomeOf section ====\" && wc -l /testbed/voluptuous/validators.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-291c913e-a910-4c5f-977a-724158134ad8-1",
+            "content": "bash: line 1: rg: command not found\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-b9f5e053-0853-4063-aaf0-4c3592c858aa-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "grep -n \"SomeOf\" /testbed -r --include=\"*.py\" --include=\"*.md\" --include=\"*.rst\""
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-b9f5e053-0853-4063-aaf0-4c3592c858aa-2",
+            "content": "/testbed/CHANGELOG.md:188:- [#314](https://github.com/alecthomas/voluptuous/pull/314): Add `SomeOf` validator.\n/testbed/voluptuous/validators.py:1181:class SomeOf(_WithSubValidators):\n/testbed/voluptuous/validators.py:1196:    >>> validate = Schema(SomeOf(min_valid=2, validators=[Range(1, 5), Any(float, int), 6.6]))\n/testbed/voluptuous/validators.py:1218:        super(SomeOf, self).__init__(*validators, **kwargs)\n/testbed/voluptuous/validators.py:1245:        return 'SomeOf(min_valid=%s, validators=[%s], max_valid=%s, msg=%r)' % (\n/testbed/voluptuous/tests/tests.py:16:    Required, Schema, Self, SomeOf, TooManyValid, TypeInvalid, Union, Unordered, Url,\n/testbed/voluptuous/tests/tests.py:1234:def test_SomeOf_min_validation():\n/testbed/voluptuous/tests/tests.py:1237:        SomeOf(\n/testbed/voluptuous/tests/tests.py:1259:def test_SomeOf_max_validation():\n/testbed/voluptuous/tests/tests.py:1260:    validator = SomeOf(\n/testbed/voluptuous/tests/tests.py:1450:def test_SomeOf_on_bounds_assertion():\n/testbed/voluptuous/tests/tests.py:1453:        'when using \"SomeOf\" you should specify at least one of min_valid and max_valid',\n/testbed/voluptuous/tests/tests.py:1455:        SomeOf(validators=[])\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-09513903-4576-4735-a74f-905b544942fe-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '1100,1260p' /testbed/voluptuous/validators.py && echo \"======== TESTS ========\" && sed -n '1220,1280p' /testbed/voluptuous/tests/tests.py && echo \"======== BOUNDS TEST ========\" && sed -n '1440,1470p' /testbed/voluptuous/tests/tests.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-09513903-4576-4735-a74f-905b544942fe-3",
+            "content": "_valid is not None or max_valid is not None, (\n            'when using \"%s\" you should specify at least one of min_valid and max_valid'\n            % (type(self).__name__,)\n        )\n        self.min_valid = min_valid or 0\n        self.max_valid = max_valid or len(validators)\n        super(SomeOf, self).__init__(*validators, **kwargs)\n\n    def _exec(self, funcs, v, path=None):\n        errors = []\n        funcs = list(funcs)\n        for func in funcs:\n            try:\n                if path is None:\n                    v = func(v)\n                else:\n                    v = func(path, v)\n            except Invalid as e:\n                errors.append(e)\n\n        passed_count = len(funcs) - len(errors)\n        if self.min_valid <= passed_count <= self.max_valid:\n            return v\n\n        msg = self.msg\n        if not msg:\n            msg = ', '.join(map(str, errors))\n\n        if passed_count > self.max_valid:\n            raise TooManyValid(msg)\n        raise NotEnoughValid(msg)\n\n    def __repr__(self):\n        return 'SomeOf(min_valid=%s, validators=[%s], max_valid=%s, msg=%r)' % (\n            self.min_valid,\n            \", \".join(repr(v) for v in self.validators),\n            self.max_valid,\n            self.msg,\n        )\n======== TESTS ========\n\n    optional = Optional('key', description='Hello')\n    assert optional.description == 'Hello'\n\n    exclusive = Exclusive('alpha', 'angles', description='Hello')\n    assert exclusive.description == 'Hello'\n\n    inclusive = Inclusive('alpha', 'angles', description='Hello')\n    assert inclusive.description == 'Hello'\n\n    required = Required('key', description='Hello')\n    assert required.description == 'Hello'\n\n\ndef test_SomeOf_min_validation():\n    validator = All(\n        Length(min=8),\n        SomeOf(\n            min_valid=3,\n            validators=[\n                Match(r'.*[A-Z]', 'no uppercase letters'),\n                Match(r'.*[a-z]', 'no lowercase letters'),\n                Match(r'.*[0-9]', 'no numbers'),\n                Match(r'.*[$@$!%*#?&^:;/<,>|{}()\\-\\'._+=]', 'no symbols'),\n            ],\n        ),\n    )\n\n    validator('ffe532A1!')\n    with raises(MultipleInvalid, 'length of value must be at least 8'):\n        validator('a')\n\n    with raises(MultipleInvalid, 'no uppercase letters, no lowercase letters'):\n        validator('1232!#4111')\n\n    with raises(MultipleInvalid, 'no lowercase letters, no symbols'):\n        validator('3A34SDEF5')\n\n\ndef test_SomeOf_max_validation():\n    validator = SomeOf(\n        max_valid=2,\n        validators=[\n            Match(r'.*[A-Z]', 'no uppercase letters'),\n            Match(r'.*[a-z]', 'no lowercase letters'),\n            Match(r'.*[0-9]', 'no numbers'),\n        ],\n        msg='max validation test failed',\n    )\n\n    validator('Aa')\n    with raises(TooManyValid, 'max validation test failed'):\n        validator('Aa1')\n\n\ndef test_self_validation():\n    schema = Schema({\"number\": int, \"follow\": Self})\n    with raises(MultipleInvalid):\n        schema({\"number\": \"abc\"})\n\n    with raises(MultipleInvalid):\n======== BOUNDS TEST ========\n    schema({\"follow\": {\"number\": 123456}})\n    schema({\"follow\": {\"follow\": {\"number\": 123456}}})\n    schema({\"follow\": {\"number\": 123456, \"extra_number\": 123}})\n\n    with pytest.raises(MultipleInvalid) as ctx:\n        schema({\"follow\": {\"number\": 123456, \"extra_number\": \"123\"}})\n    assert len(ctx.value.errors) == 1\n    assert isinstance(ctx.value.errors[0], TypeInvalid)\n\n\ndef test_SomeOf_on_bounds_assertion():\n    with raises(\n        AssertionError,\n        'when using \"SomeOf\" you should specify at least one of min_valid and max_valid',\n    ):\n        SomeOf(validators=[])\n\n\ndef test_comparing_voluptuous_object_to_str():\n    assert Optional('Classification') < 'Name'\n\n\ndef test_set_of_integers():\n    schema = Schema({int})\n    with raises(Invalid, 'expected a set'):\n        schema(42)\n    with raises(Invalid, 'expected a set'):\n        schema(frozenset([42]))\n\n    schema(set())\n    schema(set([42]))\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-45108662-4d0f-495a-98c0-daca74cb3ec4-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '1050,1220p' /testbed/voluptuous/validators.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-45108662-4d0f-495a-98c0-daca74cb3ec4-4",
+            "content": "ma = Schema(Number(precision=6, scale=2, yield_decimal=True))\n    >>> schema('1234.01')\n    Decimal('1234.01')\n    \"\"\"\n\n    def __init__(\n        self,\n        precision: typing.Optional[int] = None,\n        scale: typing.Optional[int] = None,\n        msg: typing.Optional[str] = None,\n        yield_decimal: bool = False,\n    ) -> None:\n        self.precision = precision\n        self.scale = scale\n        self.msg = msg\n        self.yield_decimal = yield_decimal\n\n    def __call__(self, v):\n        \"\"\"\n        :param v: is a number enclosed with string\n        :return: Decimal number\n        \"\"\"\n        precision, scale, decimal_num = self._get_precision_scale(v)\n\n        if (\n            self.precision is not None\n            and self.scale is not None\n            and precision != self.precision\n            and scale != self.scale\n        ):\n            raise Invalid(\n                self.msg\n                or \"Precision must be equal to %s, and Scale must be equal to %s\"\n                % (self.precision, self.scale)\n            )\n        else:\n            if self.precision is not None and precision != self.precision:\n                raise Invalid(\n                    self.msg or \"Precision must be equal to %s\" % self.precision\n                )\n\n            if self.scale is not None and scale != self.scale:\n                raise Invalid(self.msg or \"Scale must be equal to %s\" % self.scale)\n\n        if self.yield_decimal:\n            return decimal_num\n        else:\n            return v\n\n    def __repr__(self):\n        return 'Number(precision=%s, scale=%s, msg=%s)' % (\n            self.precision,\n            self.scale,\n            self.msg,\n        )\n\n    def _get_precision_scale(self, number) -> typing.Tuple[int, int, Decimal]:\n        \"\"\"\n        :param number:\n        :return: tuple(precision, scale, decimal_number)\n        \"\"\"\n        try:\n            decimal_num = Decimal(number)\n        except InvalidOperation:\n            raise Invalid(self.msg or 'Value must be a number enclosed with string')\n\n        exp = decimal_num.as_tuple().exponent\n        if isinstance(exp, int):\n            return (len(decimal_num.as_tuple().digits), -exp, decimal_num)\n        else:\n            # TODO: handle infinity and NaN\n            # raise Invalid(self.msg or 'Value has no precision')\n            raise TypeError(\"infinity and NaN have no precision\")\n\n\nclass SomeOf(_WithSubValidators):\n    \"\"\"Value must pass at least some validations, determined by the given parameter.\n    Optionally, number of passed validations can be capped.\n\n    The output of each validator is passed as input to the next.\n\n    :param min_valid: Minimum number of valid schemas.\n    :param validators: List of schemas or validators to match input against.\n    :param max_valid: Maximum number of valid schemas.\n    :param msg: Message to deliver to user if validation fails.\n    :param kwargs: All other keyword arguments are passed to the sub-schema constructors.\n\n    :raises NotEnoughValid: If the minimum number of validations isn't met.\n    :raises TooManyValid: If the maximum number of validations is exceeded.\n\n    >>> validate = Schema(SomeOf(min_valid=2, validators=[Range(1, 5), Any(float, int), 6.6]))\n    >>> validate(6.6)\n    6.6\n    >>> validate(3)\n    3\n    >>> with raises(MultipleInvalid, 'value must be at most 5, not a valid value'):\n    ...     validate(6.2)\n    \"\"\"\n\n    def __init__(\n        self,\n        validators: typing.List[Schemable],\n        min_valid: typing.Optional[int] = None,\n        max_valid: typing.Optional[int] = None,\n        **kwargs,\n    ) -> None:\n        assert min_valid is not None or max_valid is not None, (\n            'when using \"%s\" you should specify at least one of min_valid and max_valid'\n            % (type(self).__name__,)\n        )\n        self.min_valid = min_valid or 0\n        self.max_valid = max_valid or len(validators)\n        super(SomeOf, self).__init__(*validators, **kwargs)\n\n    def _exec(self, funcs, v, path=None):\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "The assertion is present in the current code; I'll check git history and run the tests to confirm the actual failure.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-5ea0a178-e1b8-4d7d-a179-b1c00f0fff36-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cd /testbed && git log --oneline -20 && echo \"==== GIT STATUS ====\" && git status && echo \"==== GIT DIFF ====\" && git diff && echo \"==== LOOK AT _WithSubValidators ====\" && grep -n \"class _WithSubValidators\\|class Any\\|class All\\|min_valid\\|max_valid\" /testbed/voluptuous/validators.py | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-5ea0a178-e1b8-4d7d-a179-b1c00f0fff36-5",
+            "content": "b8b0627 Initial commit\n==== GIT STATUS ====\nOn branch main\nYour branch is up to date with 'origin/main'.\n\nUntracked files:\n  (use \"git add <file>...\" to include in what will be committed)\n\t.gitkeep\n\nnothing added to commit but untracked files present (use \"git add\" to track)\n==== GIT DIFF ====\n==== LOOK AT _WithSubValidators ====\n223:class _WithSubValidators(object):\n277:class Any(_WithSubValidators):\n365:class All(_WithSubValidators):\n1187:    :param min_valid: Minimum number of valid schemas.\n1189:    :param max_valid: Maximum number of valid schemas.\n1196:    >>> validate = Schema(SomeOf(min_valid=2, validators=[Range(1, 5), Any(float, int), 6.6]))\n1208:        min_valid: typing.Optional[int] = None,\n1209:        max_valid: typing.Optional[int] = None,\n1212:        assert min_valid is not None or max_valid is not None, (\n1213:            'when using \"%s\" you should specify at least one of min_valid and max_valid'\n1216:        self.min_valid = min_valid or 0\n1217:        self.max_valid = max_valid or len(validators)\n1233:        if self.min_valid <= passed_count <= self.max_valid:\n1240:        if passed_count > self.max_valid:\n1245:        return 'SomeOf(min_valid=%s, validators=[%s], max_valid=%s, msg=%r)' % (\n1246:            self.min_valid,\n1248:            self.max_valid,\n"
+          }
+        ]
+      }
+    }
+  ]
+}

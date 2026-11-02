@@ -1,0 +1,251 @@
+{
+  "schema": "qasper-publication-input-summary-v1",
+  "source_commit": "616ae10e3f00e250e2744ef0ebd6ce02307baac6",
+  "source": {
+    "name": "QASPER v0.3",
+    "split": "test",
+    "revision": "allenai/qasper@fdc9d8214fbab5dd782958601db4d678e6934a54; S3 release v0.3",
+    "selection": "First four sorted papers with >=3 questions, first3 source-order questions; all other test papers, first original question. No replacement after length audit.",
+    "context": "title + abstract + full_text, same as CPU probe; no figure images/captions",
+    "task": "answer-only shared-context serving adaptation, not an agent or production trace"
+  },
+  "protocol": {
+    "model": "Qwen/Qwen2.5-7B-Instruct",
+    "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "foreground_papers": [
+      "1601.03313",
+      "1602.03483",
+      "1602.07563",
+      "1603.00957"
+    ],
+    "questions_per_foreground": 3,
+    "max_model_len": 16384,
+    "max_output_tokens": 256,
+    "block_size": 16,
+    "dtype": "bfloat16",
+    "max_num_seqs": 64,
+    "max_num_batched_tokens": 8192,
+    "gpu_memory_utilization": 0.98,
+    "stress_normal_kv_reduction_bytes": 4294967296,
+    "background_start_seconds": 16,
+    "background_rate_rps": 2,
+    "foreground_followup_gap_seconds": 16,
+    "generation_seed": 17,
+    "e1_seed": 1501,
+    "e2_seeds": [
+      1601,
+      1702,
+      1803,
+      1904
+    ],
+    "trace_timeout_seconds": 600,
+    "max_gpu_process_seconds": 10800,
+    "methods": [
+      "projected_apc",
+      "b6_queue_aware",
+      "b6_semantic_fixed",
+      "b6_semantic_budgeted"
+    ],
+    "background_ci": {
+      "block_size": 8,
+      "resamples": 1000,
+      "seed": 17
+    },
+    "background_relative_limit": 0.05
+  },
+  "tokenizer": {
+    "model": "Qwen/Qwen2.5-7B-Instruct",
+    "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "files": [
+      "tokenizer.json",
+      "tokenizer_config.json",
+      "config.json"
+    ],
+    "tokenizers_version": "0.22.2",
+    "jinja2_version": "3.1.6",
+    "chat_template": "pinned tokenizer_config.json; system/user; add_generation_prompt=True",
+    "add_special_tokens": false
+  },
+  "status": "ready",
+  "task_correctness": "Every included original question: maximum official answer token-F1 == 1 across official annotations; all FG/BG, no output-parity substitution. No evidence-task claim.",
+  "requests_before_length_exclusion": 424,
+  "included_foreground_requests": 12,
+  "included_background_requests": 410,
+  "included_prompt_tokens": 2093018,
+  "excluded": [
+    {
+      "request_id": "3d5b4aa1ce99903b1fcd257c1e394f7990431d13",
+      "paper_id": "1810.13414",
+      "status": "over_context_budget",
+      "prompt_tokens": 30075
+    },
+    {
+      "request_id": "3588988f2230f3329d7523fbb881b20bf177280d",
+      "paper_id": "1811.00051",
+      "status": "over_context_budget",
+      "prompt_tokens": 27346
+    }
+  ],
+  "foreground_papers": [
+    {
+      "paper_id": "1601.03313",
+      "kind": "foreground",
+      "request_ids": [
+        "e6204daf4efeb752fdbd5c26e179efcb8ddd2807",
+        "95c3907c5e8f57f239f3b031b1e41f19ff77924a",
+        "b900122c7d6c2d6161bfca8a95eae11952d1cb58"
+      ],
+      "all_question_lcp_tokens": 8944,
+      "all_question_shared_full_blocks": 559,
+      "pairwise_lcp": [
+        {
+          "request_ids": [
+            "e6204daf4efeb752fdbd5c26e179efcb8ddd2807",
+            "95c3907c5e8f57f239f3b031b1e41f19ff77924a"
+          ],
+          "tokens": 8945,
+          "full_blocks": 559
+        },
+        {
+          "request_ids": [
+            "e6204daf4efeb752fdbd5c26e179efcb8ddd2807",
+            "b900122c7d6c2d6161bfca8a95eae11952d1cb58"
+          ],
+          "tokens": 8944,
+          "full_blocks": 559
+        },
+        {
+          "request_ids": [
+            "95c3907c5e8f57f239f3b031b1e41f19ff77924a",
+            "b900122c7d6c2d6161bfca8a95eae11952d1cb58"
+          ],
+          "tokens": 8944,
+          "full_blocks": 559
+        }
+      ]
+    },
+    {
+      "paper_id": "1602.03483",
+      "kind": "foreground",
+      "request_ids": [
+        "7239c02a0dcc0c3c9d9cddb5e895bcf9cfcefee6",
+        "9dcc10a4a325d4c9cb3bb8134831ee470be47e93",
+        "31236a876277c6e1c80891a3293c105a1b1be008"
+      ],
+      "all_question_lcp_tokens": 4996,
+      "all_question_shared_full_blocks": 312,
+      "pairwise_lcp": [
+        {
+          "request_ids": [
+            "7239c02a0dcc0c3c9d9cddb5e895bcf9cfcefee6",
+            "9dcc10a4a325d4c9cb3bb8134831ee470be47e93"
+          ],
+          "tokens": 4997,
+          "full_blocks": 312
+        },
+        {
+          "request_ids": [
+            "7239c02a0dcc0c3c9d9cddb5e895bcf9cfcefee6",
+            "31236a876277c6e1c80891a3293c105a1b1be008"
+          ],
+          "tokens": 4996,
+          "full_blocks": 312
+        },
+        {
+          "request_ids": [
+            "9dcc10a4a325d4c9cb3bb8134831ee470be47e93",
+            "31236a876277c6e1c80891a3293c105a1b1be008"
+          ],
+          "tokens": 4996,
+          "full_blocks": 312
+        }
+      ]
+    },
+    {
+      "paper_id": "1602.07563",
+      "kind": "foreground",
+      "request_ids": [
+        "c5ea4da3c760ba89194ad807bc1ef60e1761429f",
+        "4a093a9af4903a59057a4372ac1b01603467ca58",
+        "f4e16b185b506713ff99acc4dbd9ec3208e4997b"
+      ],
+      "all_question_lcp_tokens": 13065,
+      "all_question_shared_full_blocks": 816,
+      "pairwise_lcp": [
+        {
+          "request_ids": [
+            "c5ea4da3c760ba89194ad807bc1ef60e1761429f",
+            "4a093a9af4903a59057a4372ac1b01603467ca58"
+          ],
+          "tokens": 13066,
+          "full_blocks": 816
+        },
+        {
+          "request_ids": [
+            "c5ea4da3c760ba89194ad807bc1ef60e1761429f",
+            "f4e16b185b506713ff99acc4dbd9ec3208e4997b"
+          ],
+          "tokens": 13065,
+          "full_blocks": 816
+        },
+        {
+          "request_ids": [
+            "4a093a9af4903a59057a4372ac1b01603467ca58",
+            "f4e16b185b506713ff99acc4dbd9ec3208e4997b"
+          ],
+          "tokens": 13065,
+          "full_blocks": 816
+        }
+      ]
+    },
+    {
+      "paper_id": "1603.00957",
+      "kind": "foreground",
+      "request_ids": [
+        "55bafa0f7394163f4afd1d73340aac94c2d9f36c",
+        "cbb4eba59434d596749408be5b923efda7560890",
+        "1d9d7c96c5e826ac06741eb40e89fca6b4b022bd"
+      ],
+      "all_question_lcp_tokens": 6965,
+      "all_question_shared_full_blocks": 435,
+      "pairwise_lcp": [
+        {
+          "request_ids": [
+            "55bafa0f7394163f4afd1d73340aac94c2d9f36c",
+            "cbb4eba59434d596749408be5b923efda7560890"
+          ],
+          "tokens": 6965,
+          "full_blocks": 435
+        },
+        {
+          "request_ids": [
+            "55bafa0f7394163f4afd1d73340aac94c2d9f36c",
+            "1d9d7c96c5e826ac06741eb40e89fca6b4b022bd"
+          ],
+          "tokens": 6965,
+          "full_blocks": 435
+        },
+        {
+          "request_ids": [
+            "cbb4eba59434d596749408be5b923efda7560890",
+            "1d9d7c96c5e826ac06741eb40e89fca6b4b022bd"
+          ],
+          "tokens": 6966,
+          "full_blocks": 435
+        }
+      ]
+    }
+  ],
+  "full_input_artifact": {
+    "path": "/home/ubuntu/experiments/octopus/qasper-kv-20260911/e0-native-616ae10.json",
+    "bytes": 20543499,
+    "sha256": "ed7a1375b4cc31371b6c24c581575062ae98ac6f339f22861171306419b4151c"
+  },
+  "omitted_from_git": [
+    "corpus text",
+    "questions and input prompts",
+    "input token arrays",
+    "full chat template",
+    "gold answers/evidence"
+  ]
+}

@@ -1,0 +1,555 @@
+--- a/areal/api/io_struct.py
++++ b/areal/api/io_struct.py
+@@ -43,6 +43,12 @@
+     # vlm+vllm:
+     vision_msg_vllm: list | None = None
+ 
++    # the reply this prompt continues: its server may hold a prefix of input_ids (docs/cursor-protocol.md)
++    parent: Optional["ModelResponse"] = None
++    # a read (docs/cross-branch-read.md): (source reply, start, end) mounts tokens [start, end) of the source's
++    # input_tokens into this request's attention layers; it must continue its parent's cursor on the source's server
++    mount: tuple["ModelResponse", int, int] | None = None
++
+     def copy(self):
+         return ModelRequest(
+             rid=self.rid,
+@@ -57,6 +63,8 @@
+                 if self.vision_msg_vllm is not None
+                 else None
+             ),
++            parent=self.parent,
++            mount=self.mount,
+         )
+ 
+ 
+@@ -84,6 +92,11 @@
+     # MoE routing (only populated when return_routed_experts=True)
+     routed_experts: np.ndarray | None = None
+ 
++    # (server address, request id) of an SGLang cursor holding input_tokens + output_tokens
++    cursor: tuple[str, str] | None = None
++    # mounts the cursor holds: (at, M) = M placeholder ids sit on the server before input_tokens[at]
++    placeholders: tuple[tuple[int, int], ...] = ()
++
+     @property
+     def input_len(self) -> int:
+         return len(self.input_tokens)
+@@ -110,14 +123,17 @@
+         if self.tokenizer is None:
+             raise ValueError("tokenizer is None, cannot get output_tokens_without_stop")
+         if self.stop_reason not in ["length", "abort"] and self.output_tokens:
+-            if not self.end_with_stop:
++            # octopus: or on a stop of the model's own, a control token (GLM's <|observation|>, gpt-oss's <|call|>)
++            if not self.end_with_stop and not getattr(
++                self.tokenizer.added_tokens_decoder.get(self.output_tokens[-1]), "special", False
++            ):
+                 raise ValueError(
+                     f"output_tokens does not end with eos or pad token, it ends with {self.output_tokens[-1]}, but stop_reason is {self.stop_reason}"
+                 )
+             pad_or_eos_len = 0
+             eos_id = self.tokenizer.eos_token_id
+             pad_id = self.tokenizer.pad_token_id
+-            stop_tokens = {eos_id, pad_id}
++            stop_tokens = {eos_id, pad_id, self.output_tokens[-1]}
+             stop_tokens.discard(None)
+             for tok in reversed(self.output_tokens):
+                 if tok in stop_tokens:
+@@ -334,6 +350,7 @@
+     spec_accept_rate: float | None = None
+     spec_accept_length: float | None = None
+     output_top_logprobs: list | None = None
++    rid: str | None = None  # SGLang's request id: its cursor holds the request's input_ids + these output tokens
+ 
+     def __post_init__(self) -> None:
+         if len(self.output_tokens) != len(self.output_logprobs):
+--- a/areal/engine/sglang_remote.py
++++ b/areal/engine/sglang_remote.py
+@@ -141,6 +141,7 @@
+                 routed_experts=routed_experts,
+                 spec_accept_rate=spec_accept_rate,
+                 spec_accept_length=spec_accept_length,
++                rid=meta_info["id"],
+             )
+ 
+         output_tokens = [x[1] for x in meta_info["output_token_logprobs"]]
+@@ -155,6 +156,7 @@
+             spec_accept_rate=spec_accept_rate,
+             spec_accept_length=spec_accept_length,
+             output_top_logprobs=output_top_logprobs,
++            rid=meta_info["id"],
+         )
+ 
+     def build_score_request(
+--- a/areal/experimental/openai/cache.py
++++ b/areal/experimental/openai/cache.py
+@@ -292,8 +292,10 @@
+             if entry.messages is None:
+                 continue
+             try:
++                # octopus: a request's mount is part of its input, so a read control's first request (its reader's
++                # mounted request again, without the mount: OCTOPUS_READ_CONTROL) is never taken for a retry of it
+                 serialized = json.dumps(
+-                    entry.messages, sort_keys=True, default=str
++                    [entry.messages, entry.metadata.get("mount")], sort_keys=True, default=str
+                 ).encode("utf-8")
+             except (TypeError, ValueError):
+                 continue
+@@ -428,6 +430,8 @@
+             raise ValueError(
+                 "Interaction messages must be set to find parent relationship."
+             )
++        if value.parent is not None:  # a cursor request names its parent
++            return super().__setitem__(key, value)
+ 
+         def _is_similar_on_last_message(
+             a: list[dict], b: list[dict]
+--- a/areal/experimental/openai/client.py
++++ b/areal/experimental/openai/client.py
+@@ -5,6 +5,7 @@
+ import json
+ import os
+ import re
++import time
+ import uuid
+ from collections.abc import AsyncGenerator, Iterable, Mapping
+ from copy import deepcopy
+@@ -69,6 +70,7 @@
+ from areal.infra.processor_cache import ProcessorCallCache
+ from areal.utils import logging
+ from areal.utils.hf_utils import apply_chat_template
++from octopus.serving.delta_render import concat_start, read_range, render_delta, terminator
+
+ if TYPE_CHECKING:
+     from transformers.processing_utils import ProcessorMixin
+@@ -105,6 +107,33 @@
+     """Raised before generation when the prompt exhausts the context window."""
+ 
+ 
++class CursorError(LookupError):
++    """A cursor request names no finished reply of its session (docs/cursor-protocol.md)."""
++
++
++def _read_range(cache, parent, mount: dict, tokenizer) -> tuple[tuple, dict]:
++    """A read (docs/cross-branch-read.md): mount = {"from": reply id, "to": reply id, "thread": name, "ended"?}, two
++    replies of one thread of this session, "from" "to" or before it. The mounted tokens: read_range in "to"'s input +
++    output tokens (what the server's cursor of "to" holds). Returns (source reply, start, end) for the engine and the
++    record kept on the reader's interaction: the source interaction, that token range in its concat tokens, and `at`,
++    the index in the reader's tokens of the first token computed with the mount."""
++    if parent is None:
++        raise ValueError("a mount needs a cursor request")
++    a, b = cache.get(mount.get("from")), cache.get(mount.get("to"))
++    if a is None or b is None or a.output_message_list is None or b.output_message_list is None:
++        raise CursorError(f"mount {mount} does not name finished replies of this session")
++    x = b
++    while x is not None and x is not a:
++        x = x.parent
++    if x is None:
++        raise ValueError(f"mount {mount}: reply {mount['from']} is not {mount['to']} or before it in one thread")
++    src, p, n = b.model_response, parent.model_response, len(b.model_response.input_tokens)
++    start, end = read_range(tokenizer, mount, a.model_response.input_tokens, src.input_tokens, n + len(src.output_tokens))
++    record = {"thread": mount.get("thread"), "source": mount["to"], "start": start, "end": end,
++              "at": len(p.input_tokens) + len(p.output_tokens)}
++    return (src, start, end), record
++
++
+ @dataclass
+ class _PreparedPrompt:
+     input_ids: list[int]
+@@ -681,7 +710,7 @@
+     """
+     parent_tokens: list[int] = []
+     all_message_list: list[dict] = []
+-    eos_token_id = tokenizer.eos_token_id
++    chat_template_kwargs = extra_body.get("chat_template_kwargs", {})
+ 
+     # To ensure compatibility across different models, we adopted the following padding scheme:
+     # Apply the chat template to the full-text message_list of the new input, then count the number of eos tokens
+@@ -708,7 +737,10 @@
+         # If the parent terminated with an EOS token, it will be removed by parent.model_response.output_tokens_without_stop, and
+         # we add it here.
+         # TODO: should we mask this extra eos token in loss_mask during training?
+-        parent_tokens += [eos_token_id]
++        # octopus: not eos but the reply's terminator, what the template renders after it in the history (eos for
++        # Qwen; gpt-oss: <|end|> or <|call|>; GLM: none, its next message starts with a role token)
++        parent_tokens += terminator(tokenizer, parent.output_message_list[-1], chat_template_kwargs)
++    history = list(all_message_list)
+ 
+     all_message_list += message_list
+     all_message_list = _parse_tool_call_arguments(all_message_list)
+@@ -720,24 +752,15 @@
+             tools=tools,
+             add_generation_prompt=True,
+             tokenize=True,
+-            **extra_body.get("chat_template_kwargs", {}),
++            **chat_template_kwargs,
+         )
+     else:
+         all_tokens = full_prompt_token_ids
+-    parent_eos_num = parent_tokens.count(eos_token_id)
+-    if parent_eos_num > 0:
+-        child_tokens_truncate_idx = _find_kth(all_tokens, eos_token_id, parent_eos_num)
+-        if child_tokens_truncate_idx == -1 or child_tokens_truncate_idx + 1 >= len(
+-            all_tokens
+-        ):
+-            raise RuntimeError(
+-                f"Failed to align child tokens with parent tokens in concat prompt."
+-                f"Find child_truncate_idx at {child_tokens_truncate_idx}, "
+-                f"parent_eos_num: {parent_eos_num}, "
+-                f"all_tokens eos count: {all_tokens.count(eos_token_id)}"
+-            )
+-    else:
+-        child_tokens_truncate_idx = -1
++    child_tokens_truncate_idx = -1
++    if parent is not None:  # octopus: after the parent reply's terminator in the re-render (Qwen: the k-th eos)
++        child_tokens_truncate_idx = (
++            concat_start(tokenizer, history, all_tokens, tools, chat_template_kwargs) - 1
++        )
+ 
+     prompt_token_ids = parent_tokens + all_tokens[child_tokens_truncate_idx + 1 :]
+     return prompt_token_ids, child_tokens_truncate_idx, len(parent_tokens)
+@@ -756,9 +779,19 @@
+     extra_body: Body,
+     require_multimodal_processor: bool = False,
+     processor_cache: ProcessorCallCache | None = None,
++    from_cursor: bool = False,
+ ) -> _PreparedPrompt:
+     """Prepare text or multimodal prompt data for one agent interaction."""
+     chat_template_kwargs = extra_body.get("chat_template_kwargs", {})
++    if from_cursor:  # the concat parent's tokens + the new messages' tokens, nothing proportional to the history
++        r = parent.model_response
++        return _PreparedPrompt(
++            input_ids=r.input_tokens + r.output_tokens_without_stop
++            + terminator(tokenizer, parent.output_message_list[-1], chat_template_kwargs)
++            + render_delta(tokenizer, concat_messages, tools, chat_template_kwargs,
++                           parent.messages + parent.output_message_list),
++            multi_modal_input=None if processor is None else {},  # text-only: export fills token types
++        )
+     processed_prompt: _PreparedPrompt | None = None
+     if image_data and processor is None and require_multimodal_processor:
+         raise ValueError(
+@@ -1081,6 +1114,8 @@
+         extra_body: Body | None = None,
+         areal_cache: InteractionCache | None = None,
+         processor_cache: ProcessorCallCache | None = None,
++        cursor: str | None = None,
++        mount: dict | None = None,
+         **kwargs: Any,
+     ) -> ChatCompletion | AsyncGenerator[ChatCompletionChunk, None]:
+         """Override create method to use AReaL engine and cache responses."""
+@@ -1089,7 +1124,7 @@
+         response_model = "default" if is_omitted(model) else str(model)
+ 
+         # Extract and validate supported parameters
+-        cache, interaction = None, None
++        cache, interaction, read = None, None, None
+         completion_id = f"chatcmpl-{uuid.uuid4().hex[:29]}"
+         if not isinstance(messages, Iterable):
+             raise TypeError(
+@@ -1127,10 +1162,21 @@
+             cache = areal_cache if areal_cache is not None else self._cache
+             if completion_id in cache:
+                 raise ValueError(f"Completion {completion_id} already exists in cache")
++            parent = None
++            if cursor is not None:  # messages hold only what follows the parent's reply
++                parent = cache.get(cursor)
++                if parent is None or parent.output_message_list is None:
++                    raise CursorError(f"cursor {cursor} is not a finished reply of this session")
+             interaction = InteractionWithTokenLogpReward(
+-                messages=deepcopy(messages_list),  # Store a copy of the input messages
++                messages=deepcopy(messages_list)  # Store a copy of the input messages
++                if parent is None
++                else parent.messages + parent.output_message_list + deepcopy(messages_list),
+                 chat_template_type=self.chat_template_type,
++                parent=parent,
+             )
++            if mount is not None:
++                read = _read_range(cache, parent, mount, self.tokenizer)
++                interaction.metadata["mount"] = read[1]
+             cache[completion_id] = interaction
+ 
+         # Convert messages to prompt format
+@@ -1157,6 +1203,7 @@
+         if has_images:
+             _, concat_messages, _ = _extract_images_from_messages(concat_messages)
+         concat_messages = _parse_tool_call_arguments(concat_messages)
++        build_t0 = time.perf_counter()
+         prepared_prompt = await _prepare_prompt(
+             tokenizer=self.tokenizer,
+             processor=self.processor,
+@@ -1169,7 +1216,9 @@
+             extra_body=extra_body,
+             require_multimodal_processor=self.require_multimodal_processor,
+             processor_cache=processor_cache,
++            from_cursor=cursor is not None,
+         )
++        build_s = time.perf_counter() - build_t0
+         prompt_token_ids = prepared_prompt.input_ids
+         if interaction is not None and self.processor is not None:
+             interaction.prompt_token_ids = list(prompt_token_ids)
+@@ -1280,6 +1329,12 @@
+             processor=self.processor,
+             image_data=image_data if has_images else None,
+             vision_msg_vllm=([vision_messages_for_vllm] if has_images else None),
++            parent=(
++                interaction.parent.model_response
++                if interaction is not None and interaction.parent is not None
++                else None
++            ),
++            mount=read and read[0],
+         )
+         if not is_omitted(logprobs) and logprobs:
+             n_top = (
+@@ -1290,6 +1345,11 @@
+             md = dict(model_request.metadata or {})
+             md["top_logprobs_num"] = n_top
+             model_request.metadata = md
++        if os.environ.get("OCTOPUS_CURSOR_AUDIT") and interaction is not None:
++            from octopus.serving import cursor_audit  # the full-mode oracle beside this prompt
++
++            cursor_audit.prompt(completion_id, model_request.rid, cursor, interaction, concat_messages,
++                                self.tokenizer, tools_list, extra_body, prompt_token_ids, build_s)
+ 
+         # Call inference engine
+         response = await self.engine.agenerate(model_request)
+--- a/areal/experimental/openai/proxy/proxy_rollout_server.py
++++ b/areal/experimental/openai/proxy/proxy_rollout_server.py
+@@ -32,7 +32,11 @@
+     translate_anthropic_response,
+     translate_anthropic_stream,
+ )
+-from areal.experimental.openai.client import ArealOpenAI, ContextLengthExceededError
++from areal.experimental.openai.client import (
++    ArealOpenAI,
++    ContextLengthExceededError,
++    CursorError,
++)
+ from areal.experimental.openai.types import InteractionWithTokenLogpReward
+ from areal.infra.processor_cache import ProcessorCacheRegistry
+ from areal.infra.rpc.serialization import deserialize_value, serialize_value
+@@ -42,6 +46,7 @@
+ from areal.utils.hf_utils import load_hf_processor_and_tokenizer
+ from areal.utils.logging import getLogger
+ from areal.utils.network import find_free_ports, gethostip
++from octopus.serving.delta_render import REQUEST_FIELDS
+ 
+ from .server import (
+     ANTHROPIC_MESSAGES_PATHNAME,
+@@ -941,6 +946,10 @@
+     for k, v in kwargs.items():
+         if k not in areal_client_allowed_args and k not in keep_openai_logprobs:
+             dropped_args.append((k, v))
++    # octopus: a cursor-protocol field this endpoint does not consume fails the request, never a silent drop
++    unconsumed = [k for k, _ in dropped_args if k in REQUEST_FIELDS]
++    if unconsumed:
++        raise HTTPException(status_code=400, detail=f"this endpoint does not consume {unconsumed}")
+ 
+     for k, _ in dropped_args:
+         del kwargs[k]
+@@ -1010,6 +1019,8 @@
+             status_code=400,
+             detail={"type": "context_length_exceeded", "message": str(e)},
+         )
++    except CursorError as e:
++        raise HTTPException(status_code=404, detail=str(e))
+     except ValueError as e:
+         session_data.mark_system_error(f"{type(e).__name__}: {e}")
+         raise HTTPException(status_code=500, detail=str(e))
+--- a/areal/experimental/openai/proxy/server.py
++++ b/areal/experimental/openai/proxy/server.py
+@@ -239,6 +239,10 @@
+         for interaction in interactions.values():
+             # Interaction-specific values override session defaults.
+             interaction.metadata = {**self.metadata, **interaction.metadata}
++        if style == "concat":  # each leaf's reads for the trainer (docs/cross-branch-read.md "Export")
++            from octopus.rl.prefix_tree import record_reads
++
++            record_reads(interactions)
+         return interactions
+ 
+ 
+--- a/areal/infra/remote_inf_engine.py
++++ b/areal/infra/remote_inf_engine.py
+@@ -522,6 +522,20 @@
+         ...
+ 
+ 
++def _parent_cursor(req: ModelRequest, server_addr: str) -> tuple[str, int] | None:
++    """(id, n): the parent reply's SGLang cursor, when it lives on server_addr and
++    holds req.input_ids[:n] (its input + output tokens; text only). Not when the
++    reply stopped on a token concat replaces, e.g. <|endoftext|> by eos."""
++    p = req.parent
++    if not (p and p.cursor and p.cursor[0] == server_addr) or req.image_data:
++        return None
++    n, m = len(p.input_tokens), len(p.input_tokens) + len(p.output_tokens)
++    ids = req.input_ids
++    if ids[:n] == p.input_tokens and ids[n:m] == p.output_tokens:
++        return p.cursor[1], m
++    return None
++
++
+ class RemoteInfEngine(InferenceEngine):
+     """
+     Base implementation for HTTP-based remote inference engines.
+@@ -1089,17 +1103,41 @@
+         accumulated_routed_experts: list[np.ndarray] = []
+         saw_top_logprobs = False
+ 
+-        # A single "rid" shares the same server to allow KV cache reuse
++        # A single "rid" shares the same server to allow KV cache reuse; a new
++        # one goes to the server holding its parent reply's cursor
+         if req.rid in self.rid_to_address:
+             server_addr = self.rid_to_address[req.rid]
+         else:
+-            server_addr = self.choose_server()
++            p = req.parent
++            server_addr = p.cursor[0] if p and p.cursor else self.choose_server()
+             if len(self.rid_queue) >= RID_CACHE_SIZE:
+                 # Remove the oldest entry if cache is full
+                 oldest_rid = self.rid_queue.pop(0)
+                 self.rid_to_address.pop(oldest_rid, None)
+             self.rid_to_address[req.rid] = server_addr
+             self.rid_queue.append(req.rid)
++        cursor = _parent_cursor(req, server_addr)
++        # (at, M) mounts the server holds under `cursor`: a send of all ids would drop them (docs/cross-branch-read.md)
++        held = req.parent.placeholders if cursor is not None else ()
++        mount = None
++        if req.mount is not None or (req.parent is not None and req.parent.placeholders):
++            if cursor is None:
++                raise RuntimeError(
++                    f"request {req.rid} reads another thread but cannot continue its parent's cursor on "
++                    f"{server_addr}: a send of all ids would drop the read"
++                )
++        if req.mount is not None:  # tokens [s, e) of the source reply's cursor, counted on the server
++            src, s, e = req.mount
++            if src.cursor is None or src.cursor[0] != server_addr:
++                raise RuntimeError(
++                    f"request {req.rid} on {server_addr} mounts cursor {src.cursor}: "
++                    "a read needs both threads on one server"
++                )
++            mount = {
++                "cursor": src.cursor[1],
++                "start": s + sum(m for at, m in src.placeholders if at <= s),
++                "end": e + sum(m for at, m in src.placeholders if at < e),
++            }
+ 
+         # Get the shared session from workflow context
+         session = await workflow_context.get_aiohttp_session()
+@@ -1129,22 +1167,76 @@
+                 version=request_version,
+             )
+ 
++            payload = http_req.payload
++            if cursor is not None:  # the server holds input_ids[:n]: send the rest
++                payload = {
++                    **payload,
++                    "cursor": cursor[0],
++                    "input_ids": req.input_ids[cursor[1] :],
++                }
++            if mount is not None:
++                payload["mount"] = [mount]
++            if os.environ.get("OCTOPUS_CURSOR_AUDIT"):
++                from octopus.serving import cursor_audit
++
++                cursor_audit.hop(req, server_addr, payload, http_req.payload, cursor)
++
+             # Loop until the generation is complete
+-            result = await arequest_with_retry(
+-                session=session,
+-                addr=server_addr,
+-                endpoint=http_req.endpoint,
+-                payload=http_req.payload,
+-                method=http_req.method,
+-                max_retries=self.config.request_retries,
+-                timeout=self.config.request_timeout,
+-            )
++            try:
++                result = await arequest_with_retry(
++                    session=session,
++                    addr=server_addr,
++                    endpoint=http_req.endpoint,
++                    payload=payload,
++                    method=http_req.method,
++                    max_retries=self.config.request_retries,
++                    timeout=self.config.request_timeout,
++                )
++            except RuntimeError as e:  # cursor evicted or server restarted
++                if cursor is None or getattr(e.__cause__, "status", None) != 404:
++                    raise
++                if mount is not None or held:
++                    raise RuntimeError(
++                        f"cursor {cursor[0]} or a cursor it mounts is gone from {server_addr}: "
++                        f"a send of all {len(req.input_ids)} input ids would drop the read"
++                    ) from e
++                self.logger.warning(
++                    f"cursor {cursor[0]} is gone from {server_addr}: "
++                    f"resending all {len(req.input_ids)} input ids"
++                )
++                if os.environ.get("OCTOPUS_CURSOR_AUDIT"):
++                    from octopus.serving import cursor_audit
++
++                    cursor_audit.hop(req, server_addr, http_req.payload, http_req.payload, None, resend=True)
++                result = await arequest_with_retry(
++                    session=session,
++                    addr=server_addr,
++                    endpoint=http_req.endpoint,
++                    payload=http_req.payload,
++                    method=http_req.method,
++                    max_retries=self.config.request_retries,
++                    timeout=self.config.request_timeout,
++                )
+ 
+             # Assert response is JSON dict (not text/binary from error pages)
+             if not isinstance(result, dict):
+                 raise ValueError(
+                     f"Expected JSON dict response, got {type(result).__name__}"
+                 )
++            # An SGLang without the cursor patch drops "cursor" and generates
++            # from the delta alone (a queue abort reports no prompt_tokens)
++            # (a mount's M placeholder ids count in prompt_tokens, also on later requests)
++            n_ids = len(req.input_ids) + sum(m for _, m in held)
++            n_ids += 0 if mount is None else mount["end"] - mount["start"]
++            n_prompt = result["meta_info"].get("prompt_tokens", n_ids)
++            if cursor is not None and n_prompt != n_ids:
++                raise RuntimeError(
++                    f"{server_addr} ignored cursor {cursor[0]}: "
++                    "it needs patches/apply_sglang_cursor.py"
++                    if mount is None
++                    else f"{server_addr} ignored the mount of {mount['cursor']}: "
++                    "it needs patches/apply_sglang_mount.py"
++                )
+ 
+             # Parse response using backend
+             gen_result = self.backend.parse_generation_response(result)
+@@ -1194,6 +1286,12 @@
+                 len(gen_result.output_tokens),
+                 len(req.input_ids),
+             )
++            # The server now holds req.input_ids under this request's id (a read
++            # cut before its first token goes again from the parent's cursor)
++            if mount is None or gen_result.output_tokens or gen_result.rid is None:
++                if mount is not None:
++                    held, mount = held + ((cursor[1], mount["end"] - mount["start"]),), None
++                cursor = None if gen_result.rid is None else (gen_result.rid, len(req.input_ids))
+ 
+         # Final abort handling
+         if stop_reason == "abort":
+@@ -1227,6 +1325,8 @@
+             tokenizer=req.tokenizer,
+             processor=req.processor,
+             routed_experts=accumulated_routed_experts,
++            cursor=None if cursor is None else (server_addr, cursor[0]),
++            placeholders=held if cursor is not None else (),
+         )
+         return response
+ 
+--- a/areal/infra/utils/http.py
++++ b/areal/infra/utils/http.py
+@@ -221,7 +221,7 @@
+         f"Failed after {max_retries} retries each. "
+         f"Payload: {payload}. Addr: {addr}. Endpoint: {endpoint}. "
+         f"Last error: {repr(last_exception)}"
+-    )
++    ) from last_exception
+ 
+ 
+ def response_ok(http_code: int) -> bool:

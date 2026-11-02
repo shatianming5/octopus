@@ -1,0 +1,96 @@
+{
+  "schema": "octopus-r1-gpu-accounting-correction-v1",
+  "scope_id": "octopus-r1-gpu-falsifier-20260912",
+  "correction_only": true,
+  "new_run_or_scoring": false,
+  "original_observations_preserved": {
+    "full_result": "/home/ubuntu/experiments/octopus/r1-controller-gpu-20260912/r1-gpu-result.json",
+    "compact_export": "/home/ubuntu/experiments/octopus/r1-controller-gpu-20260912/r1-gpu-export.json.gz",
+    "raw_archive": "/home/ubuntu/experiments/octopus/r1-controller-gpu-20260912/raw-archive/trace-data"
+  },
+  "gates": {
+    "timing_point_gate": "passed",
+    "cost_gate": "unmet",
+    "combined_R1_acceptance": false,
+    "timing_interpretation": "Fixed FG E2E was no slower than queue and fixed BG P95 was within APC +5% for both seeds. These observed points pass independently, while combined R1 acceptance fails because the actual selector CPU ratio exceeded 2x queue."
+  },
+  "accounting_definition": {
+    "adapter_plus_audit_partial_seconds": "adapter_cpu_seconds + audit_decode_cpu_seconds; retained as a narrow metric and not labeled full-controller coverage",
+    "conservative_controller_cpu_bound_seconds": "adapter_cpu_seconds + prefix_maintenance_cpu_seconds + audit_decode_cpu_seconds",
+    "overlap": "The conservative bound intentionally double-counts prefix maintenance where it overlaps adapter/free timing.",
+    "json_serialization": "CPU time is unmeasured, is not treated as zero, and is excluded from the conservative bound; therefore the bound is only over recorded controller timers, not an all-in serialization-inclusive total.",
+    "cpu_timer_scope": "adapter includes native/provider/selector; maintenance overlaps adapter and free; audit decode is deferred, not eliminated; JSON serialization is additional"
+  },
+  "rows": [
+    {
+      "seed": 1601,
+      "method": "projected_apc",
+      "adapter_cpu_seconds": 1.1121391640044749,
+      "selector_cpu_seconds": 0,
+      "prefix_maintenance_cpu_seconds": 0.0,
+      "audit_decode_cpu_seconds": 0.04231415898539126,
+      "adapter_plus_audit_partial_seconds": 1.1544533229898661,
+      "conservative_controller_cpu_bound_seconds": 1.1544533229898661
+    },
+    {
+      "seed": 1601,
+      "method": "b6_queue_aware",
+      "adapter_cpu_seconds": 1.3011379654053599,
+      "selector_cpu_seconds": 0.13404522370547056,
+      "prefix_maintenance_cpu_seconds": 0.0,
+      "audit_decode_cpu_seconds": 0.08126506884582341,
+      "adapter_plus_audit_partial_seconds": 1.3824030342511833,
+      "conservative_controller_cpu_bound_seconds": 1.3824030342511833
+    },
+    {
+      "seed": 1601,
+      "method": "b6_semantic_fixed",
+      "adapter_cpu_seconds": 1.6067394700367004,
+      "selector_cpu_seconds": 0.43094622902572155,
+      "prefix_maintenance_cpu_seconds": 0.04936675610952079,
+      "audit_decode_cpu_seconds": 1.790095736971125,
+      "adapter_plus_audit_partial_seconds": 3.3968352070078254,
+      "conservative_controller_cpu_bound_seconds": 3.446201963117346
+    },
+    {
+      "seed": 1702,
+      "method": "projected_apc",
+      "adapter_cpu_seconds": 1.138372688787058,
+      "selector_cpu_seconds": 0,
+      "prefix_maintenance_cpu_seconds": 0.0,
+      "audit_decode_cpu_seconds": 0.04066128400154412,
+      "adapter_plus_audit_partial_seconds": 1.1790339727886021,
+      "conservative_controller_cpu_bound_seconds": 1.1790339727886021
+    },
+    {
+      "seed": 1702,
+      "method": "b6_queue_aware",
+      "adapter_cpu_seconds": 1.2781620149035007,
+      "selector_cpu_seconds": 0.170467680785805,
+      "prefix_maintenance_cpu_seconds": 0.0,
+      "audit_decode_cpu_seconds": 0.11476783687248826,
+      "adapter_plus_audit_partial_seconds": 1.392929851775989,
+      "conservative_controller_cpu_bound_seconds": 1.392929851775989
+    },
+    {
+      "seed": 1702,
+      "method": "b6_semantic_fixed",
+      "adapter_cpu_seconds": 1.90022167051211,
+      "selector_cpu_seconds": 0.7581442161463201,
+      "prefix_maintenance_cpu_seconds": 0.046059045707806945,
+      "audit_decode_cpu_seconds": 1.8575159450992942,
+      "adapter_plus_audit_partial_seconds": 3.757737615611404,
+      "conservative_controller_cpu_bound_seconds": 3.803796661319211
+    }
+  ],
+  "paired_ratios": {
+    "selector_fixed_over_queue": {
+      "1601": 3.214931626154868,
+      "1702": 4.44743667920806
+    },
+    "conservative_recorded_controller_bound_fixed_over_queue": {
+      "1601": 2.492906827988899,
+      "1702": 2.7307883856960644
+    }
+  }
+}

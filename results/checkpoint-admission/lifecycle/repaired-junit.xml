@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="4" time="38.113" timestamp="2026-09-08T23:34:32.971462+08:00" hostname="7443-5x4090-68"><testcase classname="tests.test_gpu_admission" name="test_revocable_gpu_warm_cold_child_and_queued_close" time="11.656"><failure message="assert (220, 362, 6094, 2266) == (362, 6094, 2266, 369)&#10;  &#10;  At index 0 diff: 220 != 362&#10;  Use -v to get more diff">def test_revocable_gpu_warm_cold_child_and_queued_close():
+        config = BackendConfig(
+            max_model_len=256, max_num_seqs=3, max_num_batched_tokens=256,
+            kv_cache_memory_bytes=17 * 917504,
+            retention_policy="cost_greedy",
+            admission_calibration=calibration(
+                loss_probability=(1.0, 1.0), initial_price=0,
+                price_learning_rate=0, ttl_seconds=(60.0,),
+                selected_ttl_seconds=60.0,
+            ),
+        )
+        with Octopus(config) as runtime:
+            tokens = runtime.backend.tokenize("A shared context for deterministic restoration. ")
+            prompt = (tokens * 129)[:129]
+            checkpoint = runtime.run_brain(prompt, max_new_tokens=1, ignore_eos=True).checkpoint
+            scheduler = runtime.backend.scheduler
+            assert scheduler._checkpoints[checkpoint.checkpoint_id].lease_id is not None
+            suffix = tuple(runtime.backend.tokenize(" Continue."))
+            kept = runtime.fork(checkpoint, [BranchTask(
+                suffix, 4, branch_id="kept", ignore_eos=True, capture_checkpoint=True,
+            )])[0]
+            while runtime.has_pending_branches():
+                runtime.step()
+            child = kept.output_checkpoint
+            assert child is not None
+            assert child.logical_token_ids == (*checkpoint.logical_token_ids, *suffix, *kept.output_token_ids)
+            runtime.release(child)
+            scheduler.drop_checkpoint(checkpoint.checkpoint_id)
+            warm = runtime.fork(checkpoint, [BranchTask(
+                suffix, 4, branch_id="warm", ignore_eos=True,
+            )])[0]
+            while runtime.has_pending_branches():
+                runtime.step()
+            assert warm.output_token_ids == kept.output_token_ids
+            scheduler.drop_checkpoint(checkpoint.checkpoint_id)
+            assert runtime.backend.reset_prefix_cache()
+            cold = runtime.fork(checkpoint, [BranchTask(
+                suffix, 4, branch_id="cold", ignore_eos=True,
+            )])[0]
+            # Closing a bound handle must not invalidate an already accepted request.
+            runtime.release(checkpoint)
+            with pytest.raises((KeyError, ValueError)):
+                runtime.fork(checkpoint, [BranchTask(suffix, 1, branch_id="closed")])
+            while runtime.has_pending_branches():
+                runtime.step()
+&gt;           assert cold.output_token_ids == kept.output_token_ids
+E           assert (220, 362, 6094, 2266) == (362, 6094, 2266, 369)
+E             
+E             At index 0 diff: 220 != 362
+E             Use -v to get more diff
+
+tests/test_gpu_admission.py:56: AssertionError</failure></testcase><testcase classname="tests.test_gpu_fork" name="test_real_gpu_checkpoint_fork_abort_release_and_tail[32]" time="2.039"><failure message="ValueError: Free memory on device cuda:0 (32.62/47.38 GiB) on startup is less than desired GPU memory utilization (0.92, 43.59 GiB). Decrease GPU memory utilization or reduce GPU memory used by other processes.">prompt_length = 32
+
+    @pytest.mark.parametrize("prompt_length", [32, 33])
+    def test_real_gpu_checkpoint_fork_abort_release_and_tail(
+        prompt_length: int,
+    ) -&gt; None:
+        config = BackendConfig(
+            max_model_len=1024,
+            max_num_seqs=4,
+            max_num_batched_tokens=1024,
+            kv_cache_memory_bytes=512 * 1024**2,
+        )
+&gt;       with Octopus(config) as runtime:
+             ^^^^^^^^^^^^^^^
+
+tests/test_gpu_fork.py:29: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/octopus/runtime.py:70: in __init__
+    self.backend = VllmBackend(config or BackendConfig())
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/octopus/vllm_backend.py:527: in __init__
+    self.engine = LLMEngine.from_engine_args(
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/engine/llm_engine.py:179: in from_engine_args
+    return cls(
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/engine/llm_engine.py:105: in __init__
+    self.engine_core = EngineCoreClient.make_client(
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/engine/core_client.py:112: in make_client
+    return InprocClient(vllm_config, executor_class, log_stats)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/engine/core_client.py:317: in __init__
+    self.engine_core = EngineCore(*args, **kwargs)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/engine/core.py:133: in __init__
+    self.model_executor = executor_class(vllm_config)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/tracing/otel.py:178: in sync_wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/executor/abstract.py:110: in __init__
+    self._init_executor()
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/executor/uniproc_executor.py:69: in _init_executor
+    self.driver_worker.init_device()
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/worker/worker_base.py:335: in init_device
+    self.worker.init_device()  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/tracing/otel.py:178: in sync_wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/worker/gpu_worker.py:407: in init_device
+    self.requested_memory = request_memory(init_snapshot, self.cache_config)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+init_snapshot = torch_peak=14.33GiB, torch_allocated=14.3GiB, free_memory=32.62GiB, total_memory=47.38GiB, cuda_memory=14.76GiB, torch_memory=14.32GiB, non_torch_memory=0.44GiB, timestamp=1788881692.5305183, auto_measure=True
+cache_config = CacheConfig(block_size=16, user_specified_block_size=True, user_specified_mamba_block_size=False, prefix_match_unit=No...e, kv_cache_memory_bytes=536870912, kv_offloading_size=None, kv_offloading_backend='native', _block_size_resolved=True)
+
+    def request_memory(init_snapshot: MemorySnapshot, cache_config: CacheConfig) -&gt; int:
+        """
+        Calculate the amount of memory required by vLLM, then validate
+        that the current amount of free memory is sufficient for that.
+        """
+        requested_memory = math.ceil(
+            init_snapshot.total_memory * cache_config.gpu_memory_utilization
+        )
+    
+        if init_snapshot.free_memory &lt; requested_memory:
+&gt;           raise ValueError(
+                f"Free memory on device {init_snapshot.device_} "
+                f"({format_gib(init_snapshot.free_memory)}/"
+                f"{format_gib(init_snapshot.total_memory)} GiB) on startup "
+                f"is less than desired GPU memory utilization "
+                f"({cache_config.gpu_memory_utilization}, "
+                f"{format_gib(requested_memory)} GiB). Decrease GPU memory "
+                f"utilization or reduce GPU memory used by other processes."
+            )
+E           ValueError: Free memory on device cuda:0 (32.62/47.38 GiB) on startup is less than desired GPU memory utilization (0.92, 43.59 GiB). Decrease GPU memory utilization or reduce GPU memory used by other processes.
+
+../octopus-contention/.venv/lib/python3.12/site-packages/vllm/v1/worker/utils.py:454: ValueError</failure></testcase><testcase classname="tests.test_gpu_fork" name="test_real_gpu_checkpoint_fork_abort_release_and_tail[33]" time="7.033" /><testcase classname="tests.test_gpu_fork" name="test_public_semantic_demo" time="11.441" /></testsuite></testsuites>

@@ -1,0 +1,192 @@
+# RQ1 RL (octopus/rl/train.py): GRPO on plan episodes, node-94 layout = 6 SGLang servers
+# (GPUs 0-5, launched by scripts/rl_env/rl_run.sh serve) + FSDP LoRA actor on GPUs 6-7 (CUDA_VISIBLE_DEVICES=6,7).
+experiment_name: rq1-rl
+trial_name: pilot0
+seed: 1
+enable_offload: false
+total_train_epochs: 5
+tokenizer_path: ${actor.path}
+workflow: octopus.envs.swe.rl.HarborEpisodeAgent
+
+rl:
+  servers: ""  # set on the command line: 127.0.0.1:30200,...,127.0.0.1:30205
+  jobs_dir: /home/user/harbor-udocker/rl/jobs
+  exclude: ""  # file of task dirs of rl.plan_tasks to leave out, set on the command line
+  lora_keep_versions: 10
+  episodes_per_server: 8
+  filter_zero_variance: true  # drop groups whose advantages are all 0 (dynamic_filter_fn); false for pilots
+  init_lora: ""  # saved adapter dir the LoRA starts from (a continued run; ADAPTER0 must be the same); "" = zero
+  plan_tasks: ""  # file of task dirs, or a directory of them (kind=plan)
+  plan_control: false  # one no-fork continuation from the first fork: an evaluation's (never trained)
+  branch_credit: outcome  # a branch thread's advantage: outcome = A_main; gate = the environment's rule (SWE v5, Search v5/v6; octopus/rl/group.py tree_advantage)
+  search_questions: ""  # JSONL of {qid, question, answer}: a search run (octopus/envs/search/rl.py)
+  search_split: ""  # file of the qids of search_questions to train on ("" = all)
+
+cluster:
+  n_nodes: 1
+  n_gpus_per_node: 8
+  fileroot: /mnt/disk1/user/areal-exp
+  name_resolve:
+    type: nfs
+    nfs_record_root: ${cluster.fileroot}/name_resolve
+
+scheduler:
+  type: local
+
+rollout:
+  backend: "sglang:d6"
+  experiment_name: ${experiment_name}
+  trial_name: ${trial_name}
+  fileroot: ${cluster.fileroot}
+  tokenizer_path: ${tokenizer_path}
+  max_concurrent_rollouts: 48          # ~8 episodes per server; 32 CPU cores run the containers
+  queue_size: null
+  consumer_batch_size: ${train_dataset.batch_size}
+  max_head_offpolicyness: 2           # what every recorded run used (rl_run.sh OFFPOLICY overrides it)
+  request_timeout: 21600               # AReaL times out a whole group rollout with this (8 queued episodes take > 15 min)
+  use_lora: true
+  scheduling_spec: ${actor.scheduling_spec}
+  dump_to_file: true
+  agent:
+    mode: inline
+    tool_call_parser: qwen3_coder
+    reasoning_parser: qwen3
+    chat_template_kwargs: {enable_thinking: false}
+    chat_template_type: concat         # one append-only token sequence per episode
+    export_style: concat
+    drop_retry_orphans: true
+    session_timeout_seconds: 21600
+    turn_discount: 1.0
+    engine_max_tokens: ${gconfig.max_tokens}   # the proxy's cap on prompt + reply (default 32768 < our starts)
+
+gconfig:
+  n_samples: 8
+  min_new_tokens: 0
+  max_new_tokens: 8192
+  max_tokens: 262144                   # prompt + reply of one thread: the whole served context
+  greedy: false
+  temperature: 1.0
+  lora_name: rq1
+
+actor:
+  backend: "fsdp:d2"
+  experiment_name: ${experiment_name}
+  trial_name: ${trial_name}
+  path: /mnt/disk1/user/models/Qwen3.5-9B-text   # octopus/rl/text_checkpoint.py: trained as a causal LM; SGLang serves the VL checkpoint
+  init_from_scratch: false
+  disable_dropout: true
+  gradient_checkpointing: true
+  dtype: bfloat16
+  optimizer_dtype: bfloat16          # base and LoRA weights stored in bf16, no fp32 master (AReaL builds the LoRA with
+                                     # get_peft_model(autocast_adapter_dtype=False)); FSDP2 computes them in bf16 too
+  fsdp:
+    memory_efficient_load: false      # true builds from_config() (random) and the text checkpoint's weights never arrive
+  use_lora: true
+  lora_rank: 32
+  lora_alpha: 32
+  # []: every decoder linear SGLang serves LoRA on, resolved from the model (octopus/rl/lora_targets.py, as the
+  # zero adapter; checked by lora_parity.py); a list overrides it
+  target_modules: []
+  weight_update_mode: disk
+  mb_spec:
+    max_tokens_per_mb: 262144         # prefix-tree tokens; 294912 peaked at 46.7 of 48 GB in a 3-rank FSDP step, 262144 leaves ~5 GB
+  optimizer:
+    type: adam_bf16                   # bf16 storage with Kahan-summed updates (plain adam + bf16 = AReaL #1292)
+    lr: 2.0e-5
+    weight_decay: 0.0
+    beta1: 0.9
+    beta2: 0.999
+    eps: 1e-8
+    lr_scheduler_type: constant
+    gradient_clipping: 1.0
+    warmup_steps_proportion: 0.0          # warmup starts at lr 0: phase-1 step 1 trained with lr 0 (40 steps/epoch x 5 epochs x 0.02)
+  eps_clip: 0.2
+  eps_clip_higher: 0.28
+  temperature: ${gconfig.temperature}
+  reward_scaling: 1.0
+  reward_bias: 0.0
+  kl_ctl: 0.0
+  ppo_n_minibatches: 1
+  recompute_logprob: true
+  use_decoupled_loss: true
+  # the proximal logp is the training forward's own (logprobs.detach() in grpo_loss_fn), so no compute_logp pass:
+  # needs ppo_n_minibatches 1 (every micro-batch at the step's weights; AReaL's __post_init__ forces it)
+  # (docs/trainer-memory.md "Proximal logprobs")
+  prox_logp_method: reuse_train_logp
+  rejection_sampling:
+    metric: ratio
+    upper: 5.0
+  reward_norm: null
+  adv_norm:
+    mean_level: group
+    std_level: null
+  max_new_tokens: ${gconfig.max_new_tokens}
+  scheduling_spec:
+    - task_type: worker
+      port_count: 2
+      gpu: 1
+      cmd: python3 -m areal.infra.rpc.rpc_server
+      env_vars:
+        NCCL_DEBUG: "WARN"
+        NCCL_P2P_DISABLE: "1"          # 4090D: no peer-to-peer over PCIe
+        PYTORCH_CUDA_ALLOC_CONF: "expandable_segments:True"
+        PYTHONPATH: ${oc.env:PYTHONPATH}  # the launcher's (rl_run.sh: AREAL_OVERLAY then CODE), never a fixed code dir
+        LITELLM_LOCAL_MODEL_COST_MAP: "True"  # no GitHub fetch (unreachable here: 3 timed-out retries outlast worker startup)
+        OCTOPUS_INIT_LORA: "${rl.init_lora}"
+        OCTOPUS_ADAPTER_PUSH: ${oc.env:OCTOPUS_ADAPTER_PUSH,""}  # rl_run.sh REMOTE: hosts that get each adapter first
+
+sglang:
+  model_path: ${actor.path}
+  random_seed: ${seed}
+  dtype: ${actor.dtype}
+  context_length: 262144
+
+train_dataset:
+  batch_size: 16                       # tasks per step, x n_samples episodes
+  shuffle: true
+  pin_memory: false
+  num_workers: 0
+  path: ${rl.plan_tasks}               # unused: octopus/rl/train.py builds the dataset
+  type: rl
+
+valid_dataset: null                  # dev evaluation runs octopus/eval/dev_eval.py on saved adapters
+
+saver:
+  experiment_name: ${experiment_name}
+  trial_name: ${trial_name}
+  fileroot: ${cluster.fileroot}
+  freq_epochs: null
+  freq_steps: 5                       # LoRA ~250 MB each; dev eval picks among these (a 5-step pilot saved none at 20)
+  freq_secs: null
+
+recover:
+  mode: auto                           # a relaunch with the same trial_name resumes after its last finished step
+  experiment_name: ${experiment_name}
+  trial_name: ${trial_name}
+  fileroot: ${cluster.fileroot}
+  freq_epochs: null
+  freq_steps: 1                        # LoRA + optimizer + dataloader state, ~1 GB: a stop loses at most the step in flight
+  freq_secs: null
+
+evaluator:
+  experiment_name: ${experiment_name}
+  trial_name: ${trial_name}
+  fileroot: ${cluster.fileroot}
+  freq_epochs: null
+  freq_steps: 20
+  freq_secs: null
+
+stats_logger:
+  experiment_name: ${experiment_name}
+  trial_name: ${trial_name}
+  fileroot: ${cluster.fileroot}
+  wandb:
+    mode: disabled
+
+perf_tracer:
+  experiment_name: ${experiment_name}
+  trial_name: ${trial_name}
+  fileroot: ${cluster.fileroot}
+  enabled: false
+  session_tracer:
+    enabled: false

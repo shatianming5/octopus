@@ -1,0 +1,53 @@
+{
+  "schema": "octopus-tool-recovery-attempts-v1",
+  "scientific_recipe_changes": 0,
+  "attempts": [
+    {
+      "name": "attempt-1",
+      "path": "execution",
+      "terminal": "failed",
+      "wall_seconds": 3,
+      "model_loaded": false,
+      "optimizer_steps": 0,
+      "model_outputs": 0,
+      "cause": "CLI authorization dispatch eagerly accessed an unrelated argparse namespace"
+    },
+    {
+      "name": "attempt-2",
+      "path": "attempt-2/data",
+      "terminal": "pre-output validation",
+      "optimizer_steps": 0,
+      "model_outputs": 0,
+      "cause": "real missing-path observations contained nondeterministic temporary absolute roots"
+    },
+    {
+      "name": "attempt-3",
+      "path": "attempt-3",
+      "terminal": "failed",
+      "wall_seconds": 9,
+      "model_loaded": true,
+      "optimizer_steps": 0,
+      "model_outputs": 0,
+      "cause": "Transformers 5.16 requires warmup_steps instead of warmup_ratio"
+    },
+    {
+      "name": "attempt-4",
+      "path": "attempt-4",
+      "terminal": "complete",
+      "wall_seconds": 662,
+      "optimizer_steps": 128,
+      "model_outputs": 140,
+      "training_runs": 1,
+      "heldout_suite_runs": 1,
+      "conditional_lighthouse_runs": 1,
+      "scientific_result": "heldout_pass_lighthouse_quality_fail"
+    }
+  ],
+  "repair_constraints": {
+    "data_seed_unchanged": true,
+    "data_hashes_unchanged_after_determinism_fix": true,
+    "recipe_unchanged": true,
+    "gates_unchanged": true,
+    "no_output_driven_tuning": true
+  }
+}

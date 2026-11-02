@@ -1,0 +1,90 @@
+{
+  "result_id": "59204123-aae1-4e70-ae7c-8a7461cab293",
+  "scope_id": "b6-real-two-engine-routing-20260917",
+  "status": "passed",
+  "attempt": 4,
+  "source": {
+    "base_commit": "aa7ef2f7b14882b96b24312fcada134eb951e873",
+    "cold_start_patch_sha256": "bbd7fd20533e8571f3acd1b803f092d392c740a1329fb5151122ed39d9f0ab91",
+    "final_commit_patch_sha256": "81fe47401048cec3b71d0286cc26640e7d0ddf18fe588cdf05cbadf2a2594c97",
+    "backend_or_native_changes": false
+  },
+  "resources": {
+    "host": "73F3-5xA6000-221",
+    "worker_a_gpu_uuid": "GPU-5c1232dd-c2d0-5721-388a-06c68868d6fd",
+    "worker_b_gpu_uuid": "GPU-7bb7435e-7d3d-6281-60da-f7a828eb90a4",
+    "worker_a_bridge_pid": 2237551,
+    "worker_b_bridge_pid": 2237552,
+    "gateway_pid": 2237860,
+    "distinct_real_engines": true
+  },
+  "parallel_protocol": {
+    "total_attempts": 15,
+    "cold_warmup_requests": 4,
+    "measured_requests": 4,
+    "same_semantic_keys_and_sampling": true,
+    "measured_first_output_to_terminal_overlap": true,
+    "warmup_is_conditioning_not_latency_evidence": true
+  },
+  "completed_checks": [
+    "exact_raw_token_transport",
+    "multiple_real_engine_workers",
+    "stable_affinity",
+    "native_registry_removal",
+    "actual_origin_reassignment",
+    "canonical_state_rebind",
+    "structured_commit_and_continuation",
+    "precise_remote_abort_and_sibling_ownership",
+    "native_prefix_hit_and_cross_worker_inflight_overlap",
+    "accounted_cold_wave_before_same_key_output_overlap"
+  ],
+  "native_cache_evidence": {
+    "root_l3_ready_tokens": 512,
+    "measured_cached_tokens": [528, 528, 528, 528],
+    "registry_removal_observed": true,
+    "origin_reassignment_observed": true,
+    "rebind_cached_tokens": 521
+  },
+  "structured_commit": {
+    "branch_status": "COMMIT_READY",
+    "commit_id": "commit-final",
+    "branch_id": "final",
+    "fact": {
+      "predicate": "routing",
+      "value": "complete",
+      "evidence_source": "INPUT"
+    },
+    "exact_expected_commit_returned": true,
+    "reducer_before_facts": {},
+    "reducer_after_routing": "complete",
+    "continuation_completed": true
+  },
+  "budget": {
+    "attempt4_including_cleanup_seconds": 147.782,
+    "all_attempts_cumulative_seconds": 877.665,
+    "total_cap_seconds": 1200,
+    "unused_seconds": 322.335,
+    "attempt4_cleanup_seconds": 7.047
+  },
+  "paths": {
+    "local_result": "/home/ubuntu/.copilot/session-state/9982c699-cc5d-4682-a8db-1ecc8c706ac0/files/b6-two-engine/host-138-attempt4/results/routing-conformance.json",
+    "local_logs": "/home/ubuntu/.copilot/session-state/9982c699-cc5d-4682-a8db-1ecc8c706ac0/files/b6-two-engine/host-138-attempt4/logs",
+    "remote_l3": "/home/user/octopus-sglang-routing-138-20260917/attempt4/l3"
+  },
+  "result_sha256": "19785a05affb6b9d83ca6c2fafc13626e170a68cdc04d3b58eb0d18ce704789f",
+  "cleanup": {
+    "owned_processes_remaining": 0,
+    "gpu1_processes_remaining": 0,
+    "gpu2_processes_remaining": 0,
+    "ports_30100_to_30103_released": true,
+    "bulk_l3_not_copied": true
+  },
+  "claims": {
+    "native_b6_functional_pass": true,
+    "latency_benefit": false,
+    "distributed_b5_pass": false,
+    "provider_fault_pass": false,
+    "joint_b8_pass": false,
+    "quality_claim": false
+  }
+}

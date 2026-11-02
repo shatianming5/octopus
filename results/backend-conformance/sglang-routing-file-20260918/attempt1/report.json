@@ -1,0 +1,106 @@
+{
+  "result_id": "95e3c4d7-abc5-4b10-a8ef-8acbf64bcba4",
+  "scope_id": "b6-real-two-engine-routing-20260917",
+  "status": "failed",
+  "claim": "real two-engine file-L3 native routing functional attempt; no latency benefit, distributed B5, provider fault, or joint B8 claim",
+  "source_commit": "aa7ef2f7b14882b96b24312fcada134eb951e873",
+  "host": "73F3-5xA6000-221",
+  "task_root": "/home/user/octopus-sglang-routing-138-20260917",
+  "gpu_assignments": [
+    {
+      "worker": "worker-a",
+      "gpu_index": 1,
+      "gpu_uuid": "GPU-5c1232dd-c2d0-5721-388a-06c68868d6fd",
+      "bridge_pid": 2231056,
+      "engine_pid": 2231058,
+      "worker_id": "0ecde4fca0354fae90d3cb2615a77fba",
+      "origin": "http://127.0.0.1:30101"
+    },
+    {
+      "worker": "worker-b",
+      "gpu_index": 2,
+      "gpu_uuid": "GPU-7bb7435e-7d3d-6281-60da-f7a828eb90a4",
+      "bridge_pid": 2231057,
+      "engine_pid": 2231059,
+      "worker_id": "7891a29cf55044c1a7f6bc26add356cc",
+      "origin": "http://127.0.0.1:30102"
+    }
+  ],
+  "gateway": {
+    "pid": 2231428,
+    "url": "http://127.0.0.1:30100",
+    "version": "0.3.2",
+    "policy": "manual",
+    "assignment_mode": "min_load",
+    "retries_disabled": true,
+    "listed_healthy_workers": 2
+  },
+  "common_identity": {
+    "model": "SWE-Gym/OpenHands-7B-Agent",
+    "weight_revision": "97054e70501d79c27499518af5ce613be6278bcb",
+    "tokenizer_revision": "c03e6d358207e414f1eca0bb1891e29f1db0e242",
+    "dtype": "bfloat16",
+    "cache_namespace": "m6-file-l3-20260917",
+    "kv_layout": {
+      "dtype": "torch.bfloat16",
+      "host_layout": "layer_first",
+      "page_size": 1,
+      "page_shape": [28672],
+      "model_shape": [28, 4, 128]
+    }
+  },
+  "attempt": {
+    "request_id": "7ac21481c5224490949f9a798fd6129c",
+    "selected_worker": "http://127.0.0.1:30101",
+    "gateway_acknowledged": true,
+    "outcome": "outcome_unknown",
+    "retry_performed": false,
+    "accepted_request_count_before_attempt": 0
+  },
+  "failure": {
+    "primary": "worker-a native file-L3 lookup attempted to load the HiCache native hash C++ extension, but Ninja was unavailable",
+    "exception": "RuntimeError: Ninja is required to load C++ extensions (pip install ninja to get it)",
+    "cascade": [
+      "Failed to load HiCache native hash extension",
+      "SGLang worker disconnected",
+      "routing selector reported SGLang worker exited with status 1",
+      "remote owner cleanup for http://127.0.0.1:30101 returned HTTP 500"
+    ],
+    "source_or_runtime_fix_required": "provide the already-required native hash artifact or task-local pinned Ninja/build prerequisite before a separately authorized fresh run",
+    "semantic_settings_changed": false
+  },
+  "unaffected_sibling": {
+    "worker_b_remained_live_until_supervisor_cleanup": true,
+    "accepted_request_count": 0
+  },
+  "phase": {
+    "elapsed_seconds_including_cleanup": 215.863,
+    "wall_cap_seconds": 1200,
+    "cleanup_elapsed_seconds": 7.028,
+    "cleanup_grace_seconds": 90,
+    "concurrent_with_m8": true,
+    "performance_claim_from_concurrency": false
+  },
+  "artifacts": {
+    "routing_result": "/home/user/octopus-sglang-routing-138-20260917/results/routing-conformance.json",
+    "routing_result_sha256": "54a060ab6d2ddbd4e90496dcc3a3ebf2d722e2154a6e0f27367159a2466a47f5",
+    "worker_config_sha256": "f78549b4aa2bc8d0f01e1914c96665cd827ede06c768d1d9c05ca0271acb3887",
+    "routing_config_sha256": "129c2f4877ca80337241d6e65b553acc7d2643934a0b683215391643c4c107b5"
+  },
+  "physical_metrics": {
+    "per_worker_peak_gpu_memory": "unknown",
+    "native_work_counters": "unknown",
+    "network_bytes": "unknown"
+  },
+  "cleanup": {
+    "owned_gateway_processes_remaining": 0,
+    "owned_worker_processes_remaining": 0,
+    "gpu1_processes_remaining": 0,
+    "gpu2_processes_remaining": 0,
+    "ports_30100_to_30103_released": true,
+    "fresh_file_l3_artifacts_retained": true
+  },
+  "b6_passed": false,
+  "distributed_b5_passed": false,
+  "provider_fault_tested": false
+}

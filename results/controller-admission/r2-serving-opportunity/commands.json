@@ -1,0 +1,8 @@
+{
+  "schema": "octopus-r2-serving-opportunity-commands-v1",
+  "source_commit": "a59e3177a3866cf3cf76889af31b7a687a5e3c72",
+  "driver": "cd /mnt/disk2/user/octopus-contention/r2-serving-opportunity-20260912-d3c687/native-source-v2 && /mnt/disk2/user/octopus-contention/.venv/bin/python -m benchmarks.r2_serving_driver --plan ../plan-v2.json",
+  "launch": "Detached tmux session r2-serving-opportunity-20260912 with completion channel r2-serving-opportunity-20260912-done.",
+  "export_template": "cd native-source-v2 && PYTHONPATH=src /mnt/disk2/user/octopus-contention/.venv/bin/python -m benchmarks.r2_serving_opportunity export --freeze ../input/measurement-freeze-v2.json --spec ../input/measurement-spec-v2.json --raw ../trace-data/e2-normal-METHOD-SEED.raw.json --output ../export/e2-normal-METHOD-SEED.json.gz",
+  "export_attempt_note": "Initial exporter invocation omitted PYTHONPATH=src and failed before reading raw data with ModuleNotFoundError: octopus.signals. The preserved retry changed only the standalone import environment."
+}

@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "lincolnloop__python-qrcode.456b0__8imTveR__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# QR code version validation raises TypeError instead of ValueError\n\n## Description\n\nI noticed that when trying to create a QR code with an invalid version number, the library now raises a TypeError instead of a ValueError. This is a breaking change that affects my code.\n\nIn my application, I have error handling that specifically catches ValueError for invalid QR code versions. After updating to the latest version, my error handling is no longer working because the exception type has changed.\n\n## Steps to reproduce\n\nHere's a simple script that demonstrates the issue:\n\n```python\nimport qrcode\n\ntry:\n    # Try to create a QR code with an invalid version\n    qr = qrcode.QRCode(version=42)  # Versions should be 1-40\nexcept ValueError as e:\n    print(\"Caught ValueError as expected:\", e)\n    # My error handling code works here\nexcept TypeError as e:\n    print(\"Got TypeError instead:\", e)\n    # This is what happens now, breaking my error handling\n```\n\nThe same issue occurs when directly calling the check_version function:\n\n```python\nfrom qrcode.util import check_version\n\ntry:\n    check_version(0)  # Should raise ValueError for out of range\nexcept ValueError as e:\n    print(\"Caught ValueError as expected:\", e)\nexcept TypeError as e:\n    print(\"Got TypeError instead:\", e)\n```\n\n## Expected behavior\n\nThe library should raise ValueError for invalid version numbers to maintain backward compatibility with existing code that catches ValueError."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-37563fef-9a81-46a3-bd2b-33c40b292674-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -50 && cat /testbed/README.md 2>/dev/null | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-37563fef-9a81-46a3-bd2b-33c40b292674-0",
+            "content": "total 72\ndrwxr-xr-x 1 root root 4096 Sep 22 17:12 .\ndrwxr-xr-x 1 root root 4096 Sep 22 17:12 ..\n-rw-r--r-- 1 root root  242 Jul 13  2025 .editorconfig\ndrwxr-xr-x 8 root root 4096 Jul 13  2025 .git\n-rw-r--r-- 1 root root   74 Jul 13  2025 .git-blame-ignore-revs\n-rw-r--r-- 1 root root  114 Jul 13  2025 .gitignore\n-rw-rw-r-- 1 1005 1005    0 Sep 22 15:44 .gitkeep\n-rw-r--r-- 1 root root 8089 Jul 13  2025 CHANGES.rst\n-rw-r--r-- 1 root root 2143 Jul 13  2025 LICENSE\n-rw-r--r-- 1 root root  203 Jul 13  2025 PACKAGING.rst\n-rw-r--r-- 1 root root 7932 Jul 13  2025 README.rst\n-rw-r--r-- 1 root root  835 Jul 13  2025 TESTING.rst\ndrwxr-xr-x 2 root root 4096 Jul 13  2025 doc\n-rw-r--r-- 1 root root 2040 Jul 13  2025 pyproject.toml\ndrwxr-xr-x 5 root root 4096 Jul 13  2025 qrcode\n-rw-r--r-- 1 root root 2215 Jul 13  2025 signing-key.asc\n-rw-r--r-- 1 root root  297 Jul 13  2025 tox.ini\n/testbed/qrcode/main.py\n/testbed/qrcode/exceptions.py\n/testbed/qrcode/__init__.py\n/testbed/qrcode/tests/__init__.py\n/testbed/qrcode/tests/test_qrcode_svg.py\n/testbed/qrcode/tests/test_qrcode_pypng.py\n/testbed/qrcode/tests/test_example.py\n/testbed/qrcode/tests/test_script.py\n/testbed/qrcode/tests/test_qrcode.py\n/testbed/qrcode/tests/test_util.py\n/testbed/qrcode/tests/test_release.py\n/testbed/qrcode/tests/consts.py\n/testbed/qrcode/tests/test_qrcode_pil.py\n/testbed/qrcode/LUT.py\n/testbed/qrcode/base.py\n/testbed/qrcode/constants.py\n/testbed/qrcode/image/styles/moduledrawers/svg.py\n/testbed/qrcode/image/styles/moduledrawers/__init__.py\n/testbed/qrcode/image/styles/moduledrawers/base.py\n/testbed/qrcode/image/styles/moduledrawers/pil.py\n/testbed/qrcode/image/styles/colormasks.py\n/testbed/qrcode/image/styles/__init__.py\n/testbed/qrcode/image/svg.py\n/testbed/qrcode/image/__init__.py\n/testbed/qrcode/image/base.py\n/testbed/qrcode/image/styledpil.py\n/testbed/qrcode/image/pure.py\n/testbed/qrcode/image/pil.py\n/testbed/qrcode/compat/etree.py\n/testbed/qrcode/compat/__init__.py\n/testbed/qrcode/compat/png.py\n/testbed/qrcode/release.py\n/testbed/qrcode/util.py\n/testbed/qrcode/console_scripts.py\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-f068a294-9586-42b3-a87e-b8359c7c9efd-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/qrcode/util.py && echo \"==== EXCEPTIONS ====\" && cat /testbed/qrcode/exceptions.py && echo \"==== MAIN ====\" && cat /testbed/qrcode/main.py && echo \"==== TEST_UTIL ====\" && cat /testbed/qrcode/tests/test_util.py && echo \"==== CHANGES ====\" && cat /testbed/CHANGES.rst | head -100"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-f068a294-9586-42b3-a87e-b8359c7c9efd-1",
+            "content": "les[row][c] = dark\n                        bitIndex -= 1\n\n                        if bitIndex == -1:\n                            byteIndex += 1\n                            bitIndex = 7\n\n                row += inc\n\n                if row < 0 or self.modules_count <= row:\n                    row -= inc\n                    inc = -inc\n                    break\n\n    def get_matrix(self):\n        \"\"\"\n        Return the QR Code as a multidimensional array, including the border.\n\n        To return the array without a border, set ``self.border`` to 0 first.\n        \"\"\"\n        if self.data_cache is None:\n            self.make()\n\n        if not self.border:\n            return self.modules\n\n        width = len(self.modules) + self.border * 2\n        code = [[False] * width] * self.border\n        x_border = [False] * self.border\n        for module in self.modules:\n            code.append(x_border + cast(List[bool], module) + x_border)\n        code += [[False] * width] * self.border\n\n        return code\n\n    def active_with_neighbors(self, row: int, col: int) -> ActiveWithNeighbors:\n        context: List[bool] = []\n        for r in range(row - 1, row + 2):\n            for c in range(col - 1, col + 2):\n                context.append(self.is_constrained(r, c) and bool(self.modules[r][c]))\n        return ActiveWithNeighbors(*context)\n==== TEST_UTIL ====\nimport pytest\n\nfrom qrcode import util\n\n\ndef test_check_wrong_version():\n    with pytest.raises(ValueError):\n        util.check_version(0)\n\n    with pytest.raises(ValueError):\n        util.check_version(41)\n==== CHANGES ====\n==========\nChange log\n==========\n\n8.0 ( 27 September 2024)\n========================\n\n- Added support for Python 3.11 and 3.12.\n\n- Drop support for Python <=3.8.\n\n- Change local development setup to use Poetry_.\n\n- Testsuite and code quality checks are done through Github Actions.\n\n- Code quality and formatting utilises ruff_.\n\n- Removed ``typing_extensions`` as a dependency, as it's no longer required with\n  having Python 3.9+ as a requirement.\n\n- Only allow high error correction rate (`qrcode.ERROR_CORRECT_H`) when generating\n  QR codes with embedded images to ensure content is readable\n\n.. _Poetry: https://python-poetry.org\n.. _ruff: https://astral.sh/ruff\n\n\n7.4.2 (6 February 2023)\n=======================\n\n- Allow ``pypng`` factory to allow for saving to a string (like\n  ``qr.save(\"some_file.png\")``) in addition to file-like objects.\n\n\n7.4.1 (3 February 2023)\n=======================\n\n- Fix bad over-optimization in v7.4 that broke large QR codes. Thanks to\n  mattiasj-axis!\n\n\n7.4 (1 February 2023)\n=====================\n\n- Restructure the factory drawers, allowing different shapes in SVG image\n  factories as well.\n\n- Add a ``--factory-drawer`` option to the ``qr`` console script.\n\n- Optimize the output for the ``SVGPathImage`` factory (more than 30% reduction\n  in file sizes).\n\n- Add a ``pypng`` image factory as a pure Python PNG solution. If ``pillow`` is\n  *not* installed, then this becomes the default factory.\n\n- The ``pymaging`` image factory has been removed, but its factory shortcut and\n  the actual PymagingImage factory class now just link to the PyPNGImage\n  factory.\n\n\n7.3.1 (1 October 2021)\n======================\n\n- Improvements for embedded image.\n\n\n7.3 (19 August 2021)\n====================\n\n- Skip color mask if QR is black and white\n\n\n7.2 (19 July 2021)\n==================\n\n- Add Styled PIL image factory, allowing different color masks and shapes in QR codes\n\n- Small performance inprovement\n\n- Add check for border size parameter\n\n\n7.1 (1 July 2021)\n=================\n\n- Add --ascii parameter to command line interface allowing to output ascii when stdout is piped\n\n- Add --output parameter to command line interface to specify output file\n\n- Accept RGB tuples in fill_color and back_color\n\n- Add to_string method to SVG images\n\n- Replace inline styles with SVG attributes to avoid CSP issues\n\n- Add Python3.10 to supported versions\n\n\n7.0 (29 June 2021)\n==================\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-4cbba43f-7d08-4667-98ff-5614d31e7745-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "rg -n \"check_version|version\" /testbed/qrcode --type py | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-4cbba43f-7d08-4667-98ff-5614d31e7745-2",
+            "content": "bash: line 1: rg: command not found\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-07bb6145-e829-47aa-b742-ea7b19dbd159-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "grep -n \"check_version\\|def check\" /testbed/qrcode/*.py /testbed/qrcode/**/*.py 2>/dev/null; echo \"==== util.py first part ====\"; head -200 /testbed/qrcode/util.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-07bb6145-e829-47aa-b742-ea7b19dbd159-3",
+            "content": "limited data lengths.\nNUMBER_LENGTH = {3: 10, 2: 7, 1: 4}\n\nPATTERN_POSITION_TABLE = [\n    [],\n    [6, 18],\n    [6, 22],\n    [6, 26],\n    [6, 30],\n    [6, 34],\n    [6, 22, 38],\n    [6, 24, 42],\n    [6, 26, 46],\n    [6, 28, 50],\n    [6, 30, 54],\n    [6, 32, 58],\n    [6, 34, 62],\n    [6, 26, 46, 66],\n    [6, 26, 48, 70],\n    [6, 26, 50, 74],\n    [6, 30, 54, 78],\n    [6, 30, 56, 82],\n    [6, 30, 58, 86],\n    [6, 34, 62, 90],\n    [6, 28, 50, 72, 94],\n    [6, 26, 50, 74, 98],\n    [6, 30, 54, 78, 102],\n    [6, 28, 54, 80, 106],\n    [6, 32, 58, 84, 110],\n    [6, 30, 58, 86, 114],\n    [6, 34, 62, 90, 118],\n    [6, 26, 50, 74, 98, 122],\n    [6, 30, 54, 78, 102, 126],\n    [6, 26, 52, 78, 104, 130],\n    [6, 30, 56, 82, 108, 134],\n    [6, 34, 60, 86, 112, 138],\n    [6, 30, 58, 86, 114, 142],\n    [6, 34, 62, 90, 118, 146],\n    [6, 30, 54, 78, 102, 126, 150],\n    [6, 24, 50, 76, 102, 128, 154],\n    [6, 28, 54, 80, 106, 132, 158],\n    [6, 32, 58, 84, 110, 136, 162],\n    [6, 26, 54, 82, 110, 138, 166],\n    [6, 30, 58, 86, 114, 142, 170],\n]\n\nG15 = (1 << 10) | (1 << 8) | (1 << 5) | (1 << 4) | (1 << 2) | (1 << 1) | (1 << 0)\nG18 = (\n    (1 << 12)\n    | (1 << 11)\n    | (1 << 10)\n    | (1 << 9)\n    | (1 << 8)\n    | (1 << 5)\n    | (1 << 2)\n    | (1 << 0)\n)\nG15_MASK = (1 << 14) | (1 << 12) | (1 << 10) | (1 << 4) | (1 << 1)\n\nPAD0 = 0xEC\nPAD1 = 0x11\n\n\n# Precompute bit count limits, indexed by error correction level and code size\ndef _data_count(block):\n    return block.data_count\n\n\nBIT_LIMIT_TABLE = [\n    [0]\n    + [\n        8 * sum(map(_data_count, base.rs_blocks(version, error_correction)))\n        for version in range(1, 41)\n    ]\n    for error_correction in range(4)\n]\n\n\ndef BCH_type_info(data):\n    d = data << 10\n    while BCH_digit(d) - BCH_digit(G15) >= 0:\n        d ^= G15 << (BCH_digit(d) - BCH_digit(G15))\n\n    return ((data << 10) | d) ^ G15_MASK\n\n\ndef BCH_type_number(data):\n    d = data << 12\n    while BCH_digit(d) - BCH_digit(G18) >= 0:\n        d ^= G18 << (BCH_digit(d) - BCH_digit(G18))\n    return (data << 12) | d\n\n\ndef BCH_digit(data):\n    digit = 0\n    while data != 0:\n        digit += 1\n        data >>= 1\n    return digit\n\n\ndef pattern_position(version):\n    return PATTERN_POSITION_TABLE[version - 1]\n\n\ndef mask_func(pattern):\n    \"\"\"\n    Return the mask function for the given mask pattern.\n    \"\"\"\n    if pattern == 0:  # 000\n        return lambda i, j: (i + j) % 2 == 0\n    if pattern == 1:  # 001\n        return lambda i, j: i % 2 == 0\n    if pattern == 2:  # 010\n        return lambda i, j: j % 3 == 0\n    if pattern == 3:  # 011\n        return lambda i, j: (i + j) % 3 == 0\n    if pattern == 4:  # 100\n        return lambda i, j: (math.floor(i / 2) + math.floor(j / 3)) % 2 == 0\n    if pattern == 5:  # 101\n        return lambda i, j: (i * j) % 2 + (i * j) % 3 == 0\n    if pattern == 6:  # 110\n        return lambda i, j: ((i * j) % 2 + (i * j) % 3) % 2 == 0\n    if pattern == 7:  # 111\n        return lambda i, j: ((i * j) % 3 + (i + j) % 2) % 2 == 0\n    raise TypeError(\"Bad mask pattern: \" + pattern)  # pragma: no cover\n\n\ndef mode_sizes_for_version(version):\n    if version < 10:\n        return MODE_SIZE_SMALL\n    elif version < 27:\n        return MODE_SIZE_MEDIUM\n    else:\n        return MODE_SIZE_LARGE\n\n\ndef length_in_bits(mode, version):\n    if mode not in (MODE_NUMBER, MODE_ALPHA_NUM, MODE_8BIT_BYTE, MODE_KANJI):\n        raise TypeError(f\"Invalid mode ({mode})\")  # pragma: no cover\n\n    check_version(version)\n\n    return mode_sizes_for_version(version)[mode]\n\n\ndef check_version(version):\n    if version < 1 or version > 40:\n        raise ValueError(f\"Invalid version (was {version}, expected 1 to 40)\")\n\n\ndef lost_point(modules):\n    modules_count = len(modules)\n\n    lost_point = 0\n\n    lost_point = _lost_point_level1(modules, modules_count)\n    lost_point += _lost_point_level2(modules, modules_count)\n    lost_point += _lost_point_level3(modules, modules_count)\n    lost_point += _lost_point_level4(modules, modules_count)\n\n    return lost_point\n\n\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "The current `check_version` already raises `ValueError`. I'll inspect git history and other version checks to find where `TypeError` is being raised.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-7b496cae-98a1-47f7-8bb8-109df31fd10e-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cd /testbed && git log --oneline -20 && echo \"====\" && git log --all --oneline | head -40 && echo \"==== GREP TypeError ====\" && grep -n \"TypeError\\|check_version\\|version\" /testbed/qrcode/util.py /testbed/qrcode/main.py /testbed/qrcode/base.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-7b496cae-98a1-47f7-8bb8-109df31fd10e-4",
+            "content": "l.py:108:        8 * sum(map(_data_count, base.rs_blocks(version, error_correction)))\n/testbed/qrcode/util.py:109:        for version in range(1, 41)\n/testbed/qrcode/util.py:138:def pattern_position(version):\n/testbed/qrcode/util.py:139:    return PATTERN_POSITION_TABLE[version - 1]\n/testbed/qrcode/util.py:162:    raise TypeError(\"Bad mask pattern: \" + pattern)  # pragma: no cover\n/testbed/qrcode/util.py:165:def mode_sizes_for_version(version):\n/testbed/qrcode/util.py:166:    if version < 10:\n/testbed/qrcode/util.py:168:    elif version < 27:\n/testbed/qrcode/util.py:174:def length_in_bits(mode, version):\n/testbed/qrcode/util.py:176:        raise TypeError(f\"Invalid mode ({mode})\")  # pragma: no cover\n/testbed/qrcode/util.py:178:    check_version(version)\n/testbed/qrcode/util.py:180:    return mode_sizes_for_version(version)[mode]\n/testbed/qrcode/util.py:183:def check_version(version):\n/testbed/qrcode/util.py:184:    if version < 1 or version > 40:\n/testbed/qrcode/util.py:185:        raise ValueError(f\"Invalid version (was {version}, expected 1 to 40)\")\n/testbed/qrcode/util.py:436:                raise TypeError(f\"Invalid mode ({mode})\")  # pragma: no cover\n/testbed/qrcode/util.py:551:def create_data(version, error_correction, data_list):\n/testbed/qrcode/util.py:555:        buffer.put(len(data), length_in_bits(data.mode, version))\n/testbed/qrcode/util.py:558:    # Calculate the maximum number of bits for the given version.\n/testbed/qrcode/util.py:559:    rs_blocks = base.rs_blocks(version, error_correction)\n/testbed/qrcode/main.py:21:# Cache modules generated just based on the QR Code version\n/testbed/qrcode/main.py:47:        raise TypeError(\n/testbed/qrcode/main.py:79:    _version: Optional[int] = None\n/testbed/qrcode/main.py:83:        version=None,\n/testbed/qrcode/main.py:92:        self.version = version\n/testbed/qrcode/main.py:105:    def version(self) -> int:\n/testbed/qrcode/main.py:106:        if self._version is None:\n/testbed/qrcode/main.py:108:        return cast(int, self._version)\n/testbed/qrcode/main.py:110:    @version.setter\n/testbed/qrcode/main.py:111:    def version(self, value) -> None:\n/testbed/qrcode/main.py:114:            util.check_version(value)\n/testbed/qrcode/main.py:115:        self._version = value\n/testbed/qrcode/main.py:158:        if fit or (self.version is None):\n/testbed/qrcode/main.py:159:            self.best_fit(start=self.version)\n/testbed/qrcode/main.py:166:        self.modules_count = self.version * 4 + 17\n/testbed/qrcode/main.py:168:        if self.version in precomputed_qr_blanks:\n/testbed/qrcode/main.py:169:            self.modules = copy_2d_array(precomputed_qr_blanks[self.version])\n/testbed/qrcode/main.py:180:            precomputed_qr_blanks[self.version] = copy_2d_array(self.modules)\n/testbed/qrcode/main.py:184:        if self.version >= 7:\n/testbed/qrcode/main.py:189:                self.version, self.error_correction, self.data_list\n/testbed/qrcode/main.py:217:        util.check_version(start)\n/testbed/qrcode/main.py:220:        # version, so optimistically assume start and check later\n/testbed/qrcode/main.py:221:        mode_sizes = util.mode_sizes_for_version(start)\n/testbed/qrcode/main.py:229:        self.version = bisect_left(\n/testbed/qrcode/main.py:232:        if self.version == 41:\n/testbed/qrcode/main.py:237:        if mode_sizes is not util.mode_sizes_for_version(self.version):\n/testbed/qrcode/main.py:238:            self.best_fit(start=self.version)\n/testbed/qrcode/main.py:239:        return self.version\n/testbed/qrcode/main.py:409:        pos = util.pattern_position(self.version)\n/testbed/qrcode/main.py:434:        bits = util.BCH_type_number(self.version)\n/testbed/qrcode/base.py:297:def rs_blocks(version, error_correction):\n/testbed/qrcode/base.py:300:            \"bad rs block @ version: %s / error_correction: %s\"\n/testbed/qrcode/base.py:301:            % (version, error_correction)\n/testbed/qrcode/base.py:304:    rs_block = RS_BLOCK_TABLE[(version - 1) * 4 + offset]\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-8a0dbb53-1302-4daa-ac05-8e8547fed071-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cd /testbed && git log --oneline -30 && echo \"==== STATUS ====\" && git status && echo \"==== MAIN.PY version related ====\" && sed -n '1,130p' /testbed/qrcode/main.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-8a0dbb53-1302-4daa-ac05-8e8547fed071-5",
+            "content": "c6f316c Initial commit\n==== STATUS ====\nOn branch main\nYour branch is up to date with 'origin/main'.\n\nUntracked files:\n  (use \"git add <file>...\" to include in what will be committed)\n\t.gitkeep\n\nnothing added to commit but untracked files present (use \"git add\" to track)\n==== MAIN.PY version related ====\nimport sys\nfrom bisect import bisect_left\nfrom typing import (\n    Dict,\n    Generic,\n    List,\n    NamedTuple,\n    Optional,\n    Type,\n    TypeVar,\n    cast,\n    overload,\n    Literal,\n)\n\nfrom qrcode import constants, exceptions, util\nfrom qrcode.image.base import BaseImage\nfrom qrcode.image.pure import PyPNGImage\n\nModulesType = List[List[Optional[bool]]]\n# Cache modules generated just based on the QR Code version\nprecomputed_qr_blanks: Dict[int, ModulesType] = {}\n\n\ndef make(data=None, **kwargs):\n    qr = QRCode(**kwargs)\n    qr.add_data(data)\n    return qr.make_image()\n\n\ndef _check_box_size(size):\n    if int(size) <= 0:\n        raise ValueError(f\"Invalid box size (was {size}, expected larger than 0)\")\n\n\ndef _check_border(size):\n    if int(size) < 0:\n        raise ValueError(\n            \"Invalid border value (was %s, expected 0 or larger than that)\" % size\n        )\n\n\ndef _check_mask_pattern(mask_pattern):\n    if mask_pattern is None:\n        return\n    if not isinstance(mask_pattern, int):\n        raise TypeError(\n            f\"Invalid mask pattern (was {type(mask_pattern)}, expected int)\"\n        )\n    if mask_pattern < 0 or mask_pattern > 7:\n        raise ValueError(f\"Mask pattern should be in range(8) (got {mask_pattern})\")\n\n\ndef copy_2d_array(x):\n    return [row[:] for row in x]\n\n\nclass ActiveWithNeighbors(NamedTuple):\n    NW: bool\n    N: bool\n    NE: bool\n    W: bool\n    me: bool\n    E: bool\n    SW: bool\n    S: bool\n    SE: bool\n\n    def __bool__(self) -> bool:\n        return self.me\n\n\nGenericImage = TypeVar(\"GenericImage\", bound=BaseImage)\nGenericImageLocal = TypeVar(\"GenericImageLocal\", bound=BaseImage)\n\n\nclass QRCode(Generic[GenericImage]):\n    modules: ModulesType\n    _version: Optional[int] = None\n\n    def __init__(\n        self,\n        version=None,\n        error_correction=constants.ERROR_CORRECT_M,\n        box_size=10,\n        border=4,\n        image_factory: Optional[Type[GenericImage]] = None,\n        mask_pattern=None,\n    ):\n        _check_box_size(box_size)\n        _check_border(border)\n        self.version = version\n        self.error_correction = int(error_correction)\n        self.box_size = int(box_size)\n        # Spec says border should be at least four boxes wide, but allow for\n        # any (e.g. for producing printable QR codes).\n        self.border = int(border)\n        self.mask_pattern = mask_pattern\n        self.image_factory = image_factory\n        if image_factory is not None:\n            assert issubclass(image_factory, BaseImage)\n        self.clear()\n\n    @property\n    def version(self) -> int:\n        if self._version is None:\n            self.best_fit()\n        return cast(int, self._version)\n\n    @version.setter\n    def version(self, value) -> None:\n        if value is not None:\n            value = int(value)\n            util.check_version(value)\n        self._version = value\n\n    @property\n    def mask_pattern(self):\n        return self._mask_pattern\n\n    @mask_pattern.setter\n    def mask_pattern(self, pattern):\n        _check_mask_pattern(pattern)\n        self._mask_pattern = pattern\n\n    def clear(self):\n        \"\"\"\n        Reset the internal data.\n        \"\"\"\n        self.modules = [[]]\n"
+          }
+        ]
+      }
+    }
+  ]
+}

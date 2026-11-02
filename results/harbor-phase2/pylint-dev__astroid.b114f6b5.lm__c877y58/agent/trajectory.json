@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "pylint-dev__astroid.b114f6b5.lm__c877y58__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# Bug in ImportNode.real_name method\n\n## Description\n\nI found a bug in the `real_name` method of the `ImportNode` class. The method is not correctly handling wildcard imports and is returning incorrect names for certain import statements.\n\n## Current behavior\n\nWhen using the `real_name` method on an `ImportNode` with wildcard imports (`from module import *`), it returns the wrong name instead of the expected behavior.\n\n```python\nfrom module import *\n# When trying to get the real name for a symbol imported via wildcard\n# The method returns the wrong name\n```\n\nAlso, when an import doesn't have an explicit \"as\" name, the method is not correctly handling the case where the name is split with a dot.\n\n## Expected behavior\n\nThe `real_name` method should:\n1. Correctly handle wildcard imports (`*`)\n2. Properly handle imports without explicit \"as\" names\n3. Raise an `AttributeInferenceError` when the original name cannot be found\n\n## Reproduction\n\n```python\n# Create an import node with a wildcard import\nfrom some_module import *\n\n# Try to get the real name for a symbol that was imported via wildcard\n# This should return the correct name but currently doesn't\n\n# Also, for regular imports without \"as\" names:\nimport module.submodule\n# Getting the real name for \"module\" should work correctly\n```\n\nThis issue affects code that relies on the `real_name` method to determine the original module name for an imported symbol, especially when dealing with wildcard imports or nested module imports."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository and locate the `ImportNode.real_name` method to identify the bug.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-b297d39f-7017-4a5a-bfc9-a0c88d1ec143-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -50 && cat /testbed/README.md 2>/dev/null | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-b297d39f-7017-4a5a-bfc9-a0c88d1ec143-0",
+            "content": "total 288\ndrwxr-xr-x 1 root root   4096 Sep 22 18:10 .\ndrwxr-xr-x 1 root root   4096 Sep 22 18:10 ..\n-rw-r--r-- 1 root root    328 Jul 13  2025 .coveragerc\ndrwxr-xr-x 8 root root   4096 Jul 13  2025 .git\n-rw-r--r-- 1 root root    205 Jul 13  2025 .git-blame-ignore-revs\n-rw-r--r-- 1 root root     80 Jul 13  2025 .gitattributes\ndrwxr-xr-x 2 root root   4096 Jul 13  2025 .github\n-rw-r--r-- 1 root root    192 Jul 13  2025 .gitignore\n-rw-rw-r-- 1 1005 1005      0 Sep 22 15:44 .gitkeep\n-rw-r--r-- 1 root root   1887 Jul 13  2025 .pre-commit-config.yaml\n-rw-r--r-- 1 root root    242 Jul 13  2025 .readthedocs.yaml\n-rw-r--r-- 1 root root   8577 Jul 13  2025 CONTRIBUTORS.txt\n-rw-r--r-- 1 root root 133376 Jul 13  2025 ChangeLog\n-rw-r--r-- 1 root root  26516 Jul 13  2025 LICENSE\n-rw-r--r-- 1 root root    111 Jul 13  2025 MANIFEST.in\n-rw-r--r-- 1 root root   2840 Jul 13  2025 README.rst\ndrwxr-xr-x 5 root root   4096 Jul 13  2025 astroid\ndrwxr-xr-x 2 root root   4096 Jul 13  2025 astroid.egg-info\n-rw-r--r-- 1 root root    162 Jul 13  2025 codecov.yml\ndrwxr-xr-x 5 root root   4096 Jul 13  2025 doc\n-rw-r--r-- 1 root root  11233 Jul 13  2025 pylintrc\n-rw-r--r-- 1 root root   4976 Jul 13  2025 pyproject.toml\n-rw-r--r-- 1 root root    140 Jul 13  2025 requirements_dev.txt\n-rw-r--r-- 1 root root    249 Jul 13  2025 requirements_full.txt\n-rw-r--r-- 1 root root    128 Jul 13  2025 requirements_minimal.txt\ndrwxr-xr-x 2 root root   4096 Jul 13  2025 script\n-rw-r--r-- 1 root root    292 Jul 13  2025 setup.cfg\n-rw-r--r-- 1 root root   1556 Jul 13  2025 tbump.toml\ndrwxr-xr-x 4 root root   4096 Jul 13  2025 tests\n-rw-r--r-- 1 root root    420 Jul 13  2025 tox.ini\n/testbed/astroid/const.py\n/testbed/astroid/_backport_stdlib_names.py\n/testbed/astroid/objects.py\n/testbed/astroid/transforms.py\n/testbed/astroid/modutils.py\n/testbed/astroid/interpreter/dunder_lookup.py\n/testbed/astroid/interpreter/__init__.py\n/testbed/astroid/interpreter/objectmodel.py\n/testbed/astroid/interpreter/_import/__init__.py\n/testbed/astroid/interpreter/_import/spec.py\n/testbed/astroid/interpreter/_import/util.py\n/testbed/astroid/inference_tip.py\n/testbed/astroid/rebuilder.py\n/testbed/astroid/exceptions.py\n/testbed/astroid/context.py\n/testbed/astroid/__init__.py\n/testbed/astroid/protocols.py\n/testbed/astroid/helpers.py\n/testbed/astroid/__pkginfo__.py\n/testbed/astroid/brain/brain_typing.py\n/testbed/astroid/brain/brain_io.py\n/testbed/astroid/brain/brain_http.py\n/testbed/astroid/brain/brain_collections.py\n/testbed/astroid/brain/brain_namedtuple_enum.py\n/testbed/astroid/brain/brain_hypothesis.py\n/testbed/astroid/brain/brain_numpy_core_numerictypes.py\n/testbed/astroid/brain/brain_numpy_ma.py\n/testbed/astroid/brain/brain_numpy_core_umath.py\n/testbed/astroid/brain/brain_functools.py\n/testbed/astroid/brain/brain_uuid.py\n/testbed/astroid/brain/brain_multiprocessing.py\n/testbed/astroid/brain/brain_threading.py\n/testbed/astroid/brain/brain_numpy_core_numeric.py\n/testbed/astroid/brain/brain_pathlib.py\n/testbed/astroid/brain/brain_ssl.py\n/testbed/astroid/brain/brain_random.py\n/testbed/astroid/brain/brain_numpy_ndarray.py\n/testbed/astroid/brain/brain_attrs.py\n/testbed/astroid/brain/__init__.py\n/testbed/astroid/brain/helpers.py\n/testbed/astroid/brain/brain_hashlib.py\n/testbed/astroid/brain/brain_responses.py\n/testbed/astroid/brain/brain_builtin_inference.py\n/testbed/astroid/brain/brain_signal.py\n/testbed/astroid/brain/brain_re.py\n/testbed/astroid/brain/brain_subprocess.py\n/testbed/astroid/brain/brain_scipy_signal.py\n/testbed/astroid/brain/brain_qt.py\n/testbed/astroid/brain/brain_crypt.py\n/testbed/astroid/brain/brain_curses.py\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-78804250-af2e-42a6-8de2-e715b447d90b-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "rg -n \"def real_name\" --type py /testbed && echo \"====\" && rg -n \"class ImportNode\" --type py /testbed && echo \"====\" && rg -n \"class Import\" --type py /testbed | head -30"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-78804250-af2e-42a6-8de2-e715b447d90b-1",
+            "content": "bash: line 1: rg: command not found\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-826330d0-89f9-4b50-bb81-8fba60cbb9d9-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "grep -rn \"def real_name\" --include=\"*.py\" /testbed && echo \"====\" && grep -rn \"class ImportNode\" --include=\"*.py\" /testbed && echo \"====\" && grep -rn \"class Import\" --include=\"*.py\" /testbed | head -30"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-826330d0-89f9-4b50-bb81-8fba60cbb9d9-2",
+            "content": "/testbed/astroid/nodes/_base_nodes.py:175:    def real_name(self, asname: str) -> str:\n====\n/testbed/astroid/nodes/_base_nodes.py:130:class ImportNode(FilterStmtsBaseNode, NoChildrenNode, Statement):\n/testbed/tests/test_nodes.py:483:class ImportNodeTest(resources.SysPathSetup, unittest.TestCase):\n====\n/testbed/astroid/interpreter/objectmodel.py:789:class ImportErrorInstanceModel(ExceptionInstanceModel):\n/testbed/astroid/interpreter/_import/spec.py:120:class ImportlibFinder(Finder):\n/testbed/astroid/nodes/node_classes.py:2786:class ImportFrom(_base_nodes.ImportNode):\n/testbed/astroid/nodes/node_classes.py:3138:class Import(_base_nodes.ImportNode):\n/testbed/astroid/nodes/_base_nodes.py:130:class ImportNode(FilterStmtsBaseNode, NoChildrenNode, Statement):\n/testbed/tests/test_nodes.py:483:class ImportNodeTest(resources.SysPathSetup, unittest.TestCase):\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-7af035a7-442b-4d83-ac8b-ee6a1059cee3-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '1,250p' /testbed/astroid/nodes/_base_nodes.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-7af035a7-442b-4d83-ac8b-ee6a1059cee3-3",
+            "content": "Each entry is a :class:`tuple` of the name being imported,\n    and the alias that the name is assigned to (if any).\n    \"\"\"\n\n    def _infer_name(self, frame, name):\n        return name\n\n    def do_import_module(self, modname: str | None = None) -> nodes.Module:\n        \"\"\"Return the ast for a module whose name is <modname> imported by <self>.\"\"\"\n        mymodule = self.root()\n        level: int | None = getattr(self, \"level\", None)  # Import has no level\n        if modname is None:\n            modname = self.modname\n        # If the module ImportNode is importing is a module with the same name\n        # as the file that contains the ImportNode we don't want to use the cache\n        # to make sure we use the import system to get the correct module.\n        if (\n            modname\n            # pylint: disable-next=no-member # pylint doesn't recognize type of mymodule\n            and mymodule.relative_to_absolute_name(modname, level) == mymodule.name\n        ):\n            use_cache = False\n        else:\n            use_cache = True\n\n        # pylint: disable-next=no-member # pylint doesn't recognize type of mymodule\n        return mymodule.import_module(\n            modname,\n            level=level,\n            relative_only=bool(level and level >= 1),\n            use_cache=use_cache,\n        )\n\n    def real_name(self, asname: str) -> str:\n        \"\"\"Get name from 'as' name.\"\"\"\n        for name, _asname in self.names:\n            if name == \"*\":\n                return asname\n            if not _asname:\n                name = name.split(\".\", 1)[0]\n                _asname = name\n            if asname == _asname:\n                return name\n        raise AttributeInferenceError(\n            \"Could not find original name for {attribute} in {target!r}\",\n            target=self,\n            attribute=asname,\n        )\n\n\nclass MultiLineBlockNode(NodeNG):\n    \"\"\"Base node for multi-line blocks, e.g. For and FunctionDef.\n\n    Note that this does not apply to every node with a `body` field.\n    For instance, an If node has a multi-line body, but the body of an\n    IfExpr is not multi-line, and hence cannot contain Return nodes,\n    Assign nodes, etc.\n    \"\"\"\n\n    _multi_line_block_fields: ClassVar[tuple[str, ...]] = ()\n\n    @cached_property\n    def _multi_line_blocks(self):\n        return tuple(getattr(self, field) for field in self._multi_line_block_fields)\n\n    def _get_return_nodes_skip_functions(self):\n        for block in self._multi_line_blocks:\n            for child_node in block:\n                if child_node.is_function:\n                    continue\n                yield from child_node._get_return_nodes_skip_functions()\n\n    def _get_yield_nodes_skip_functions(self):\n        for block in self._multi_line_blocks:\n            for child_node in block:\n                if child_node.is_function:\n                    continue\n                yield from child_node._get_yield_nodes_skip_functions()\n\n    def _get_yield_nodes_skip_lambdas(self):\n        for block in self._multi_line_blocks:\n            for child_node in block:\n                if child_node.is_lambda:\n                    continue\n                yield from child_node._get_yield_nodes_skip_lambdas()\n\n    @cached_property\n    def _assign_nodes_in_scope(self) -> list[nodes.Assign]:\n        children_assign_nodes = (\n            child_node._assign_nodes_in_scope\n            for block in self._multi_line_blocks\n            for child_node in block\n        )\n        return list(itertools.chain.from_iterable(children_assign_nodes))\n\n\nclass MultiLineWithElseBlockNode(MultiLineBlockNode):\n    \"\"\"Base node for multi-line blocks that can have else statements.\"\"\"\n\n    @cached_property\n    def blockstart_tolineno(self):\n        return self.lineno\n\n    def _elsed_block_range(\n        self, lineno: int, orelse: list[nodes.NodeNG], last: int | None = None\n    ) -> tuple[int, int]:\n        \"\"\"Handle block line numbers range for try/finally, for, if and while\n        statements.\n        \"\"\"\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect tests, git history, and related code to pinpoint the expected `real_name` behavior.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-01b2ec42-a95d-41cf-bae6-27df6ec6b5cd-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '483,700p' /testbed/tests/test_nodes.py && echo \"======= CHANGELOG ======\" && grep -n -i \"real_name\\|wildcard\\|ImportNode\" /testbed/ChangeLog | head -50"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-01b2ec42-a95d-41cf-bae6-27df6ec6b5cd-4",
+            "content": ".lookupname = \"email\"\n        m = next(module[\"email\"].infer(ctx))\n        self.assertFalse(m.file.startswith(os.path.join(\"data\", \"email.py\")))\n\n    def test_more_absolute_import(self) -> None:\n        module = resources.build_file(\"data/module1abs/__init__.py\", \"data.module1abs\")\n        self.assertIn(\"sys\", module.locals)\n\n    _pickle_names = (\"dump\",)  # \"dumps\", \"load\", \"loads\")\n\n    def test_conditional(self) -> None:\n        module = resources.build_file(\"data/conditional_import/__init__.py\")\n        ctx = InferenceContext()\n\n        for name in self._pickle_names:\n            ctx.lookupname = name\n            some = list(module[name].infer(ctx))\n            assert Uninferable not in some, name\n\n    def test_conditional_import(self) -> None:\n        module = resources.build_file(\"data/conditional.py\")\n        ctx = InferenceContext()\n\n        for name in self._pickle_names:\n            ctx.lookupname = name\n            some = list(module[name].infer(ctx))\n            assert Uninferable not in some, name\n\n\nclass CmpNodeTest(unittest.TestCase):\n    def test_as_string(self) -> None:\n        ast = abuilder.string_build(\"a == 2\").body[0]\n        self.assertEqual(ast.as_string(), \"a == 2\")\n\n\nclass ConstNodeTest(unittest.TestCase):\n    def _test(self, value: Any) -> None:\n        node = nodes.const_factory(value)\n        self.assertIsInstance(node._proxied, nodes.ClassDef)\n        self.assertEqual(node._proxied.name, value.__class__.__name__)\n        self.assertIs(node.value, value)\n        self.assertTrue(node._proxied.parent)\n        self.assertEqual(node._proxied.root().name, value.__class__.__module__)\n        with self.assertRaises(StatementMissing):\n            with pytest.warns(DeprecationWarning) as records:\n                node.statement(future=True)\n                assert len(records) == 1\n        with self.assertRaises(StatementMissing):\n            node.statement()\n\n        with pytest.warns(DeprecationWarning) as records:\n            assert node.frame(future=True) is SYNTHETIC_ROOT\n            assert len(records) == 1\n        assert node.frame() is SYNTHETIC_ROOT\n\n    def test_none(self) -> None:\n        self._test(None)\n\n    def test_bool(self) -> None:\n        self._test(True)\n\n    def test_int(self) -> None:\n        self._test(1)\n\n    def test_float(self) -> None:\n        self._test(1.0)\n\n    def test_complex(self) -> None:\n        self._test(1.0j)\n\n    def test_str(self) -> None:\n        self._test(\"a\")\n\n    def test_unicode(self) -> None:\n        self._test(\"a\")\n\n    def test_str_kind(self):\n        node = builder.extract_node(\n            \"\"\"\n            const = u\"foo\"\n        \"\"\"\n        )\n        assert isinstance(node.value, nodes.Const)\n        assert node.value.value == \"foo\"\n        assert node.value.kind, \"u\"\n\n    def test_copy(self) -> None:\n        \"\"\"Make sure copying a Const object doesn't result in infinite recursion.\"\"\"\n        const = copy.copy(nodes.Const(1))\n        assert const.value == 1\n\n\nclass NameNodeTest(unittest.TestCase):\n    def test_assign_to_true(self) -> None:\n        \"\"\"Test that True and False assignments don't crash.\"\"\"\n        code = \"\"\"\n            True = False\n            def hello(False):\n                pass\n            del True\n        \"\"\"\n        with self.assertRaises(AstroidBuildingError):\n            builder.parse(code)\n\n\nclass TestNamedExprNode:\n    \"\"\"Tests for the NamedExpr node.\"\"\"\n\n    @staticmethod\n    def test_frame() -> None:\n        \"\"\"Test if the frame of NamedExpr is correctly set for certain types\n        of parent nodes.\n        \"\"\"\n        module = builder.parse(\n            \"\"\"\n            def func(var_1):\n                pass\n\n            def func_two(var_2, var_2 = (named_expr_1 := \"walrus\")):\n                pass\n\n======= CHANGELOG ======\n2994:    * wildcard_imported_names() got replaced by _public_names()\n2996:      Our understanding of wildcard imports through __all__ was\n3678:    * Fix names grabbed using wildcard import in \"absolute import mode\"\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-125dbb64-c16b-4d4a-86e1-ba0c31a5092a-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "grep -n \"real_name\" -r /testbed --include=\"*.py\" && echo \"==== GIT LOG ====\" && cd /testbed && git log --oneline -20 && echo \"==== GIT BLAME ====\" && git blame -L 175,190 astroid/nodes/_base_nodes.py && echo \"==== PYPROJECT ====\" && cat /testbed/pyproject.toml | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-125dbb64-c16b-4d4a-86e1-ba0c31a5092a-5",
+            "content": " GIT BLAME ====\n^2f7df1f (sweft 2025-03-15 00:09:59 +0000 175)     def real_name(self, asname: str) -> str:\n^2f7df1f (sweft 2025-03-15 00:09:59 +0000 176)         \"\"\"Get name from 'as' name.\"\"\"\n^2f7df1f (sweft 2025-03-15 00:09:59 +0000 177)         for name, _asname in self.names:\n^2f7df1f (sweft 2025-03-15 00:09:59 +0000 178)             if name == \"*\":\n^2f7df1f (sweft 2025-03-15 00:09:59 +0000 179)                 return asname\n^2f7df1f (sweft 2025-03-15 00:09:59 +0000 180)             if not _asname:\n^2f7df1f (sweft 2025-03-15 00:09:59 +0000 181)                 name = name.split(\".\", 1)[0]\n^2f7df1f (sweft 2025-03-15 00:09:59 +0000 182)                 _asname = name\n^2f7df1f (sweft 2025-03-15 00:09:59 +0000 183)             if asname == _asname:\n^2f7df1f (sweft 2025-03-15 00:09:59 +0000 184)                 return name\n^2f7df1f (sweft 2025-03-15 00:09:59 +0000 185)         raise AttributeInferenceError(\n^2f7df1f (sweft 2025-03-15 00:09:59 +0000 186)             \"Could not find original name for {attribute} in {target!r}\",\n^2f7df1f (sweft 2025-03-15 00:09:59 +0000 187)             target=self,\n^2f7df1f (sweft 2025-03-15 00:09:59 +0000 188)             attribute=asname,\n^2f7df1f (sweft 2025-03-15 00:09:59 +0000 189)         )\n^2f7df1f (sweft 2025-03-15 00:09:59 +0000 190) \n==== PYPROJECT ====\n[build-system]\nrequires = [\"setuptools>=75.2.0\"]\nbuild-backend = \"setuptools.build_meta\"\n\n[project]\nname        = \"astroid\"\nlicense     = {text = \"LGPL-2.1-or-later\"}\ndescription = \"An abstract syntax tree for Python with inference support.\"\nreadme      = \"README.rst\"\nkeywords    = [\"static code analysis\", \"python\", \"abstract syntax tree\"]\nclassifiers = [\n    \"Development Status :: 6 - Mature\",\n    \"Environment :: Console\",\n    \"Intended Audience :: Developers\",\n    \"License :: OSI Approved :: GNU Lesser General Public License v2 (LGPLv2)\",\n    \"Operating System :: OS Independent\",\n    \"Programming Language :: Python\",\n    \"Programming Language :: Python :: 3\",\n    \"Programming Language :: Python :: 3 :: Only\",\n    \"Programming Language :: Python :: 3.9\",\n    \"Programming Language :: Python :: 3.10\",\n    \"Programming Language :: Python :: 3.11\",\n    \"Programming Language :: Python :: 3.12\",\n    \"Programming Language :: Python :: 3.13\",\n    \"Programming Language :: Python :: Implementation :: CPython\",\n    \"Programming Language :: Python :: Implementation :: PyPy\",\n    \"Topic :: Software Development :: Libraries :: Python Modules\",\n    \"Topic :: Software Development :: Quality Assurance\",\n    \"Topic :: Software Development :: Testing\",\n]\nrequires-python = \">=3.9.0\"\ndependencies = [\n    \"typing-extensions>=4.0.0;python_version<'3.11'\",\n]\ndynamic = [\"version\"]\n\n[project.urls]\n\"Docs\"           = \"https://pylint.readthedocs.io/projects/astroid/en/latest/\"\n\"Source Code\"    = \"https://github.com/pylint-dev/astroid\"\n\"Bug tracker\"    = \"https://github.com/pylint-dev/astroid/issues\"\n\"Discord server\" = \"https://discord.gg/Egy6P8AMB5\"\n\n[tool.setuptools]\nlicense-files = [\"LICENSE\", \"CONTRIBUTORS.txt\"]  # Keep in sync with setup.cfg\n\n[tool.setuptools.package-dir]\n\"\" = \".\"\n\n[tool.setuptools.packages.find]\ninclude = [\"astroid*\"]\n\n[tool.setuptools.dynamic]\nversion = {attr = \"astroid.__pkginfo__.__version__\"}\n\n[tool.aliases]\ntest = \"pytest\"\n\n[tool.pytest.ini_options]\naddopts = '-m \"not acceptance\"'\npython_files = [\"*test_*.py\"]\ntestpaths = [\"tests\"]\nfilterwarnings = \"error\"\n\n[tool.mypy]\npython_version = \"3.9\"\nfiles = [\n    \"astroid/_ast.py\",\n    \"astroid/_backport_stdlib_names.py\",\n    \"astroid/astroid_manager.py\",\n    \"astroid/brain/brain_crypt.py\",\n    \"astroid/brain/brain_ctypes.py\",\n    \"astroid/brain/brain_curses.py\",\n    \"astroid/brain/brain_datetime.py\",\n    \"astroid/brain/brain_dateutil.py\",\n    \"astroid/brain/brain_hashlib.py\",\n    \"astroid/brain/brain_http.py\",\n    \"astroid/brain/brain_hypothesis.py\",\n    \"astroid/brain/brain_mechanize.py\",\n    \"astroid/brain/brain_numpy_core_einsumfunc.py\",\n    \"astroid/brain/brain_numpy_core_fromnumeric.py\",\n"
+          }
+        ]
+      }
+    }
+  ]
+}

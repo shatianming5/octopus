@@ -1,0 +1,17 @@
+# cooperbench-v2 Train bundles whose grading needs the network, dropped from cooperbench-v2-train-valid before Step 4
+# (#225 blocks agent commands' connections off the host; an agent could not run these tests, and grading would depend on
+# the verifier's internet). Found 2026-10-21 by `cooperbench.py offline cooperbench-v2-valid` on node-134: every accepted
+# bundle's combined patch graded with OCTOPUS_NO_EGRESS=1 (connect guard of #225, 5d650a4), the failing ones again with and
+# without the marker; needs the network = solved with it, not without. First-pass failures that were load or tooling:
+# DSPy 8394 f1-f2 (`udocker images` 60 s timeout), its other 9 bundles (runner's `timeout 300` under load 25), datasets
+# 7309 f1-f2 (setup timeout, rc 124); all solved with and without the marker on the re-run.
+# llama_index 18813: features 2 and 3 add tests on the mock_pdf_bytes fixture, which downloads a PDF from www.w3.org.
+llama_index.task18813.f1-f2
+llama_index.task18813.f1-f3
+llama_index.task18813.f2-f3
+llama_index.task18813.f2-f4
+llama_index.task18813.f2-f5
+llama_index.task18813.f2-f6
+llama_index.task18813.f3-f4
+llama_index.task18813.f3-f5
+llama_index.task18813.f3-f6

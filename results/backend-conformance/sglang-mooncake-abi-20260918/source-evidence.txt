@@ -1,0 +1,53 @@
+Native B5 attempt-3 ABI evidence (CPU/read-only)
+
+Actual crash: backup_from_device_all_layer -> transfer_kv_all_layer_direct_lf_pf
+-> transfer_kv_page_first_direct_impl<true> -> cudaMemcpyBatchAsync ->
+cuMemcpyBatchAsync. The reached copy was D2H. No H2D or provider-fault success
+is inferred from that crash.
+
+Installed sglang-kernel: 0.4.6.post1.
+Observed ELF:
+/home/user/octopus-sglang-conformance-138-20260917/venv/lib/python3.12/site-packages/sgl_kernel/sm90/common_ops.abi3.so
+
+Actual dynamic import:
+229: 0000000000000000 0 FUNC GLOBAL DEFAULT UND cudaRuntimeGetVersion@libcudart.so.13 (7)
+
+Exact bounded disassembly anchors in transfer_kv_page_first_direct_impl<true>:
+2a9c24: 48 8d 35 e3 a7 15 00  lea 0x15a7e3(%rip),%rsi
+2a9c2b: 31 ff                 xor %edi,%edi
+2a9c2d: e8 ae a4 de ff        call 940e0 <dlsym@plt>
+2a9c7b: e8 60 cf de ff        call 96be0 <cudaRuntimeGetVersion@plt>
+2a9b62: 81 38 c7 32 00 00     cmpl $0x32c7,(%rax)
+2a9b6f: 0f 9f 00              setg (%rax)
+
+The dlsym handle is null/RTLD_DEFAULT; the actual ELF contains the literal
+cudaMemcpyBatchAsync and the cached variable cuda_memcpy_batch_async_sym.
+The separate version query is version-bound to libcudart.so.13. The comparison
+sets use_v13_signature when runtime_version > 12999.
+
+Actual CUDA 12.9 header:
+/usr/local/cuda-12.9/include/cuda_runtime_api.h
+extern __host__ cudaError_t CUDARTAPI cudaMemcpyBatchAsync(void **dsts, void **srcs, size_t *sizes, size_t count, struct cudaMemcpyAttributes *attrs, size_t *attrsIdxs, size_t numAttrs, size_t *failIdx, cudaStream_t stream);
+
+Actual CUDA 13 header:
+/home/user/octopus-sglang-conformance-138-20260917/venv/lib/python3.12/site-packages/nvidia/cu13/include/cuda_runtime_api.h
+extern __host__ cudaError_t CUDARTAPI cudaMemcpyBatchAsync(void *const *dsts, const void *const *srcs, const size_t *sizes, size_t count, struct cudaMemcpyAttributes *attrs, size_t *attrsIdxs, size_t numAttrs, cudaStream_t stream);
+
+The CUDA 12.9 ABI has 9 arguments including failIdx; the CUDA 13 ABI has 8.
+The actual CPU red/green dladdr and runtime-version receipts are preserved
+separately, not inferred from the filenames.
+
+Official layout normalization:
+Pinned SGLang commit 0bcd822377da7b5718e674eaf9c870d349424dd1,
+python/sglang/srt/arg_groups/hicache_hook.py:
+resolve_storage_layout_compatibility, lines 139-164.
+For Mooncake + requested layer_first:
+  direct -> page_first_direct
+  kernel -> page_first
+The actual released resolver was executed on CPU for both cases, with CUDA
+initialization prohibited; both matched. Therefore page_first_direct is
+required for the current direct-I/O path, not for every Mooncake configuration.
+
+This evidence does not claim GPU memcpy safety. The model-free native copy
+probe is for the authorized supervisor only. No memcpy, model, engine, Store,
+provider service, or GPU allocation was executed by this source owner.

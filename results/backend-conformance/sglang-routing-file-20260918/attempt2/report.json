@@ -1,0 +1,132 @@
+{
+  "result_id": "51f0f007-96aa-4197-a102-ab731d9c619f",
+  "scope_id": "b6-real-two-engine-routing-20260917",
+  "attempt": 2,
+  "status": "failed",
+  "source_commit": "aa7ef2f7b14882b96b24312fcada134eb951e873",
+  "method_change": {
+    "only_change": "prepend /home/user/octopus-sglang-conformance-138-20260917/venv/bin to PATH for every worker/native-hash process",
+    "before": {
+      "shutil.which_ninja": null,
+      "verify_ninja_availability": "RuntimeError"
+    },
+    "after": {
+      "shutil.which_ninja": "/home/user/octopus-sglang-conformance-138-20260917/venv/bin/ninja",
+      "verify_ninja_availability": "ok",
+      "native_hash_module": "/home/user/octopus-sglang-hicache-138-20260917/build-deps/hash-cache/hicache_hash_cpp/hicache_hash_cpp.so"
+    },
+    "package_or_source_mutation": false
+  },
+  "resources": {
+    "worker_a_gpu_uuid": "GPU-5c1232dd-c2d0-5721-388a-06c68868d6fd",
+    "worker_b_gpu_uuid": "GPU-7bb7435e-7d3d-6281-60da-f7a828eb90a4",
+    "worker_a_bridge_pid": 2232389,
+    "worker_a_engine_pid": 2232391,
+    "worker_b_bridge_pid": 2232390,
+    "worker_b_engine_pid": 2232392,
+    "gateway_pid": 2232731,
+    "worker_a_id": "2033038d18814f538d874b789a8f70b5",
+    "worker_b_id": "c3b19ef202e2404b85001bfb60abc8f3"
+  },
+  "isolated_paths": {
+    "root": "/home/user/octopus-sglang-routing-138-20260917/attempt2",
+    "l3": "/home/user/octopus-sglang-routing-138-20260917/attempt2/l3",
+    "result": "/home/user/octopus-sglang-routing-138-20260917/attempt2/results/routing-conformance.json",
+    "worker_config": "/home/user/octopus-sglang-routing-138-20260917/attempt2-worker-config.json",
+    "routing_config": "/home/user/octopus-sglang-routing-138-20260917/attempt2-routing-config.json"
+  },
+  "terminal_error": "RuntimeError: different native workers were not concurrently in flight",
+  "successful_request_evidence": [
+    {
+      "request_id": "d24d0f0d506843b9a44fdce86e0f16f2",
+      "worker": "http://127.0.0.1:30101",
+      "cached_tokens": 0,
+      "prompt_tokens": 512,
+      "output_tokens": 8,
+      "outcome": "length"
+    },
+    {
+      "request_id": "9029396907944aefba807a1924adfcf5",
+      "worker": "http://127.0.0.1:30101",
+      "cached_tokens": 520,
+      "prompt_tokens": 529,
+      "output_tokens": 32,
+      "outcome": "length"
+    },
+    {
+      "request_id": "20e6106d39b5469ab39342efd32236cd",
+      "worker": "http://127.0.0.1:30101",
+      "cached_tokens": 524,
+      "prompt_tokens": 529,
+      "output_tokens": 32,
+      "outcome": "length",
+      "transfer": {
+        "direction": "L2->L3",
+        "confirmed_tokens": 9,
+        "payload_bytes": 516096,
+        "actual_bytes": null
+      }
+    },
+    {
+      "request_id": "b6343ffd055e4647889f5287f06f7b72",
+      "worker": "http://127.0.0.1:30102",
+      "cached_tokens": 512,
+      "prompt_tokens": 529,
+      "output_tokens": 32,
+      "outcome": "length",
+      "transfers": [
+        {
+          "direction": "L3->L2",
+          "confirmed_tokens": 512,
+          "payload_bytes": 29360128,
+          "actual_bytes": null
+        },
+        {
+          "direction": "L2->L1",
+          "confirmed_tokens": 512,
+          "payload_bytes": 29360128,
+          "actual_bytes": 29360128
+        }
+      ]
+    },
+    {
+      "request_id": "a9a9e285458d4428b7b916d9c27d1a8e",
+      "worker": "http://127.0.0.1:30102",
+      "cached_tokens": 524,
+      "prompt_tokens": 529,
+      "output_tokens": 32,
+      "outcome": "length"
+    }
+  ],
+  "reached": {
+    "two_distinct_real_engine_pids": true,
+    "matching_cache_identity": true,
+    "gateway_listed_both_origins": true,
+    "native_cached_tokens_positive": true,
+    "actual_cross_worker_l3_restore": true,
+    "different_workers_concurrently_in_flight": false
+  },
+  "not_reached_after_failure": [
+    "remote abort with unaffected sibling",
+    "native registry removal and reassignment",
+    "strict structured Commit and continuation"
+  ],
+  "budget": {
+    "attempt1_and_attempt2_cumulative_phase_seconds": 587.052,
+    "total_cap_seconds": 1200,
+    "remaining_seconds": 612.948,
+    "attempt2_cleanup_seconds": 7.02
+  },
+  "cleanup": {
+    "owned_processes_remaining": 0,
+    "gpu1_processes_remaining": 0,
+    "gpu2_processes_remaining": 0,
+    "ports_30100_to_30103_released": true,
+    "remote_l3_retained": true,
+    "local_bulk_l3_copy_cancelled_and_removed": true
+  },
+  "result_sha256": "34de3acd318cb055f66fd8a2d2f0bd43edec0844b516b3e20d666eac7827d1d2",
+  "b6_passed": false,
+  "distributed_b5_passed": false,
+  "quality_or_performance_claim": false
+}

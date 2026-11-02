@@ -1,0 +1,13 @@
+--- a/areal/infra/controller/train_controller.py
++++ b/areal/infra/controller/train_controller.py
+@@ -633,6 +633,10 @@
+                     self._engine_name(idx),
+                     *worker_args,
+                     rpc_meta=rpc_meta,
++                    # a train step's call (ppo_update, compute_logp) can outlast the 2 h default, and a retry
++                    # reruns it on the same batch: one attempt, a day's timeout
++                    http_timeout=86400.0,
++                    max_retries=1,
+                     **worker_kwargs,
+                 )
+             )

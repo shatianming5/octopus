@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "pylint-dev__astroid.b114f6b5.lm__ZBNWp3G__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "Dictionary unpacking in assignment doesn't work correctly\n\nWhen trying to unpack a dictionary in an assignment statement, the keys are not being correctly extracted. This is a regression from previous behavior.\n\nMinimal example to reproduce:\n\n```python\na, b = {1:2, 2:3}\nprint(a, b)\n```\n\nExpected behavior:\nThe keys of the dictionary should be unpacked, so `a` should be `1` and `b` should be `2`.\n\nActual behavior:\nThe unpacking doesn't work correctly. The values of `a` and `b` are not the dictionary keys as expected.\n\nThis affects code that relies on dictionary unpacking in assignment statements, which is a common Python idiom."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository and reproduce the dictionary-unpacking assignment issue.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-b5f94ab1-0347-4bdb-a646-85ae028acf69-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && echo \"====\" && find /testbed -type f | head -100 && echo \"====\" && cat /testbed/README.md 2>/dev/null || cat /testbed/*.md 2>/dev/null | head -50"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-b5f94ab1-0347-4bdb-a646-85ae028acf69-0",
+            "content": "2025 setup.cfg\n-rw-r--r-- 1 root root   1556 Jul 13  2025 tbump.toml\ndrwxr-xr-x 4 root root   4096 Jul 13  2025 tests\n-rw-r--r-- 1 root root    420 Jul 13  2025 tox.ini\n====\n/testbed/astroid/const.py\n/testbed/astroid/_backport_stdlib_names.py\n/testbed/astroid/objects.py\n/testbed/astroid/transforms.py\n/testbed/astroid/modutils.py\n/testbed/astroid/interpreter/dunder_lookup.py\n/testbed/astroid/interpreter/__init__.py\n/testbed/astroid/interpreter/objectmodel.py\n/testbed/astroid/interpreter/_import/__init__.py\n/testbed/astroid/interpreter/_import/spec.py\n/testbed/astroid/interpreter/_import/util.py\n/testbed/astroid/inference_tip.py\n/testbed/astroid/rebuilder.py\n/testbed/astroid/exceptions.py\n/testbed/astroid/context.py\n/testbed/astroid/__init__.py\n/testbed/astroid/protocols.py\n/testbed/astroid/helpers.py\n/testbed/astroid/__pkginfo__.py\n/testbed/astroid/brain/brain_typing.py\n/testbed/astroid/brain/brain_io.py\n/testbed/astroid/brain/brain_http.py\n/testbed/astroid/brain/brain_collections.py\n/testbed/astroid/brain/brain_namedtuple_enum.py\n/testbed/astroid/brain/brain_hypothesis.py\n/testbed/astroid/brain/brain_numpy_core_numerictypes.py\n/testbed/astroid/brain/brain_numpy_ma.py\n/testbed/astroid/brain/brain_numpy_core_umath.py\n/testbed/astroid/brain/brain_functools.py\n/testbed/astroid/brain/brain_uuid.py\n/testbed/astroid/brain/brain_multiprocessing.py\n/testbed/astroid/brain/brain_threading.py\n/testbed/astroid/brain/brain_numpy_core_numeric.py\n/testbed/astroid/brain/brain_pathlib.py\n/testbed/astroid/brain/brain_ssl.py\n/testbed/astroid/brain/brain_random.py\n/testbed/astroid/brain/brain_numpy_ndarray.py\n/testbed/astroid/brain/brain_attrs.py\n/testbed/astroid/brain/__init__.py\n/testbed/astroid/brain/helpers.py\n/testbed/astroid/brain/brain_hashlib.py\n/testbed/astroid/brain/brain_responses.py\n/testbed/astroid/brain/brain_builtin_inference.py\n/testbed/astroid/brain/brain_signal.py\n/testbed/astroid/brain/brain_re.py\n/testbed/astroid/brain/brain_subprocess.py\n/testbed/astroid/brain/brain_scipy_signal.py\n/testbed/astroid/brain/brain_qt.py\n/testbed/astroid/brain/brain_crypt.py\n/testbed/astroid/brain/brain_curses.py\n/testbed/astroid/brain/brain_sqlalchemy.py\n/testbed/astroid/brain/brain_argparse.py\n/testbed/astroid/brain/brain_numpy_core_fromnumeric.py\n/testbed/astroid/brain/brain_unittest.py\n/testbed/astroid/brain/brain_numpy_core_multiarray.py\n/testbed/astroid/brain/brain_mechanize.py\n/testbed/astroid/brain/brain_numpy_core_function_base.py\n/testbed/astroid/brain/brain_ctypes.py\n/testbed/astroid/brain/brain_boto3.py\n/testbed/astroid/brain/brain_six.py\n/testbed/astroid/brain/brain_datetime.py\n/testbed/astroid/brain/brain_numpy_core_einsumfunc.py\n/testbed/astroid/brain/brain_pytest.py\n/testbed/astroid/brain/brain_numpy_random_mtrand.py\n/testbed/astroid/brain/brain_type.py\n/testbed/astroid/brain/brain_pkg_resources.py\n/testbed/astroid/brain/brain_regex.py\n/testbed/astroid/brain/brain_gi.py\n/testbed/astroid/brain/brain_numpy_utils.py\n/testbed/astroid/brain/brain_dataclasses.py\n/testbed/astroid/brain/brain_dateutil.py\n/testbed/astroid/brain/brain_nose.py\n/testbed/astroid/builder.py\n/testbed/astroid/manager.py\n/testbed/astroid/_ast.py\n/testbed/astroid/raw_building.py\n/testbed/astroid/nodes/node_classes.py\n/testbed/astroid/nodes/const.py\n/testbed/astroid/nodes/scoped_nodes/scoped_nodes.py\n/testbed/astroid/nodes/scoped_nodes/__init__.py\n/testbed/astroid/nodes/scoped_nodes/mixin.py\n/testbed/astroid/nodes/scoped_nodes/utils.py\n/testbed/astroid/nodes/_base_nodes.py\n/testbed/astroid/nodes/__init__.py\n/testbed/astroid/nodes/node_ng.py\n/testbed/astroid/nodes/as_string.py\n/testbed/astroid/nodes/utils.py\n/testbed/astroid/astroid_manager.py\n/testbed/astroid/bases.py\n/testbed/astroid/test_utils.py\n/testbed/astroid/typing.py\n/testbed/astroid/filter_statements.py\n/testbed/astroid/arguments.py\n/testbed/astroid/util.py\n/testbed/astroid/constraint.py\n/testbed/astroid/decorators.py\n/testbed/requirements_dev.txt\n/testbed/LICENSE\n/testbed/codecov.yml\n/testbed/ChangeLog\n====\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-0b3115f3-4dd1-4e76-9ef2-212d4ff69c23-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls /testbed/tests && echo \"==== CHANGELOG ====\" && head -100 /testbed/ChangeLog && echo \"==== GIT LOG ====\" && cd /testbed && git log --oneline -20 && git status && echo \"==== ISSUE SEARCH ====\" && rg -l \"unpack\" --type py | head -30"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-0b3115f3-4dd1-4e76-9ef2-212d4ff69c23-1",
+            "content": "__init__.py\nbrain\nresources.py\ntest_builder.py\ntest_constraint.py\ntest_decorators.py\ntest_filter_statements.py\ntest_group_exceptions.py\ntest_helpers.py\ntest_inference.py\ntest_inference_calls.py\ntest_lookup.py\ntest_manager.py\ntest_modutils.py\ntest_nodes.py\ntest_nodes_lineno.py\ntest_nodes_position.py\ntest_object_model.py\ntest_objects.py\ntest_protocols.py\ntest_python3.py\ntest_raw_building.py\ntest_regrtest.py\ntest_scoped_nodes.py\ntest_stdlib.py\ntest_transforms.py\ntest_type_params.py\ntest_utils.py\ntestdata\n==== CHANGELOG ====\n===================\nastroid's ChangeLog\n===================\n\n\nWhat's New in astroid 4.0.0?\n============================\nRelease date: TBA\n\n* Removed internal functions ``infer_numpy_member``, ``name_looks_like_numpy_member``, and\n  ``attribute_looks_like_numpy_member`` from ``astroid.brain.brain_numpy_utils``.\n\n* Constants now have a parent of ``nodes.SYNTHETIC_ROOT``.\n\n* Fix crashes with large positive and negative list multipliers.\n\n  Closes #2521\n  Closes #2523\n\n* Fix crash when typing._alias() call is missing arguments.\n\n  Closes #2513\n\n\nWhat's New in astroid 3.3.6?\n============================\nRelease date: TBA\n\n* Fix precedence of `path` arg in `modpath_from_file_with_callback` to be higher than `sys.path`\n\n\nWhat's New in astroid 3.3.5?\n============================\nRelease date: 2024-10-04\n\n* Control setting local nodes outside of the supposed local's constructor.\n\n  Closes #1490\n\n* Fix Python 3.13 compatibility re: `collections.abc`\n\n  Closes pylint-dev/pylint#10000\n\n\nWhat's New in astroid 3.3.4?\n============================\nRelease date: 2024-09-23\n\n* Fix regression with f-string inference.\n\n  Closes pylint-dev/pylint#9947\n\n* Fix bug with ``manager.clear_cache()`` not fully clearing cache.\n\n  Refs https://github.com/pylint-dev/pylint/pull/9932#issuecomment-2364985551\n\n* Fix a crash from inferring empty format specs.\n\n  Closes pylint-dev/pylint#9945\n\n\nWhat's New in astroid 3.3.3?\n============================\nRelease date: 2024-09-20\n\n* Fix inference regression with property setters.\n\n  Closes pylint-dev/pylint#9811\n\n* Add annotation-only instance attributes to attrs classes to fix `no-member` false positives.\n\n  Closes #2514\n\n\nWhat's New in astroid 3.3.2?\n============================\nRelease date: 2024-08-11\n\n* Restore support for soft-deprecated members of the ``typing`` module with python 3.13.\n\n  Refs pylint-dev/pylint#9852\n\n\nWhat's New in astroid 3.3.1?\n============================\nRelease date: 2024-08-06\n\n* Fix a crash introduced in 3.3.0 involving invalid format strings.\n\n  Closes #2492\n\n\nWhat's New in astroid 3.3.0?\n============================\nRelease date: 2024-08-04\n\n* Add support for Python 3.13.\n\n* Remove support for Python 3.8 (and constants `PY38`, `PY39_PLUS`, and `PYPY_7_3_11_PLUS`).\n\n==== GIT LOG ====\n2f7df1f Initial commit\nOn branch main\nYour branch is up to date with 'origin/main'.\n\nUntracked files:\n  (use \"git add <file>...\" to include in what will be committed)\n\t.gitkeep\n\nnothing added to commit but untracked files present (use \"git add\" to track)\n==== ISSUE SEARCH ====\nbash: line 1: rg: command not found\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-0f5adf1b-e682-4007-92b7-c4591435b91d-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cd /testbed && grep -rn \"unpack\" --include=\"*.py\" | head -80 && echo \"====\" && grep -rn \"Dict\" tests/test_inference.py | head -50 && echo \"==== CHANGELOG more ====\" && grep -n -i \"dict\\|unpack\\|assign\" ChangeLog | head -40"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-0f5adf1b-e682-4007-92b7-c4591435b91d-2",
+            "content": "    self.assertInferDict(ast[1], {\"a\": 1, \"b\": 2, \"c\": 3})\n2218:            self.assertInferDict(ast[i], {1: 2, 2: 3})\n2219:        self.assertInferDict(ast[5], {\"a\": 2, \"b\": 2, \"c\": 3})\n2220:        self.assertInferDict(ast[6], {1: 2})\n2221:        self.assertInferDict(ast[7], {\"c\": 2, \"a\": 4, \"b\": 5})\n2222:        self.assertInferDict(ast[8], {\"a\": 1, \"b\": 2})\n2223:        self.assertInferDict(ast[9], {\"x\": 2, \"y\": 3, \"a\": 1, \"b\": 2})\n2232:        self.assertInferDict(ast_node, {\"a\": 1, \"b\": 2, \"c\": 3})\n2242:            self.assertInferDict(node, expected_value)\n2293:        self.assertInferDict(ast[0], {\"b\": 1, \"c\": 2})\n4037:                return super().__new__(mcs, \"str\", (enum.Enum,), enum._EnumDict(), **kwargs)\n4040:                return super().__new__(A, \"str\", (enum.Enum,), enum._EnumDict(), **kwargs)\n4081:        class AttributeDict(dict):\n4084:        flow = AttributeDict()\n4085:        flow['app'] = AttributeDict()\n4086:        flow['app']['config'] = AttributeDict()\n4087:        flow['app']['config']['doffing'] = AttributeDict() #@\n5218:            self.assertIsInstance(inferred, nodes.Dict)\n5241:            self.assertIsInstance(inferred, nodes.Dict)\n5274:        self.assertIsInstance(inferred, nodes.Dict)\n6493:    assert isinstance(inferred_data, nodes.Dict)\n==== CHANGELOG more ====\n286:  ``nodes.AnnAssign`` nodes with no assigned value.\n358:  - ``nodes.AnnAssign``\n360:  - ``nodes.Assign``\n361:  - ``nodes.AssignAttr``\n362:  - ``nodes.AssignName``\n364:  - ``nodes.AugAssign``\n376:  - ``nodes.Dict``\n377:  - ``nodes.DictComp``\n413:* ``CallSite._unpack_args`` and ``CallSite._unpack_keywords`` now use ``safe_infer()`` for\n814:* Fix inferring attributes with empty annotation assignments if parent\n815:  class contains valid assignment.\n1052:* Fixed pylint ``not-callable`` false positive with nested-tuple assignment in a for-loop.\n1058:* Infer the return value of the ``.copy()`` method on ``dict``, ``list``, ``set``,\n1082:* Infer the ``DictUnpack`` value for ``Dict.getitem`` calls.\n1208:  with PyPy 3.8. PyPy 3.8 assigns these attributes inconsistently which could lead\n1271:* Fixed crash when trying to infer ``items()`` on the ``__dict__``\n1399:* Fix crash with assignment expressions, nested if expressions and filtering of statements\n1403:* Fix incorrect filtering of assignment expressions statements\n1503:    * ``name`` (``str``) for ``Name``, ``AssignName``, ``DelName``\n1504:    * ``attrname`` (``str``) for ``Attribute``, ``AssignAttr``, ``DelAttr``\n1505:    * ``op`` (``str``) for ``AugAssign``, ``BinOp``, ``BoolOp``, ``UnaryOp``\n1642:  item assignment' in the code we parse.\n1681:* Fix issue that ``TypedDict`` instance wasn't callable.\n1707:* Fix issue with ``TypedDict`` for Python 3.9+\n1882:* Use ``inference_tip`` for ``typing.TypedDict`` brain.\n1914:* Improve typing.TypedDict inference\n1943:* The ``context.path`` is now a ``dict`` and the ``context.push`` method\n1985:* Fixes a to-list cast bug in ``starred_assigned_stmts`` method, in the\n2040:* Do not crash when encountering starred assignments in enums.\n2052:* ``is_generator`` correctly considers `Yield` nodes in `AugAssign` nodes\n2054:  This fixes a false positive with the `assignment-from-no-return` pylint check.\n2178:* Skip non ``Assign`` and ``AnnAssign`` nodes from enum reinterpretation\n2191:* Use the parent of the node when inferring aug assign nodes instead of the statement\n2264:* Infer args unpacking of ``self``\n2327:  In the previous versions of `astroid`, annotated assign nodes were\n2383:* Add support for Python 3.8's `NamedExpr` nodes, which is part of assignment expressions.\n2415:* Improved builtin inference for ``tuple``, ``set``, ``frozenset``, ``list`` and ``dict``\n2481:* Fix a crash in the ``enum`` brain tip caused by non-assign members in class definitions.\n2485:* ``brain_numpy`` returns an undefined type for ``numpy`` methods to avoid ``assignment-from-no-return``\n2574:   * Make sure that assign nodes can find ``yield`` statements in their values\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll look at how assignment unpacking is inferred, especially for dictionaries.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-739f8d69-81ad-4da1-b620-63b444c0987e-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cd /testbed && grep -n \"assigned_stmts\\|starred_assigned\\|dict_assigned\\|unpack\" astroid/protocols.py | head -80 && echo \"====\" && wc -l astroid/protocols.py astroid/nodes/node_classes.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-739f8d69-81ad-4da1-b620-63b444c0987e-3",
+            "content": "236:\"\"\"The assigned_stmts method is responsible to return the assigned statement\n290:def for_assigned_stmts(\n318:def sequence_assigned_stmts(\n337:    return self.parent.assigned_stmts(\n342:def assend_assigned_stmts(\n348:    return self.parent.assigned_stmts(node=self, context=context)\n415:def arguments_assigned_stmts(\n447:def assign_assigned_stmts(\n468:def assign_annassigned_stmts(\n474:    for inferred in assign_assigned_stmts(self, node, context, assign_path):\n522:def excepthandler_assigned_stmts(\n530:    for assigned in node_classes.unpack_infer(self.type):\n582:def with_assigned_stmts(\n646:                        \"Tried to unpack a non-iterable value in {node!r}.\",\n662:def named_expr_assigned_stmts(\n681:def starred_assigned_stmts(  # noqa: C901\n780:                # We're done unpacking.\n865:            unpacked = nodes.List(\n871:            unpacked.postinit(elts=found_element or [])\n872:            yield unpacked\n879:def match_mapping_assigned_stmts(\n893:def match_star_assigned_stmts(\n907:def match_as_assigned_stmts(\n925:def generic_type_assigned_stmts(\n====\n   934 astroid/protocols.py\n  5555 astroid/nodes/node_classes.py\n  6489 total\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-ee4eaf65-01ef-4f2b-855c-534e2475ca6f-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cd /testbed && sed -n '230,520p' astroid/protocols.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-ee4eaf65-01ef-4f2b-855c-534e2475ca6f-4",
+            "content": "g\n        return\n    if name == self.kwarg:\n        kwarg = nodes.const_factory({})\n        kwarg.parent = self\n        yield kwarg\n        return\n    # if there is a default value, yield it. And then yield Uninferable to reflect\n    # we can't guess given argument value\n    try:\n        context = copy_context(context)\n        yield from self.default_value(name).infer(context)\n        yield util.Uninferable\n    except NoDefault:\n        yield util.Uninferable\n\n\ndef arguments_assigned_stmts(\n    self: nodes.Arguments,\n    node: node_classes.AssignedStmtsPossibleNode = None,\n    context: InferenceContext | None = None,\n    assign_path: list[int] | None = None,\n) -> Any:\n    from astroid import arguments  # pylint: disable=import-outside-toplevel\n\n    try:\n        node_name = node.name  # type: ignore[union-attr]\n    except AttributeError:\n        # Added to handle edge cases where node.name is not defined.\n        # https://github.com/pylint-dev/astroid/pull/1644#discussion_r901545816\n        node_name = None  # pragma: no cover\n\n    if context and context.callcontext:\n        callee = context.callcontext.callee\n        while hasattr(callee, \"_proxied\"):\n            callee = callee._proxied\n    else:\n        return _arguments_infer_argname(self, node_name, context)\n    if node and getattr(callee, \"name\", None) == node.frame().name:\n        # reset call context/name\n        callcontext = context.callcontext\n        context = copy_context(context)\n        context.callcontext = None\n        args = arguments.CallSite(callcontext, context=context)\n        return args.infer_argument(self.parent, node_name, context)\n    return _arguments_infer_argname(self, node_name, context)\n\n\n@decorators.raise_if_nothing_inferred\ndef assign_assigned_stmts(\n    self: nodes.AugAssign | nodes.Assign | nodes.AnnAssign | nodes.TypeAlias,\n    node: node_classes.AssignedStmtsPossibleNode = None,\n    context: InferenceContext | None = None,\n    assign_path: list[int] | None = None,\n) -> Any:\n    if not assign_path:\n        yield self.value\n        return None\n    yield from _resolve_assignment_parts(\n        self.value.infer(context), assign_path, context\n    )\n\n    return {\n        \"node\": self,\n        \"unknown\": node,\n        \"assign_path\": assign_path,\n        \"context\": context,\n    }\n\n\ndef assign_annassigned_stmts(\n    self: nodes.AnnAssign,\n    node: node_classes.AssignedStmtsPossibleNode = None,\n    context: InferenceContext | None = None,\n    assign_path: list[int] | None = None,\n) -> Any:\n    for inferred in assign_assigned_stmts(self, node, context, assign_path):\n        if inferred is None:\n            yield util.Uninferable\n        else:\n            yield inferred\n\n\ndef _resolve_assignment_parts(parts, assign_path, context):\n    \"\"\"Recursive function to resolve multiple assignments.\"\"\"\n    assign_path = assign_path[:]\n    index = assign_path.pop(0)\n    for part in parts:\n        assigned = None\n        if isinstance(part, nodes.Dict):\n            # A dictionary in an iterating context\n            try:\n                assigned, _ = part.items[index]\n            except IndexError:\n                return\n\n        elif hasattr(part, \"getitem\"):\n            index_node = nodes.Const(index)\n            try:\n                assigned = part.getitem(index_node, context)\n            except (AstroidTypeError, AstroidIndexError):\n                return\n\n        if not assigned:\n            return\n\n        if not assign_path:\n            # we achieved to resolved the assignment path, don't infer the\n            # last part\n            yield assigned\n        elif isinstance(assigned, util.UninferableBase):\n            return\n        else:\n            # we are not yet on the last part of the path search on each\n            # possibly inferred value\n            try:\n                yield from _resolve_assignment_parts(\n                    assigned.infer(context), assign_path, context\n                )\n            except InferenceError:\n                return\n\n\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-bd1c5692-2447-433f-862d-d37eedf6434d-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cd /testbed && grep -n -A 30 \"def test.*dict\" tests/test_inference.py | head -100 && echo \"==== PROTOCOLS TESTS ====\" && grep -n -i \"dict\\|unpack\\|assign\" tests/test_protocols.py | head -50"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-bd1c5692-2447-433f-862d-d37eedf6434d-5",
+            "content": "-        set({1:2, 2:4}.keys()) #@\n2166-        \"\"\"\n2167-        )\n2168-        assert isinstance(ast_nodes, list)\n2169-        self.assertInferList(ast_nodes[0], [2, 3])\n2170-        self.assertInferList(ast_nodes[1], [1, 2])\n2171-        self.assertInferTuple(ast_nodes[2], [2, 3])\n2172-        self.assertInferTuple(ast_nodes[3], [1, 3])\n2173-        self.assertInferSet(ast_nodes[4], [1, 2])\n2174-\n2175-    def test_builtin_inference_py3k(self) -> None:\n2176-        code = \"\"\"\n2177-        list(b\"abc\") #@\n2178-        tuple(b\"abc\") #@\n2179-        set(b\"abc\") #@\n2180-        \"\"\"\n2181-        ast = extract_node(code, __name__)\n2182-        self.assertInferList(ast[0], [97, 98, 99])\n2183-        self.assertInferTuple(ast[1], [97, 98, 99])\n2184-        self.assertInferSet(ast[2], [97, 98, 99])\n2185-\n2186:    def test_dict_inference(self) -> None:\n2187-        code = \"\"\"\n2188-        dict() #@\n2189-        dict(a=1, b=2, c=3) #@\n2190-        dict([(1, 2), (2, 3)]) #@\n2191-        dict([[1, 2], [2, 3]]) #@\n2192-        dict([(1, 2), [2, 3]]) #@\n2193-        dict([('a', 2)], b=2, c=3) #@\n==== PROTOCOLS TESTS ====\n55:    def test_assigned_stmts_simple_for(self) -> None:\n56:        assign_stmts = extract_node(\n66:        for1_assnode = next(assign_stmts[0].nodes_of_class(nodes.AssignName))\n67:        assigned = list(for1_assnode.assigned_stmts())\n68:        self.assertConstNodesEqual([1, 2, 3], assigned)\n70:        for2_assnode = next(assign_stmts[1].nodes_of_class(nodes.AssignName))\n71:        self.assertRaises(InferenceError, list, for2_assnode.assigned_stmts())\n73:    def test_assigned_stmts_nested_for_tuple(self) -> None:\n74:        assign_stmts = extract_node(\n81:        assign_nodes = assign_stmts.nodes_of_class(nodes.AssignName)\n83:        for1_assnode = next(assign_nodes)\n84:        assigned = list(for1_assnode.assigned_stmts())\n85:        self.assertConstNodesEqual([1], assigned)\n87:        for2_assnode = next(assign_nodes)\n88:        assigned2 = list(for2_assnode.assigned_stmts())\n89:        self.assertConstNodesEqual([2], assigned2)\n91:    def test_assigned_stmts_nested_for_dict(self) -> None:\n92:        assign_stmts = extract_node(\n98:        assign_nodes = assign_stmts.nodes_of_class(nodes.AssignName)\n100:        # assigned: [1, 2]\n101:        for1_assnode = next(assign_nodes)\n102:        assigned = list(for1_assnode.assigned_stmts())\n103:        self.assertConstNodesEqual([1, 2], assigned)\n105:        # assigned2: [\"a\", \"b\"]\n106:        for2_assnode = next(assign_nodes)\n107:        assigned2 = list(for2_assnode.assigned_stmts())\n108:        self.assertConstNodesEqual([\"a\", \"b\"], assigned2)\n110:        # assigned3: [str, bytes]\n111:        for3_assnode = next(assign_nodes)\n112:        assigned3 = list(for3_assnode.assigned_stmts())\n113:        self.assertNameNodesEqual([\"str\", \"bytes\"], assigned3)\n115:    def test_assigned_stmts_starred_for(self) -> None:\n116:        assign_stmts = extract_node(\n123:        for1_starred = next(assign_stmts.nodes_of_class(nodes.Starred))\n124:        assigned = next(for1_starred.assigned_stmts())\n125:        assert isinstance(assigned, astroid.List)\n126:        assert assigned.as_string() == \"[1, 2]\"\n129:        assign_stmt = extract_node(f\"{code} #@\")\n130:        starred = next(assign_stmt.nodes_of_class(nodes.Starred))\n131:        return next(starred.assigned_stmts())\n144:        assign_stmt = extract_node(f\"{code} #@\")\n145:        starred = next(assign_stmt.nodes_of_class(nodes.Starred))\n146:        self.assertRaises(InferenceError, list, starred.assigned_stmts())\n148:    def test_assigned_stmts_starred_assnames(self) -> None:\n156:    def test_assigned_stmts_starred_yes(self) -> None:\n173:    def test_assigned_stmts_starred_inside_call(self) -> None:\n178:        starred_stmts = starred.assigned_stmts()\n184:    def test_assign_stmts_starred_fails(self) -> None:\n188:        # code for assigned_stmts, without offering real benefit.\n193:    def test_assigned_stmts_assignments(self) -> None:\n"
+          }
+        ]
+      }
+    }
+  ]
+}

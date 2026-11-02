@@ -1,0 +1,97 @@
+{
+  "status": "authorized_frozen_post_merge_reverification",
+  "authorization": "User explicitly requested rerunning validation after merging PR5/PR6 on 2026-09-09.",
+  "policy_commit": "ccc073837c845c9a195eff2e66b06906e14f2057",
+  "config_source": "results/checkpoint-admission/repair-device/real-tool-gpu6-protocol.json",
+  "mode": "real_tool",
+  "condition": "tight_burst",
+  "phase": "main",
+  "model_id": "Qwen/Qwen2.5-7B-Instruct",
+  "model_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+  "methods": [
+    "apc",
+    "queue_aware",
+    "semantic_future_only",
+    "semantic_naive_pin"
+  ],
+  "blocks": [
+    {
+      "block_id": 1,
+      "seed": 1101,
+      "methods_in_order": [
+        "apc",
+        "queue_aware",
+        "semantic_naive_pin",
+        "semantic_future_only"
+      ]
+    },
+    {
+      "block_id": 2,
+      "seed": 1202,
+      "methods_in_order": [
+        "queue_aware",
+        "semantic_future_only",
+        "apc",
+        "semantic_naive_pin"
+      ]
+    },
+    {
+      "block_id": 3,
+      "seed": 1303,
+      "methods_in_order": [
+        "semantic_future_only",
+        "semantic_naive_pin",
+        "queue_aware",
+        "apc"
+      ]
+    },
+    {
+      "block_id": 4,
+      "seed": 1404,
+      "methods_in_order": [
+        "semantic_naive_pin",
+        "apc",
+        "semantic_future_only",
+        "queue_aware"
+      ]
+    }
+  ],
+  "design": "Post-merge repeat of the original four-seed/four-method Williams matrix, same seeds/order/workload. These seeds are already evaluated, not newly held-out. Fresh processes and common warmup/reset, same physical single GPU within this new matrix.",
+  "background_requests_per_trace": 96,
+  "foreground_tasks_per_trace": 4,
+  "budget": {
+    "gpu_lifecycle_cases": 1,
+    "max_measured_traces": 16,
+    "new_calibrations": 0,
+    "new_models": 0,
+    "new_sweeps": 0,
+    "new_provisioning": 0
+  },
+  "success": {
+    "all_semantic_future_tasks_correct": true,
+    "semantic_future_background_failures": 0,
+    "each_block_bg_point_and_one_sided_95_upper_max": 0.05,
+    "foreground_mean_relative_improvement_vs_apc_min": 0.1,
+    "independent_block_mean_difference_one_sided_95_upper_vs_apc": "<0",
+    "independent_block_mean_difference_one_sided_95_upper_vs_queue_aware": "<0"
+  },
+  "within_block_background_ci": {
+    "method": "paired_circular_moving_block_bootstrap",
+    "block_size": 8,
+    "resamples": 1000,
+    "seed": 17
+  },
+  "between_block_foreground_ci": {
+    "unit": "one four-task mean per method per seed; paired method differences across four seeds",
+    "method": "one_sided_95_student_t",
+    "n": 4,
+    "df": 3,
+    "critical_value": 2.3533634348018264
+  },
+  "scope_limit": "Merged-main revalidation on one fixed workload stratum and the SAME four previously evaluated traffic seeds. Do not pool old/new runs or claim new held-out/general performance evidence. Lifecycle fixes do not imply the old no-go must reverse.",
+  "instrumentation": "all-policy-native-lifecycle-v1",
+  "output_directory": "results/semantic-future-main-revalidation",
+  "stop": "One GPU lifecycle and exactly the existing16-trace matrix while scientifically valid. Stop for real code/identity/infrastructure failures, preserve evidence, no hidden reruns or added sweeps. No historical artifact overwrite.",
+  "validated_repair_head": "738813de80b94e5d40923bdfb649bca7d17013f8",
+  "previous_measured_source": "62de966349d41d97dae596abe64d9b4bb5575509"
+}

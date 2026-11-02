@@ -1,0 +1,189 @@
+{
+  "adapter_sha256": "afbaddcb5387cbd084c58efeb596b0be0091664ebf75445b8bd038d8c63cc4d3",
+  "answer_schema": {
+    "additionalProperties": false,
+    "properties": {
+      "answer": {
+        "type": "integer"
+      }
+    },
+    "required": [
+      "answer"
+    ],
+    "type": "object"
+  },
+  "architecture": "No redundant carrier. The required first normal dispatch_index field is the sole decision; runtime streams its constrained 0/1 value directly into native intent before the closing brace.",
+  "before_model_outcomes": true,
+  "before_v41_heldout_outcomes": true,
+  "causal_claim": "This consumes genuine action output from the unchanged normal task, not a post-outcome score, private label, duplicate choice, or separate inference.",
+  "cohorts": {
+    "e2e-8101": {
+      "decisions": 12,
+      "families": [
+        "fabrication_inspection",
+        "freight_dispatch",
+        "grid_monitoring",
+        "meteorology_observation",
+        "pharmacy_inventory",
+        "wetland_survey"
+      ],
+      "input_sha256": "6fde6242737193b267399990a13aaf3f570f9445f4de8d88d11dcd8684a044fa",
+      "labels_sha256": "e27258cfd874b89a613c8e8941c42f3d65399e68d11778d706e9ffc4ba45a7d1"
+    },
+    "e2e-8202": {
+      "decisions": 12,
+      "families": [
+        "fabrication_inspection",
+        "freight_dispatch",
+        "grid_monitoring",
+        "meteorology_observation",
+        "pharmacy_inventory",
+        "wetland_survey"
+      ],
+      "input_sha256": "fdadc282b5b2f61696af327d488fda131c0ac8b19e361df5f39da4a189a875c4",
+      "labels_sha256": "18421336e82f48f3ce4784e2832794480f85ee9a8b3ac69d06f132f464695e9d"
+    },
+    "smoke-8000": {
+      "decisions": 4,
+      "families": [
+        "harbor_clearance",
+        "orchard_monitoring"
+      ],
+      "input_sha256": "2d16245cfda6b0b8779e449e595bdb541c58553f87b125fa07fca2564f8f20c0",
+      "labels_sha256": "a849c78bb6516de06d9ac50b0ab778cbff909b64b54aadc40a4d07783f9644ff"
+    }
+  },
+  "dtype": "bfloat16",
+  "execution": {
+    "exact_heldout_traces": 6,
+    "gpu_hard_seconds_remaining": 1749,
+    "no_answer_retries": true,
+    "no_training_tuning_or_capacity_adjustment": true,
+    "one_physical_gpu": true,
+    "seen_integration_diagnostic_traces": 1,
+    "seen_v40_smoke_is_diagnostic_only": true
+  },
+  "frozen_at": "2026-09-15T14:56:16.894677+00:00",
+  "gate": {
+    "absolute_quality_min": 10,
+    "bg_p95_increase_vs_apc_max": 0.05,
+    "bg_work_increase_max": 0,
+    "each_seed_must_pass": true,
+    "fg_e2e_increase_vs_structural_max": 0,
+    "gross_continuation_saving_fraction_min": 0.8,
+    "net_oracle_saving_fraction_min": 0.7,
+    "quality_regression_max": 0,
+    "selection_min": 0.9166666666666666,
+    "total_prefill_reduction_min": 0.1
+  },
+  "gpu_workload": {
+    "accounting": "unchanged all-native root/candidates/normal/pressure/continuation work and latency; marginal guidance and envelope tokens are zero by construction",
+    "active_normal_allowance_tokens": 1024,
+    "arrivals": "unchanged candidate/root construction; start the bare normal reducer, then submit pressure after the tokenizer-frozen output-bearing step that exposes first-field dispatch_index; start the actual follow-up only from that same parsed normal body",
+    "block_size": 16,
+    "candidate_output_tokens": 1,
+    "capacity": "two 2048-token candidates consume 256 blocks; 64 extra blocks are fixed before outcomes for the active normal prompt/output; the 2048-token pressure request must evict candidate cache",
+    "carrier_control_prompt": false,
+    "contention": "authored fixed causal pressure injection for mechanism isolation, not natural multi-branch contention",
+    "continuation_max_tokens": 12,
+    "control": "runtime reads the required first normal dispatch_index digit directly; there is no carrier, duplicated decision, extra prompt guidance, or independent request",
+    "episodes_per_trace": 12,
+    "kv_cache_memory_bytes": 294518784,
+    "max_model_len": 4096,
+    "max_num_batched_tokens": 512,
+    "max_num_seqs": 2,
+    "normal_max_tokens": 24,
+    "pool_blocks_including_null": 321,
+    "prefix_tokens": 2048,
+    "pressure_injection_output_steps": 6,
+    "pressure_output_tokens": 1,
+    "pressure_tokens": 2048,
+    "quality": "actual follow-up is dispatched by normal body dispatch_index; exact JSON integer answer; at least 10/12 passes per method and seed with zero paired inline regression",
+    "reset": "release all captured checkpoints and reset prefix cache between episodes",
+    "root_output_tokens": 1
+  },
+  "historical_v3": "valid historical E2E_UTILITY_NO_GO; unchanged and not rerun",
+  "hypothesis": "A necessary normal reducer output can expose its actual follow-up choice early enough to improve native cache retention without a separate intent inference.",
+  "merged_model_path": "/home/user/octopus-utility-v3-20260915/merged-qwen-lora",
+  "methods": [
+    "apc",
+    "structural",
+    "inline"
+  ],
+  "model": "Qwen/Qwen2.5-7B-Instruct",
+  "model_seed": 17,
+  "normal_body_schema": {
+    "additionalProperties": false,
+    "properties": {
+      "dispatch_index": {
+        "enum": [
+          0,
+          1
+        ],
+        "type": "integer"
+      }
+    },
+    "required": [
+      "dispatch_index"
+    ],
+    "type": "object"
+  },
+  "order": {
+    "8101": [
+      "apc",
+      "structural",
+      "inline"
+    ],
+    "8202": [
+      "inline",
+      "structural",
+      "apc"
+    ]
+  },
+  "parent_v40_freeze": "results/model-intent/utility-v4/freeze-final.json",
+  "parent_v40_freeze_sha256": "94143b40815d33e538d55b3507317e985d32342b77d71eb00336568487c5730e",
+  "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+  "schema": "octopus-utility-v4.1-freeze-v1",
+  "scope": "authored inline-intent mechanism only; real natural-contention pilot is outside this scope",
+  "score_schema": "octopus-utility-v4.1-score-v1",
+  "stopping": "functional failure stops the matrix; any valid per-seed gate failure is terminal SCIENTIFIC_NO_GO; instrumentation faults are repaired and the same frozen protocol rerun",
+  "temperature": 0,
+  "tensor_parallel_size": 1,
+  "tokenizer_frozen_before_v41_heldout_outcomes": true,
+  "tokenizer_gate": {
+    "carrier_envelope_tokens_per_episode": 0,
+    "choice_digit_must_precede_closing_brace": true,
+    "incremental_control_tokens_per_episode": 0,
+    "incremental_control_tokens_per_trace": 0,
+    "normal_prompt_plus_output_max": 1024
+  },
+  "tokenizer_measurement": {
+    "carrier_envelope_tokens_per_episode": 0,
+    "choice_boundaries": {
+      "0-compact": {
+        "complete_output_tokens": 6,
+        "ready_output_steps": 5
+      },
+      "0-spaced": {
+        "complete_output_tokens": 7,
+        "ready_output_steps": 6
+      },
+      "1-compact": {
+        "complete_output_tokens": 6,
+        "ready_output_steps": 5
+      },
+      "1-spaced": {
+        "complete_output_tokens": 7,
+        "ready_output_steps": 6
+      }
+    },
+    "incremental_control_tokens_per_episode": 0,
+    "incremental_control_tokens_per_trace": 0,
+    "measured_at": "2026-09-15T14:56:16.894651+00:00",
+    "normal_prompt_plus_output_tokens_max": 481,
+    "pressure_injection_output_steps": 6,
+    "tokenizer_class": "Qwen2Tokenizer"
+  },
+  "trace_schema": "octopus-utility-v4.1-gpu-trace-v1",
+  "training_runs": 0
+}

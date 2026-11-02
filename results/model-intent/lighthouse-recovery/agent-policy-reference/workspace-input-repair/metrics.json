@@ -1,0 +1,132 @@
+{
+  "actions": {
+    "action_types": {
+      "edit": 1,
+      "find": 4,
+      "invalid_decision": 29,
+      "search": 5,
+      "view": 11
+    },
+    "canonical_action_records": 21,
+    "controller_actions": 50,
+    "failed_actions": 34,
+    "invalid_decisions": 29,
+    "physical_tool_actions": 17,
+    "raw_model_requests": 50,
+    "successful_actions": 16,
+    "unchanged_state_rejections": 4,
+    "unique_canonical_actions": 19,
+    "unique_failed_actions": 6
+  },
+  "active_gpu_sample": {
+    "device_index": 0,
+    "device_uuid": "GPU-c5792743-87d0-80a0-8a3e-876d31e854d9",
+    "memory_used_mib": 42946,
+    "note": "The sample was taken while the task-owned relay process was live; instantaneous utilization was between decode bursts.",
+    "power_watts": 86.16,
+    "relay_process_observed": true,
+    "schema": "octopus-workspace-input-active-gpu-sample-v1",
+    "utilization_percent": 0
+  },
+  "budget_seconds": {
+    "gpu_remaining": 824.9472978399135,
+    "gpu_used": 345.0527021600865,
+    "official_grading_remaining": 1790.6801169919781,
+    "official_grading_used": 9.319883008021861,
+    "phase_gpu_remaining": 854.9472978399135
+  },
+  "native": {
+    "actual_decode_tokens": 10405,
+    "actual_prefill_tokens": 372383,
+    "adopted_prefix_tokens": 66640,
+    "allocation_rejections": 0,
+    "cache_evictions": 0,
+    "capsule_tokens": 20125,
+    "max_actual_decode_tokens": 353,
+    "max_actual_prefill_tokens": 9369,
+    "max_prompt_tokens": 10729,
+    "max_simultaneous_scheduler_requests": 1,
+    "preemptions": 0,
+    "request_records": 50,
+    "selected_parent_tokens": 66003,
+    "terminal_pool": {
+      "active_blocks": 0,
+      "cold_free_blocks": 7888,
+      "free_blocks": 31790,
+      "request_owned_blocks": 0,
+      "retention_only_blocks": 0,
+      "shared_request_retention_blocks": 0,
+      "total_blocks": 31790,
+      "warm_cached_blocks": 23902
+    }
+  },
+  "quality": {
+    "decision": "QUALITY_FAIL",
+    "developer_test_actions": 0,
+    "finish_actions": 0,
+    "legitimate_product_patch": true,
+    "official_fail_to_pass": {
+      "lighthouse-core/test/audits/dobetterweb/js-libraries-test.js": "FAILED"
+    },
+    "official_resolved": false,
+    "patch_bytes": 621,
+    "stop_reason": "action_limit"
+  },
+  "schema": "octopus-workspace-input-quality-metrics-v1",
+  "timing_seconds": {
+    "child_process_wall": 366.2523625269532,
+    "gpu_engine_scope": 345.0527021600865,
+    "official_grading": 9.319883008021861,
+    "runner_wall": 381,
+    "solver_e2e": 347.150547740981,
+    "solver_parent": 366.5583955210168
+  },
+  "validation": {
+    "capsule_present_in_every_context": true,
+    "feedback_records_complete": true,
+    "initial_empty_capsule_tokens": 36,
+    "initial_input_exact": true,
+    "initial_prompt_ids_sha256": "0afe2590c932164377c6490d15bf2f92aea1c8c4e174eb23fb2ef9fb1677c998",
+    "initial_prompt_tokens": 1481,
+    "limits_valid": true
+  },
+  "workspace_input": {
+    "decisive_trace": "The first request correctly viewed /testbed, exercised the real root directory producer, and led to successful directory, source-view, find, grep/search and edit actions. The model made a nonempty product patch but ran no developer test and never finished; after one missing path, four state-scoped actions were rejected, followed by 29 invalid function calls. The original official test remained failed.",
+    "edit_path": "lighthouse-core/lib/stack-collector.js",
+    "initial_action": {
+      "action": "view",
+      "count": 200,
+      "path": ".",
+      "start": 1
+    },
+    "initial_action_success": true,
+    "nonhidden_directory_paths_revealed": [
+      "docs",
+      "lighthouse-cli",
+      "lighthouse-core",
+      "stack-packs"
+    ],
+    "root_directory_producer_exercised": true,
+    "successful_find_paths": [
+      ".",
+      "lighthouse-core/lib",
+      "lighthouse-core/audits"
+    ],
+    "successful_search_paths": [
+      "lighthouse-core",
+      "lighthouse-core/audits",
+      "lighthouse-core/audits"
+    ],
+    "successful_source_views": [
+      ".",
+      "stack-packs",
+      "stack-packs/packs",
+      "stack-packs/packs/react.js",
+      "lighthouse-core/lib/stack-collector.js",
+      "lighthouse-core/runner.js",
+      "lighthouse-core/lib/stack-packs.js",
+      "stack-packs/index.js",
+      "lighthouse-core/audits/network-requests.js"
+    ]
+  }
+}

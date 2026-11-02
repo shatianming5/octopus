@@ -1,0 +1,17 @@
+{
+  "schema": "octopus-lighthouse-exact-input-decoding-pair-v1",
+  "before_model_outputs": true,
+  "claim": "Is the observed source-visible unhelpful search dependent on request-level JSON grammar, rather than an unconstrained model policy on the same input?",
+  "source_episode": "../regex-search/execution/solver/episode.json",
+  "action_index": 3,
+  "input_tokens": 3003,
+  "literal_source_window_bytes": 3108,
+  "proof": "Prefix consists only of successful list/search/read and ends with a complete source read. V3 recovery/path/verification masks are therefore unrestricted. Each reference checks the source window against actual decoded input IDs before engine creation. Reference freezes differ only in frozen_at and explicit decoding mode.",
+  "arms": ["fresh stock-vLLM with original exact schema string", "fresh stock-vLLM with no request JSON grammar"],
+  "fixed": "Same actual prompt-token IDs, original prompt words,14Bweights,seed17,temp0,BF16,512outputtokens,stock engine config and sameGPU9. Both engines disable prefix caching and run in separate fresh subprocesses; grammar removal is not mixed with physical-reuse removal within the pair. No tools, task edits, official evaluations, training or new task.",
+  "max_model_requests": 2,
+  "phase_gpu_seconds_max": 600,
+  "per_arm_gpu_seconds_max": 300,
+  "interpretation": "Constrained control matching original links this input to the captured trajectory. Different unconstrained output isolates a decoding effect in this pair, not an official repair or global bug. Identical action bounds grammar dependence at this input only. Non-JSON output remains a reported parse failure without cleanup/reformatting/retry. A nonmatching control limits attribution to the fresh-engine pair.",
+  "stop": "One output per frozen arm or actual execution/budget blocker. No outcome-driven replay, third request, new prompt, action extension or automatic quality run. Source/evaluator labels remain excluded. Preserve raw outputs, identities, source visibility, exact schema application and cleanup evidence."
+}

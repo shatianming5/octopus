@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "keleshev__schema.24a30457.lm_rew__jWwGVFH__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# Schema: additionalProperties not correctly detected in JSON schema\n\n**Describe the bug**\nWhen generating a JSON schema, the `additionalProperties` field is not correctly set for certain schema types. This affects schemas that use `str` or `object` as keys, which should allow additional properties.\n\n**To Reproduce**\nHere's a simple example that demonstrates the issue:\n\n```python\nfrom schema import Schema\n\n# This should allow additional properties\nschema1 = Schema({str: str})\njson_schema1 = schema1.json_schema('my-id')\nprint(json_schema1['additionalProperties'])  # Should be True, but is False\n\n# This should also allow additional properties\nschema2 = Schema({object: int})\njson_schema2 = schema2.json_schema('my-id')\nprint(json_schema2['additionalProperties'])  # Should be True, but is False\n\n# Optional keys should also allow additional properties\nfrom schema import Optional\nschema3 = Schema({Optional(str): str})\njson_schema3 = schema3.json_schema('my-id')\nprint(json_schema3['additionalProperties'])  # Should be True, but is False\n```\n\n**Expected behavior**\nThe `additionalProperties` field in the generated JSON schema should be `True` when the schema allows additional properties, such as when using `str` or `object` as keys.\n\n**Actual behavior**\nThe `additionalProperties` field is incorrectly set to `False` for schemas that should allow additional properties.\n\n**Environment info**\n- Python version: 3.10\n- Schema version: latest"
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository structure and locate the JSON schema generation code related to `additionalProperties`.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-dba93f30-c8cc-4214-b8d1-d15ba852ab3e-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -50"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-dba93f30-c8cc-4214-b8d1-d15ba852ab3e-0",
+            "content": "total 176\ndrwxr-xr-x 1 root root  4096 Sep 22 18:08 .\ndrwxr-xr-x 1 root root  4096 Sep 22 18:08 ..\n-rw-r--r-- 1 root root   291 Jul 13  2025 .editorconfig\ndrwxr-xr-x 8 root root  4096 Jul 13  2025 .git\n-rw-r--r-- 1 root root  6551 Jul 13  2025 .gitchangelog.rc\n-rw-r--r-- 1 root root  2354 Jul 13  2025 .gitignore\n-rw-rw-r-- 1 1005 1005     0 Sep 22 15:44 .gitkeep\n-rw-r--r-- 1 root root   353 Jul 13  2025 .pre-commit-config.yaml\n-rw-r--r-- 1 root root   607 Jul 13  2025 .travis.yml\n-rw-r--r-- 1 root root  3056 Jul 13  2025 CHANGELOG.md\n-rw-r--r-- 1 root root  1086 Jul 13  2025 LICENSE-MIT\n-rw-r--r-- 1 root root    93 Jul 13  2025 MANIFEST.in\n-rw-r--r-- 1 root root 33192 Jul 13  2025 README.rst\n-rw-r--r-- 1 root root   128 Jul 13  2025 pyproject.toml\n-rw-r--r-- 1 root root    43 Jul 13  2025 requirements.txt\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 schema\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 schema.egg-info\n-rw-r--r-- 1 root root    22 Jul 13  2025 setup.cfg\n-rw-r--r-- 1 root root  1516 Jul 13  2025 setup.py\n-rw-r--r-- 1 root root 61652 Jul 13  2025 test_schema.py\n-rw-r--r-- 1 root root   842 Jul 13  2025 tox.ini\n/testbed/test_schema.py\n/testbed/setup.py\n/testbed/schema/__init__.py\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-e9f702b7-6ee2-4310-a20f-312d002359a8-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed/schema && wc -l /testbed/schema/__init__.py /testbed/test_schema.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-e9f702b7-6ee2-4310-a20f-312d002359a8-1",
+            "content": "total 44\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 .\ndrwxr-xr-x 1 root root  4096 Sep 22 18:08 ..\n-rw-r--r-- 1 root root 34916 Jul 13  2025 __init__.py\n-rw-r--r-- 1 root root     0 Jul 13  2025 py.typed\n  923 /testbed/schema/__init__.py\n 1987 /testbed/test_schema.py\n 2910 total\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-c2ba1c34-cabe-4870-84df-a9de75f0ce72-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "grep -n \"additionalProperties\\|json_schema\\|additional_properties\" /testbed/schema/__init__.py /testbed/test_schema.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-c2ba1c34-cabe-4870-84df-a9de75f0ce72-2",
+            "content": "a(\"my-id\") == {\n/testbed/test_schema.py:1539:        \"additionalProperties\": False,\n/testbed/test_schema.py:1559:def test_json_schema_ref_in_list():\n/testbed/test_schema.py:1566:    generated_json_schema = s.json_schema(\"my-id\")\n/testbed/test_schema.py:1568:    assert generated_json_schema == {\n/testbed/test_schema.py:1582:def test_json_schema_refs():\n/testbed/test_schema.py:1585:    generated_json_schema = s.json_schema(\"my-id\", use_refs=True)\n/testbed/test_schema.py:1588:    assert generated_json_schema[\"type\"] == \"object\"\n/testbed/test_schema.py:1589:    assert sorted(generated_json_schema[\"required\"]) == [\"test1\", \"test2\", \"test3\"]\n/testbed/test_schema.py:1590:    assert generated_json_schema[\"additionalProperties\"] is False\n/testbed/test_schema.py:1591:    assert generated_json_schema[\"$id\"] == \"my-id\"\n/testbed/test_schema.py:1592:    assert generated_json_schema[\"$schema\"] == \"http://json-schema.org/draft-07/schema#\"\n/testbed/test_schema.py:1600:    for v in generated_json_schema[\"properties\"].values():\n/testbed/test_schema.py:1609:def test_json_schema_refs_is_smaller():\n/testbed/test_schema.py:1657:    assert len(json.dumps(s.json_schema(\"my-id\", use_refs=False))) > len(\n/testbed/test_schema.py:1658:        json.dumps(s.json_schema(\"my-id\", use_refs=True))\n/testbed/test_schema.py:1662:def test_json_schema_refs_no_missing():\n/testbed/test_schema.py:1710:    json_s = s.json_schema(\"my-id\", use_refs=True)\n/testbed/test_schema.py:1739:def test_json_schema_definitions():\n/testbed/test_schema.py:1743:    json_schema = main_schema.json_schema(\"my-id\")\n/testbed/test_schema.py:1744:    assert sorted_dict(json_schema) == {\n/testbed/test_schema.py:1751:        \"additionalProperties\": False,\n/testbed/test_schema.py:1759:                \"additionalProperties\": False,\n/testbed/test_schema.py:1765:def test_json_schema_definitions_and_literals():\n/testbed/test_schema.py:1780:    json_schema = main_schema.json_schema(\"my-id\")\n/testbed/test_schema.py:1781:    assert sorted_dict(json_schema) == {\n/testbed/test_schema.py:1795:        \"additionalProperties\": False,\n/testbed/test_schema.py:1806:                \"additionalProperties\": False,\n/testbed/test_schema.py:1812:def test_json_schema_definitions_nested():\n/testbed/test_schema.py:1823:    json_schema = main_schema.json_schema(\"my-id\")\n/testbed/test_schema.py:1824:    assert sorted_dict(json_schema) == {\n/testbed/test_schema.py:1831:        \"additionalProperties\": False,\n/testbed/test_schema.py:1842:                \"additionalProperties\": False,\n/testbed/test_schema.py:1848:                \"additionalProperties\": False,\n/testbed/test_schema.py:1854:def test_json_schema_definitions_recursive():\n/testbed/test_schema.py:1867:    json_schema = person.json_schema(\"my-id\")\n/testbed/test_schema.py:1868:    assert json_schema == {\n/testbed/test_schema.py:1884:                \"additionalProperties\": False,\n/testbed/test_schema.py:1890:def test_json_schema_definitions_invalid():\n/testbed/test_schema.py:1895:def test_json_schema_default_value():\n/testbed/test_schema.py:1897:    assert s.json_schema(\"my-id\") == {\n/testbed/test_schema.py:1901:        \"additionalProperties\": False,\n/testbed/test_schema.py:1907:def test_json_schema_default_value_with_literal():\n/testbed/test_schema.py:1909:    assert s.json_schema(\"my-id\") == {\n/testbed/test_schema.py:1913:        \"additionalProperties\": False,\n/testbed/test_schema.py:1919:def test_json_schema_default_is_none():\n/testbed/test_schema.py:1921:    assert s.json_schema(\"my-id\") == {\n/testbed/test_schema.py:1925:        \"additionalProperties\": False,\n/testbed/test_schema.py:1931:def test_json_schema_default_is_tuple():\n/testbed/test_schema.py:1933:    assert s.json_schema(\"my-id\") == {\n/testbed/test_schema.py:1937:        \"additionalProperties\": False,\n/testbed/test_schema.py:1943:def test_json_schema_default_is_literal():\n/testbed/test_schema.py:1945:    assert s.json_schema(\"my-id\") == {\n/testbed/test_schema.py:1949:        \"additionalProperties\": False,\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-59852330-2cb1-4b9a-9524-b91dfc5d2e61-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "grep -n \"def json_schema\\|additionalProperties\\|additional_properties\\|_json_schema\" /testbed/schema/__init__.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-59852330-2cb1-4b9a-9524-b91dfc5d2e61-3",
+            "content": "575:    def json_schema(\n590:        def _json_schema(\n665:                    definitions_by_name[cast(str, schema.name)] = _json_schema(\n679:                        return_schema[\"items\"] = _json_schema(\n683:                        return_schema[\"items\"] = _json_schema(\n706:                            new_value = _json_schema(\n720:                        new_value = _json_schema(\n744:                    additional_properties = i\n749:                        def _key_allows_additional_properties(key: Any) -> bool:\n752:                                return _key_allows_additional_properties(key.schema)\n776:                        additional_properties = (\n777:                            additional_properties\n778:                            or _key_allows_additional_properties(key)\n786:                            expanded_schema[key_name] = _json_schema(\n802:                                expanded_schema[_get_key_name(or_key)] = _json_schema(\n813:                            \"additionalProperties\": additional_properties,\n834:        return _json_schema(self, True)\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-32129e50-411a-418b-8bb5-43f9e36ba72c-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '575,834p' /testbed/schema/__init__.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-32129e50-411a-418b-8bb5-43f9e36ba72c-4",
+            "content": "                         return _key_allows_additional_properties(key.schema)\n\n                            return key == str or key == object\n\n                        def _get_key_description(key: Any) -> Union[str, None]:\n                            \"\"\"Get the description associated to a key (as specified in a Literal object). Return None if not a Literal\"\"\"\n                            if isinstance(key, Optional):\n                                return _get_key_description(key.schema)\n\n                            if isinstance(key, Literal):\n                                return key.description\n\n                            return None\n\n                        def _get_key_name(key: Any) -> Any:\n                            \"\"\"Get the name of a key (as specified in a Literal object). Return the key unchanged if not a Literal\"\"\"\n                            if isinstance(key, Optional):\n                                return _get_key_name(key.schema)\n\n                            if isinstance(key, Literal):\n                                return key.schema\n\n                            return key\n\n                        additional_properties = (\n                            additional_properties\n                            or _key_allows_additional_properties(key)\n                        )\n                        sub_schema = _to_schema(s[key], ignore_extra_keys=i)\n                        key_name = _get_key_name(key)\n\n                        if isinstance(key_name, str):\n                            if not isinstance(key, Optional):\n                                required_keys.append(key_name)\n                            expanded_schema[key_name] = _json_schema(\n                                sub_schema,\n                                is_main_schema=False,\n                                description=_get_key_description(key),\n                            )\n                            if isinstance(key, Optional) and hasattr(key, \"default\"):\n                                expanded_schema[key_name][\"default\"] = _to_json_type(\n                                    _invoke_with_optional_kwargs(key.default, **kwargs)\n                                    if callable(key.default)\n                                    else key.default\n                                )\n                        elif isinstance(key_name, Or):\n                            # JSON schema does not support having a key named one name or another, so we just add both options\n                            # This is less strict because we cannot enforce that one or the other is required\n\n                            for or_key in key_name.args:\n                                expanded_schema[_get_key_name(or_key)] = _json_schema(\n                                    sub_schema,\n                                    is_main_schema=False,\n                                    description=_get_key_description(or_key),\n                                )\n\n                    return_schema.update(\n                        {\n                            \"type\": \"object\",\n                            \"properties\": expanded_schema,\n                            \"required\": required_keys,\n                            \"additionalProperties\": additional_properties,\n                        }\n                    )\n\n            if is_main_schema:\n                return_schema.update(\n                    {\n                        \"$id\": schema_id,\n                        \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n                    }\n                )\n                if self._name:\n                    return_schema[\"title\"] = self._name\n\n                if definitions_by_name:\n                    return_schema[\"definitions\"] = {}\n                    for definition_name, definition in definitions_by_name.items():\n                        return_schema[\"definitions\"][definition_name] = definition\n\n            return _create_or_use_ref(return_schema)\n\n        return _json_schema(self, True)\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-fd8fe0a2-4fe7-4b00-ae70-4bfe5e689711-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '1,100p' /testbed/schema/__init__.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-fd8fe0a2-4fe7-4b00-ae70-4bfe5e689711-5",
+            "content": "\"\"\"schema is a library for validating Python data structures, such as those\nobtained from config-files, forms, external services or command-line\nparsing, converted from JSON/YAML (or something else) to Python data-types.\"\"\"\n\nimport inspect\nimport re\nfrom typing import (\n    TYPE_CHECKING,\n    Any,\n    Callable,\n    Dict,\n    Generic,\n    Iterable,\n    List,\n    NoReturn,\n    Sequence,\n    Set,\n    Sized,\n    Tuple,\n    Type,\n    TypeVar,\n    Union,\n    cast,\n)\n\n# Use TYPE_CHECKING to determine the correct type hint but avoid runtime import errors\nif TYPE_CHECKING:\n    # Only for type checking purposes, we import the standard ExitStack\n    from contextlib import ExitStack\nelse:\n    try:\n        from contextlib import ExitStack  # Python 3.3 and later\n    except ImportError:\n        from contextlib2 import ExitStack  # Python 2.x/3.0-3.2 fallback\n\n\n__version__ = \"0.7.7\"\n__all__ = [\n    \"Schema\",\n    \"And\",\n    \"Or\",\n    \"Regex\",\n    \"Optional\",\n    \"Use\",\n    \"Forbidden\",\n    \"Const\",\n    \"Literal\",\n    \"SchemaError\",\n    \"SchemaWrongKeyError\",\n    \"SchemaMissingKeyError\",\n    \"SchemaForbiddenKeyError\",\n    \"SchemaUnexpectedTypeError\",\n    \"SchemaOnlyOneAllowedError\",\n]\n\n\nclass SchemaError(Exception):\n    \"\"\"Error during Schema validation.\"\"\"\n\n    def __init__(\n        self,\n        autos: Union[Sequence[Union[str, None]], None],\n        errors: Union[List, str, None] = None,\n    ):\n        self.autos = autos if isinstance(autos, List) else [autos]\n        self.errors = errors if isinstance(errors, List) else [errors]\n        Exception.__init__(self, self.code)\n\n    @property\n    def code(self) -> str:\n        \"\"\"Remove duplicates in autos and errors list and combine them into a single message.\"\"\"\n\n        def uniq(seq: Iterable[Union[str, None]]) -> List[str]:\n            \"\"\"Utility function to remove duplicates while preserving the order.\"\"\"\n            seen: Set[str] = set()\n            unique_list: List[str] = []\n            for x in seq:\n                if x is not None and x not in seen:\n                    seen.add(x)\n                    unique_list.append(x)\n            return unique_list\n\n        data_set = uniq(self.autos)\n        error_list = uniq(self.errors)\n\n        return \"\\n\".join(error_list if error_list else data_set)\n\n\nclass SchemaWrongKeyError(SchemaError):\n    \"\"\"Error Should be raised when an unexpected key is detected within the\n    data set being.\"\"\"\n\n    pass\n\n\nclass SchemaMissingKeyError(SchemaError):\n    \"\"\"Error should be raised when a mandatory key is not found within the\n    data set being validated\"\"\"\n\n    pass\n"
+          }
+        ]
+      }
+    }
+  ]
+}

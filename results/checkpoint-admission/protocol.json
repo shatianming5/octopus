@@ -1,0 +1,292 @@
+{
+  "budget_seconds": 11400,
+  "completion_budget_amendment": {
+    "previous_seconds": 10800,
+    "new_seconds": 11400,
+    "additional_seconds": 600,
+    "decision": "One explicit bounded completion extension under the user's autonomous CORE execution authorization, after the original budget stopped at 10836.159 seconds.",
+    "scope": "Only the two already-specified controlled tight_burst triples for seeds 101 and 303, six traces total. No new selectors, samples, models, calibration or tuning.",
+    "reason": "Finish the fixed paired comparator matrix after the authoritative baseline correction; not selection for a positive claim.",
+    "preservation": "Keep the original budget-exhausted execution record and all prior trace metadata immutable."
+  },
+  "calibration": {
+    "calibration_id": "independent-seed707-cuda-apc-v2",
+    "deadline_seconds": 8.303620841008366,
+    "initial_price": 0.0,
+    "loss_pressure": [
+      0.0,
+      1.0
+    ],
+    "loss_probability": [
+      0.0,
+      0.25
+    ],
+    "prefill_contexts": [
+      {
+        "batch": 1,
+        "pressure": 0.09120706854781246,
+        "seconds": [
+          0,
+          0.10598300933837891,
+          0.31453695678710936,
+          0.6599987182617187
+        ],
+        "tokens": [
+          0,
+          1024,
+          3072,
+          6144
+        ]
+      },
+      {
+        "batch": 4,
+        "pressure": 0.2006555508051874,
+        "seconds": [
+          0,
+          0.1035709457397461,
+          0.3171581420898437,
+          0.6675630035400391
+        ],
+        "tokens": [
+          0,
+          1024,
+          3072,
+          6144
+        ]
+      },
+      {
+        "batch": 1,
+        "pressure": 0.365296803652968,
+        "seconds": [
+          0,
+          0.10396665954589844,
+          0.3170989685058594,
+          0.66941748046875
+        ],
+        "tokens": [
+          0,
+          1024,
+          3072,
+          6144
+        ]
+      },
+      {
+        "batch": 4,
+        "pressure": 0.6575342465753424,
+        "seconds": [
+          0,
+          0.10443878173828125,
+          0.3202037811279297,
+          0.6751498413085938
+        ],
+        "tokens": [
+          0,
+          1024,
+          3072,
+          6144
+        ]
+      }
+    ],
+    "prefill_seconds": [
+      0,
+      0.10598300933837891,
+      0.31453695678710936,
+      0.6599987182617187
+    ],
+    "prefill_tokens": [
+      0,
+      1024,
+      3072,
+      6144
+    ],
+    "price_learning_rate": 1.060938974887904e-06,
+    "reuse_probability": 1.0,
+    "risk_seconds": 0.3632571907043457,
+    "selected_ttl_seconds": 8.0,
+    "tool_priors": {
+      "fast": 0.7666666666666666,
+      "slow": 4.666666666666667
+    },
+    "ttl_seconds": [
+      0.5,
+      2.0,
+      8.0
+    ],
+    "unknown_eta_seconds": 2.716666666666667
+  },
+  "conditions": {
+    "roomy_short": {
+      "kv_bytes": 2147483648,
+      "rate_rps": 1.0,
+      "wait_scale": 0.05
+    },
+    "tight_burst": {
+      "kv_bytes": 536870912,
+      "rate_rps": 2.0,
+      "wait_scale": 1.0
+    },
+    "tight_low": {
+      "kv_bytes": 536870912,
+      "rate_rps": 1.0,
+      "wait_scale": 1.0
+    }
+  },
+  "dtype": "bfloat16",
+  "engine": {
+    "block_size": 16,
+    "enable_chunked_prefill": true,
+    "enable_prefix_caching": true,
+    "matched_async_scheduling": false,
+    "matched_enforce_eager": true,
+    "max_model_len": 8192,
+    "max_num_batched_tokens": 8192,
+    "max_num_seqs": 8
+  },
+  "freeze": {
+    "background_requests": 96,
+    "budget": "81 traces, 72 controlled + 9 real-tool; at most 3 GPU-host execution hours including startup",
+    "calibration_seed": 707,
+    "pilot_evidence": {
+      "apc": {
+        "d95": 0.0,
+        "foreground_difference_seconds": 0.0,
+        "paired_block_95_upper": 0.0,
+        "point_feasible": true,
+        "quality_unchanged": true
+      },
+      "cost_greedy": {
+        "d95": 0.0009661938603753306,
+        "foreground_difference_seconds": 0.0007356575224548578,
+        "paired_block_95_upper": 0.002943512829963524,
+        "point_feasible": true,
+        "quality_unchanged": true
+      },
+      "queue_aware": {
+        "d95": 0.01681511725231344,
+        "foreground_difference_seconds": 0.32088761788327247,
+        "paired_block_95_upper": 0.018501208463020502,
+        "point_feasible": true,
+        "quality_unchanged": true
+      }
+    },
+    "pilot_seed": 909,
+    "post_pilot_repairs": [
+      "deduplicate frequency observations on allocator retries",
+      "align KEEP horizon cost with shortened causal ETA deadline",
+      "add native eviction and unique retained block-time counters"
+    ],
+    "reason": "96 paired arrivals gave pilot moving-block upper bounds within 5%; retain this bounded sample count, with P99 descriptive and three held-out traffic seeds. No pilot foreground advantage was established.",
+    "selected_ttl_seconds": 8.0,
+    "ttl_candidate_values": {
+      "0.5": 0.0,
+      "2.0": 0.0,
+      "8.0": 512.0
+    },
+    "ttl_objective": "independent observed APC miss tokens covered per TTL second"
+  },
+  "generation_seed": 17,
+  "amendment": {
+    "reason": "The initial nine real-tool anchors incorrectly reused controlled replay ETA priors despite independent real-tool measurements being available.",
+    "scope": "Replace only the same nine real-tool selectors. Preserve initial rows as ETA-prior diagnostic data; no controlled trace, seed, cohort, cost curve, TTL candidate or SLO gate changes.",
+    "additional_trace_attempts": 9,
+    "total_valid_main_traces": 81,
+    "budget_seconds_unchanged": 10800,
+    "source_measurements": "calibration-v2/calibration.json:real_tool_seconds"
+  },
+  "real_tool_priors": {
+    "fast": 0.02545046992599964,
+    "slow": 0.02227746113203466
+  },
+  "repair_device_amendment": {
+    "authorized_at_utc": "2026-09-08T19:40:52Z",
+    "host": "7443-5x4090-68",
+    "controlled_original_gpu_uuid": "GPU-7879fd32-ec29-b6a1-6cf4-725d454a8170",
+    "real_tool_repair_gpu_uuid": "GPU-aa7be32a-43d1-b13e-45dd-ef46033f7631",
+    "real_tool_repair_physical_index": 6,
+    "controlled_queue_repair_gpu_uuid": "GPU-aa7be32a-43d1-b13e-45dd-ef46033f7631",
+    "controlled_queue_repair_scope": "The already-planned 27 adjacent APC/queue/full controls form a separate GPU6 repair epoch. Preserve original GPU3 controlled traces; use only the fresh GPU6 controls for those queue comparisons.",
+    "controlled_cost_calibration": "repair-device/gpu6-controlled-cost-calibration.json",
+    "controlled_derived_protocol": "repair-device/controlled-gpu6-protocol.json",
+    "hardware": "NVIDIA GeForce RTX4090D, 49140 MiB, driver 570.133.20",
+    "scope": "Replacement of one authorized single-GPU slot, not parallel measurement or new provisioning. All nine real-tool repaired selectors, including fresh APC controls, and remaining GPU stress checks use GPU6.",
+    "independent_cost_calibration": "repair-device/gpu6-cost-calibration.json",
+    "derived_real_tool_protocol": "repair-device/real-tool-gpu6-protocol.json",
+    "calibration_scope": "Six independent cold-prefix CUDA cost measurements: 1024/3072/6144 tokens, batch 1/4, only the repaired 512 MiB capacity. No held-out fitting.",
+    "comparability": "Every real-tool matched block is wholly on GPU6. Original controlled GPU3 and repaired real-tool GPU6 remain separate workload strata. Do not claim all primary traces used one physical GPU.",
+    "unchanged": "model/revision/traffic/seeds/cohort/capacity/TTL choices/APC loss proxy/absolute calibration deadline/5% evaluation gate"
+  },
+  "queue_baseline_amendment": {
+    "implementation": "local-ready-waiting-free-lru-no-reservation",
+    "superseded_controlled_queue_rows": 9,
+    "paired_controlled_repair_traces": 27,
+    "real_tool_prior_repair_traces": 9,
+    "primary_replacements": 18,
+    "additional_fresh_paired_controls": 18,
+    "total_repair_attempts": 36,
+    "valid_primary_trace_count_unchanged": 81,
+    "budget_seconds_unchanged": 10800,
+    "scope": "Same conditions, seeds, cohorts and model. Queue repairs run next to fresh APC/full controls; no hybrid/interval/model runs and no unannounced budget expansion.",
+    "actual_stock_target": "dense full-attention APC/LRU",
+    "frequency_comparator": "local full-attention second-hit lease, not a stock engine option",
+    "upstream_tag_commit": "2cf0a6915ce544dc493a0990f2ea38d81601128a"
+  },
+  "main": {
+    "background_output_tokens": 32,
+    "background_prompt_tokens": 2048,
+    "background_requests": 96,
+    "bootstrap_block_size": 8,
+    "seed": 909,
+    "shared_prompt_tokens": 3072,
+    "task_arrivals": [
+      0,
+      12,
+      24,
+      36
+    ],
+    "task_timeout_seconds": 180,
+    "trace_timeout_seconds": 600
+  },
+  "model": "Qwen/Qwen2.5-7B-Instruct",
+  "model_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+  "pilot": {
+    "background_output_tokens": 32,
+    "background_prompt_tokens": 2048,
+    "background_requests": 96,
+    "bootstrap_block_size": 8,
+    "seed": 909,
+    "shared_prompt_tokens": 3072,
+    "task_arrivals": [
+      0,
+      12,
+      24,
+      36
+    ],
+    "task_timeout_seconds": 180,
+    "trace_timeout_seconds": 600
+  },
+  "planned_trace_budget": {
+    "controlled": 72,
+    "real_tool": 9,
+    "total": 81
+  },
+  "seeds": [
+    101,
+    202,
+    303
+  ],
+  "slo_relative_p95_limit": 0.05,
+  "status": "main-frozen",
+  "study_id": "checkpoint-admission-v2",
+  "tool_latency_distribution": {
+    "fast": [
+      0.3,
+      0.8,
+      1.2
+    ],
+    "slow": [
+      2.0,
+      4.0,
+      8.0
+    ]
+  }
+}

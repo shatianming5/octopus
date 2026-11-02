@@ -1,0 +1,83 @@
+{
+  "schema": "octopus-teacher-ceiling-terminal-v1",
+  "scope_id": "teacher-ceiling-v2-20260917",
+  "status": "blocked",
+  "decision": "MODEL_CACHE_MISSING",
+  "finished_at": "2026-09-17T15:32:39Z",
+  "source": {
+    "repository": "shatianming5/octopus",
+    "commit": "c91b921c1cfba18c5780124e8d2fbaa7759d256a",
+    "worktree_was_clean_before_evidence": true,
+    "lighthouse_actor_reference_sha256": "b582907dd4bc41f8e58bcd7f1a8703e308a476c34a34a8a5122e5e6664497622",
+    "lighthouse_quality_sha256": "18818bac12007d8b2ed71b4962a1fa9fc3026fd2246b73e73669113919c58cd4"
+  },
+  "task": {
+    "instance_id": "GoogleChrome__lighthouse-10176",
+    "repo": "GoogleChrome/lighthouse",
+    "base_commit": "a5dbdd2eff4238213dcaad404d0e06d8d5d2489b",
+    "image": "sha256:b8d51faee583632569625837d3f5b1a8a58f19c90f659597bd33234b145f7eae"
+  },
+  "teacher": {
+    "name": "Qwen/Qwen2.5-Coder-32B-Instruct",
+    "declared_path": "/mnt/ssd2/user/models/Qwen2.5-Coder-32B-Instruct",
+    "host": "user@198.51.100.10:20186",
+    "declared_path_exists": false,
+    "exact_name_matches_under_mnt_maxdepth6": 0,
+    "config_identity": null,
+    "tokenizer_identity": null,
+    "reason": "The authorized cached model and tokenizer directory is absent. Downloads, alternate models, and alternate hosts are outside the scientific freeze."
+  },
+  "protocol": {
+    "workflow": "actor_reproduction_v2",
+    "max_output_tokens_per_action": 4096,
+    "max_model_len": 32768,
+    "max_actions": 100,
+    "max_num_seqs": 1,
+    "dtype": "bfloat16",
+    "temperature": 0,
+    "generation_seed": 17,
+    "gpu_episode_timeout_seconds": 1070,
+    "gpu_budget_seconds": 1170,
+    "phase_timeout_seconds": 1200,
+    "enable_prefix_caching": false,
+    "kv_cache_memory_bytes": null
+  },
+  "preflight": {
+    "remote_system_python": "/usr/bin/python3",
+    "remote_python_version": "3.12.3",
+    "task_owned_venv_created": false,
+    "source_deployed": false,
+    "tokenizer_input_check_completed": false,
+    "model_requests": 0,
+    "gpu_initialized": false,
+    "capacity_check_performed": false,
+    "capacity_check_reason": "The one permitted launch-adjacent GPU conflict check was not consumed because engine launch was impossible."
+  },
+  "episode": {
+    "started": false,
+    "requests": 0,
+    "actions": 0,
+    "reproduction_evidence": null,
+    "model_patch": null,
+    "official_grade": null,
+    "mechanism_judgment": "not_applicable_without_episode"
+  },
+  "accounting": {
+    "valid_nonzero_request_episodes": 0,
+    "gpu_seconds": 0,
+    "phase_seconds_charged": 0,
+    "teacher_attempt_consumed": false
+  },
+  "cleanup": {
+    "local_owned_containers": 0,
+    "remote_task_root": "absent",
+    "remote_engine_pid": null,
+    "selected_gpu": null,
+    "live_gpu_allocation_created": false,
+    "retained": [
+      "local blocker evidence",
+      "unchanged evaluator freeze"
+    ]
+  },
+  "next_decision": "Restore the exact authorized cached teacher directory on .186, then parent may decide whether to authorize a fresh bounded teacher run."
+}

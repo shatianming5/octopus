@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "jaraco__inflect.c079a96a.lm_rewr__CFrkom3__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# Bug: Incorrect pluralization of compound units with prepositions\n\n## Problem\n\nI've found an issue with the pluralization of compound units that contain prepositions. The library is not correctly handling certain unit expressions, particularly those with measurement units.\n\n## To Reproduce\n\nHere's a simple example that demonstrates the issue:\n\n```python\nimport inflect\n\np = inflect.engine()\n\n# These should pluralize correctly but don't\nprint(p.plural(\"degree celsius\"))  # Expected: \"degrees celsius\"\nprint(p.plural(\"pound per square inch\"))  # Expected: \"pounds per square inch\"\nprint(p.plural(\"watt per square meter degree celsius\"))  # Expected: \"watts per square meter degree celsius\"\n```\n\n## Expected behavior\n\nWhen pluralizing compound units with prepositions, only the first word (or the word before the preposition) should be pluralized:\n\n- \"degree celsius\" → \"degrees celsius\"\n- \"pound per square inch\" → \"pounds per square inch\"\n- \"metre per second\" → \"metres per second\"\n- \"dollar a year\" → \"dollars a year\"\n\n## Actual behavior\n\nThe pluralization is incorrect for these compound units. It seems the logic for handling compound words with prepositions isn't working properly for unit measurements.\n\nI've tested with several different unit expressions and the issue is consistent. This affects scientific and technical text that needs to correctly pluralize measurement units."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository structure and the inflect pluralization logic for compound units with prepositions.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-b7d64891-0d5a-42b3-9e28-dde267937d7b-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -50 && cat /testbed/README* 2>/dev/null | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-b7d64891-0d5a-42b3-9e28-dde267937d7b-0",
+            "content": " 1005 1005     0 Sep 22 15:44 .gitkeep\n-rw-r--r-- 1 root root   150 Jul 13  2025 .pre-commit-config.yaml\n-rw-r--r-- 1 root root   334 Jul 13  2025 .readthedocs.yaml\n-rw-r--r-- 1 root root  1023 Jul 13  2025 LICENSE\n-rw-r--r-- 1 root root  7728 Jul 13  2025 NEWS.rst\n-rw-r--r-- 1 root root 23034 Jul 13  2025 README.rst\n-rw-r--r-- 1 root root   180 Jul 13  2025 SECURITY.md\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 docs\ndrwxr-xr-x 3 root root  4096 Jul 13  2025 inflect\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 inflect.egg-info\n-rw-r--r-- 1 root root   375 Jul 13  2025 mypy.ini\n-rw-r--r-- 1 root root  1694 Jul 13  2025 pyproject.toml\n-rw-r--r-- 1 root root   584 Jul 13  2025 pytest.ini\n-rw-r--r-- 1 root root   633 Jul 13  2025 ruff.toml\n-rw-r--r-- 1 root root   126 Jul 13  2025 tea.yaml\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 tests\n-rw-r--r-- 1 root root    44 Jul 13  2025 towncrier.toml\n-rw-r--r-- 1 root root  1324 Jul 13  2025 tox.ini\n/testbed/inflect/__init__.py\n/testbed/inflect/compat/py38.py\n/testbed/inflect/compat/__init__.py\n/testbed/tests/test_inflections.py\n/testbed/tests/test_classical_names.py\n/testbed/tests/test_classical_ancient.py\n/testbed/tests/test_classical_person.py\n/testbed/tests/test_pl_si.py\n/testbed/tests/test_an.py\n/testbed/tests/test_compounds.py\n/testbed/tests/test_join.py\n/testbed/tests/test_numwords.py\n/testbed/tests/test_classical_zero.py\n/testbed/tests/test_pwd.py\n/testbed/tests/test_unicode.py\n/testbed/tests/test_classical_all.py\n/testbed/tests/test_classical_herd.py\n/testbed/docs/conf.py\n.. image:: https://img.shields.io/pypi/v/inflect.svg\n   :target: https://pypi.org/project/inflect\n\n.. image:: https://img.shields.io/pypi/pyversions/inflect.svg\n\n.. image:: https://github.com/jaraco/inflect/actions/workflows/main.yml/badge.svg\n   :target: https://github.com/jaraco/inflect/actions?query=workflow%3A%22tests%22\n   :alt: tests\n\n.. image:: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v2.json\n    :target: https://github.com/astral-sh/ruff\n    :alt: Ruff\n\n.. image:: https://readthedocs.org/projects/inflect/badge/?version=latest\n   :target: https://inflect.readthedocs.io/en/latest/?badge=latest\n\n.. image:: https://img.shields.io/badge/skeleton-2024-informational\n   :target: https://blog.jaraco.com/skeleton\n\n.. image:: https://tidelift.com/badges/package/pypi/inflect\n   :target: https://tidelift.com/subscription/pkg/pypi-inflect?utm_source=pypi-inflect&utm_medium=readme\n\nNAME\n====\n\ninflect.py - Accurately generate plurals, singular nouns, ordinals, indefinite articles, and word-based representations of numbers. This functionality is limited to English.\n\nSYNOPSIS\n========\n\n.. code-block:: python\n    \n    >>> import inflect\n    >>> p = inflect.engine()\n\nSimple example with pluralization and word-representation of numbers:\n\n.. code-block:: python\n    \n    >>> count=1\n    >>> print('There', p.plural_verb('was', count), p.number_to_words(count), p.plural_noun('person', count), 'by the door.')\n    There was one person by the door.\n\nWhen ``count=243``, the same code will generate:\n\n.. code-block:: python\n    \n    There were two hundred and forty-three people by the door.\n\n\nMethods\n=======\n\n- ``plural``, ``plural_noun``, ``plural_verb``, ``plural_adj``, ``singular_noun``, ``no``, ``num``\n- ``compare``, ``compare_nouns``, ``compare_nouns``, ``compare_adjs``\n- ``a``, ``an``\n- ``present_participle``\n- ``ordinal``, ``number_to_words``\n- ``join``\n- ``inflect``, ``classical``, ``gender``\n- ``defnoun``, ``defverb``, ``defadj``, ``defa``, ``defan``\n\nPlurality/Singularity\n---------------------\nUnconditionally Form the Plural\n^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n.. code-block:: python\n    \n    >>> \"the plural of person is \" + p.plural(\"person\")\n    'the plural of person is people'\n\nConditionally Form the Plural\n^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n.. code-block:: python\n    \n    >>> \"the plural of 1 person is \" + p.plural(\"person\", 1)\n    'the plural of 1 person is person'\n\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-a1c10a68-1a30-4845-a03c-6f69d34fa0ba-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed/inflect /testbed/tests && wc -l /testbed/inflect/__init__.py /testbed/tests/test_compounds.py /testbed/tests/test_inflections.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-a1c10a68-1a30-4845-a03c-6f69d34fa0ba-1",
+            "content": "/testbed/inflect:\ntotal 116\ndrwxr-xr-x 3 root root   4096 Jul 13  2025 .\ndrwxr-xr-x 1 root root   4096 Sep 22 17:08 ..\n-rw-r--r-- 1 root root 103339 Jul 13  2025 __init__.py\ndrwxr-xr-x 2 root root   4096 Jul 13  2025 compat\n-rw-r--r-- 1 root root      0 Jul 13  2025 py.typed\n\n/testbed/tests:\ntotal 160\ndrwxr-xr-x 2 root root  4096 Jul 13  2025 .\ndrwxr-xr-x 1 root root  4096 Sep 22 17:08 ..\n-rw-r--r-- 1 root root 36101 Jul 13  2025 inflections.txt\n-rw-r--r-- 1 root root  1018 Jul 13  2025 test_an.py\n-rw-r--r-- 1 root root  2386 Jul 13  2025 test_classical_all.py\n-rw-r--r-- 1 root root   541 Jul 13  2025 test_classical_ancient.py\n-rw-r--r-- 1 root root   543 Jul 13  2025 test_classical_herd.py\n-rw-r--r-- 1 root root   635 Jul 13  2025 test_classical_names.py\n-rw-r--r-- 1 root root   589 Jul 13  2025 test_classical_person.py\n-rw-r--r-- 1 root root   536 Jul 13  2025 test_classical_zero.py\n-rw-r--r-- 1 root root  2979 Jul 13  2025 test_compounds.py\n-rw-r--r-- 1 root root  8740 Jul 13  2025 test_inflections.py\n-rw-r--r-- 1 root root  1678 Jul 13  2025 test_join.py\n-rw-r--r-- 1 root root 15632 Jul 13  2025 test_numwords.py\n-rw-r--r-- 1 root root   364 Jul 13  2025 test_pl_si.py\n-rw-r--r-- 1 root root 42637 Jul 13  2025 test_pwd.py\n-rw-r--r-- 1 root root   402 Jul 13  2025 test_unicode.py\n  4003 /testbed/inflect/__init__.py\n    90 /testbed/tests/test_compounds.py\n   268 /testbed/tests/test_inflections.py\n  4361 total\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-e05113df-ac55-4ae4-9c5f-df67673a6ada-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/tests/test_compounds.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-e05113df-ac55-4ae4-9c5f-df67673a6ada-2",
+            "content": "import inflect\n\np = inflect.engine()\n\n\ndef test_compound_1():\n    assert p.singular_noun(\"hello-out-there\") == \"hello-out-there\"\n\n\ndef test_compound_2():\n    assert p.singular_noun(\"hello out there\") == \"hello out there\"\n\n\ndef test_compound_3():\n    assert p.singular_noun(\"continue-to-operate\") == \"continue-to-operate\"\n\n\ndef test_compound_4():\n    assert p.singular_noun(\"case of diapers\") == \"case of diapers\"\n\n\ndef test_unit_handling_degree():\n    test_cases = {\n        \"degree celsius\": \"degrees celsius\",\n        # 'degree Celsius': 'degrees Celsius',\n        \"degree fahrenheit\": \"degrees fahrenheit\",\n        \"degree rankine\": \"degrees rankine\",\n        \"degree fahrenheit second\": \"degree fahrenheit seconds\",\n    }\n    for singular, plural in test_cases.items():\n        assert p.plural(singular) == plural\n\n\ndef test_unit_handling_fractional():\n    test_cases = {\n        \"pound per square inch\": \"pounds per square inch\",\n        \"metre per second\": \"metres per second\",\n        \"kilometre per hour\": \"kilometres per hour\",\n        \"cubic metre per second\": \"cubic metres per second\",\n        \"dollar a year\": \"dollars a year\",\n        # Correct pluralization of denominator\n        \"foot per square second\": \"feet per square second\",\n        \"mother-in-law per lifetime\": \"mothers-in-law per lifetime\",\n        \"pound-force per square inch\": \"pounds-force per square inch\",\n    }\n    for singular, plural in test_cases.items():\n        assert p.plural(singular) == plural\n\n\ndef test_unit_handling_combined():\n    test_cases = {\n        # Heat transfer coefficient unit\n        \"watt per square meter degree celsius\": \"watts per square meter degree celsius\",\n        \"degree celsius per hour\": \"degrees celsius per hour\",\n        \"degree fahrenheit hour square foot per btuit inch\": (\n            \"degree fahrenheit hour square feet per btuit inch\"\n        ),\n        # 'degree Celsius per hour': 'degrees Celsius per hour',\n        # 'degree Fahrenheit hour square foot per BtuIT inch':\n        #   'degree Fahrenheit hour square feet per BtuIT inch'\n    }\n    for singular, plural in test_cases.items():\n        assert p.plural(singular) == plural\n\n\ndef test_unit_open_compound_nouns():\n    test_cases = {\n        \"high school\": \"high schools\",\n        \"master genie\": \"master genies\",\n        \"MASTER genie\": \"MASTER genies\",\n        \"Blood brother\": \"Blood brothers\",\n        \"prima donna\": \"prima donnas\",\n        \"prima DONNA\": \"prima DONNAS\",\n    }\n    for singular, plural in test_cases.items():\n        assert p.plural(singular) == plural\n\n\ndef test_unit_open_compound_nouns_classical():\n    p.classical(all=True)\n    test_cases = {\n        \"master genie\": \"master genii\",\n        \"MASTER genie\": \"MASTER genii\",\n        \"Blood brother\": \"Blood brethren\",\n        \"prima donna\": \"prime donne\",\n        \"prima DONNA\": \"prime DONNE\",\n    }\n    for singular, plural in test_cases.items():\n        assert p.plural(singular) == plural\n    p.classical(all=False)\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "The tests already cover this case. I'll inspect the pluralization implementation next.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-52731778-a111-452f-b8b0-3b5e754c3c27-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "rg -n \"preposition|compound|pl_sb|def_noun|plural_noun|unit\" /testbed/inflect/__init__.py | head -100"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-52731778-a111-452f-b8b0-3b5e754c3c27-3",
+            "content": "bash: line 1: rg: command not found\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-cd9da1b3-bc8c-4818-86db-03ac82ca46e0-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "grep -n -E \"preposition|compound|pl_sb|def_noun|plural_noun|unit\" /testbed/inflect/__init__.py | head -150"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-cd9da1b3-bc8c-4818-86db-03ac82ca46e0-4",
+            "content": ", 2)\n557:pl_sb_C_o_i = [\n566:]  # list not tuple so can concat for pl_sb_U_o_os\n568:pl_sb_C_o_i_bysize = bysize(pl_sb_C_o_i)\n569:si_sb_C_o_i_bysize = bysize([f\"{w[:-1]}i\" for w in pl_sb_C_o_i])\n571:pl_sb_C_o_i_stems = joinstem(-1, pl_sb_C_o_i)\n575:pl_sb_U_o_os_complete = {\"ado\", \"ISO\", \"NATO\", \"NCO\", \"NGO\", \"oto\"}\n576:si_sb_U_o_os_complete = {f\"{w}s\" for w in pl_sb_U_o_os_complete}\n579:pl_sb_U_o_os_endings = [\n775:] + pl_sb_C_o_i\n777:pl_sb_U_o_os_bysize = bysize(pl_sb_U_o_os_endings)\n778:si_sb_U_o_os_bysize = bysize([f\"{w}s\" for w in pl_sb_U_o_os_endings])\n783:pl_sb_U_ch_chs_list = (\"czech\", \"eunuch\", \"stomach\")\n788:    pl_sb_U_ch_chs_bysize,\n789:    pl_sb_U_ch_chs,\n790:) = make_pl_si_lists(pl_sb_U_ch_chs_list, \"s\", None)\n795:pl_sb_U_ex_ices_list = (\"codex\", \"murex\", \"silex\")\n799:    pl_sb_U_ex_ices_bysize,\n800:    pl_sb_U_ex_ices,\n801:) = make_pl_si_lists(pl_sb_U_ex_ices_list, \"ices\", 2)\n803:pl_sb_U_ix_ices_list = (\"radix\", \"helix\")\n807:    pl_sb_U_ix_ices_bysize,\n808:    pl_sb_U_ix_ices,\n809:) = make_pl_si_lists(pl_sb_U_ix_ices_list, \"ices\", 2)\n813:pl_sb_C_ex_ices_list = (\n827:    pl_sb_C_ex_ices_bysize,\n828:    pl_sb_C_ex_ices,\n829:) = make_pl_si_lists(pl_sb_C_ex_ices_list, \"ices\", 2)\n832:pl_sb_C_ix_ices_list = (\"appendix\",)\n837:    pl_sb_C_ix_ices_bysize,\n838:    pl_sb_C_ix_ices,\n839:) = make_pl_si_lists(pl_sb_C_ix_ices_list, \"ices\", 2)\n844:pl_sb_C_i_list = (\"afrit\", \"afreet\", \"efreet\")\n846:(si_sb_C_i_list, si_sb_C_i_bysize, pl_sb_C_i_bysize, pl_sb_C_i) = make_pl_si_lists(\n847:    pl_sb_C_i_list, \"i\", None\n853:pl_sb_C_im_list = (\"goy\", \"seraph\", \"cherub\")\n855:(si_sb_C_im_list, si_sb_C_im_bysize, pl_sb_C_im_bysize, pl_sb_C_im) = make_pl_si_lists(\n856:    pl_sb_C_im_list, \"im\", None\n862:pl_sb_U_man_mans_list = \"\"\"\n867:pl_sb_U_man_mans_caps_list = \"\"\"\n877:    pl_sb_U_man_mans_bysize,\n878:) = make_pl_si_lists(pl_sb_U_man_mans_list, \"s\", None, dojoinstem=False)\n882:    pl_sb_U_man_mans_caps_bysize,\n883:) = make_pl_si_lists(pl_sb_U_man_mans_caps_list, \"s\", None, dojoinstem=False)\n886:pl_sb_U_louse_lice_list = (\"booklouse\", \"grapelouse\", \"louse\", \"woodlouse\")\n891:    pl_sb_U_louse_lice_bysize,\n892:) = make_pl_si_lists(pl_sb_U_louse_lice_list, \"lice\", 5, dojoinstem=False)\n894:pl_sb_uninflected_s_complete = [\n937:pl_sb_uninflected_s_endings = [\n944:pl_sb_uninflected_s = pl_sb_uninflected_s_complete + [\n945:    f\".*{w}\" for w in pl_sb_uninflected_s_endings\n948:pl_sb_uninflected_herd = (\n981:pl_sb_uninflected_complete = [\n1003:] + pl_sb_uninflected_s_complete\n1006:pl_sb_uninflected_caps = [\n1035:pl_sb_uninflected_endings = [\n1054:] + pl_sb_uninflected_s_endings\n1058:pl_sb_uninflected_bysize = bysize(pl_sb_uninflected_endings)\n1063:pl_sb_singular_s_complete = [\n1096:] + pl_sb_C_is_ides_complete\n1099:pl_sb_singular_s_endings = [\"ss\", \"us\"] + pl_sb_C_is_ides_endings\n1101:pl_sb_singular_s_bysize = bysize(pl_sb_singular_s_endings)\n1103:si_sb_singular_s_complete = [f\"{w}es\" for w in pl_sb_singular_s_complete]\n1104:si_sb_singular_s_endings = [f\"{w}es\" for w in pl_sb_singular_s_endings]\n1107:pl_sb_singular_s_es = [\"[A-Z].*es\"]\n1109:pl_sb_singular_s = enclose(\n1111:        pl_sb_singular_s_complete\n1112:        + [f\".*{w}\" for w in pl_sb_singular_s_endings]\n1113:        + pl_sb_singular_s_es\n1500:        [pl_sb_singular_s]\n1501:        + pl_sb_uninflected_s\n1502:        + list(pl_sb_irregular_s)\n1507:_pl_sb_postfix_adj_defn = (\n1513:pl_sb_postfix_adj: Iterable[str] = (\n1514:    enclose(val + f\"(?=(?:-|\\\\s+){key})\") for key, val in _pl_sb_postfix_adj_defn\n1517:pl_sb_postfix_adj_stems = f\"({'|'.join(pl_sb_postfix_adj)})(.*)\"\n1603:pl_sb_prep_dual_compound = rf\"(.*?)((?:-|\\s+)(?:{pl_prep})(?:-|\\s+))a(?:-|\\s+)(.*)\"\n1920:unit = [\"\", \"one\", \"two\", \"three\", \"four\", \"five\", \"six\", \"seven\", \"eight\", \"nine\"]\n1980:    rf\"^(?:{pl_sb_postfix_adj_stems})$\", re.IGNORECASE\n1983:    rf\"^(?:{pl_sb_prep_dual_compound})$\", re.IGNORECASE\n2076:        self.pl_sb_user_defined: List[Optional[Word]] = []\n2100:        self.pl_sb_user_defined.extend((singular, plural))\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-9a653f15-b5df-4e2a-92da-76e5938d9b40-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '1480,1650p' /testbed/inflect/__init__.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-9a653f15-b5df-4e2a-92da-76e5938d9b40-5",
+            "content": "    \"Palmolives\",\n)\nsi_sb_ves_ve = (\n    # *[^d]eaves -> eave\n    \"interweaves\",\n    \"weaves\",\n    # *[nwl]ives -> [nwl]live\n    \"olives\",\n    # *[eoa]lves -> [eoa]lve\n    \"bivalves\",\n    \"dissolves\",\n    \"resolves\",\n    \"salves\",\n    \"twelves\",\n    \"valves\",\n)\n\n\nplverb_special_s = enclose(\n    \"|\".join(\n        [pl_sb_singular_s]\n        + pl_sb_uninflected_s\n        + list(pl_sb_irregular_s)\n        + [\"(.*[csx])is\", \"(.*)ceps\", \"[A-Z].*s\"]\n    )\n)\n\n_pl_sb_postfix_adj_defn = (\n    (\"general\", enclose(r\"(?!major|lieutenant|brigadier|adjutant|.*star)\\S+\")),\n    (\"martial\", enclose(\"court\")),\n    (\"force\", enclose(\"pound\")),\n)\n\npl_sb_postfix_adj: Iterable[str] = (\n    enclose(val + f\"(?=(?:-|\\\\s+){key})\") for key, val in _pl_sb_postfix_adj_defn\n)\n\npl_sb_postfix_adj_stems = f\"({'|'.join(pl_sb_postfix_adj)})(.*)\"\n\n\n# PLURAL WORDS ENDING IS es GO TO SINGULAR is\n\nsi_sb_es_is = (\n    \"amanuenses\",\n    \"amniocenteses\",\n    \"analyses\",\n    \"antitheses\",\n    \"apotheoses\",\n    \"arterioscleroses\",\n    \"atheroscleroses\",\n    \"axes\",\n    # 'bases', # bases -> basis\n    \"catalyses\",\n    \"catharses\",\n    \"chasses\",\n    \"cirrhoses\",\n    \"cocces\",\n    \"crises\",\n    \"diagnoses\",\n    \"dialyses\",\n    \"diereses\",\n    \"electrolyses\",\n    \"emphases\",\n    \"exegeses\",\n    \"geneses\",\n    \"halitoses\",\n    \"hydrolyses\",\n    \"hypnoses\",\n    \"hypotheses\",\n    \"hystereses\",\n    \"metamorphoses\",\n    \"metastases\",\n    \"misdiagnoses\",\n    \"mitoses\",\n    \"mononucleoses\",\n    \"narcoses\",\n    \"necroses\",\n    \"nemeses\",\n    \"neuroses\",\n    \"oases\",\n    \"osmoses\",\n    \"osteoporoses\",\n    \"paralyses\",\n    \"parentheses\",\n    \"parthenogeneses\",\n    \"periphrases\",\n    \"photosyntheses\",\n    \"probosces\",\n    \"prognoses\",\n    \"prophylaxes\",\n    \"prostheses\",\n    \"preces\",\n    \"psoriases\",\n    \"psychoanalyses\",\n    \"psychokineses\",\n    \"psychoses\",\n    \"scleroses\",\n    \"scolioses\",\n    \"sepses\",\n    \"silicoses\",\n    \"symbioses\",\n    \"synopses\",\n    \"syntheses\",\n    \"taxes\",\n    \"telekineses\",\n    \"theses\",\n    \"thromboses\",\n    \"tuberculoses\",\n    \"urinalyses\",\n)\n\npl_prep_list = \"\"\"\n    about above across after among around at athwart before behind\n    below beneath beside besides between betwixt beyond but by\n    during except for from in into near of off on onto out over\n    since till to under until unto upon with\"\"\".split()\n\npl_prep_list_da = pl_prep_list + [\"de\", \"du\", \"da\"]\n\npl_prep_bysize = bysize(pl_prep_list_da)\n\npl_prep = enclose(\"|\".join(pl_prep_list_da))\n\npl_sb_prep_dual_compound = rf\"(.*?)((?:-|\\s+)(?:{pl_prep})(?:-|\\s+))a(?:-|\\s+)(.*)\"\n\n\nsingular_pronoun_genders = {\n    \"neuter\",\n    \"feminine\",\n    \"masculine\",\n    \"gender-neutral\",\n    \"feminine or masculine\",\n    \"masculine or feminine\",\n}\n\npl_pron_nom = {\n    # NOMINATIVE    REFLEXIVE\n    \"i\": \"we\",\n    \"myself\": \"ourselves\",\n    \"you\": \"you\",\n    \"yourself\": \"yourselves\",\n    \"she\": \"they\",\n    \"herself\": \"themselves\",\n    \"he\": \"they\",\n    \"himself\": \"themselves\",\n    \"it\": \"they\",\n    \"itself\": \"themselves\",\n    \"they\": \"they\",\n    \"themself\": \"themselves\",\n    #   POSSESSIVE\n    \"mine\": \"ours\",\n    \"yours\": \"yours\",\n    \"hers\": \"theirs\",\n    \"his\": \"theirs\",\n    \"its\": \"theirs\",\n    \"theirs\": \"theirs\",\n}\n\nsi_pron: Dict[str, Dict[str, Union[str, Dict[str, str]]]] = {\n    \"nom\": {v: k for (k, v) in pl_pron_nom.items()}\n}\nsi_pron[\"nom\"][\"we\"] = \"I\"\n\n\npl_pron_acc = {\n    # ACCUSATIVE    REFLEXIVE\n    \"me\": \"us\",\n    \"myself\": \"ourselves\",\n    \"you\": \"you\",\n    \"yourself\": \"yourselves\",\n    \"her\": \"them\",\n"
+          }
+        ]
+      }
+    }
+  ]
+}

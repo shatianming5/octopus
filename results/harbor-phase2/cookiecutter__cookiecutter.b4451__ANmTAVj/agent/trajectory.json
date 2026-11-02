@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "cookiecutter__cookiecutter.b4451__ANmTAVj__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# Missing validation for 'cookiecutter' key in context dictionary\n\nWhen dumping a replay file, the function doesn't check if the 'cookiecutter' key exists in the context dictionary. This can lead to unexpected behavior when trying to replay a template generation.\n\n## Steps to reproduce\n\n1. Create a context dictionary without a 'cookiecutter' key\n2. Try to dump it to a replay file\n\n```python\nfrom cookiecutter.replay import dump\nimport tempfile\nimport os\n\n# Create a temporary directory\nwith tempfile.TemporaryDirectory() as temp_dir:\n    # Try to dump a context without 'cookiecutter' key\n    try:\n        dump(temp_dir, \"my-template\", {\"foo\": \"bar\"})\n        print(\"No error was raised!\")\n    except ValueError as e:\n        print(f\"Error raised: {e}\")\n```\n\n## Expected behavior\n\nThe function should raise a ValueError with a message like \"Context is required to contain a cookiecutter key\"\n\n## Actual behavior\n\nNo error is raised, and the context is dumped to the replay file without validation.\n\nThis could cause issues later when trying to use the replay file, as the cookiecutter key is expected to be present in the context."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository structure and the replay dumping code to add validation for the missing `cookiecutter` key.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-c1106224-ec73-4edd-a65f-d0bc65dc78c6-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -50"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-c1106224-ec73-4edd-a65f-d0bc65dc78c6-0",
+            "content": "12  2025 .bandit\ndrwxr-xr-x  8 root root  4096 Jul 12  2025 .git\n-rw-r--r--  1 root root   175 Jul 12  2025 .gitattributes\ndrwxr-xr-x  2 root root  4096 Jul 12  2025 .github\n-rw-r--r--  1 root root  3307 Jul 12  2025 .gitignore\n-rw-rw-r--  1 1005 1005     0 Sep 22 15:44 .gitkeep\n-rw-r--r--  1 root root  2146 Jul 12  2025 .pre-commit-config.yaml\n-rw-r--r--  1 root root   364 Jul 12  2025 .readthedocs.yaml\n-rw-r--r--  1 root root   191 Jul 12  2025 .safety-policy.yml\n-rw-r--r--  1 root root 11796 Jul 12  2025 AUTHORS.md\n-rw-r--r--  1 root root   326 Jul 12  2025 CODE_OF_CONDUCT.md\n-rw-r--r--  1 root root 12666 Jul 12  2025 CONTRIBUTING.md\n-rw-r--r--  1 root root 77589 Jul 12  2025 HISTORY.md\n-rw-r--r--  1 root root  1493 Jul 12  2025 LICENSE\n-rw-r--r--  1 root root   427 Jul 12  2025 MANIFEST.in\n-rw-r--r--  1 root root  2539 Jul 12  2025 Makefile\n-rw-r--r--  1 root root  5451 Jul 12  2025 README.md\n-rw-r--r--  1 root root   171 Jul 12  2025 __main__.py\n-rw-r--r--  1 root root    81 Jul 12  2025 codecov.yml\ndrwxr-xr-x  2 root root  4096 Jul 12  2025 cookiecutter\ndrwxr-xr-x  2 root root  4096 Jul 12  2025 cookiecutter.egg-info\ndrwxr-xr-x  5 root root  4096 Jul 12  2025 docs\ndrwxr-xr-x  2 root root  4096 Jul 12  2025 logo\n-rw-r--r--  1 root root  3563 Jul 12  2025 pyproject.toml\n-rw-r--r--  1 root root  2639 Jul 12  2025 setup.py\n-rw-r--r--  1 root root    62 Jul 12  2025 test_requirements.txt\ndrwxr-xr-x 39 root root  4096 Jul 12  2025 tests\n-rw-r--r--  1 root root  1368 Jul 12  2025 tox.ini\n/testbed/__main__.py\n/testbed/tests/test_pre_prompt_hooks.py\n/testbed/tests/test_abort_generate_on_hook_error.py\n/testbed/tests/test_output_folder.py\n/testbed/tests/hooks-abort-render/hooks/post_gen_project.py\n/testbed/tests/hooks-abort-render/hooks/pre_gen_project.py\n/testbed/tests/test_environment.py\n/testbed/tests/test-output-folder/{{cookiecutter.test_name}}/{{cookiecutter.folder_name}}/{{cookiecutter.filename}}.py\n/testbed/tests/test_generate_copy_without_render_override.py\n/testbed/tests/zipfile/test_unzip.py\n/testbed/tests/test_read_user_choice.py\n/testbed/tests/test_cookiecutter_invocation.py\n/testbed/tests/test_default_extensions.py\n/testbed/tests/test_preferred_encoding.py\n/testbed/tests/test_templates.py\n/testbed/tests/test-extensions/custom-extension-post/hooks/post_gen_project.py\n/testbed/tests/test-extensions/hello_extension/__init__.py\n/testbed/tests/test-extensions/hello_extension/hello_extension.py\n/testbed/tests/test-extensions/local_extension/local_extensions/main.py\n/testbed/tests/test-extensions/local_extension/local_extensions/__init__.py\n/testbed/tests/test-extensions/custom-extension-pre/hooks/pre_gen_project.py\n/testbed/tests/test_get_config.py\n/testbed/tests/test_generate_copy_without_render.py\n/testbed/tests/test_time_extension.py\n/testbed/tests/test_read_user_yes_no.py\n/testbed/tests/__init__.py\n/testbed/tests/test-generate-files-line-end/{{cookiecutter.test_name}}/{{cookiecutter.folder_name}}/{{cookiecutter.filename}}.py\n/testbed/tests/test_read_repo_password.py\n/testbed/tests/test_generate_hooks.py\n/testbed/tests/test_prompt.py\n/testbed/tests/test_generate_context.py\n/testbed/tests/test_cookiecutter_nested_templates.py\n/testbed/tests/test_generate_files.py\n/testbed/tests/test_get_user_config.py\n/testbed/tests/vcs/test_clone.py\n/testbed/tests/vcs/test_is_vcs_installed.py\n/testbed/tests/vcs/test_identify_repo.py\n/testbed/tests/test_cookiecutter_local_no_input.py\n/testbed/tests/test-pyshellhooks/hooks/post_gen_project.py\n/testbed/tests/test-pyshellhooks/hooks/pre_gen_project.py\n/testbed/tests/test_exceptions.py\n/testbed/tests/test_log.py\n/testbed/tests/test_cookiecutter_local_with_input.py\n/testbed/tests/conftest.py\n/testbed/tests/test_cli.py\n/testbed/tests/test_generate_file.py\n/testbed/tests/test_read_user_variable.py\n/testbed/tests/repository/test_determine_repository_should_use_local_repo.py\n/testbed/tests/repository/test_abbreviation_expansion.py\n/testbed/tests/repository/test_repository_has_cookiecutter_json.py\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-f38b0290-da8b-4289-8185-3abadeb47b7b-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed/cookiecutter && cat /testbed/cookiecutter/replay.py; echo \"==== TESTS ====\"; ls /testbed/tests | grep -i replay; find /testbed -name \"*replay*\""
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-f38b0290-da8b-4289-8185-3abadeb47b7b-1",
+            "content": "total 148\ndrwxr-xr-x 2 root root  4096 Jul 12  2025 .\ndrwxr-xr-x 1 root root  4096 Sep 22 15:52 ..\n-rw-r--r-- 1 root root     6 Jul 12  2025 VERSION.txt\n-rw-r--r-- 1 root root   318 Jul 12  2025 __init__.py\n-rw-r--r-- 1 root root   174 Jul 12  2025 __main__.py\n-rw-r--r-- 1 root root  7920 Jul 12  2025 cli.py\n-rw-r--r-- 1 root root  5014 Jul 12  2025 config.py\n-rw-r--r-- 1 root root  2474 Jul 12  2025 environment.py\n-rw-r--r-- 1 root root  4249 Jul 12  2025 exceptions.py\n-rw-r--r-- 1 root root  5414 Jul 12  2025 extensions.py\n-rw-r--r-- 1 root root  1131 Jul 12  2025 find.py\n-rw-r--r-- 1 root root 17908 Jul 12  2025 generate.py\n-rw-r--r-- 1 root root  6356 Jul 12  2025 hooks.py\n-rw-r--r-- 1 root root  1650 Jul 12  2025 log.py\n-rw-r--r-- 1 root root  8046 Jul 12  2025 main.py\n-rw-r--r-- 1 root root 14685 Jul 12  2025 prompt.py\n-rw-r--r-- 1 root root  1410 Jul 12  2025 replay.py\n-rw-r--r-- 1 root root  4538 Jul 12  2025 repository.py\n-rw-r--r-- 1 root root  3174 Jul 12  2025 utils.py\n-rw-r--r-- 1 root root  4561 Jul 12  2025 vcs.py\n-rw-r--r-- 1 root root  4537 Jul 12  2025 zipfile.py\n\"\"\"\ncookiecutter.replay.\n\n-------------------\n\"\"\"\n\nfrom __future__ import annotations\n\nimport json\nimport os\nfrom typing import TYPE_CHECKING, Any\n\nfrom cookiecutter.utils import make_sure_path_exists\n\nif TYPE_CHECKING:\n    from pathlib import Path\n\n\ndef get_file_name(replay_dir: Path | str, template_name: str) -> str:\n    \"\"\"Get the name of file.\"\"\"\n    suffix = '.json' if not template_name.endswith('.json') else ''\n    file_name = f'{template_name}{suffix}'\n    return os.path.join(replay_dir, file_name)\n\n\ndef dump(replay_dir: Path | str, template_name: str, context: dict[str, Any]) -> None:\n    \"\"\"Write json data to file.\"\"\"\n    make_sure_path_exists(replay_dir)\n\n    if 'cookiecutter' not in context:\n        msg = 'Context is required to contain a cookiecutter key'\n        raise ValueError(msg)\n\n    replay_file = get_file_name(replay_dir, template_name)\n\n    with open(replay_file, 'w', encoding=\"utf-8\") as outfile:\n        json.dump(context, outfile, indent=2)\n\n\ndef load(replay_dir: Path | str, template_name: str) -> dict[str, Any]:\n    \"\"\"Read json data from file.\"\"\"\n    replay_file = get_file_name(replay_dir, template_name)\n\n    with open(replay_file, encoding=\"utf-8\") as infile:\n        context: dict[str, Any] = json.load(infile)\n\n    if 'cookiecutter' not in context:\n        msg = 'Context is required to contain a cookiecutter key'\n        raise ValueError(msg)\n\n    return context\n==== TESTS ====\nfake-repo-replay\nreplay\ntest-replay\n/testbed/tests/test-replay\n/testbed/tests/test-replay/invalid_replay.json\n/testbed/tests/test-replay/valid_replay.json\n/testbed/tests/fake-repo-replay\n/testbed/tests/replay\n/testbed/tests/replay/test_replay.py\n/testbed/cookiecutter/replay.py\n/testbed/docs/advanced/replay.rst\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-e96fb9e0-50d8-4615-865b-5dcca2a062c5-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/tests/replay/test_replay.py; echo \"==== GIT LOG ====\"; git -C /testbed log --oneline -20; echo \"==== GIT STATUS ====\"; git -C /testbed status; echo \"==== HISTORY replay ====\"; grep -A 5 -i replay /testbed/HISTORY.md | head -50"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-e96fb9e0-50d8-4615-865b-5dcca2a062c5-2",
+            "content": "mock_replay_dump.called\n    assert not mock_replay_load.called\n    assert mock_gen_files.called\n==== GIT LOG ====\n383cfa9 Initial commit\n==== GIT STATUS ====\nOn branch main\nYour branch is up to date with 'origin/main'.\n\nUntracked files:\n  (use \"git add <file>...\" to include in what will be committed)\n\t.gitkeep\n\nnothing added to commit but untracked files present (use \"git add\" to track)\n==== HISTORY replay ====\n* Fix replay (#1904) @vemonet\n* Support multichoice overwrite (#1903) @Meepit\n\n### This release is made by wonderful contributors:\n\n@Meepit, @dependabot, @dependabot[bot], @ericof, @pre-commit-ci, @pre-commit-ci[bot] and @vemonet\n--\n* Prompt with replay file (#1758) @w1ndblow\n\n### CI/CD and QA changes\n\n* Set cookiecutter/VERSION.txt as source of truth for version number (#1896) @ericof\n* [pre-commit.ci] pre-commit autoupdate (#1897) @pre-commit-ci\n--\n* Fixed: Python code block in the replay documentation (#1715) @juhannc\n* Fixed: recommonmark replaced with myst, as recommonmark is deprecated (#1709) @insspb\n* Improve Docs Readability (#1690) @ryanrussell\n* Update base docs, remove tox (#1858) @ericof\n* Updated: Boolean Variables documentation and docstrings (#1705) @italomaia\n* docs: fix simple typo, shat -> that (#1749) @timgates42\n--\n* Added: --replay-file cli option, for replay file distributing (#906) @Cadair\n* Added: _output_dir to cookiecutter context (#1034) @Casyfill\n* Added: CLI option to ignore hooks (#992) @rgreinho\n* Changed: Generated projects can use multiple type hooks at same time. (sh + py) (#974) @milonimrod\n* Added: Path templates will be rendered when copy_without_render used (#839) @noirbizarre\n* Added: End of line detection and configuration. (#1407) @insspb\n--\n* Update replay.py json.dump indent for easy viewing [@nicain](https://github.com/nicain) (#1293)\n* 'future' library replaced with 'six' as a more lightweight python porting library [@asottile](https://github.com/asottile) (#941)\n* Added extension: Slugify template filter [@ppanero](https://github.com/ppanero) (#1336)\n* Added command line option: `--skip-if-file-exists`, allow to skip the existing files when doing `overwrite_if_exists`. [@chhsiao1981](https://github.com/chhsiao1981) (#1076)\n* Some packages versions limited to be compatible with python2.7 and python 3.5 [@insspb](https://github.com/insspb) (#1349)\n\n--\n* Added pep257 docstring for tests/replay/conftest.py [@kishan](https://github.com/kishan3) (#1270, #1268)\n* Added pep257 docstring for docs/__init__.py [@kishan](https://github.com/kishan3) (#1273, #1265)\n* Added missing docstring headers to all files [@croesnick](https://github.com/croesnick) (#1269, #1283)\n* Gitter links replaced by Slack in README [@browniebroke](https://github.com/browniebroke) (#1282)\n* flake8-docstrings tests added to CI/CD [@ssbarnea](https://github.com/ssbarnea) (#1284)\n* Activated pydocstyle rule: D401 - First line should be in imperative mood [@ssbarnea](https://github.com/ssbarnea) (#1285)\n--\n* PEP257 fixing docstrings in replay.py. Thanks to [@kishan](https://github.com/kishan3) (#1234)\n* PEP257 fixing docstrings in test_unzip.py. Thanks to [@tonytheleg](https://github.com/tonytheleg) and [@insspb](https://github.com/insspb) (#1236, #1262)\n* Fixed tests sequence for appveyor, to exclude file not found bug. Thanks to [@insspb](https://github.com/insspb) (#1257)\n* Updates REAMDE.md with svg badge for appveyor. Thanks to [@sobolevn](https://github.com/sobolevn) (#1254)\n* Add missing {% endif %} to Choice Variables example. Thanks to [@mattstibbs](https://github.com/mattstibbs) (#1249)\n* Core documentation converted to Markdown format thanks to [@wagnernegrao](https://github.com/wagnernegrao), [@insspb](https://github.com/insspb) (#1216)\n--\n* Fix an issue around **replay** file names when **cookiecutter** is used with a relative path to a template, thanks to    [@eliasdorneles](https://github.com/eliasdorneles) for raising the issue and [@hackebrot](https://github.com/hackebrot) for the PR (#752, #753)\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-c97627c5-6115-419b-8fc0-82fa77010027-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "find /testbed/tests -name \"*replay*\" -o -path \"*replay*\" | head -50; echo \"====\"; ls -la /testbed/tests/replay/; echo \"====\"; cat /testbed/tests/replay/test_replay.py; echo \"==== CONTEST ====\"; ls /testbed/tests/replay/"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-c97627c5-6115-419b-8fc0-82fa77010027-3",
+            "content": "/testbed/tests/test-replay\n/testbed/tests/test-replay/invalid_replay.json\n/testbed/tests/test-replay/valid_replay.json\n/testbed/tests/test-replay/cookiedozer_load.json\n/testbed/tests/fake-repo-replay\n/testbed/tests/fake-repo-replay/cookiecutter.json\n/testbed/tests/fake-repo-replay/{{cookiecutter.repo_name}}\n/testbed/tests/fake-repo-replay/{{cookiecutter.repo_name}}/README.md\n/testbed/tests/replay\n/testbed/tests/replay/test_replay.py\n/testbed/tests/replay/test_dump.py\n/testbed/tests/replay/test_load.py\n/testbed/tests/replay/conftest.py\n====\ntotal 24\ndrwxr-xr-x  2 root root 4096 Jul 12  2025 .\ndrwxr-xr-x 39 root root 4096 Jul 12  2025 ..\n-rw-r--r--  1 root root  678 Jul 12  2025 conftest.py\n-rw-r--r--  1 root root 2925 Jul 12  2025 test_dump.py\n-rw-r--r--  1 root root 1680 Jul 12  2025 test_load.py\n-rw-r--r--  1 root root 2329 Jul 12  2025 test_replay.py\n====\n\"\"\"test_replay.\"\"\"\n\nimport os\n\nimport pytest\n\nfrom cookiecutter import exceptions, main, replay\n\n\n@pytest.mark.parametrize(\"replay_file_name\", ['bar', 'bar.json'])\ndef test_get_replay_file_name(replay_file_name) -> None:\n    \"\"\"Make sure that replay.get_file_name generates a valid json file path.\"\"\"\n    exp_replay_file_path = os.path.join('foo', 'bar.json')\n    replay_file_path = replay.get_file_name('foo', replay_file_name)\n    assert replay_file_path == exp_replay_file_path\n\n\n@pytest.mark.parametrize(\n    'invalid_kwargs',\n    (\n        {'no_input': True},\n        {'extra_context': {}},\n        {'no_input': True, 'extra_context': {}},\n    ),\n)\ndef test_raise_on_invalid_mode(invalid_kwargs) -> None:\n    \"\"\"Test `cookiecutter` raise exception on unacceptable `replay` request.\"\"\"\n    with pytest.raises(exceptions.InvalidModeException):\n        main.cookiecutter('foo', replay=True, **invalid_kwargs)\n\n\ndef test_main_does_not_invoke_dump_but_load(mocker) -> None:\n    \"\"\"Test `cookiecutter` calling correct functions on `replay`.\"\"\"\n    mock_prompt = mocker.patch('cookiecutter.main.prompt_for_config')\n    mock_gen_context = mocker.patch('cookiecutter.main.generate_context')\n    mock_gen_files = mocker.patch('cookiecutter.main.generate_files')\n    mock_replay_dump = mocker.patch('cookiecutter.main.dump')\n    mock_replay_load = mocker.patch('cookiecutter.main.load')\n\n    main.cookiecutter('tests/fake-repo-tmpl/', replay=True)\n\n    assert not mock_prompt.called\n    assert mock_gen_context.called\n    assert mock_replay_dump.called\n    assert mock_replay_load.called\n    assert mock_gen_files.called\n\n\ndef test_main_does_not_invoke_load_but_dump(mocker) -> None:\n    \"\"\"Test `cookiecutter` calling correct functions on non-replay launch.\"\"\"\n    mock_prompt = mocker.patch('cookiecutter.main.prompt_for_config')\n    mock_gen_context = mocker.patch('cookiecutter.main.generate_context')\n    mock_gen_files = mocker.patch('cookiecutter.main.generate_files')\n    mock_replay_dump = mocker.patch('cookiecutter.main.dump')\n    mock_replay_load = mocker.patch('cookiecutter.main.load')\n\n    main.cookiecutter('tests/fake-repo-tmpl/', replay=False)\n\n    assert mock_prompt.called\n    assert mock_gen_context.called\n    assert mock_replay_dump.called\n    assert not mock_replay_load.called\n    assert mock_gen_files.called\n==== CONTEST ====\nconftest.py\ntest_dump.py\ntest_load.py\ntest_replay.py\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-0fd16b5a-578e-4eec-92f8-ebc221b1f3e9-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/tests/replay/test_dump.py; echo \"======== LOAD ========\"; cat /testbed/tests/replay/test_load.py; echo \"======== CONFTEST ========\"; cat /testbed/tests/replay/conftest.py; echo \"======== VERSION ========\"; cat /testbed/cookiecutter/VERSION.txt; echo \"======== PYPROJECT ========\"; cat /testbed/pyproject.toml"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-0fd16b5a-578e-4eec-92f8-ebc221b1f3e9-4",
+            "content": "RuntimeError: Command timed out after 20 seconds"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-219d0a7a-db82-4936-aa1e-0e8d0c0668d7-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/tests/replay/test_dump.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-219d0a7a-db82-4936-aa1e-0e8d0c0668d7-5",
+            "content": "\"\"\"test_dump.\"\"\"\n\nimport json\nimport os\n\nimport pytest\n\nfrom cookiecutter import replay\n\n\n@pytest.fixture\ndef template_name() -> str:\n    \"\"\"Fixture to return a valid template_name.\"\"\"\n    return 'cookiedozer'\n\n\n@pytest.fixture\ndef replay_file(replay_test_dir, template_name):\n    \"\"\"Fixture to return a actual file name of the dump.\"\"\"\n    file_name = f'{template_name}.json'\n    return os.path.join(replay_test_dir, file_name)\n\n\n@pytest.fixture(autouse=True)\ndef remove_replay_dump(request, replay_file) -> None:\n    \"\"\"Remove the replay file created by tests.\"\"\"\n\n    def fin_remove_replay_file() -> None:\n        if os.path.exists(replay_file):\n            os.remove(replay_file)\n\n    request.addfinalizer(fin_remove_replay_file)\n\n\ndef test_value_error_if_key_missing_in_context(replay_test_dir, template_name) -> None:\n    \"\"\"Test that replay.dump raises if the context does not contain a key \\\n    named 'cookiecutter'.\"\"\"\n    with pytest.raises(ValueError):\n        replay.dump(replay_test_dir, template_name, {'foo': 'bar'})\n\n\n@pytest.fixture\ndef mock_ensure_failure(mocker):\n    \"\"\"Replace cookiecutter.replay.make_sure_path_exists function.\n\n    Used to mock internal function and limit test scope.\n    Always return expected value: False\n    \"\"\"\n    return mocker.patch(\n        'cookiecutter.replay.make_sure_path_exists', side_effect=OSError\n    )\n\n\n@pytest.fixture\ndef mock_ensure_success(mocker):\n    \"\"\"Replace cookiecutter.replay.make_sure_path_exists function.\n\n    Used to mock internal function and limit test scope.\n    Always return expected value: True\n    \"\"\"\n    return mocker.patch('cookiecutter.replay.make_sure_path_exists', return_value=True)\n\n\ndef test_ioerror_if_replay_dir_creation_fails(\n    mock_ensure_failure, replay_test_dir\n) -> None:\n    \"\"\"Test that replay.dump raises when the replay_dir cannot be created.\"\"\"\n    with pytest.raises(OSError):\n        replay.dump(replay_test_dir, 'foo', {'cookiecutter': {'hello': 'world'}})\n\n    mock_ensure_failure.assert_called_once_with(replay_test_dir)\n\n\ndef test_run_json_dump(\n    mocker,\n    mock_ensure_success,\n    mock_user_config,\n    template_name,\n    context,\n    replay_test_dir,\n    replay_file,\n) -> None:\n    \"\"\"Test that replay.dump runs json.dump under the hood and that the context \\\n    is correctly written to the expected file in the replay_dir.\"\"\"\n    spy_get_replay_file = mocker.spy(replay, 'get_file_name')\n\n    mock_json_dump = mocker.patch('json.dump', side_effect=json.dump)\n\n    replay.dump(replay_test_dir, template_name, context)\n\n    assert not mock_user_config.called\n    mock_ensure_success.assert_called_once_with(replay_test_dir)\n    spy_get_replay_file.assert_called_once_with(replay_test_dir, template_name)\n\n    assert mock_json_dump.call_count == 1\n    (dumped_context, outfile_handler), _kwargs = mock_json_dump.call_args\n    assert outfile_handler.name == replay_file\n    assert dumped_context == context\n"
+          }
+        ]
+      }
+    }
+  ]
+}

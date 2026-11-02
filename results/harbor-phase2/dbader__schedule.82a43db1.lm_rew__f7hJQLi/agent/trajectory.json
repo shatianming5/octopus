@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "dbader__schedule.82a43db1.lm_rew__f7hJQLi__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# Job string representation doesn't include args and kwargs\n\nWhen using the schedule library, the string representation of a Job object no longer includes the arguments and keyword arguments passed to the job function.\n\n## Example\n\n```python\nfrom schedule import every\n\ndef job_fun():\n    pass\n\njob = every().minute.do(job_fun, 'foo', bar=23)\nprint(str(job))\n```\n\n### Current output:\n```\nEvery 1 minute do job_fun\n```\n\n### Expected output:\n```\nJob(interval=1, unit=minutes, do=job_fun, args=('foo',), kwargs={'bar': 23})\n```\n\nThe current string representation only shows the interval, unit, and function name, but doesn't include the arguments and keyword arguments that will be passed to the function when it runs. This makes it harder to debug and identify jobs when multiple similar jobs are scheduled with different parameters."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository and locate how Job objects currently format their string representation.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-061e3f56-e631-4d54-b973-00723d15b7d7-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -50 && cat /testbed/README.md 2>/dev/null | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-061e3f56-e631-4d54-b973-00723d15b7d7-0",
+            "content": "total 140\ndrwxr-xr-x 1 root root  4096 Sep 22 17:23 .\ndrwxr-xr-x 1 root root  4096 Sep 22 17:23 ..\ndrwxr-xr-x 8 root root  4096 Jul 12  2025 .git\n-rw-r--r-- 1 root root   404 Jul 12  2025 .gitignore\n-rw-rw-r-- 1 1005 1005     0 Sep 22 15:44 .gitkeep\n-rw-r--r-- 1 root root  2054 Jul 12  2025 AUTHORS.rst\n-rw-r--r-- 1 root root  6743 Jul 12  2025 HISTORY.rst\n-rw-r--r-- 1 root root  1099 Jul 12  2025 LICENSE.txt\n-rw-r--r-- 1 root root   147 Jul 12  2025 MANIFEST.in\n-rw-r--r-- 1 root root  2288 Jul 12  2025 README.rst\ndrwxr-xr-x 4 root root  4096 Jul 12  2025 docs\n-rw-r--r-- 1 root root   669 Jul 12  2025 pyproject.toml\n-rw-r--r-- 1 root root   104 Jul 12  2025 requirements-dev.txt\ndrwxr-xr-x 2 root root  4096 Jul 12  2025 schedule\ndrwxr-xr-x 2 root root  4096 Jul 12  2025 schedule.egg-info\n-rw-r--r-- 1 root root    22 Jul 12  2025 setup.cfg\n-rw-r--r-- 1 root root  1588 Jul 12  2025 setup.py\n-rw-r--r-- 1 root root 66565 Jul 12  2025 test_schedule.py\n-rw-r--r-- 1 root root   842 Jul 12  2025 tox.ini\n/testbed/test_schedule.py\n/testbed/schedule/__init__.py\n/testbed/setup.py\n/testbed/docs/conf.py\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-7ee383b8-aad6-4025-b964-4d6081728b3d-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/schedule/__init__.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-7ee383b8-aad6-4025-b964-4d6081728b3d-1",
+            "content": "            # schedule the job 1 offset later than possible.\n            # For example, if 02:23 does not exist (because DST moves from 02:00\n            # to 03:00), this will schedule the job at 03:23.\n            moment += offset_diff\n        return moment\n\n    def _is_overdue(self, when: datetime.datetime):\n        return self.cancel_after is not None and when > self.cancel_after\n\n    def _decode_datetimestr(\n        self, datetime_str: str, formats: List[str]\n    ) -> Optional[datetime.datetime]:\n        for f in formats:\n            try:\n                return datetime.datetime.strptime(datetime_str, f)\n            except ValueError:\n                pass\n        return None\n\n\n# The following methods are shortcuts for not having to\n# create a Scheduler instance:\n\n#: Default :class:`Scheduler <Scheduler>` object\ndefault_scheduler = Scheduler()\n\n#: Default :class:`Jobs <Job>` list\njobs = default_scheduler.jobs  # todo: should this be a copy, e.g. jobs()?\n\n\ndef every(interval: int = 1) -> Job:\n    \"\"\"Calls :meth:`every <Scheduler.every>` on the\n    :data:`default scheduler instance <default_scheduler>`.\n    \"\"\"\n    return default_scheduler.every(interval)\n\n\ndef run_pending() -> None:\n    \"\"\"Calls :meth:`run_pending <Scheduler.run_pending>` on the\n    :data:`default scheduler instance <default_scheduler>`.\n    \"\"\"\n    default_scheduler.run_pending()\n\n\ndef run_all(delay_seconds: int = 0) -> None:\n    \"\"\"Calls :meth:`run_all <Scheduler.run_all>` on the\n    :data:`default scheduler instance <default_scheduler>`.\n    \"\"\"\n    default_scheduler.run_all(delay_seconds=delay_seconds)\n\n\ndef get_jobs(tag: Optional[Hashable] = None) -> List[Job]:\n    \"\"\"Calls :meth:`get_jobs <Scheduler.get_jobs>` on the\n    :data:`default scheduler instance <default_scheduler>`.\n    \"\"\"\n    return default_scheduler.get_jobs(tag)\n\n\ndef clear(tag: Optional[Hashable] = None) -> None:\n    \"\"\"Calls :meth:`clear <Scheduler.clear>` on the\n    :data:`default scheduler instance <default_scheduler>`.\n    \"\"\"\n    default_scheduler.clear(tag)\n\n\ndef cancel_job(job: Job) -> None:\n    \"\"\"Calls :meth:`cancel_job <Scheduler.cancel_job>` on the\n    :data:`default scheduler instance <default_scheduler>`.\n    \"\"\"\n    default_scheduler.cancel_job(job)\n\n\ndef next_run(tag: Optional[Hashable] = None) -> Optional[datetime.datetime]:\n    \"\"\"Calls :meth:`next_run <Scheduler.next_run>` on the\n    :data:`default scheduler instance <default_scheduler>`.\n    \"\"\"\n    return default_scheduler.get_next_run(tag)\n\n\ndef idle_seconds() -> Optional[float]:\n    \"\"\"Calls :meth:`idle_seconds <Scheduler.idle_seconds>` on the\n    :data:`default scheduler instance <default_scheduler>`.\n    \"\"\"\n    return default_scheduler.idle_seconds\n\n\ndef repeat(job, *args, **kwargs):\n    \"\"\"\n    Decorator to schedule a new periodic job.\n\n    Any additional arguments are passed on to the decorated function\n    when the job runs.\n\n    :param job: a :class:`Jobs <Job>`\n    \"\"\"\n\n    def _schedule_decorator(decorated_function):\n        job.do(decorated_function, *args, **kwargs)\n        return decorated_function\n\n    return _schedule_decorator\n\n\ndef _move_to_next_weekday(moment: datetime.datetime, weekday: str):\n    \"\"\"\n    Move the given timestamp to the nearest given weekday. May be this week\n    or next week. If the timestamp is already at the given weekday, it is not\n    moved.\n    \"\"\"\n    weekday_index = _weekday_index(weekday)\n\n    days_ahead = weekday_index - moment.weekday()\n    if days_ahead < 0:\n        # Target day already happened this week, move to next week\n        days_ahead += 7\n    return moment + datetime.timedelta(days=days_ahead)\n\n\ndef _weekday_index(day: str) -> int:\n    weekdays = (\n        \"monday\",\n        \"tuesday\",\n        \"wednesday\",\n        \"thursday\",\n        \"friday\",\n        \"saturday\",\n        \"sunday\",\n    )\n    if day not in weekdays:\n        raise ScheduleValueError(\n            \"Invalid start day (valid start days are {})\".format(weekdays)\n        )\n    return weekdays.index(day)\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-4080001b-ba56-4542-b88a-40c63f26af82-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "grep -n \"class Job\\|def __str__\\|def __repr__\\|def do\\|self.job_func\\|self.args\\|kwargs\" /testbed/schedule/__init__.py | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-4080001b-ba56-4542-b88a-40c63f26af82-2",
+            "content": "209:class Job:\n230:        self.job_func: Optional[functools.partial] = None  # the job job_func to run\n264:    def __str__(self) -> str:\n265:        if hasattr(self.job_func, \"__name__\"):\n266:            job_func_name = self.job_func.__name__  # type: ignore\n268:            job_func_name = repr(self.job_func)\n270:        return (\"Job(interval={}, unit={}, do={}, args={}, kwargs={})\").format(\n274:            \"()\" if self.job_func is None else self.job_func.args,\n275:            \"{}\" if self.job_func is None else self.job_func.keywords,\n278:    def __repr__(self):\n290:        if hasattr(self.job_func, \"__name__\"):\n291:            job_func_name = self.job_func.__name__\n293:            job_func_name = repr(self.job_func)\n295:        if self.job_func is not None:\n296:            args = [repr(x) if is_repr(x) else str(x) for x in self.job_func.args]\n297:            kwargs = [\"%s=%s\" % (k, repr(v)) for k, v in self.job_func.keywords.items()]\n298:            call_repr = job_func_name + \"(\" + \", \".join(args + kwargs) + \")\"\n644:    def do(self, job_func: Callable, *args, **kwargs):\n655:        self.job_func = functools.partial(job_func, *args, **kwargs)\n656:        functools.update_wrapper(self.job_func, job_func)\n691:        ret = self.job_func()\n757:        kwargs = {\"second\": self.at_time.second, \"microsecond\": 0}\n760:            kwargs[\"hour\"] = self.at_time.hour\n763:            kwargs[\"minute\"] = self.at_time.minute\n765:        moment = moment.replace(**kwargs)  # type: ignore\n899:def repeat(job, *args, **kwargs):\n910:        job.do(decorated_function, *args, **kwargs)\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-ef380b23-cff8-49d8-b0c6-2eb828c6cc5d-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '209,320p' /testbed/schedule/__init__.py && echo \"==== TESTS ====\" && grep -n \"str(job)\\|__str__\\|Job(interval\\|string representation\\|repr\" /testbed/test_schedule.py | head -50"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-ef380b23-cff8-49d8-b0c6-2eb828c6cc5d-3",
+            "content": "s not None\n        self.at_time_zone = None\n\n        # datetime of the last run\n        self.last_run: Optional[datetime.datetime] = None\n\n        # datetime of the next run\n        self.next_run: Optional[datetime.datetime] = None\n\n        # Weekday to run the job at. Only relevant when unit is 'weeks'.\n        # For example, when asking 'every week on tuesday' the start_day is 'tuesday'.\n        self.start_day: Optional[str] = None\n\n        # optional time of final run\n        self.cancel_after: Optional[datetime.datetime] = None\n\n        self.tags: Set[Hashable] = set()  # unique set of tags for the job\n        self.scheduler: Optional[Scheduler] = scheduler  # scheduler to register with\n\n    def __lt__(self, other) -> bool:\n        \"\"\"\n        PeriodicJobs are sortable based on the scheduled time they\n        run next.\n        \"\"\"\n        return self.next_run < other.next_run\n\n    def __str__(self) -> str:\n        if hasattr(self.job_func, \"__name__\"):\n            job_func_name = self.job_func.__name__  # type: ignore\n        else:\n            job_func_name = repr(self.job_func)\n\n        return (\"Job(interval={}, unit={}, do={}, args={}, kwargs={})\").format(\n            self.interval,\n            self.unit,\n            job_func_name,\n            \"()\" if self.job_func is None else self.job_func.args,\n            \"{}\" if self.job_func is None else self.job_func.keywords,\n        )\n\n    def __repr__(self):\n        def format_time(t):\n            return t.strftime(\"%Y-%m-%d %H:%M:%S\") if t else \"[never]\"\n\n        def is_repr(j):\n            return not isinstance(j, Job)\n\n        timestats = \"(last run: %s, next run: %s)\" % (\n            format_time(self.last_run),\n            format_time(self.next_run),\n        )\n\n        if hasattr(self.job_func, \"__name__\"):\n            job_func_name = self.job_func.__name__\n        else:\n            job_func_name = repr(self.job_func)\n\n        if self.job_func is not None:\n            args = [repr(x) if is_repr(x) else str(x) for x in self.job_func.args]\n            kwargs = [\"%s=%s\" % (k, repr(v)) for k, v in self.job_func.keywords.items()]\n            call_repr = job_func_name + \"(\" + \", \".join(args + kwargs) + \")\"\n        else:\n            call_repr = \"[None]\"\n\n        if self.at_time is not None:\n            return \"Every %s %s at %s do %s %s\" % (\n                self.interval,\n                self.unit[:-1] if self.interval == 1 else self.unit,\n                self.at_time,\n                call_repr,\n                timestats,\n            )\n        else:\n            fmt = (\n                \"Every %(interval)s \"\n                + (\"to %(latest)s \" if self.latest is not None else \"\")\n                + \"%(unit)s do %(call_repr)s %(timestats)s\"\n            )\n\n            return fmt % dict(\n                interval=self.interval,\n                latest=self.latest,\n                unit=(self.unit[:-1] if self.interval == 1 else self.unit),\n==== TESTS ====\n28:# Set timezone to Europe/Berlin (CEST) to ensure global reproducibility\n115:        job_instance = schedule.Job(interval=2)\n260:    def test_time_range_repr(self):\n264:            job_repr = repr(every(5).to(30).minutes.do(mock_job))\n266:        assert job_repr.startswith(\"Every 5 to 30 minutes do job()\")\n1331:            \"Job(interval=1, unit=minutes, do=job_fun, \"\n1338:    def test_to_repr(self):\n1342:        s = repr(every().minute.do(job_fun, \"foo\", bar=23))\n1350:        # test repr when at_time is not None\n1351:        s2 = repr(every().day.at(\"00:00\").do(job_fun, \"foo\", bar=23))\n1359:        # Ensure Job.__repr__ does not throw exception on a partially-composed Job\n1360:        s3 = repr(schedule.every(10))\n1367:    def test_repr_functools_partial_job_func(self):\n1372:        job_repr = repr(every().minute.do(job_fun, bar=True, somekey=23))\n1373:        assert \"functools.partial\" in job_repr\n1374:        assert \"bar=True\" in job_repr\n1375:        assert \"somekey=23\" in job_repr\n1390:        that represent increasing system times.\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-18ede74c-99f7-4e50-afce-d5c4dde3d06e-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '1300,1390p' /testbed/test_schedule.py && echo \"==== HISTORY ====\" && cat /testbed/HISTORY.rst | head -80 && echo \"==== GIT LOG ====\" && git -C /testbed log --oneline -20 && git -C /testbed log --all --oneline | head -30"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-18ede74c-99f7-4e50-afce-d5c4dde3d06e-4",
+            "content": "ols.partial\" in job_str\n        assert \"bar=True\" in job_str\n        assert \"somekey=23\" in job_str\n\n    def test_run_pending(self):\n        \"\"\"Check that run_pending() runs pending jobs.\n        We do this by overriding datetime.datetime with mock objects\n        that represent increasing system times.\n==== HISTORY ====\n.. :changelog:\n\nHistory\n-------\n\n1.2.2 (2024-05-25)\n++++++++++++++++++\n\n- Fix bugs in cross-timezone scheduling (#601, #602, #604, #623)\n- Add support for python 3.12 (#606)\n- Remove dependency on old mock (#622) Thanks @a-detiste!\n\n\n1.2.1 (2023-11-01)\n++++++++++++++++++\n\n-  Fix bug where schedule was off when using .at with timezone (#583) Thanks @AnezeR!\n\n\n1.2.0 (2023-04-10)\n++++++++++++++++++\n\n- Dropped support for Python 3.6, add support for Python 3.10 and 3.11.\n- Add timezone support for .at(). See #517. Thanks @chrimaho!\n- Get next run by tag (#463) Thanks @jweijers!\n- Add py.typed file. See #521. Thanks @Akuli!\n\n- Fix the re pattern of the 'days'. See #506 Thanks @sunpro108!\n- Fix test_until_time failure when run early. See #563. Thanks @emollier!\n- Fix crash repr on partially constructed job. See #569. Thanks @CPickens42!\n- Code cleanup and modernization. See #567, #536. Thanks @masa-08 and @SergBobrovsky!\n- Documentation improvements and fix typos. See #469, #479, #493, #519, #520. Thanks to @NaelsonDouglas, @chrimaho, @rudSarkar\n\n1.1.0 (2021-04-09)\n++++++++++++++++++\n\n- Added @repeat() decorator. See #148. Thanks @rhagenaars!\n- Added execute .until(). See #195. Thanks @fredthomsen!\n- Added job retrieval filtered by tags using get_jobs('tag'). See #419. Thanks @skenvy!\n- Added type annotations. See #427. Thanks @martinthoma!\n\n- Bugfix: str() of job when there is no __name__. See #430. Thanks @biggerfisch!\n- Improved error messages. See #280, #439. Thanks @connorskees and @sosolidkk!\n- Improved logging. See #193. Thanks @zcking!\n- Documentation improvements and fix typos. See #424, #435, #436, #453, #437, #448. Thanks @ebllg!\n\n1.0.0 (2021-01-20)\n++++++++++++++++++\n\nDepending on your configuration, the following bugfixes might change schedule's behaviour:\n\n- Fix: idle_seconds crashes when no jobs are scheduled. See #401. Thanks @yoonghm!\n- Fix: day.at('HH:MM:SS') where HMS=now+10s doesn't run today. See #331. Thanks @qmorek!\n- Fix: hour.at('MM:SS'), the seconds are set to 00. See #290. Thanks @eladbi!\n- Fix: Long-running jobs skip a day when they finish in the next day #404. Thanks @4379711!\n\nOther changes:\n\n- Dropped Python 2.7 and 3.5 support, added 3.8 and 3.9 support. See #409\n- Fix RecursionError when the job is passed to the do function as an arg. See #190. Thanks @connorskees!\n- Fix DeprecationWarning of 'collections'. See #296. Thanks @gaguirregabiria!\n- Replaced Travis with Github Actions for automated testing\n- Revamp and extend documentation. See #395\n- Improved tests. Thanks @connorskees and @Jamim!\n- Changed log messages to DEBUG level. Thanks @aisk!\n\n\n0.6.0 (2019-01-20)\n++++++++++++++++++\n\n- Make at() accept timestamps with 1 second precision (#267). Thanks @NathanWailes!\n- Introduce proper exception hierarchy (#271). Thanks @ConnorSkees!\n\n\n0.5.0 (2017-11-16)\n++++++++++++++++++\n\n- Keep partially scheduled jobs from breaking the scheduler (#125)\n- Add support for random intervals (Thanks @grampajoe and @gilbsgilbs)\n\n==== GIT LOG ====\n9a84ffc Initial commit\n141da2b Remove F2P Tests\na55c8fb Bug Patch\na4efe87 Remove F2P Tests\ne261696 Bug Patch\n521b4b9 Remove F2P Tests\nda2d239 Bug Patch\nfa26525 Remove F2P Tests\n91a2e6d Bug Patch\nabafb77 Remove F2P Tests\n8a6af1d Bug Patch\nd1f9e23 Remove F2P Tests\na3897af Bug Patch\n3da23a6 Remove F2P Tests\n9326f7a Bug Patch\n866185d Remove F2P Tests\ndc4c189 Bug Patch\n6b0a9f4 Remove F2P Tests\nad716d7 Bug Patch\ne7d0be5 Remove F2P Tests\n7523065 Bug Patch\nce64a10 Remove F2P Tests\nc6ceeca Bug Patch\nf7a58eb Remove F2P Tests\n1b789df Bug Patch\n064fccc Remove F2P Tests\n5394a22 Bug Patch\n3ab5fbe Remove F2P Tests\n296d475 Bug Patch\na5afb82 Remove F2P Tests\nfd8577e Bug Patch\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-64b92e94-1afa-4c11-b847-431625e6b41d-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '1260,1380p' /testbed/test_schedule.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-64b92e94-1afa-4c11-b847-431625e6b41d-5",
+            "content": "        monday = datetime.datetime(2024, 5, 13, 10, 27, 54)\n        tuesday = schedule._move_to_next_weekday(monday, \"tuesday\")\n        assert tuesday.day == 14  # 1 day ahead\n        assert tuesday.hour == 10\n        assert tuesday.minute == 27\n\n    def test_move_to_next_weekday_nextweek(self):\n        wednesday = datetime.datetime(2024, 5, 15, 10, 27, 54)\n        tuesday = schedule._move_to_next_weekday(wednesday, \"tuesday\")\n        assert tuesday.day == 21  # next week monday\n        assert tuesday.hour == 10\n        assert tuesday.minute == 27\n\n    def test_run_all(self):\n        mock_job = make_mock_job()\n        every().minute.do(mock_job)\n        every().hour.do(mock_job)\n        every().day.at(\"11:00\").do(mock_job)\n        schedule.run_all()\n        assert mock_job.call_count == 3\n\n    def test_run_all_with_decorator(self):\n        mock_job = make_mock_job()\n\n        @repeat(every().minute)\n        def job1():\n            mock_job()\n\n        @repeat(every().hour)\n        def job2():\n            mock_job()\n\n        @repeat(every().day.at(\"11:00\"))\n        def job3():\n            mock_job()\n\n        schedule.run_all()\n        assert mock_job.call_count == 3\n\n    def test_run_all_with_decorator_args(self):\n        mock_job = make_mock_job()\n\n        @repeat(every().minute, 1, 2, \"three\", foo=23, bar={})\n        def job(*args, **kwargs):\n            mock_job(*args, **kwargs)\n\n        schedule.run_all()\n        mock_job.assert_called_once_with(1, 2, \"three\", foo=23, bar={})\n\n    def test_run_all_with_decorator_defaultargs(self):\n        mock_job = make_mock_job()\n\n        @repeat(every().minute)\n        def job(nothing=None):\n            mock_job(nothing)\n\n        schedule.run_all()\n        mock_job.assert_called_once_with(None)\n\n    def test_job_func_args_are_passed_on(self):\n        mock_job = make_mock_job()\n        every().second.do(mock_job, 1, 2, \"three\", foo=23, bar={})\n        schedule.run_all()\n        mock_job.assert_called_once_with(1, 2, \"three\", foo=23, bar={})\n\n    def test_to_string(self):\n        def job_fun():\n            pass\n\n        s = str(every().minute.do(job_fun, \"foo\", bar=23))\n        assert s == (\n            \"Job(interval=1, unit=minutes, do=job_fun, \"\n            \"args=('foo',), kwargs={'bar': 23})\"\n        )\n        assert \"job_fun\" in s\n        assert \"foo\" in s\n        assert \"{'bar': 23}\" in s\n\n    def test_to_repr(self):\n        def job_fun():\n            pass\n\n        s = repr(every().minute.do(job_fun, \"foo\", bar=23))\n        assert s.startswith(\n            \"Every 1 minute do job_fun('foo', bar=23) (last run: [never], next run: \"\n        )\n        assert \"job_fun\" in s\n        assert \"foo\" in s\n        assert \"bar=23\" in s\n\n        # test repr when at_time is not None\n        s2 = repr(every().day.at(\"00:00\").do(job_fun, \"foo\", bar=23))\n        assert s2.startswith(\n            (\n                \"Every 1 day at 00:00:00 do job_fun('foo', \"\n                \"bar=23) (last run: [never], next run: \"\n            )\n        )\n\n        # Ensure Job.__repr__ does not throw exception on a partially-composed Job\n        s3 = repr(schedule.every(10))\n        assert s3 == \"Every 10 None do [None] (last run: [never], next run: [never])\"\n\n    def test_to_string_lambda_job_func(self):\n        assert len(str(every().minute.do(lambda: 1))) > 1\n        assert len(str(every().day.at(\"10:30\").do(lambda: 1))) > 1\n\n    def test_repr_functools_partial_job_func(self):\n        def job_fun(arg):\n            pass\n\n        job_fun = functools.partial(job_fun, \"foo\")\n        job_repr = repr(every().minute.do(job_fun, bar=True, somekey=23))\n        assert \"functools.partial\" in job_repr\n        assert \"bar=True\" in job_repr\n        assert \"somekey=23\" in job_repr\n\n    def test_to_string_functools_partial_job_func(self):\n        def job_fun(arg):\n            pass\n\n"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "cool-RR__PySnooper.57472b46.lm_r__KBT7rcA__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "Custom representation for single type-handler pair fails in PySnooper\n\nWhen using PySnooper with a single custom representation handler (not wrapped in a tuple of tuples), the tracer fails to initialize properly. This happens when passing a type and handler function directly as a pair.\n\nFor example, this code fails:\n\n```python\n@pysnooper.snoop(custom_repr=(list, lambda l: 'custom_list_repr'))\ndef my_function():\n    my_list = [1, 2, 3]\n    return my_list\n```\n\nThe code raises a TypeError when trying to use a single type-handler pair. \n\nTo reproduce:\n```python\nimport pysnooper\nimport io\n\nstring_io = io.StringIO()\n\n@pysnooper.snoop(string_io, custom_repr=(list, lambda l: 'foofoo!'))\ndef sum_to_x(x):\n    l = list(range(x))\n    return 7\n\nsum_to_x(10000)  # This will raise TypeError\n```\n\nThe error occurs because the code doesn't properly handle the case when a single type-handler pair is provided directly instead of being wrapped in an additional tuple. This should work since the documentation suggests this is a valid way to specify a custom representation."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository structure and locate how `custom_repr` is handled.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-c09a9ade-b8e8-4805-8b37-e23611ae1aba-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -50 && cat /testbed/README.md 2>/dev/null | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-c09a9ade-b8e8-4805-8b37-e23611ae1aba-0",
+            "content": "Jul 12  2025 setup.cfg\n-rw-r--r-- 1 root root 1675 Jul 12  2025 setup.py\ndrwxr-xr-x 6 root root 4096 Jul 12  2025 tests\n-rw-r--r-- 1 root root 1217 Jul 12  2025 tox.ini\n/testbed/pysnooper/variables.py\n/testbed/pysnooper/tracer.py\n/testbed/pysnooper/__init__.py\n/testbed/pysnooper/pycompat.py\n/testbed/pysnooper/utils.py\n/testbed/misc/generate_authors.py\n/testbed/tests/test_utils/__init__.py\n/testbed/tests/test_utils/test_ensure_tuple.py\n/testbed/tests/test_utils/test_regex.py\n/testbed/tests/test_chinese.py\n/testbed/tests/test_mini_toolbox.py\n/testbed/tests/test_not_implemented.py\n/testbed/tests/__init__.py\n/testbed/tests/mini_toolbox/__init__.py\n/testbed/tests/mini_toolbox/pathlib.py\n/testbed/tests/mini_toolbox/contextlib.py\n/testbed/tests/test_multiple_files/multiple_files/foo.py\n/testbed/tests/test_multiple_files/multiple_files/__init__.py\n/testbed/tests/test_multiple_files/multiple_files/bar.py\n/testbed/tests/test_multiple_files/__init__.py\n/testbed/tests/test_multiple_files/test_multiple_files.py\n/testbed/tests/utils.py\n/testbed/tests/samples/recursion.py\n/testbed/tests/samples/__init__.py\n/testbed/tests/samples/indentation.py\n/testbed/tests/samples/exception.py\n/testbed/tests/test_pysnooper.py\n/testbed/setup.py\n# PySnooper - Never use print for debugging again\n\n**PySnooper** is a poor man's debugger. If you've used Bash, it's like `set -x` for Python, except it's fancier.\n\nYour story: You're trying to figure out why your Python code isn't doing what you think it should be doing. You'd love to use a full-fledged debugger with breakpoints and watches, but you can't be bothered to set one up right now.\n\nYou want to know which lines are running and which aren't, and what the values of the local variables are.\n\nMost people would use `print` lines, in strategic locations, some of them showing the values of variables.\n\n**PySnooper** lets you do the same, except instead of carefully crafting the right `print` lines, you just add one decorator line to the function you're interested in. You'll get a play-by-play log of your function, including which lines ran and   when, and exactly when local variables were changed.\n\nWhat makes **PySnooper** stand out from all other code intelligence tools? You can use it in your shitty, sprawling enterprise codebase without having to do any setup. Just slap the decorator on, as shown below, and redirect the output to a dedicated log file by specifying its path as the first argument.\n\n## Example\n\nWe're writing a function that converts a number to binary, by returning a list of bits. Let's snoop on it by adding the `@pysnooper.snoop()` decorator:\n\n```python\nimport pysnooper\n\n@pysnooper.snoop()\ndef number_to_bits(number):\n    if number:\n        bits = []\n        while number:\n            number, remainder = divmod(number, 2)\n            bits.insert(0, remainder)\n        return bits\n    else:\n        return [0]\n\nnumber_to_bits(6)\n```\nThe output to stderr is:\n\n![](https://i.imgur.com/TrF3VVj.jpg)\n\nOr if you don't want to trace an entire function, you can wrap the relevant part in a `with` block:\n\n```python\nimport pysnooper\nimport random\n\ndef foo():\n    lst = []\n    for i in range(10):\n        lst.append(random.randrange(1, 1000))\n\n    with pysnooper.snoop():\n        lower = min(lst)\n        upper = max(lst)\n        mid = (lower + upper) / 2\n        print(lower, mid, upper)\n\nfoo()\n```\n\nwhich outputs something like:\n\n```\nNew var:....... i = 9\nNew var:....... lst = [681, 267, 74, 832, 284, 678, ...]\n09:37:35.881721 line        10         lower = min(lst)\nNew var:....... lower = 74\n09:37:35.882137 line        11         upper = max(lst)\nNew var:....... upper = 832\n09:37:35.882304 line        12         mid = (lower + upper) / 2\n74 453.0 832\nNew var:....... mid = 453.0\n09:37:35.882486 line        13         print(lower, mid, upper)\nElapsed time: 00:00:00.000344\n```\n\n## Features\n\nIf stderr is not easily accessible for you, you can redirect the output to a file:\n\n```python\n@pysnooper.snoop('/my/log/file.log')\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-a1bb95bb-87ba-4c37-b03d-f86d558897db-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/pysnooper/tracer.py && echo \"===== UTILS =====\" && cat /testbed/pysnooper/utils.py && echo \"===== INIT =====\" && cat /testbed/pysnooper/__init__.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-a1bb95bb-87ba-4c37-b03d-f86d558897db-1",
+            "content": "self.max_variable_length,\n                                                            normalize=self.normalize,\n                                                            )\n                self.write('{indent}{_FOREGROUND_CYAN}{_STYLE_DIM}'\n                           'Return value:.. {_STYLE_NORMAL}{return_value_repr}'\n                           '{_STYLE_RESET_ALL}'.\n                           format(**locals()))\n\n        if event == 'exception':\n            exception = '\\n'.join(traceback.format_exception_only(*arg[:2])).strip()\n            if self.max_variable_length:\n                exception = utils.truncate(exception, self.max_variable_length)\n            self.write('{indent}{_FOREGROUND_RED}Exception:..... '\n                       '{_STYLE_BRIGHT}{exception}'\n                       '{_STYLE_RESET_ALL}'.format(**locals()))\n\n        return self.trace\n===== UTILS =====\n# Copyright 2019 Ram Rachum and collaborators.\n# This program is distributed under the MIT license.\n\nimport abc\nimport re\n\nimport sys\nfrom .pycompat import ABC, string_types, collections_abc\n\ndef _check_methods(C, *methods):\n    mro = C.__mro__\n    for method in methods:\n        for B in mro:\n            if method in B.__dict__:\n                if B.__dict__[method] is None:\n                    return NotImplemented\n                break\n        else:\n            return NotImplemented\n    return True\n\n\nclass WritableStream(ABC):\n    @abc.abstractmethod\n    def write(self, s):\n        pass\n\n    @classmethod\n    def __subclasshook__(cls, C):\n        if cls is WritableStream:\n            return _check_methods(C, 'write')\n        return NotImplemented\n\n\n\nfile_reading_errors = (\n    IOError,\n    OSError,\n    ValueError # IronPython weirdness.\n)\n\n\n\ndef shitcode(s):\n    return ''.join(\n        (c if (0 < ord(c) < 256) else '?') for c in s\n    )\n\n\ndef get_repr_function(item, custom_repr):\n    for condition, action in custom_repr:\n        if isinstance(condition, type):\n            condition = lambda x, y=condition: isinstance(x, y)\n        if condition(item):\n            return action\n    return repr\n\n\nDEFAULT_REPR_RE = re.compile(r' at 0x[a-f0-9A-F]{4,}')\n\n\ndef normalize_repr(item_repr):\n    \"\"\"Remove memory address (0x...) from a default python repr\"\"\"\n    return DEFAULT_REPR_RE.sub('', item_repr)\n\n\ndef get_shortish_repr(item, custom_repr=(), max_length=None, normalize=False):\n    repr_function = get_repr_function(item, custom_repr)\n    try:\n        r = repr_function(item)\n    except Exception:\n        r = 'REPR FAILED'\n    r = r.replace('\\r', '').replace('\\n', '')\n    if normalize:\n        r = normalize_repr(r)\n    if max_length:\n        r = truncate(r, max_length)\n    return r\n\n\ndef truncate(string, max_length):\n    if (max_length is None) or (len(string) <= max_length):\n        return string\n    else:\n        left = (max_length - 3) // 2\n        right = max_length - 3 - left\n        return u'{}...{}'.format(string[:left], string[-right:])\n\n\ndef ensure_tuple(x):\n    if isinstance(x, collections_abc.Iterable) and \\\n                                               not isinstance(x, string_types):\n        return tuple(x)\n    else:\n        return (x,)\n\n\n\n===== INIT =====\n# Copyright 2019 Ram Rachum and collaborators.\n# This program is distributed under the MIT license.\n'''\nPySnooper - Never use print for debugging again\n\nUsage:\n\n    import pysnooper\n\n    @pysnooper.snoop()\n    def your_function(x):\n        ...\n\nA log will be written to stderr showing the lines executed and variables\nchanged in the decorated function.\n\nFor more information, see https://github.com/cool-RR/PySnooper\n'''\n\nfrom .tracer import Tracer as snoop\nfrom .variables import Attrs, Exploding, Indices, Keys\nimport collections\n\n__VersionInfo = collections.namedtuple('VersionInfo',\n                                       ('major', 'minor', 'micro'))\n\n__version__ = '1.2.1'\n__version_info__ = __VersionInfo(*(map(int, __version__.split('.'))))\n\ndel collections, __VersionInfo # Avoid polluting the namespace\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-a40d8fb5-ac39-44b5-83f9-da9a1a1d75ce-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "wc -l /testbed/pysnooper/tracer.py && head -200 /testbed/pysnooper/tracer.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-a40d8fb5-ac39-44b5-83f9-da9a1a1d75ce-2",
+            "content": "= int(ipython_filename_match.group(1))\n            try:\n                import IPython\n                ipython_shell = IPython.get_ipython()\n                ((_, _, source_chunk),) = ipython_shell.history_manager. \\\n                                  get_range(0, entry_number, entry_number + 1)\n                source = source_chunk.splitlines()\n            except Exception:\n                pass\n        elif ansible_filename_match:\n            try:\n                import zipfile\n                archive_file = zipfile.ZipFile(ansible_filename_match.group(1), 'r')\n                source = archive_file.read(ansible_filename_match.group(2).replace('\\\\', '/')).splitlines()\n            except Exception:\n                pass\n        else:\n            try:\n                with open(file_name, 'rb') as fp:\n                    source = fp.read().splitlines()\n            except utils.file_reading_errors:\n                pass\n    if not source:\n        # We used to check `if source is None` but I found a rare bug where it\n        # was empty, but not `None`, so now we check `if not source`.\n        source = UnavailableSource()\n\n    # If we just read the source from a file, or if the loader did not\n    # apply tokenize.detect_encoding to decode the source into a\n    # string, then we should do that ourselves.\n    if isinstance(source[0], bytes):\n        encoding = 'utf-8'\n        for line in source[:2]:\n            # File coding may be specified. Match pattern from PEP-263\n            # (https://www.python.org/dev/peps/pep-0263/)\n            match = re.search(br'coding[:=]\\s*([-\\w.]+)', line)\n            if match:\n                encoding = match.group(1).decode('ascii')\n                break\n        source = [pycompat.text_type(sline, encoding, 'replace') for sline in\n                  source]\n\n    result = (file_name, source)\n    source_and_path_cache[cache_key] = result\n    return result\n\n\ndef get_write_function(output, overwrite):\n    is_path = isinstance(output, (pycompat.PathLike, str))\n    if overwrite and not is_path:\n        raise Exception('`overwrite=True` can only be used when writing '\n                        'content to file.')\n    if output is None:\n        def write(s):\n            stderr = sys.stderr\n            try:\n                stderr.write(s)\n            except UnicodeEncodeError:\n                # God damn Python 2\n                stderr.write(utils.shitcode(s))\n    elif is_path:\n        return FileWriter(output, overwrite).write\n    elif callable(output):\n        write = output\n    else:\n        assert isinstance(output, utils.WritableStream)\n\n        def write(s):\n            output.write(s)\n    return write\n\n\nclass FileWriter(object):\n    def __init__(self, path, overwrite):\n        self.path = pycompat.text_type(path)\n        self.overwrite = overwrite\n\n    def write(self, s):\n        with open(self.path, 'w' if self.overwrite else 'a',\n                  encoding='utf-8') as output_file:\n            output_file.write(s)\n        self.overwrite = False\n\n\nthread_global = threading.local()\nDISABLED = bool(os.getenv('PYSNOOPER_DISABLED', ''))\n\nclass Tracer:\n    '''\n    Snoop on the function, writing everything it's doing to stderr.\n\n    This is useful for debugging.\n\n    When you decorate a function with `@pysnooper.snoop()`\n    or wrap a block of code in `with pysnooper.snoop():`, you'll get a log of\n    every line that ran in the function and a play-by-play of every local\n    variable that changed.\n\n    If stderr is not easily accessible for you, you can redirect the output to\n    a file::\n\n        @pysnooper.snoop('/my/log/file.log')\n\n    See values of some expressions that aren't local variables::\n\n        @pysnooper.snoop(watch=('foo.bar', 'self.x[\"whatever\"]'))\n\n    Expand values to see all their attributes or items of lists/dictionaries:\n\n        @pysnooper.snoop(watch_explode=('foo', 'self'))\n\n    (see Advanced Usage in the README for more control)\n\n    Show snoop lines for functions that your function calls::\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-0a6a6302-bfc1-4fe5-a33a-f86f49bd6748-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "rg -n \"custom_repr\" /testbed --type py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-0a6a6302-bfc1-4fe5-a33a-f86f49bd6748-3",
+            "content": "bash: line 1: rg: command not found\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-87611841-3182-4baf-b66d-090ae79eb63c-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "grep -n \"custom_repr\" -r /testbed --include=\"*.py\" --include=\"*.rst\" --include=\"*.md\""
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-87611841-3182-4baf-b66d-090ae79eb63c-4",
+            "content": "/testbed/pysnooper/tracer.py:32:def get_local_reprs(frame, watch=(), custom_repr=(), max_length=None, normalize=False):\n/testbed/pysnooper/tracer.py:37:    result_items = [(key, utils.get_shortish_repr(value, custom_repr,\n/testbed/pysnooper/tracer.py:214:        @pysnooper.snoop(custom_repr=((type1, custom_repr_func1),\n/testbed/pysnooper/tracer.py:215:                         (condition2, custom_repr_func2), ...))\n/testbed/pysnooper/tracer.py:235:                 prefix='', overwrite=False, thread_info=False, custom_repr=(),\n/testbed/pysnooper/tracer.py:257:        if len(custom_repr) == 2 and not all(isinstance(x,\n/testbed/pysnooper/tracer.py:258:                      pycompat.collections_abc.Iterable) for x in custom_repr):\n/testbed/pysnooper/tracer.py:259:            custom_repr = (custom_repr,)\n/testbed/pysnooper/tracer.py:260:        self.custom_repr = custom_repr\n/testbed/pysnooper/tracer.py:492:                                                       watch=self.watch, custom_repr=self.custom_repr,\n/testbed/pysnooper/tracer.py:561:                                                            custom_repr=self.custom_repr,\n/testbed/pysnooper/utils.py:50:def get_repr_function(item, custom_repr):\n/testbed/pysnooper/utils.py:51:    for condition, action in custom_repr:\n/testbed/pysnooper/utils.py:67:def get_shortish_repr(item, custom_repr=(), max_length=None, normalize=False):\n/testbed/pysnooper/utils.py:68:    repr_function = get_repr_function(item, custom_repr)\n/testbed/tests/test_pysnooper.py:1428:def test_custom_repr(normalize):\n/testbed/tests/test_pysnooper.py:1443:    @pysnooper.snoop(string_io, custom_repr=(\n/testbed/tests/test_pysnooper.py:1476:def test_custom_repr_single(normalize):\n/testbed/tests/test_pysnooper.py:1479:    @pysnooper.snoop(string_io, custom_repr=(list, lambda l: 'foofoo!'),\n/testbed/ADVANCED_USAGE.md:70:@pysnooper.snoop(custom_repr=((large, print_list_size), (numpy.ndarray, print_ndarray)))\n/testbed/ADVANCED_USAGE.md:80:The `custom_repr` are matched in order, if one condition matches, no further conditions will be checked.\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-92d2342d-45b3-4bf0-aceb-0463606b37b4-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '200,280p' /testbed/pysnooper/tracer.py && echo \"===== TEST =====\" && sed -n '1420,1520p' /testbed/tests/test_pysnooper.py && echo \"===== PYCOMPAT =====\" && cat /testbed/pysnooper/pycompat.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-92d2342d-45b3-4bf0-aceb-0463606b37b4-5",
+            "content": "'49995000'),\n            ElapsedTimeEntry(),\n        ),\n        normalize=normalize,\n    )\n\n\n@pytest.mark.parametrize(\"normalize\", (True, False))\ndef test_custom_repr_single(normalize):\n    string_io = io.StringIO()\n\n    @pysnooper.snoop(string_io, custom_repr=(list, lambda l: 'foofoo!'),\n                     normalize=normalize, color=False)\n    def sum_to_x(x):\n        l = list(range(x))\n        return 7\n\n    result = sum_to_x(10000)\n\n    output = string_io.getvalue()\n    assert_output(\n        output,\n        (\n            SourcePathEntry(),\n            VariableEntry('x', '10000'),\n            CallEntry(),\n            LineEntry(),\n            VariableEntry('l', 'foofoo!'),\n            LineEntry(),\n            ReturnEntry(),\n            ReturnValueEntry('7'),\n            ElapsedTimeEntry(),\n        ),\n        normalize=normalize,\n    )\n\n\ndef test_disable():\n    string_io = io.StringIO()\n\n    def my_function(foo):\n        x = 7\n        y = 8\n        return x + y\n\n    with mini_toolbox.TempValueSetter((pysnooper.tracer, 'DISABLED'), True):\n        tracer = pysnooper.snoop(string_io, color=False)\n        with tracer:\n            result = my_function('baba')\n        my_decorated_function = tracer(my_function)\n        my_decorated_function('booboo')\n\n    output = string_io.getvalue()\n===== PYCOMPAT =====\n# Copyright 2019 Ram Rachum and collaborators.\n# This program is distributed under the MIT license.\n'''Python 2/3 compatibility'''\n\nimport abc\nimport os\nimport inspect\nimport sys\nimport datetime as datetime_module\n\nPY3 = (sys.version_info[0] == 3)\nPY2 = not PY3\n\nif hasattr(abc, 'ABC'):\n    ABC = abc.ABC\nelse:\n    class ABC(object):\n        \"\"\"Helper class that provides a standard way to create an ABC using\n        inheritance.\n        \"\"\"\n        __metaclass__ = abc.ABCMeta\n        __slots__ = ()\n\n\nif hasattr(os, 'PathLike'):\n    PathLike = os.PathLike\nelse:\n    class PathLike(ABC):\n        \"\"\"Abstract base class for implementing the file system path protocol.\"\"\"\n\n        @abc.abstractmethod\n        def __fspath__(self):\n            \"\"\"Return the file system path representation of the object.\"\"\"\n            raise NotImplementedError\n\n        @classmethod\n        def __subclasshook__(cls, subclass):\n            return (\n                hasattr(subclass, '__fspath__') or\n                # Make a concession for older `pathlib` versions:g\n                (hasattr(subclass, 'open') and\n                 'path' in subclass.__name__.lower())\n            )\n\n\ntry:\n    iscoroutinefunction = inspect.iscoroutinefunction\nexcept AttributeError:\n    iscoroutinefunction = lambda whatever: False # Lolz\n\ntry:\n    isasyncgenfunction = inspect.isasyncgenfunction\nexcept AttributeError:\n    isasyncgenfunction = lambda whatever: False # Lolz\n\n\nif PY3:\n    string_types = (str,)\n    text_type = str\n    binary_type = bytes\nelse:\n    string_types = (basestring,)\n    text_type = unicode\n    binary_type = str\n\n\ntry:\n    from collections import abc as collections_abc\nexcept ImportError: # Python 2.7\n    import collections as collections_abc\n\nif sys.version_info[:2] >= (3, 6):\n    time_isoformat = datetime_module.time.isoformat\nelse:\n    def time_isoformat(time, timespec='microseconds'):\n        assert isinstance(time, datetime_module.time)\n        if timespec != 'microseconds':\n            raise NotImplementedError\n        result = '{:02d}:{:02d}:{:02d}.{:06d}'.format(\n            time.hour, time.minute, time.second, time.microsecond\n        )\n        assert len(result) == 15\n        return result\n\n\ndef timedelta_format(timedelta):\n    time = (datetime_module.datetime.min + timedelta).time()\n    return time_isoformat(time, timespec='microseconds')\n\ndef timedelta_parse(s):\n    hours, minutes, seconds, microseconds = map(\n        int,\n        s.replace('.', ':').split(':')\n    )\n    return datetime_module.timedelta(hours=hours, minutes=minutes,\n                                     seconds=seconds,\n                                     microseconds=microseconds)\n\n"
+          }
+        ]
+      }
+    }
+  ]
+}

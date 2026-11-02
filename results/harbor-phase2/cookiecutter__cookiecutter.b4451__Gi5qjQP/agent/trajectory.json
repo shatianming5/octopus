@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "cookiecutter__cookiecutter.b4451__Gi5qjQP__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# `--list-installed` command broken in latest version\n\nI'm trying to use the `--list-installed` command to see my installed templates, but it's failing with an error.\n\n## Steps to reproduce\n\n1. Install cookiecutter\n2. Run `cookiecutter --list-installed`\n\n## Expected behavior\n\nThe command should list all installed templates in my cookiecutters directory, like:\n\n```\n3 installed templates: \n * template1\n * template2\n * template3\n```\n\n## Actual behavior\n\nInstead, I get an error:\n\n```\nAttributeError: 'bool' object has no attribute 'get'\n```\n\nThis seems to be related to how the configuration is being handled in the `list_installed_templates` function. The function is trying to access a 'get' attribute on a boolean value.\n\nI noticed this started happening after the recent changes to the `list_installed_templates` function. The way it's handling the default_config parameter seems to be causing the issue."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository and the `list_installed_templates` function to find why `--list-installed` fails.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-fd824b87-0156-4966-8d37-9a5358d33975-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -50 && cat /testbed/README.md | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-fd824b87-0156-4966-8d37-9a5358d33975-0",
+            "content": "ates.py\n/testbed/tests/test_generate_files.py\n/testbed/tests/test_get_user_config.py\n/testbed/tests/vcs/test_clone.py\n/testbed/tests/vcs/test_is_vcs_installed.py\n/testbed/tests/vcs/test_identify_repo.py\n/testbed/tests/test_cookiecutter_local_no_input.py\n/testbed/tests/test-pyshellhooks/hooks/post_gen_project.py\n/testbed/tests/test-pyshellhooks/hooks/pre_gen_project.py\n/testbed/tests/test_exceptions.py\n/testbed/tests/test_log.py\n/testbed/tests/test_cookiecutter_local_with_input.py\n/testbed/tests/conftest.py\n/testbed/tests/test_cli.py\n/testbed/tests/test_generate_file.py\n/testbed/tests/test_read_user_variable.py\n/testbed/tests/repository/test_determine_repository_should_use_local_repo.py\n/testbed/tests/repository/test_abbreviation_expansion.py\n/testbed/tests/repository/test_repository_has_cookiecutter_json.py\n<h1 align=\"center\">\n    <img alt=\"cookiecutter Logo\" width=\"200px\" src=\"https://raw.githubusercontent.com/cookiecutter/cookiecutter/3ac078356adf5a1a72042dfe72ebfa4a9cd5ef38/logo/cookiecutter_medium.png\">\n</h1>\n\n<div align=\"center\">\n\n[![pypi](https://img.shields.io/pypi/v/cookiecutter.svg)](https://pypi.org/project/cookiecutter/)\n[![python](https://img.shields.io/pypi/pyversions/cookiecutter.svg)](https://pypi.org/project/cookiecutter/)\n[![Build Status](https://github.com/cookiecutter/cookiecutter/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/cookiecutter/cookiecutter/actions)\n[![codecov](https://codecov.io/gh/cookiecutter/cookiecutter/branch/main/graphs/badge.svg?branch=main)](https://codecov.io/github/cookiecutter/cookiecutter?branch=main)\n[![discord](https://img.shields.io/badge/Discord-cookiecutter-5865F2?style=flat&logo=discord&logoColor=white)](https://discord.gg/9BrxzPKuEW)\n[![docs](https://readthedocs.org/projects/cookiecutter/badge/?version=latest)](https://readthedocs.org/projects/cookiecutter/?badge=latest)\n[![Code Quality](https://img.shields.io/scrutinizer/g/cookiecutter/cookiecutter.svg)](https://scrutinizer-ci.com/g/cookiecutter/cookiecutter/?branch=main)\n\n</div>\n\n# Cookiecutter\n\nCreate projects swiftly from **cookiecutters** (project templates) with this command-line utility. Ideal for generating Python package projects and more.\n\n- [Documentation](https://cookiecutter.readthedocs.io)\n- [GitHub](https://github.com/cookiecutter/cookiecutter)\n- [PyPI](https://pypi.org/project/cookiecutter/)\n- [License (BSD)](https://github.com/cookiecutter/cookiecutter/blob/main/LICENSE)\n\n## Installation\n\nInstall cookiecutter using pip package manager:\n```\n# pipx is strongly recommended.\npipx install cookiecutter\n\n# If pipx is not an option,\n# you can install cookiecutter in your Python user directory.\npython -m pip install --user cookiecutter\n```\n\n## Features\n\n- **Cross-Platform:** Supports Windows, Mac, and Linux.\n- **User-Friendly:** No Python knowledge required.\n- **Versatile:** Compatible with Python 3.7 to 3.12.\n- **Multi-Language Support:** Use templates in any language or markup format.\n\n### For Users\n\n#### Quick Start\n\nThe recommended way to use Cookiecutter as a command line utility is to run it with [`pipx`](https://pypa.github.io/pipx/), which can be installed with `pip install pipx`, but if you plan to use Cookiecutter programmatically, please run `pip install cookiecutter`.\n\n**Use a GitHub template**\n\n```bash\n# You'll be prompted to enter values.\n# Then it'll create your Python package in the current working directory,\n# based on those values.\n# For the sake of brevity, repos on GitHub can just use the 'gh' prefix\n$ pipx run cookiecutter gh:audreyfeldroy/cookiecutter-pypackage\n```\n\n**Use a local template**\n\n```bash\n$ pipx run cookiecutter cookiecutter-pypackage/\n```\n\n**Use it from Python**\n\n```py\nfrom cookiecutter.main import cookiecutter\n\n# Create project from the cookiecutter-pypackage/ template\ncookiecutter('cookiecutter-pypackage/')\n\n# Create project from the cookiecutter-pypackage.git repo template\ncookiecutter('gh:audreyfeldroy//cookiecutter-pypackage.git')\n```\n\n#### Detailed Usage\n\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-bf9fcc21-4ffc-462b-9029-ebbbf00a02a8-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "rg -n \"list_installed\" /testbed --type py && echo \"====\" && rg -n \"default_config\" /testbed --type py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-bf9fcc21-4ffc-462b-9029-ebbbf00a02a8-1",
+            "content": "bash: line 1: rg: command not found\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-19f95c66-3d5c-4785-acfb-12a35caeb8dd-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "grep -rn \"list_installed\" /testbed --include=\"*.py\" && echo \"====\" && grep -rn \"default_config\" /testbed --include=\"*.py\""
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-19f95c66-3d5c-4785-acfb-12a35caeb8dd-2",
+            "content": "/testbed/tests/test_cli.py:581:def test_debug_list_installed_templates(\n/testbed/tests/test_cli.py:602:def test_debug_list_installed_templates_failure(\n/testbed/cookiecutter/cli.py:62:def list_installed_templates(\n/testbed/cookiecutter/cli.py:187:    list_installed: bool,\n/testbed/cookiecutter/cli.py:197:    if list_installed:\n/testbed/cookiecutter/cli.py:198:        list_installed_templates(default_config, config_file)\n====\n/testbed/tests/test_get_user_config.py:109:def test_default_config_path(user_config_path) -> None:\n/testbed/tests/test_get_user_config.py:114:def test_default_config_from_env_variable(\n/testbed/tests/test_get_user_config.py:124:def test_force_default_config(mocker, custom_config_path) -> None:\n/testbed/tests/test_get_user_config.py:125:    \"\"\"Validate `default_config=True` should ignore provided custom user config.\"\"\"\n/testbed/tests/test_get_user_config.py:128:    user_config = config.get_user_config(custom_config_path, default_config=True)\n/testbed/tests/test_get_user_config.py:165:    user_config = config.get_user_config(default_config={'replay_dir': replay_dir})\n/testbed/tests/test_cli.py:122:        default_config=False,\n/testbed/tests/test_cli.py:149:        default_config=False,\n/testbed/tests/test_cli.py:201:        default_config=False,\n/testbed/tests/test_cli.py:237:        default_config=False,\n/testbed/tests/test_cli.py:296:        default_config=False,\n/testbed/tests/test_cli.py:341:        default_config=False,\n/testbed/tests/test_cli.py:372:        default_config=True,\n/testbed/tests/test_cli.py:398:        default_config=True,\n/testbed/tests/test_cli.py:669:        default_config=False,\n/testbed/cookiecutter/main.py:38:    default_config: bool = False,\n/testbed/cookiecutter/main.py:63:    :param default_config: Use default values rather than a config file.\n/testbed/cookiecutter/main.py:81:        default_config=default_config,\n/testbed/cookiecutter/main.py:155:                default_config=default_config,\n/testbed/cookiecutter/config.py:91:    default_config: bool | dict[str, Any] = False,\n/testbed/cookiecutter/config.py:95:    If ``default_config`` is True, ignore ``config_file`` and return default\n/testbed/cookiecutter/config.py:98:    If ``default_config`` is a dict, merge values with default values and return them\n/testbed/cookiecutter/config.py:112:    if default_config and isinstance(default_config, dict):\n/testbed/cookiecutter/config.py:113:        return merge_configs(DEFAULT_CONFIG, default_config)\n/testbed/cookiecutter/config.py:116:    if default_config:\n/testbed/cookiecutter/config.py:117:        logger.debug(\"Force ignoring user config with default_config switch.\")\n/testbed/cookiecutter/cli.py:63:    default_config: bool | dict[str, Any], passed_config_file: str | None\n/testbed/cookiecutter/cli.py:66:    config = get_user_config(passed_config_file, default_config)\n/testbed/cookiecutter/cli.py:181:    default_config: bool,\n/testbed/cookiecutter/cli.py:198:        list_installed_templates(default_config, config_file)\n/testbed/cookiecutter/cli.py:228:            default_config=default_config,\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-debec287-46a6-4bf1-aedb-3356a028f152-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/cookiecutter/cli.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-debec287-46a6-4bf1-aedb-3356a028f152-3",
+            "content": "-overwrite-if-exists',\n    is_flag=True,\n    help='Overwrite the contents of the output directory if it already exists',\n)\n@click.option(\n    '-s',\n    '--skip-if-file-exists',\n    is_flag=True,\n    help='Skip the files in the corresponding directories if they already exist',\n    default=False,\n)\n@click.option(\n    '-o',\n    '--output-dir',\n    default='.',\n    type=click.Path(),\n    help='Where to output the generated project dir into',\n)\n@click.option(\n    '--config-file', type=click.Path(), default=None, help='User configuration file'\n)\n@click.option(\n    '--default-config',\n    is_flag=True,\n    help='Do not load a config file. Use the defaults instead',\n)\n@click.option(\n    '--debug-file',\n    type=click.Path(),\n    default=None,\n    help='File to be used as a stream for DEBUG logging',\n)\n@click.option(\n    '--accept-hooks',\n    type=click.Choice(['yes', 'ask', 'no']),\n    default='yes',\n    help='Accept pre/post hooks',\n)\n@click.option(\n    '-l', '--list-installed', is_flag=True, help='List currently installed templates.'\n)\n@click.option(\n    '--keep-project-on-failure',\n    is_flag=True,\n    help='Do not delete project folder on failure',\n)\ndef main(\n    template: str,\n    extra_context: dict[str, Any],\n    no_input: bool,\n    checkout: str,\n    verbose: bool,\n    replay: bool | str,\n    overwrite_if_exists: bool,\n    output_dir: str,\n    config_file: str | None,\n    default_config: bool,\n    debug_file: str | None,\n    directory: str,\n    skip_if_file_exists: bool,\n    accept_hooks: Literal['yes', 'ask', 'no'],\n    replay_file: str | None,\n    list_installed: bool,\n    keep_project_on_failure: bool,\n) -> None:\n    \"\"\"Create a project from a Cookiecutter project template (TEMPLATE).\n\n    Cookiecutter is free and open source software, developed and managed by\n    volunteers. If you would like to help out or fund the project, please get\n    in touch at https://github.com/cookiecutter/cookiecutter.\n    \"\"\"\n    # Commands that should work without arguments\n    if list_installed:\n        list_installed_templates(default_config, config_file)\n        sys.exit(0)\n\n    # Raising usage, after all commands that should work without args.\n    if not template or template.lower() == 'help':\n        click.echo(click.get_current_context().get_help())\n        sys.exit(0)\n\n    configure_logger(stream_level='DEBUG' if verbose else 'INFO', debug_file=debug_file)\n\n    # If needed, prompt the user to ask whether or not they want to execute\n    # the pre/post hooks.\n    if accept_hooks == \"ask\":\n        _accept_hooks = click.confirm(\"Do you want to execute hooks?\")\n    else:\n        _accept_hooks = accept_hooks == \"yes\"\n\n    if replay_file:\n        replay = replay_file\n\n    try:\n        cookiecutter(\n            template,\n            checkout,\n            no_input,\n            extra_context=extra_context,\n            replay=replay,\n            overwrite_if_exists=overwrite_if_exists,\n            output_dir=output_dir,\n            config_file=config_file,\n            default_config=default_config,\n            password=os.environ.get('COOKIECUTTER_REPO_PASSWORD'),\n            directory=directory,\n            skip_if_file_exists=skip_if_file_exists,\n            accept_hooks=_accept_hooks,\n            keep_project_on_failure=keep_project_on_failure,\n        )\n    except (\n        ContextDecodingException,\n        OutputDirExistsException,\n        EmptyDirNameException,\n        InvalidModeException,\n        FailedHookException,\n        UnknownExtension,\n        InvalidZipRepository,\n        RepositoryNotFound,\n        RepositoryCloneFailed,\n    ) as e:\n        click.echo(e)\n        sys.exit(1)\n    except UndefinedVariableInTemplate as undefined_err:\n        click.echo(f'{undefined_err.message}')\n        click.echo(f'Error message: {undefined_err.error.message}')\n\n        context_str = json.dumps(undefined_err.context, indent=4, sort_keys=True)\n        click.echo(f'Context: {context_str}')\n        sys.exit(1)\n\n\nif __name__ == \"__main__\":\n    main()\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-1c57b1a0-f34e-4b1f-8ad2-290e21aad6a7-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '1,100p' /testbed/cookiecutter/cli.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-1c57b1a0-f34e-4b1f-8ad2-290e21aad6a7-4",
+            "content": "\"\"\"Main `cookiecutter` CLI.\"\"\"\n\nfrom __future__ import annotations\n\nimport json\nimport os\nimport sys\nfrom collections import OrderedDict\nfrom typing import TYPE_CHECKING, Any\n\nif TYPE_CHECKING:\n    from collections.abc import Iterable\n\n    from click import Context, Parameter\n    from typing_extensions import Literal\n\n\nimport click\n\nfrom cookiecutter import __version__\nfrom cookiecutter.config import get_user_config\nfrom cookiecutter.exceptions import (\n    ContextDecodingException,\n    EmptyDirNameException,\n    FailedHookException,\n    InvalidModeException,\n    InvalidZipRepository,\n    OutputDirExistsException,\n    RepositoryCloneFailed,\n    RepositoryNotFound,\n    UndefinedVariableInTemplate,\n    UnknownExtension,\n)\nfrom cookiecutter.log import configure_logger\nfrom cookiecutter.main import cookiecutter\n\n\ndef version_msg() -> str:\n    \"\"\"Return the Cookiecutter version, location and Python powering it.\"\"\"\n    python_version = sys.version\n    location = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))\n    return f\"Cookiecutter {__version__} from {location} (Python {python_version})\"\n\n\ndef validate_extra_context(\n    _ctx: Context, _param: Parameter, value: Iterable[str]\n) -> OrderedDict[str, str] | None:\n    \"\"\"Validate extra context.\"\"\"\n    for string in value:\n        if '=' not in string:\n            msg = (\n                f\"EXTRA_CONTEXT should contain items of the form key=value; \"\n                f\"'{string}' doesn't match that form\"\n            )\n            raise click.BadParameter(msg)\n\n    # Convert tuple -- e.g.: ('program_name=foobar', 'startsecs=66')\n    # to dict -- e.g.: {'program_name': 'foobar', 'startsecs': '66'}\n    return OrderedDict(s.split('=', 1) for s in value) or None\n\n\ndef list_installed_templates(\n    default_config: bool | dict[str, Any], passed_config_file: str | None\n) -> None:\n    \"\"\"List installed (locally cloned) templates. Use cookiecutter --list-installed.\"\"\"\n    config = get_user_config(passed_config_file, default_config)\n    cookiecutter_folder: str = config['cookiecutters_dir']\n    if not os.path.exists(cookiecutter_folder):\n        click.echo(\n            f\"Error: Cannot list installed templates. \"\n            f\"Folder does not exist: {cookiecutter_folder}\"\n        )\n        sys.exit(-1)\n\n    template_names = [\n        folder\n        for folder in os.listdir(cookiecutter_folder)\n        if os.path.exists(\n            os.path.join(cookiecutter_folder, folder, 'cookiecutter.json')\n        )\n    ]\n    click.echo(f'{len(template_names)} installed templates: ')\n    for name in template_names:\n        click.echo(f' * {name}')\n\n\n@click.command(context_settings={\"help_option_names\": ['-h', '--help']})\n@click.version_option(__version__, '-V', '--version', message=version_msg())\n@click.argument('template', required=False)\n@click.argument('extra_context', nargs=-1, callback=validate_extra_context)\n@click.option(\n    '--no-input',\n    is_flag=True,\n    help='Do not prompt for parameters and only use cookiecutter.json file content. '\n    'Defaults to deleting any cached resources and redownloading them. '\n    'Cannot be combined with the --replay flag.',\n)\n@click.option(\n    '-c',\n    '--checkout',\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-ecf1939f-e85a-40dd-b166-20e92b1ff89e-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cd /testbed && git log --oneline -20 && echo \"==== DIFF ====\" && git log -p --all -- cookiecutter/cli.py | head -200 && echo \"==== TEST CLI ====\" && sed -n '560,650p' /testbed/tests/test_cli.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-ecf1939f-e85a-40dd-b166-20e92b1ff89e-5",
+            "content": "ipRepository,\n-        RepositoryNotFound,\n+        OutputDirExistsException,\n         RepositoryCloneFailed,\n+        RepositoryNotFound,\n+        UndefinedVariableInTemplate,\n+        UnknownExtension,\n     ) as e:\n-        click.echo(e)\n+        click.echo(f\"Error: {e}\")\n         sys.exit(1)\n-    except UndefinedVariableInTemplate as undefined_err:\n-        click.echo(f'{undefined_err.message}')\n-        click.echo(f'Error message: {undefined_err.error.message}')\n-\n-        context_str = json.dumps(undefined_err.context, indent=4, sort_keys=True)\n-        click.echo(f'Context: {context_str}')\n+    except Exception as e:\n+        if verbose:\n+            click.echo(f\"Unexpected error: {e}\")\n+            import traceback\n+            traceback.print_exc()\n+        else:\n+            click.echo(f\"Unexpected error: {e}\")\n         sys.exit(1)\n \n-\n if __name__ == \"__main__\":\n     main()\n\ncommit ffb0eb5d0ef6b687bf73edb1deb5b49fefb57347\nAuthor: swesmith <swesmith@swesmith.ai>\nDate:   Sat Jul 12 19:38:47 2025 +0000\n\n    Bug Patch\n\ndiff --git a/cookiecutter/cli.py b/cookiecutter/cli.py\nindex a6fcf2b..ca15c67 100644\n--- a/cookiecutter/cli.py\n+++ b/cookiecutter/cli.py\n@@ -42,22 +42,21 @@ def version_msg() -> str:\n     return f\"Cookiecutter {__version__} from {location} (Python {python_version})\"\n \n \n==== TEST CLI ====\n\n    result = cli_runner(\n        '--verbose',\n        '--no-input',\n        '--debug-file',\n        str(debug_file),\n        'tests/fake-repo-pre/',\n    )\n    assert result.exit_code == 0\n\n    assert debug_file.exists()\n\n    context_log = (\n        \"DEBUG cookiecutter.main: context_file is \"\n        \"tests/fake-repo-pre/cookiecutter.json\"\n    )\n    assert context_log in debug_file.read_text()\n    assert context_log in result.output\n\n\n@pytest.mark.usefixtures('make_fake_project_dir', 'remove_fake_project_dir')\ndef test_debug_list_installed_templates(\n    cli_runner, debug_file, user_config_path\n) -> None:\n    \"\"\"Verify --list-installed command correct invocation.\"\"\"\n    fake_template_dir = os.path.dirname(os.path.abspath('fake-project'))\n    os.makedirs(os.path.dirname(user_config_path))\n    # Single quotes in YAML will not parse escape codes (\\).\n    Path(user_config_path).write_text(f\"cookiecutters_dir: '{fake_template_dir}'\")\n    Path(\"fake-project\", \"cookiecutter.json\").write_text('{}')\n\n    result = cli_runner(\n        '--list-installed',\n        '--config-file',\n        user_config_path,\n        str(debug_file),\n    )\n\n    assert \"1 installed templates:\" in result.output\n    assert result.exit_code == 0\n\n\ndef test_debug_list_installed_templates_failure(\n    cli_runner, debug_file, user_config_path\n) -> None:\n    \"\"\"Verify --list-installed command error on invocation.\"\"\"\n    os.makedirs(os.path.dirname(user_config_path))\n    Path(user_config_path).write_text('cookiecutters_dir: \"/notarealplace/\"')\n\n    result = cli_runner(\n        '--list-installed', '--config-file', user_config_path, str(debug_file)\n    )\n\n    assert \"Error: Cannot list installed templates.\" in result.output\n    assert result.exit_code == -1\n\n\n@pytest.mark.usefixtures('remove_fake_project_dir')\ndef test_directory_repo(cli_runner) -> None:\n    \"\"\"Test cli invocation works with `directory` option.\"\"\"\n    result = cli_runner(\n        'tests/fake-repo-dir/',\n        '--no-input',\n        '-v',\n        '--directory=my-dir',\n    )\n    assert result.exit_code == 0\n    assert os.path.isdir(\"fake-project\")\n    content = Path(\"fake-project\", \"README.rst\").read_text()\n    assert \"Project name: **Fake Project**\" in content\n\n\ncli_accept_hook_arg_testdata = [\n    (\"--accept-hooks=yes\", None, True),\n    (\"--accept-hooks=no\", None, False),\n    (\"--accept-hooks=ask\", \"yes\", True),\n    (\"--accept-hooks=ask\", \"no\", False),\n]\n\n\n@pytest.mark.parametrize(\n    \"accept_hooks_arg,user_input,expected\", cli_accept_hook_arg_testdata\n)\ndef test_cli_accept_hooks(\n    mocker,\n    cli_runner,\n    output_dir_flag,\n    output_dir,\n    accept_hooks_arg,\n    user_input,\n    expected,\n"
+          }
+        ]
+      }
+    }
+  ]
+}

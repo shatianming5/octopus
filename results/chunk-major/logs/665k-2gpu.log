@@ -1,0 +1,13 @@
+3, 1005 MiB
+6, 1007 MiB
+micro-batch /mnt/disk4/user/chunk-major-p2/mbs/mb-664738.pt: 22 rows, 951049 flat tokens, 664738 tree tokens
+[rank 1] k4; compute_logp 94.5 s, GPU peak 23.7 GiB; train 599.7 s, GPU peak 39.6 GiB, host peak 41.6 GiB
+[rank 0] k4; compute_logp 93.8 s, GPU peak 23.7 GiB; train 600.4 s, GPU peak 39.6 GiB, host peak 41.6 GiB
+[rank 0] cm32-fp32: 26 chunks (plan 0.6 s), predicted host 36.0 GiB; compute_logp 100.1 s, GPU peak 24.8 GiB; train 560.9 s, GPU peak 27.3 GiB, host peak 46.0 GiB (stores 36.0 GiB); vs k4: logp max |diff| 0.454, grad cosine 0.931584 (smallest per tensor 0.6929)
+[rank 1] cm32-fp32: 26 chunks (plan 0.6 s), predicted host 36.0 GiB; compute_logp 102.9 s, GPU peak 24.8 GiB; train 558.3 s, GPU peak 27.3 GiB, host peak 46.0 GiB (stores 36.0 GiB); vs k4: logp max |diff| 0.541, grad cosine 0.931584 (smallest per tensor 0.6606)
+[rank1]: Traceback (most recent call last):
+[rank1]: torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 1.32 GiB. GPU 1 has a total capacity of 47.45 GiB of which 7.96 GiB is free. Including non-PyTorch memory, this process has 39.40 GiB memory in use. 40.00 GiB allowed; Of the allocated memory 38.60 GiB is allocated by PyTorch, and 203.24 MiB is reserved by PyTorch but unallocated. 
+[rank0]: Traceback (most recent call last):
+[rank0]: torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 1.32 GiB. GPU 0 has a total capacity of 47.45 GiB of which 7.96 GiB is free. Including non-PyTorch memory, this process has 39.40 GiB memory in use. 40.00 GiB allowed; Of the allocated memory 38.60 GiB is allocated by PyTorch, and 203.24 MiB is reserved by PyTorch but unallocated. 
+[rank0]:[W1029 15:36:10.548028227 AllocatorConfig.cpp:28] Warning: PYTORCH_CUDA_ALLOC_CONF is deprecated, use PYTORCH_ALLOC_CONF instead (function operator())
+[rank1]:[W1029 15:36:10.659161771 AllocatorConfig.cpp:28] Warning: PYTORCH_CUDA_ALLOC_CONF is deprecated, use PYTORCH_ALLOC_CONF instead (function operator())

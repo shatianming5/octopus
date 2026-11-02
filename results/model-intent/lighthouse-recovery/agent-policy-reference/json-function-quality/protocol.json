@@ -1,0 +1,68 @@
+{
+  "schema": "octopus-software-agent7-json134-quality-v1",
+  "scope_id": "actor-json134-quality-v1",
+  "frozen_at": "2026-09-16T17:05:00Z",
+  "before_model_outputs": true,
+  "authorization": "The user explicitly authorized one separately prospective actor-JSON quality episode on .134 and all genuinely idle remote GPUs.",
+  "claim": "One episode tests published source 197eea12f70a818f4269ee65d134bbf56fedf984 with the same actor, task, physical workspace and V4 behavior; the explicit treatment is openhands_json_v1 schema-constrained same-function output.",
+  "source": {
+    "business_commit": "197eea12f70a818f4269ee65d134bbf56fedf984",
+    "remote_deployment": "/home/user/octopus-lighthouse-agent7-json-function-v1-20260916",
+    "task_repo_commit": "8d3ed32f37af9ceb8b5778b92a0088384ed057d4",
+    "source_image": "sha256:b8d51faee583632569625837d3f5b1a8a58f19c90f659597bd33234b145f7eae",
+    "base_commit": "a5dbdd2eff4238213dcaad404d0e06d8d5d2489b",
+    "schema_sha256": "a97f1e16cb58364edd1f1558f4c21564893c955243a54e253c02b5726af2a4de"
+  },
+  "model": {
+    "name": "SWE-Gym/OpenHands-7B-Agent",
+    "revision": "97054e70501d79c27499518af5ce613be6278bcb",
+    "path": "/home/user/octopus-swe-gym-agent7-reference-v1-20260916/model/snapshots/97054e70501d79c27499518af5ce613be6278bcb",
+    "tokenizer_name": "Qwen/Qwen2.5-Coder-7B-Instruct",
+    "tokenizer_revision": "c03e6d358207e414f1eca0bb1891e29f1db0e242",
+    "tokenizer_path": "/home/user/octopus-qwen-coder-reference-v1-20260915/model/snapshots/c03e6d358207e414f1eca0bb1891e29f1db0e242"
+  },
+  "task": {
+    "instance_id": "GoogleChrome__lighthouse-10176",
+    "uploaded_checkout": "/testbed",
+    "masked_from_model": ["eval.sh", "test.patch", "gold.patch", "hints.md"]
+  },
+  "episode": {
+    "model_episodes_max": 1,
+    "seed": 17,
+    "temperature": 0,
+    "dtype": "bfloat16",
+    "single_method": "apc",
+    "equivalent_single_gpu": true,
+    "max_model_len": 16384,
+    "max_journal_tokens": 8192,
+    "max_actions": 50,
+    "max_output_tokens_per_action": 512,
+    "gpu_episode_timeout_seconds": 1070,
+    "gpu_budget_seconds": 1170,
+    "cpu_evaluator_timeout_seconds": 1800,
+    "phase_gpu_seconds_max": 1200,
+    "environment": {"VLLM_USE_FLASHINFER_SAMPLER": "0"}
+  },
+  "interface": {
+    "decision_format": "openhands_json_v1",
+    "agent_policy": "failure_aware_v4",
+    "read_output_format": "raw",
+    "edit_feedback": "match_count",
+    "inspection_contract": "bounded_v1",
+    "history_format": "chat_turns_v1",
+    "journal_compaction": "deduplicate_v1",
+    "directory_search_format": "matching_files_v1",
+    "search_pattern_syntax": "regex_v1",
+    "observation_memory": "latest_v1",
+    "function_selection": "model_owned",
+    "invalid_json": "error without repair or substitution"
+  },
+  "initial_input": {
+    "compiler": "octopus.context.compile_context",
+    "required_before_inference": true,
+    "includes_empty_prefix_capsule": true,
+    "validation": "Save complete prompt IDs from the same root/suffix/FailureMemory path as inference, then compare exactly with the first real request."
+  },
+  "quality_gate": "Only original official resolved=true plus a nonempty legitimate product diff is QUALITY_PASS.",
+  "stopping": "One terminal official episode or one concrete operational blocker. On negative, retain evidence and do not retry."
+}

@@ -1,0 +1,85 @@
+{
+  "before_model_outputs": true,
+  "claim": "Generic observation-to-next-action recovery improves one unmasked held-out suite enough to conditionally justify one same-task Lighthouse attempt.",
+  "conditional_lighthouse_runs_max": 1,
+  "counts": {
+    "heldout": {
+      "edit_mismatch": 32,
+      "missing_path": 16,
+      "test_failure": 16
+    },
+    "train": {
+      "edit_mismatch": 128,
+      "missing_path": 64,
+      "test_failure": 64
+    }
+  },
+  "data_seed": 2301,
+  "data_sha256": {
+    "heldout_cases": "cfb044f473a0d2ec2e7d98d8d8fcb7a9ce29c29c34edb11ccc5bd650792aa2d2",
+    "heldout_labels": "2c35b3041487e51807c60f437d92a1749ecd57f0bf884d4ef5d21339d27f8b19",
+    "train_cases": "50b63bf5f3a2d25d8071f135493aa2ade41f7e1c0c3eb34646fd1881bf10f5da",
+    "train_labels": "7d679060c5b818b8dad2faad270bb835e6eeeba543175b7a162eab5a6ede2b38",
+    "train_supervised": "19d8d02a8566a839bdfda90b57af32921447b19cd89b9745340a49b9f50812fc",
+    "validation": "c6f9abce951210f36256b015d56596da76a25d040773c47e6b9c2161927b2c88"
+  },
+  "gates": {
+    "cases": 64,
+    "correct_first_recovery_action_cases_min": 52,
+    "no_repeated_failed_action_cases_min": 58
+  },
+  "gpu_budget_seconds": 3600,
+  "heldout_suite_runs": 1,
+  "implementation_sha256": {
+    "p1_tool_worker.py": "02cd0529f2d9f5c8b8dcc5d462b1c458256e03e724fe81b0671d5f7a92d6aeab",
+    "tool_recovery_lora.py": "ec0c5d42356c14701ab1c992a5baecc3b24c26c92b9b9bc125b3d2fae7908225"
+  },
+  "prohibitions": [
+    "no_lighthouse_source_or_solution_data",
+    "no_branch_choice_or_value_data",
+    "no_external_teacher",
+    "no_runtime_action_masks_in_heldout",
+    "no_output_driven_rerun_or_tuning"
+  ],
+  "recipe": {
+    "alpha": 16,
+    "dropout": 0.05,
+    "effective_batch": 8,
+    "epochs": 2,
+    "gradient_accumulation": 8,
+    "gradient_checkpointing": true,
+    "inference_backend": "transformers_peft_greedy_unmasked_actions",
+    "learning_rate": 0.0002,
+    "lr_schedule": "linear",
+    "max_grad_norm": 1.0,
+    "max_output_tokens": 512,
+    "max_sequence_length": 2048,
+    "microbatch": 1,
+    "model": "Qwen/Qwen2.5-7B-Instruct",
+    "optimizer": "adamw_torch",
+    "precision": "bfloat16",
+    "rank": 8,
+    "response_retries": 0,
+    "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "seed": 2301,
+    "selection": "final_epoch_only",
+    "supervision": "target_action_and_end_token_only",
+    "target_modules": [
+      "q_proj",
+      "v_proj"
+    ],
+    "temperature": 0,
+    "warmup_ratio": 0.05,
+    "weight_decay": 0.0,
+    "world_size": 1
+  },
+  "schema": "octopus-tool-recovery-lora-freeze-v1",
+  "supervised_examples": 512,
+  "tool_settings": {
+    "max_tool_input_chars": 16000,
+    "max_tool_output_chars": 6000,
+    "tool_timeout_seconds": 30
+  },
+  "training_runs": 1,
+  "transitions_per_train_case": 2
+}

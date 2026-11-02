@@ -1,0 +1,52 @@
+{
+  "schema": "octopus-actor-json-xgrammar-diagnostic-v1",
+  "status": "blocked",
+  "library": "xgrammar",
+  "version": "0.2.3",
+  "tokenizer_revision": "c03e6d358207e414f1eca0bb1891e29f1db0e242",
+  "schema_sha256": "14a8db9d78835c71f046f7afbbda0a30d9c3033e0294c5bf3b3725ce739c5c12",
+  "configuration": {
+    "any_whitespace": false,
+    "strict_mode": true,
+    "max_threads": 2,
+    "cache_enabled": false,
+    "cuda_visible_devices": ""
+  },
+  "attempt_1": {
+    "artifact": "xgrammar-result-attempt1.json",
+    "finding": "Compact JSON call serialization was incompatible with the fixed normal-json whitespace expected when any_whitespace=false. This was a test serialization error and was corrected without changing the schema."
+  },
+  "attempt_2": {
+    "artifact": "xgrammar-result.json",
+    "finding": "Normal json.dumps spacing fixed the property-separator rejection. Four of six schema-positive cases completed, including finish, typed view range, multiline/quoted create, and the semantic-boundary execute_bash pipeline."
+  },
+  "isolation": {
+    "execute_bash_plain_string": {
+      "completed_schema": true,
+      "tokens": 28
+    },
+    "execute_bash_escaped_double_quote": {
+      "completed_schema": false,
+      "tokens": 30,
+      "first_rejected_token_offset": 18,
+      "rejected_token_id": 7245,
+      "rejected_token_piece": " \\\""
+    },
+    "str_replace_plain_with_escaped_newline": {
+      "completed_schema": false,
+      "tokens": 51,
+      "first_rejected_token_offset": 36,
+      "rejected_token_id": 17882,
+      "rejected_token_piece": ";\\"
+    },
+    "str_replace_escaped_quote_and_newline": {
+      "completed_schema": false,
+      "tokens": 55,
+      "first_rejected_token_offset": 35,
+      "rejected_token_id": 7245,
+      "rejected_token_piece": " \\\""
+    }
+  },
+  "blocker": "Under the actual strict xgrammar configuration, valid JSON escape sequences inside string fields carrying minLength constraints do not complete the compiled grammar. This affects execute_bash.command and str_replace_editor.old_str, so the required full function contract is not currently grammar-compatible.",
+  "not_weakened": "No minLength, argument type, required property, variant, whitespace or strictness constraint was removed or changed."
+}

@@ -1,0 +1,187 @@
+
+Multi-thread loading shards:   0% Completed | 0/4 [00:00<?, ?it/s]
+Multi-thread loading shards:  25% Completed | 1/4 [00:00<00:02,  1.31it/s]
+Multi-thread loading shards:  50% Completed | 2/4 [00:01<00:01,  1.47it/s]
+Multi-thread loading shards:  75% Completed | 3/4 [00:01<00:00,  1.63it/s]
+Multi-thread loading shards: 100% Completed | 4/4 [00:02<00:00,  2.27it/s]
+Multi-thread loading shards: 100% Completed | 4/4 [00:02<00:00,  1.91it/s]
+{"worker_url": "http://127.0.0.1:30101", "worker_id": "0ecde4fca0354fae90d3cb2615a77fba"}
+[2026-09-18 08:03:08] Native placement L3 lookup failed
+Traceback (most recent call last):
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/mem_cache/cpp_utils/native_hash.py", line 33, in _load_native_hash_module
+    return load(
+           ^^^^^
+  File "/home/user/octopus-sglang-conformance-138-20260917/venv/lib/python3.12/site-packages/torch/utils/cpp_extension.py", line 1927, in load
+    return _jit_compile(
+           ^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-conformance-138-20260917/venv/lib/python3.12/site-packages/torch/utils/cpp_extension.py", line 2382, in _jit_compile
+    _write_ninja_file_and_build_library(
+  File "/home/user/octopus-sglang-conformance-138-20260917/venv/lib/python3.12/site-packages/torch/utils/cpp_extension.py", line 2496, in _write_ninja_file_and_build_library
+    verify_ninja_availability()
+  File "/home/user/octopus-sglang-conformance-138-20260917/venv/lib/python3.12/site-packages/torch/utils/cpp_extension.py", line 2562, in verify_ninja_availability
+    raise RuntimeError("Ninja is required to load C++ extensions (pip install ninja to get it)")
+RuntimeError: Ninja is required to load C++ extensions (pip install ninja to get it)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/managers/cache_controller.py", line 1227, in prefetch_thread_func
+    hash_value, storage_hit_count = self._storage_hit_query(operation)
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/mem_cache/hybrid_cache/hybrid_cache_controller.py", line 579, in _storage_hit_query
+    hash_value = self.get_hash_str(
+                 ^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/mem_cache/utils.py", line 113, in get_hash_str
+    return get_native_hash(token_ids, prior_digest, page_size)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/mem_cache/cpp_utils/native_hash.py", line 84, in get_native_hash
+    return _load_native_hash_module().get_hash(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/mem_cache/cpp_utils/native_hash.py", line 42, in _load_native_hash_module
+    raise RuntimeError("Failed to load HiCache native hash extension") from exc
+RuntimeError: Failed to load HiCache native hash extension
+[2026-09-18 08:03:09] Scheduler hit an exception: Traceback (most recent call last):
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/managers/scheduler.py", line 5619, in run_scheduler_process
+    scheduler.run_event_loop()
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/managers/scheduler.py", line 1795, in run_event_loop
+    dispatch_event_loop(self)
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/managers/scheduler.py", line 5465, in dispatch_event_loop
+    scheduler.event_loop_overlap()
+  File "/home/user/octopus-sglang-conformance-138-20260917/venv/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/managers/scheduler.py", line 1893, in event_loop_overlap
+    batch_result = self.run_batch(batch)
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/utils/nvtx_utils.py", line 109, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/managers/scheduler.py", line 4087, in run_batch
+    batch_result = self.model_worker.forward_batch_generation(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/managers/tp_worker.py", line 628, in forward_batch_generation
+    out = self.model_runner.forward(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/model_executor/model_runner.py", line 1613, in forward
+    output = self._forward_raw(
+             ^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/model_executor/model_runner.py", line 1800, in _forward_raw
+    ret = self.eager_runner.execute(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/model_executor/runner/eager_runner.py", line 227, in execute
+    return self._execute_extend(forward_batch, pp_proxy_tensors)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/model_executor/runner/eager_runner.py", line 371, in _execute_extend
+    ret = model_runner.model.forward(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-conformance-138-20260917/venv/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/models/qwen2.py", line 542, in forward
+    hidden_states = self.model(
+                    ^^^^^^^^^^^
+  File "/home/user/octopus-sglang-conformance-138-20260917/venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-conformance-138-20260917/venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/models/qwen2.py", line 423, in forward
+    hidden_states, residual = layer(
+                              ^^^^^^
+  File "/home/user/octopus-sglang-conformance-138-20260917/venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-conformance-138-20260917/venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/models/qwen2.py", line 301, in forward
+    hidden_states = self.self_attn(
+                    ^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-conformance-138-20260917/venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-conformance-138-20260917/venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/models/qwen2.py", line 210, in forward
+    q, k = self.rotary_emb(positions, q, k)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-conformance-138-20260917/venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-conformance-138-20260917/venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/kernels/fused_op.py", line 654, in forward
+    result = method(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/layers/rotary_embedding/base.py", line 380, in forward_cuda
+    apply_rope_with_cos_sin_cache_inplace(
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/kernels/ops/attention/rope.py", line 223, in apply_rope_with_cos_sin_cache_inplace
+    apply_rope_inplace(
+  File "/home/user/octopus-sglang-conformance-138-20260917/venv/lib/python3.12/site-packages/torch/_ops.py", line 1279, in __call__
+    return self._op(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/kernels/ops/attention/rope.py", line 140, in apply_rope_inplace
+    module = _jit_fused_rope_module(is_neox, rope_dim, k.dtype, q.dtype)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/kernels/jit/utils/common.py", line 38, in wrapper
+    result_map[key] = fn(*args, **kwargs)
+                      ^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/kernels/ops/attention/rope.py", line 36, in _jit_fused_rope_module
+    return load_jit(
+           ^^^^^^^^^
+  File "/home/user/octopus-sglang-conformance-138-20260917/venv/lib/python3.12/site-packages/torch/_dynamo/eval_frame.py", line 1446, in _fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/kernels/jit/utils/compile/loader.py", line 159, in load_jit
+    library = ninja.build(spec=spec, build_dir=staging, build_file=build_file)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/kernels/jit/utils/compile/ninja.py", line 159, in build
+    completed = subprocess.run(
+                ^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-conformance-138-20260917/runtime-python/lib/python3.12/subprocess.py", line 548, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-conformance-138-20260917/runtime-python/lib/python3.12/subprocess.py", line 1026, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+  File "/home/user/octopus-sglang-conformance-138-20260917/runtime-python/lib/python3.12/subprocess.py", line 1955, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: 'ninja'
+
+[2026-09-18 08:03:09] SIGQUIT received. signum=None, frame=None. It usually means one child failed.
+[rank0]:[W918 08:03:09.936622514 ProcessGroupNCCL.cpp:1624] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+[2026-09-18 08:03:14] No live scheduler processes found; skipping py-spy and CUDA coredump.
+Exception in thread octopus-backend-pump:
+Traceback (most recent call last):
+  File "/home/user/octopus-sglang-routing-138-20260917/source/src/octopus/routing_worker.py", line 362, in do_POST
+    self.stream_record(record)
+  File "/home/user/octopus-sglang-routing-138-20260917/source/src/octopus/routing_worker.py", line 343, in stream_record
+    raise event
+  File "/home/user/octopus-sglang-routing-138-20260917/source/src/octopus/routing_worker.py", line 294, in _pump
+    self._outputs()
+  File "/home/user/octopus-sglang-routing-138-20260917/source/src/octopus/routing_worker.py", line 260, in _outputs
+    for event in self.backend.poll():
+                 ^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-routing-138-20260917/source/src/octopus/sglang_backend.py", line 412, in poll
+    message = self._receive(0.1)
+              ^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-routing-138-20260917/source/src/octopus/sglang_backend.py", line 266, in _receive
+    raise RuntimeError(self._failure)
+RuntimeError: SGLang worker disconnected
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/user/octopus-sglang-conformance-138-20260917/runtime-python/lib/python3.12/threading.py", line 1075, in _bootstrap_inner
+    self.run()
+  File "/home/user/octopus-sglang-conformance-138-20260917/runtime-python/lib/python3.12/threading.py", line 1012, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/user/octopus-sglang-routing-138-20260917/source/src/octopus/routing_worker.py", line 305, in _pump
+    self.backend.close()
+  File "/home/user/octopus-sglang-routing-138-20260917/source/src/octopus/sglang_backend.py", line 673, in close
+    self._send({"op": "close"})
+  File "/home/user/octopus-sglang-routing-138-20260917/source/src/octopus/sglang_backend.py", line 255, in _send
+    raise RuntimeError(self._failure)
+RuntimeError: SGLang worker disconnected

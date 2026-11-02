@@ -1,0 +1,100 @@
+{
+  "schema": "octopus-lighthouse-canonical-execution-metrics-v1",
+  "decision": "QUALITY_FAIL",
+  "official_resolved": false,
+  "episode": {
+    "status": "complete",
+    "stop_reason": "action_limit",
+    "proposals": 12,
+    "distinct_raw_proposals": 6,
+    "raw_proposed_action_repeats": 6,
+    "physical_submissions": 5,
+    "rejections": 7,
+    "physical_failed_tests": 1,
+    "raw_failed_test_repeated_physical_executions": 0,
+    "effective_failed_test_repeat_proposals": 7,
+    "effective_failed_test_repeated_physical_executions": 0,
+    "done_proposals": 0,
+    "accepted_done": 0,
+    "done_accepted_while_verification_required": false,
+    "successful_visible_tests": 0,
+    "verification_required_final": true,
+    "patch_bytes": 481
+  },
+  "execution_identity": {
+    "failed_raw_proposal": [
+      "yarn",
+      "jest"
+    ],
+    "failed_effective_argv": [
+      "yarn",
+      "jest",
+      "--runInBand"
+    ],
+    "failed_proposal_hash": "b4a5eadf8cc4d98dd65157f8144b6a11032a35f63f153cde7a7dd1315a8bf154",
+    "failed_action_hash": "e699d2c0350cc0d90e4f09bd3d2b31167324fb858cdfa05448ccc74305dc73b1",
+    "first_effective_alias_raw_proposal": [
+      "yarn",
+      "jest",
+      "--runInBand"
+    ],
+    "first_effective_alias_index": 5,
+    "effective_alias_rejected_before_execution": true
+  },
+  "action_sequence": [
+    "list . [submitted success]",
+    "search . stack-packs [submitted success]",
+    "read lighthouse-core/lib/stack-collector.js [submitted success]",
+    "edit lighthouse-core/lib/stack-collector.js [submitted success]",
+    "test raw=yarn jest effective=yarn jest --runInBand [submitted timeout]",
+    "test raw=yarn jest --runInBand [rejected effective failed repeat]",
+    "test raw=yarn jest --runInBand [rejected effective failed repeat]",
+    "test raw=yarn jest --runInBand [rejected effective failed repeat]",
+    "test raw=yarn jest --runInBand [rejected effective failed repeat]",
+    "test raw=yarn jest --runInBand [rejected effective failed repeat]",
+    "test raw=yarn jest --runInBand [rejected effective failed repeat]",
+    "test raw=yarn jest --runInBand [rejected effective failed repeat]"
+  ],
+  "official_evaluation": {
+    "status": "complete",
+    "eval_returncode": 0,
+    "fail_to_pass": {
+      "lighthouse-core/test/audits/dobetterweb/js-libraries-test.js": "FAILED"
+    },
+    "pass_to_pass": {},
+    "grading_wall_seconds": 9.491618877043948,
+    "resolved": false
+  },
+  "timing_seconds": {
+    "wrapper_elapsed": 101,
+    "child_process_wall": 86.21992856590077,
+    "solver_e2e": 69.22193285508547,
+    "gpu_engine_scope": 66.96657302195672
+  },
+  "native": {
+    "request_count": 12,
+    "actual_prefill_tokens": 10385,
+    "actual_decode_tokens": 289,
+    "preemptions": 0,
+    "allocation_rejections": 0,
+    "cache_evictions": 0,
+    "max_simultaneous_scheduler_requests": 1,
+    "final_pool": {
+      "active_blocks": 0,
+      "cold_free_blocks": 4126,
+      "free_blocks": 4787,
+      "request_owned_blocks": 0,
+      "retention_only_blocks": 0,
+      "shared_request_retention_blocks": 0,
+      "total_blocks": 4787,
+      "warm_cached_blocks": 661
+    }
+  },
+  "compute": {
+    "device": "NVIDIA GeForce RTX 4090 D",
+    "device_uuid": "GPU-4cd604ce-20c4-9bb7-bed7-acc3cf542887",
+    "precision": "torch.bfloat16",
+    "gpu_budget_seconds": 1170,
+    "gpu_engine_scope_seconds": 66.96657302195672
+  }
+}

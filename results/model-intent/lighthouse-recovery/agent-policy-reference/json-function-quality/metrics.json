@@ -1,0 +1,139 @@
+{
+  "actions": {
+    "action_types": {
+      "invalid_decision": 1,
+      "view": 49
+    },
+    "canonical_action_records": 49,
+    "controller_actions": 50,
+    "controller_rejections": 1,
+    "edits": 0,
+    "failed_actions": 5,
+    "finish": 0,
+    "physical_tool_actions": 48,
+    "raw_model_requests": 50,
+    "successful_actions": 45,
+    "tests": 0,
+    "unique_canonical_actions": 48
+  },
+  "active_gpu_sample": {
+    "active_model_utilization_captured": false,
+    "device_index": 0,
+    "device_uuid": "GPU-f0e105ce-3965-e444-e4ae-0b8511bed250",
+    "memory_used_mib": 0,
+    "note": "The one scheduled sample observed the relay before GPU allocation. No later active NVML sample was retained; engine timing and terminal cleanup remain available.",
+    "power_watts": 16.78,
+    "relay_process_observed": true,
+    "schema": "octopus-json-function-quality-gpu-sample-v1",
+    "utilization_percent": 0
+  },
+  "behavior": {
+    "decisive_trace": "After one semantic view-range rejection, three physical ranged-directory view errors and one blocked repeat, the model issued 45 successful unique ranges over stack-collector.js. It never edited, tested or finished.",
+    "missing_path_failures": 0,
+    "path_recovery_exercised": false,
+    "repeated_failed_action_rejections": 1,
+    "root_directory_ranged_view_errors": 3,
+    "source_path": "lighthouse-core/lib/stack-collector.js",
+    "successful_source_views": 45,
+    "unique_successful_source_views": 45,
+    "verification_required_terminal": false
+  },
+  "budget_seconds": {
+    "gpu_remaining": 989.7956315940246,
+    "gpu_used": 180.2043684059754,
+    "official_grading_remaining": 1790.6086656490806,
+    "official_grading_used": 9.391334350919351,
+    "phase_gpu_remaining": 1019.7956315940246
+  },
+  "json": {
+    "errors": [
+      {
+        "count": 1,
+        "error": "view_range requires a positive start and at most200lines",
+        "error_type": "invalid_function_call"
+      },
+      {
+        "count": 3,
+        "error": "ValueError: view_range is only valid for a file, not a directory; omit it to list directory paths",
+        "error_type": "tool_error"
+      },
+      {
+        "count": 1,
+        "error": "This effective action already failed and cannot be submitted again.",
+        "error_type": "repeated_failed_action"
+      }
+    ],
+    "invalid_or_truncated_json_outputs": 0,
+    "runtime_engine_structured_outputs": "xgrammar with disable_any_whitespace=true",
+    "runtime_request_schema_metadata_available": false,
+    "schema_sha256": "a97f1e16cb58364edd1f1558f4c21564893c955243a54e253c02b5726af2a4de",
+    "semantic_mapper_acceptances": 49,
+    "semantic_mapper_rejections": 1,
+    "structurally_complete_function_objects": 50,
+    "valid_json_outputs": 50
+  },
+  "native": {
+    "actual_decode_tokens": 2331,
+    "actual_prefill_tokens": 294703,
+    "adopted_prefix_tokens": 69776,
+    "allocation_rejections": 0,
+    "cache_evictions": 0,
+    "capsule_tokens": 12752,
+    "max_actual_decode_tokens": 48,
+    "max_actual_prefill_tokens": 8408,
+    "max_prompt_tokens": 9832,
+    "max_simultaneous_scheduler_requests": 1,
+    "preemptions": 0,
+    "request_records": 50,
+    "selected_parent_tokens": 68943,
+    "terminal_pool": {
+      "active_blocks": 0,
+      "cold_free_blocks": 13251,
+      "free_blocks": 31790,
+      "request_owned_blocks": 0,
+      "retention_only_blocks": 0,
+      "shared_request_retention_blocks": 0,
+      "total_blocks": 31790,
+      "warm_cached_blocks": 18539
+    }
+  },
+  "quality": {
+    "decision": "QUALITY_FAIL",
+    "legitimate_product_patch": false,
+    "official_fail_to_pass": {
+      "lighthouse-core/test/audits/dobetterweb/js-libraries-test.js": "FAILED"
+    },
+    "official_resolved": false,
+    "patch_bytes": 0,
+    "stop_reason": "action_limit"
+  },
+  "schema": "octopus-json-function-quality-metrics-v1",
+  "timing_seconds": {
+    "child_process_wall": 226.33703031088226,
+    "gpu_engine_scope": 180.2043684059754,
+    "official_grading": 9.391334350919351,
+    "runner_wall": 241,
+    "solver_e2e": 182.47907586791553,
+    "solver_parent": 226.5983446680475
+  },
+  "validation": {
+    "actual_first_prompt_ids_sha256": "83750ddc479374d9522bc5b0aa0609cc60c6bae945bc6d3a8e7f1030ea7489ea",
+    "actual_first_prompt_tokens": 1546,
+    "bounds_valid": true,
+    "capsule_present_in_every_context": true,
+    "difference_tokens": 0,
+    "feedback_records_complete": true,
+    "initial_empty_capsule_tokens": 36,
+    "limits_valid": true,
+    "matches_fresh_record": true,
+    "record_created_before_inference": true,
+    "recorded_prompt_ids_sha256": "83750ddc479374d9522bc5b0aa0609cc60c6bae945bc6d3a8e7f1030ea7489ea",
+    "recorded_prompt_tokens": 1546,
+    "recorded_schema_sha256": "a97f1e16cb58364edd1f1558f4c21564893c955243a54e253c02b5726af2a4de",
+    "request_schema_exact": null,
+    "request_schema_metadata_available": false,
+    "request_schema_present": null,
+    "request_schema_records": 50,
+    "schema": "octopus-json-function-quality-input-validation-v1"
+  }
+}

@@ -1,0 +1,165 @@
+{
+  "attempt_count": 8,
+  "authorized_selectors": [
+    {
+      "condition": "tight_burst",
+      "method": "apc",
+      "mode": "controlled",
+      "seed": 101
+    },
+    {
+      "condition": "tight_burst",
+      "method": "queue_aware",
+      "mode": "controlled",
+      "seed": 101
+    },
+    {
+      "condition": "tight_burst",
+      "method": "cost_greedy",
+      "mode": "controlled",
+      "seed": 101
+    },
+    {
+      "condition": "tight_burst",
+      "method": "cost_greedy",
+      "mode": "controlled",
+      "seed": 303
+    },
+    {
+      "condition": "tight_burst",
+      "method": "apc",
+      "mode": "controlled",
+      "seed": 303
+    },
+    {
+      "condition": "tight_burst",
+      "method": "queue_aware",
+      "mode": "controlled",
+      "seed": 303
+    }
+  ],
+  "authorized_trace_limit": 6,
+  "completed_selector_count": 6,
+  "entries": [
+    {
+      "condition": "tight_burst",
+      "ended_unix": 1788904231.0809174,
+      "method": "apc",
+      "mode": "controlled",
+      "path": "results/checkpoint-admission/paired-queue-repair/traces/controlled-tight_burst-101-apc.json",
+      "returncode": 1,
+      "seed": 101,
+      "started_unix": 1788904223.3325212
+    },
+    {
+      "condition": "tight_burst",
+      "ended_unix": 1788904390.169111,
+      "method": "apc",
+      "mode": "controlled",
+      "path": "results/checkpoint-admission/paired-queue-repair/traces/controlled-tight_burst-101-apc.json",
+      "returncode": 1,
+      "seed": 101,
+      "started_unix": 1788904312.0317109
+    },
+    {
+      "condition": "tight_burst",
+      "ended_unix": 1788904490.3665633,
+      "method": "apc",
+      "mode": "controlled",
+      "path": "results/checkpoint-admission/paired-queue-repair/traces/controlled-tight_burst-101-apc.json",
+      "returncode": 0,
+      "seed": 101,
+      "started_unix": 1788904413.8405354
+    },
+    {
+      "condition": "tight_burst",
+      "ended_unix": 1788904565.1514406,
+      "method": "queue_aware",
+      "mode": "controlled",
+      "path": "results/checkpoint-admission/paired-queue-repair/traces/controlled-tight_burst-101-queue_aware.json",
+      "returncode": 0,
+      "seed": 101,
+      "started_unix": 1788904490.3673394
+    },
+    {
+      "condition": "tight_burst",
+      "ended_unix": 1788904641.707477,
+      "method": "cost_greedy",
+      "mode": "controlled",
+      "path": "results/checkpoint-admission/paired-queue-repair/traces/controlled-tight_burst-101-cost_greedy.json",
+      "returncode": 0,
+      "seed": 101,
+      "started_unix": 1788904565.1522362
+    },
+    {
+      "condition": "tight_burst",
+      "ended_unix": 1788904710.936754,
+      "method": "cost_greedy",
+      "mode": "controlled",
+      "path": "results/checkpoint-admission/paired-queue-repair/traces/controlled-tight_burst-303-cost_greedy.json",
+      "returncode": 0,
+      "seed": 303,
+      "started_unix": 1788904641.7267764
+    },
+    {
+      "condition": "tight_burst",
+      "ended_unix": 1788904781.7468228,
+      "method": "apc",
+      "mode": "controlled",
+      "path": "results/checkpoint-admission/paired-queue-repair/traces/controlled-tight_burst-303-apc.json",
+      "returncode": 0,
+      "seed": 303,
+      "started_unix": 1788904710.9375215
+    },
+    {
+      "condition": "tight_burst",
+      "ended_unix": 1788904850.5789685,
+      "method": "queue_aware",
+      "mode": "controlled",
+      "path": "results/checkpoint-admission/paired-queue-repair/traces/controlled-tight_burst-303-queue_aware.json",
+      "returncode": 0,
+      "seed": 303,
+      "started_unix": 1788904781.7476437
+    }
+  ],
+  "extra_elapsed_seconds": 522.6017701625824,
+  "failed_attempt_count": 2,
+  "infrastructure_failures": [
+    {
+      "attempt": 1,
+      "elapsed_seconds": 7.748396158218384,
+      "reason": "OCTOPUS_MODEL_PATH was omitted while offline mode was enabled; model resolution failed before engine initialization and no trace artifact was created.",
+      "selector": {
+        "condition": "tight_burst",
+        "method": "apc",
+        "mode": "controlled",
+        "seed": 101
+      },
+      "stage": "pre-engine model resolution"
+    },
+    {
+      "attempt": 2,
+      "elapsed_seconds": 78.13740015029907,
+      "reason": "OCTOPUS_COMMIT was omitted for the non-Git deployment; the measured attempt could not serialize its pinned source identity and no trace artifact was accepted.",
+      "selector": {
+        "condition": "tight_burst",
+        "method": "apc",
+        "mode": "controlled",
+        "seed": 101
+      },
+      "stage": "post-measurement provenance serialization"
+    }
+  ],
+  "launched_selector_count": 6,
+  "original_budget_history": {
+    "controlled_repair_seconds": 2400.208206176758,
+    "cumulative_seconds": 10836.15886592865,
+    "frozen_seconds": 10800,
+    "initial_main_seconds": 7812.835415124893,
+    "real_tool_repair_seconds": 623.1152446269989,
+    "rule": "Budget checked before each trace. The last already-started trace completed its triple, then no next block was launched; the configured budget was not increased.",
+    "trace_boundary_overrun_seconds": 36.15886592865
+  },
+  "reason": "explicit bounded authorization to close only the remaining paired traces",
+  "status": "complete"
+}

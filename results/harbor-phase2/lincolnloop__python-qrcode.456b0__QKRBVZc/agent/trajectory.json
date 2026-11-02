@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "lincolnloop__python-qrcode.456b0__QKRBVZc__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# QR code generation with PyPNGImage fails after refactoring rows_iter method\n\n## Description\n\nI've discovered an issue with the PyPNGImage class in the pure.py module. After a recent refactoring of the `rows_iter()` method, QR code generation is broken when using the PyPNGImage backend.\n\n## Reproduction\n\nHere's a simple code snippet that reproduces the issue:\n\n```python\nimport qrcode\nimport io\nfrom qrcode.image.pure import PyPNGImage\n\n# Create a QR code\nqr = qrcode.QRCode()\nqr.add_data(\"Hello World\")\nimg = qr.make_image(image_factory=PyPNGImage)\n\n# Try to save it - this will fail\noutput = io.BytesIO()\nimg.save(output)\n```\n\nWhen running this code, I get an AttributeError. The error occurs when trying to access the QR code modules.\n\n## Analysis\n\nThe issue appears to be in the refactored `rows_iter()` method in the PyPNGImage class. The method now uses `self.get_module(x, y)` to access module values, but this method doesn't seem to exist or is not properly implemented.\n\nThe previous implementation was using `self.modules` directly to iterate through the module rows, but the new implementation is trying to access individual modules in a different way.\n\nThis is causing QR code generation to fail completely when using the PyPNGImage backend, while other image backends like PIL and SVG still work fine."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository and the `rows_iter` refactor to find why PyPNGImage fails.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-eb1ee90a-bf93-4a8b-a871-ac681cb47d6c-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -50 && cat /testbed/README.md 2>/dev/null | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-eb1ee90a-bf93-4a8b-a871-ac681cb47d6c-0",
+            "content": "total 72\ndrwxr-xr-x 1 root root 4096 Sep 22 16:49 .\ndrwxr-xr-x 1 root root 4096 Sep 22 16:49 ..\n-rw-r--r-- 1 root root  242 Jul 13  2025 .editorconfig\ndrwxr-xr-x 8 root root 4096 Jul 13  2025 .git\n-rw-r--r-- 1 root root   74 Jul 13  2025 .git-blame-ignore-revs\n-rw-r--r-- 1 root root  114 Jul 13  2025 .gitignore\n-rw-rw-r-- 1 1005 1005    0 Sep 22 15:44 .gitkeep\n-rw-r--r-- 1 root root 8089 Jul 13  2025 CHANGES.rst\n-rw-r--r-- 1 root root 2143 Jul 13  2025 LICENSE\n-rw-r--r-- 1 root root  203 Jul 13  2025 PACKAGING.rst\n-rw-r--r-- 1 root root 7932 Jul 13  2025 README.rst\n-rw-r--r-- 1 root root  835 Jul 13  2025 TESTING.rst\ndrwxr-xr-x 2 root root 4096 Jul 13  2025 doc\n-rw-r--r-- 1 root root 2040 Jul 13  2025 pyproject.toml\ndrwxr-xr-x 5 root root 4096 Jul 13  2025 qrcode\n-rw-r--r-- 1 root root 2215 Jul 13  2025 signing-key.asc\n-rw-r--r-- 1 root root  297 Jul 13  2025 tox.ini\n/testbed/qrcode/main.py\n/testbed/qrcode/exceptions.py\n/testbed/qrcode/__init__.py\n/testbed/qrcode/tests/__init__.py\n/testbed/qrcode/tests/test_qrcode_svg.py\n/testbed/qrcode/tests/test_qrcode_pypng.py\n/testbed/qrcode/tests/test_example.py\n/testbed/qrcode/tests/test_script.py\n/testbed/qrcode/tests/test_qrcode.py\n/testbed/qrcode/tests/test_util.py\n/testbed/qrcode/tests/test_release.py\n/testbed/qrcode/tests/consts.py\n/testbed/qrcode/tests/test_qrcode_pil.py\n/testbed/qrcode/LUT.py\n/testbed/qrcode/base.py\n/testbed/qrcode/constants.py\n/testbed/qrcode/image/styles/moduledrawers/svg.py\n/testbed/qrcode/image/styles/moduledrawers/__init__.py\n/testbed/qrcode/image/styles/moduledrawers/base.py\n/testbed/qrcode/image/styles/moduledrawers/pil.py\n/testbed/qrcode/image/styles/colormasks.py\n/testbed/qrcode/image/styles/__init__.py\n/testbed/qrcode/image/svg.py\n/testbed/qrcode/image/__init__.py\n/testbed/qrcode/image/base.py\n/testbed/qrcode/image/styledpil.py\n/testbed/qrcode/image/pure.py\n/testbed/qrcode/image/pil.py\n/testbed/qrcode/compat/etree.py\n/testbed/qrcode/compat/__init__.py\n/testbed/qrcode/compat/png.py\n/testbed/qrcode/release.py\n/testbed/qrcode/util.py\n/testbed/qrcode/console_scripts.py\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-81b7774d-05bc-4722-8840-cf8d43c6e471-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/qrcode/image/pure.py && echo \"==== BASE ====\" && cat /testbed/qrcode/image/base.py && echo \"==== TEST ====\" && cat /testbed/qrcode/tests/test_qrcode_pypng.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-81b7774d-05bc-4722-8840-cf8d43c6e471-1",
+            "content": "\n\n    @abc.abstractmethod\n    def new_image(self, **kwargs) -> Any:\n        \"\"\"\n        Build the image class. Subclasses should return the class created.\n        \"\"\"\n\n    def init_new_image(self):\n        pass\n\n    def get_image(self, **kwargs):\n        \"\"\"\n        Return the image class for further processing.\n        \"\"\"\n        return self._img\n\n    def check_kind(self, kind, transform=None):\n        \"\"\"\n        Get the image type.\n        \"\"\"\n        if kind is None:\n            kind = self.kind\n        allowed = not self.allowed_kinds or kind in self.allowed_kinds\n        if transform:\n            kind = transform(kind)\n            if not allowed:\n                allowed = kind in self.allowed_kinds\n        if not allowed:\n            raise ValueError(f\"Cannot set {type(self).__name__} type to {kind}\")\n        return kind\n\n    def is_eye(self, row: int, col: int):\n        \"\"\"\n        Find whether the referenced module is in an eye.\n        \"\"\"\n        return (\n            (row < 7 and col < 7)\n            or (row < 7 and self.width - col < 8)\n            or (self.width - row < 8 and col < 7)\n        )\n\n\nclass BaseImageWithDrawer(BaseImage):\n    default_drawer_class: Type[QRModuleDrawer]\n    drawer_aliases: DrawerAliases = {}\n\n    def get_default_module_drawer(self) -> QRModuleDrawer:\n        return self.default_drawer_class()\n\n    def get_default_eye_drawer(self) -> QRModuleDrawer:\n        return self.default_drawer_class()\n\n    needs_context = True\n\n    module_drawer: \"QRModuleDrawer\"\n    eye_drawer: \"QRModuleDrawer\"\n\n    def __init__(\n        self,\n        *args,\n        module_drawer: Union[QRModuleDrawer, str, None] = None,\n        eye_drawer: Union[QRModuleDrawer, str, None] = None,\n        **kwargs,\n    ):\n        self.module_drawer = (\n            self.get_drawer(module_drawer) or self.get_default_module_drawer()\n        )\n        # The eye drawer can be overridden by another module drawer as well,\n        # but you have to be more careful with these in order to make the QR\n        # code still parseable\n        self.eye_drawer = self.get_drawer(eye_drawer) or self.get_default_eye_drawer()\n        super().__init__(*args, **kwargs)\n\n    def get_drawer(\n        self, drawer: Union[QRModuleDrawer, str, None]\n    ) -> Optional[QRModuleDrawer]:\n        if not isinstance(drawer, str):\n            return drawer\n        drawer_cls, kwargs = self.drawer_aliases[drawer]\n        return drawer_cls(**kwargs)\n\n    def init_new_image(self):\n        self.module_drawer.initialize(img=self)\n        self.eye_drawer.initialize(img=self)\n\n        return super().init_new_image()\n\n    def drawrect_context(self, row: int, col: int, qr: \"QRCode\"):\n        box = self.pixel_box(row, col)\n        drawer = self.eye_drawer if self.is_eye(row, col) else self.module_drawer\n        is_active: Union[bool, ActiveWithNeighbors] = (\n            qr.active_with_neighbors(row, col)\n            if drawer.needs_neighbors\n            else bool(qr.modules[row][col])\n        )\n\n        drawer.drawrect(box, is_active)\n==== TEST ====\nimport io\nfrom unittest import mock\n\nimport pytest\n\n\nimport qrcode\nimport qrcode.util\nfrom qrcode.image.pure import PyPNGImage\nfrom qrcode.tests.consts import UNICODE_TEXT\n\npng = pytest.importorskip(\"png\", reason=\"png is not installed\")\n\n\ndef test_render_pypng():\n    qr = qrcode.QRCode()\n    qr.add_data(UNICODE_TEXT)\n    img = qr.make_image(image_factory=PyPNGImage)\n    assert isinstance(img.get_image(), png.Writer)\n\n    print(img.width, img.box_size, img.border)\n    img.save(io.BytesIO())\n\n\ndef test_render_pypng_to_str():\n    qr = qrcode.QRCode()\n    qr.add_data(UNICODE_TEXT)\n    img = qr.make_image(image_factory=PyPNGImage)\n    assert isinstance(img.get_image(), png.Writer)\n\n    mock_open = mock.mock_open()\n    with mock.patch(\"qrcode.image.pure.open\", mock_open, create=True):\n        img.save(\"test_file.png\")\n    mock_open.assert_called_once_with(\"test_file.png\", \"wb\")\n    mock_open(\"test_file.png\", \"wb\").write.assert_called()\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-03be4efa-9d08-415f-8aa8-1e90e1c3cb51-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/qrcode/image/pure.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-03be4efa-9d08-415f-8aa8-1e90e1c3cb51-2",
+            "content": "from itertools import chain\n\nfrom qrcode.compat.png import PngWriter\nfrom qrcode.image.base import BaseImage\n\n\nclass PyPNGImage(BaseImage):\n    \"\"\"\n    pyPNG image builder.\n    \"\"\"\n\n    kind = \"PNG\"\n    allowed_kinds = (\"PNG\",)\n    needs_drawrect = False\n\n    def new_image(self, **kwargs):\n        if not PngWriter:\n            raise ImportError(\"PyPNG library not installed.\")\n\n        return PngWriter(self.pixel_size, self.pixel_size, greyscale=True, bitdepth=1)\n\n    def drawrect(self, row, col):\n        \"\"\"\n        Not used.\n        \"\"\"\n\n    def save(self, stream, kind=None):\n        if isinstance(stream, str):\n            stream = open(stream, \"wb\")\n        self._img.write(stream, self.rows_iter())\n\n    def rows_iter(self):\n        yield from self.border_rows_iter()\n        border_col = [1] * (self.box_size * self.border)\n        for module_row in self.modules:\n            row = (\n                border_col\n                + list(\n                    chain.from_iterable(\n                        ([not point] * self.box_size) for point in module_row\n                    )\n                )\n                + border_col\n            )\n            for _ in range(self.box_size):\n                yield row\n        yield from self.border_rows_iter()\n\n    def border_rows_iter(self):\n        border_row = [1] * (self.box_size * (self.width + self.border * 2))\n        for _ in range(self.border * self.box_size):\n            yield border_row\n\n\n# Keeping this for backwards compatibility.\nPymagingImage = PyPNGImage\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-83efe5ee-3a9e-4715-a71f-9b3093f21c2a-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cd /testbed && git log --oneline -20 && echo \"==== git show HEAD:qrcode/image/pure.py ====\" && git log -p -- qrcode/image/pure.py | head -200 && echo \"==== SEARCH get_module ====\" && grep -rn \"get_module\\|rows_iter\\|self.modules\" --include=\"*.py\" ."
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-83efe5ee-3a9e-4715-a71f-9b3093f21c2a-3",
+            "content": "up_position_probe_pattern(self.modules_count - 7, 0)\n./qrcode/main.py:176:            self.setup_position_probe_pattern(0, self.modules_count - 7)\n./qrcode/main.py:180:            precomputed_qr_blanks[self.version] = copy_2d_array(self.modules)\n./qrcode/main.py:195:            if row + r <= -1 or self.modules_count <= row + r:\n./qrcode/main.py:199:                if col + c <= -1 or self.modules_count <= col + c:\n./qrcode/main.py:207:                    self.modules[row + r][col + c] = True\n./qrcode/main.py:209:                    self.modules[row + r][col + c] = False\n./qrcode/main.py:251:            lost_point = util.lost_point(self.modules)\n./qrcode/main.py:276:        modcount = self.modules_count\n./qrcode/main.py:281:                if self.modules[r][c]:\n./qrcode/main.py:305:        modcount = self.modules_count\n./qrcode/main.py:312:        def get_module(x, y) -> int:\n./qrcode/main.py:317:            return cast(int, self.modules[x][y])\n./qrcode/main.py:325:                pos = get_module(r, c) + (get_module(r + 1, c) << 1)\n./qrcode/main.py:370:            self.modules_count,\n./qrcode/main.py:372:            qrcode_modules=self.modules,\n./qrcode/main.py:377:            for r in range(self.modules_count):\n./qrcode/main.py:378:                for c in range(self.modules_count):\n./qrcode/main.py:381:                    elif self.modules[r][c]:\n./qrcode/main.py:392:            and row < len(self.modules)\n./qrcode/main.py:394:            and col < len(self.modules[row])\n./qrcode/main.py:398:        for r in range(8, self.modules_count - 8):\n./qrcode/main.py:399:            if self.modules[r][6] is not None:\n./qrcode/main.py:401:            self.modules[r][6] = r % 2 == 0\n./qrcode/main.py:403:        for c in range(8, self.modules_count - 8):\n./qrcode/main.py:404:            if self.modules[6][c] is not None:\n./qrcode/main.py:406:            self.modules[6][c] = c % 2 == 0\n./qrcode/main.py:417:                if self.modules[row][col] is not None:\n./qrcode/main.py:429:                            self.modules[row + r][col + c] = True\n./qrcode/main.py:431:                            self.modules[row + r][col + c] = False\n./qrcode/main.py:438:            self.modules[i // 3][i % 3 + self.modules_count - 8 - 3] = mod\n./qrcode/main.py:442:            self.modules[i % 3 + self.modules_count - 8 - 3][i // 3] = mod\n./qrcode/main.py:453:                self.modules[i][8] = mod\n./qrcode/main.py:455:                self.modules[i + 1][8] = mod\n./qrcode/main.py:457:                self.modules[self.modules_count - 15 + i][8] = mod\n./qrcode/main.py:464:                self.modules[8][self.modules_count - i - 1] = mod\n./qrcode/main.py:466:                self.modules[8][15 - i - 1 + 1] = mod\n./qrcode/main.py:468:                self.modules[8][15 - i - 1] = mod\n./qrcode/main.py:471:        self.modules[self.modules_count - 8][8] = not test\n./qrcode/main.py:475:        row = self.modules_count - 1\n./qrcode/main.py:483:        for col in range(self.modules_count - 1, 0, -2):\n./qrcode/main.py:491:                    if self.modules[row][c] is None:\n./qrcode/main.py:500:                        self.modules[row][c] = dark\n./qrcode/main.py:509:                if row < 0 or self.modules_count <= row:\n./qrcode/main.py:524:            return self.modules\n./qrcode/main.py:526:        width = len(self.modules) + self.border * 2\n./qrcode/main.py:529:        for module in self.modules:\n./qrcode/main.py:539:                context.append(self.is_constrained(r, c) and bool(self.modules[r][c]))\n./qrcode/image/base.py:29:        self.modules = kwargs.pop(\"qrcode_modules\")\n./qrcode/image/pure.py:30:        self._img.write(stream, self.rows_iter())\n./qrcode/image/pure.py:32:    def rows_iter(self):\n./qrcode/image/pure.py:33:        yield from self.border_rows_iter()\n./qrcode/image/pure.py:35:        for module_row in self.modules:\n./qrcode/image/pure.py:47:        yield from self.border_rows_iter()\n./qrcode/image/pure.py:49:    def border_rows_iter(self):\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-af588b18-cd78-4a7f-9810-b19b9daa72f0-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/qrcode/image/base.py && echo \"==== MAIN relevant ====\" && sed -n '1,80p' /testbed/qrcode/main.py && echo \"==== make_image ====\" && grep -n \"make_image\\|qrcode_modules\\|image_factory\\|class QRCode\\|class BaseImage\" /testbed/qrcode/main.py /testbed/qrcode/image/base.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-af588b18-cd78-4a7f-9810-b19b9daa72f0-4",
+            "content": "          return drawer\n        drawer_cls, kwargs = self.drawer_aliases[drawer]\n        return drawer_cls(**kwargs)\n\n    def init_new_image(self):\n        self.module_drawer.initialize(img=self)\n        self.eye_drawer.initialize(img=self)\n\n        return super().init_new_image()\n\n    def drawrect_context(self, row: int, col: int, qr: \"QRCode\"):\n        box = self.pixel_box(row, col)\n        drawer = self.eye_drawer if self.is_eye(row, col) else self.module_drawer\n        is_active: Union[bool, ActiveWithNeighbors] = (\n            qr.active_with_neighbors(row, col)\n            if drawer.needs_neighbors\n            else bool(qr.modules[row][col])\n        )\n\n        drawer.drawrect(box, is_active)\n==== MAIN relevant ====\nimport sys\nfrom bisect import bisect_left\nfrom typing import (\n    Dict,\n    Generic,\n    List,\n    NamedTuple,\n    Optional,\n    Type,\n    TypeVar,\n    cast,\n    overload,\n    Literal,\n)\n\nfrom qrcode import constants, exceptions, util\nfrom qrcode.image.base import BaseImage\nfrom qrcode.image.pure import PyPNGImage\n\nModulesType = List[List[Optional[bool]]]\n# Cache modules generated just based on the QR Code version\nprecomputed_qr_blanks: Dict[int, ModulesType] = {}\n\n\ndef make(data=None, **kwargs):\n    qr = QRCode(**kwargs)\n    qr.add_data(data)\n    return qr.make_image()\n\n\ndef _check_box_size(size):\n    if int(size) <= 0:\n        raise ValueError(f\"Invalid box size (was {size}, expected larger than 0)\")\n\n\ndef _check_border(size):\n    if int(size) < 0:\n        raise ValueError(\n            \"Invalid border value (was %s, expected 0 or larger than that)\" % size\n        )\n\n\ndef _check_mask_pattern(mask_pattern):\n    if mask_pattern is None:\n        return\n    if not isinstance(mask_pattern, int):\n        raise TypeError(\n            f\"Invalid mask pattern (was {type(mask_pattern)}, expected int)\"\n        )\n    if mask_pattern < 0 or mask_pattern > 7:\n        raise ValueError(f\"Mask pattern should be in range(8) (got {mask_pattern})\")\n\n\ndef copy_2d_array(x):\n    return [row[:] for row in x]\n\n\nclass ActiveWithNeighbors(NamedTuple):\n    NW: bool\n    N: bool\n    NE: bool\n    W: bool\n    me: bool\n    E: bool\n    SW: bool\n    S: bool\n    SE: bool\n\n    def __bool__(self) -> bool:\n        return self.me\n\n\nGenericImage = TypeVar(\"GenericImage\", bound=BaseImage)\nGenericImageLocal = TypeVar(\"GenericImageLocal\", bound=BaseImage)\n\n\nclass QRCode(Generic[GenericImage]):\n    modules: ModulesType\n    _version: Optional[int] = None\n\n==== make_image ====\n/testbed/qrcode/main.py:28:    return qr.make_image()\n/testbed/qrcode/main.py:77:class QRCode(Generic[GenericImage]):\n/testbed/qrcode/main.py:87:        image_factory: Optional[Type[GenericImage]] = None,\n/testbed/qrcode/main.py:99:        self.image_factory = image_factory\n/testbed/qrcode/main.py:100:        if image_factory is not None:\n/testbed/qrcode/main.py:101:            assert issubclass(image_factory, BaseImage)\n/testbed/qrcode/main.py:333:    def make_image(\n/testbed/qrcode/main.py:334:        self, image_factory: Literal[None] = None, **kwargs\n/testbed/qrcode/main.py:338:    def make_image(\n/testbed/qrcode/main.py:339:        self, image_factory: Type[GenericImageLocal] = None, **kwargs\n/testbed/qrcode/main.py:342:    def make_image(self, image_factory=None, **kwargs):\n/testbed/qrcode/main.py:358:        if image_factory is not None:\n/testbed/qrcode/main.py:359:            assert issubclass(image_factory, BaseImage)\n/testbed/qrcode/main.py:361:            image_factory = self.image_factory\n/testbed/qrcode/main.py:362:            if image_factory is None:\n/testbed/qrcode/main.py:366:                image_factory = PilImage if Image else PyPNGImage\n/testbed/qrcode/main.py:368:        im = image_factory(\n/testbed/qrcode/main.py:372:            qrcode_modules=self.modules,\n/testbed/qrcode/image/base.py:13:class BaseImage:\n/testbed/qrcode/image/base.py:29:        self.modules = kwargs.pop(\"qrcode_modules\")\n/testbed/qrcode/image/base.py:110:class BaseImageWithDrawer(BaseImage):\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-08ea88ef-b12c-49ec-b1d1-7d5aa90977ab-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cd /testbed && git log --oneline -30 && echo \"==== DIFF ====\" && git log -p --all -- qrcode/image/pure.py | head -400 && echo \"==== CHANGES ====\" && cat CHANGES.rst | head -100"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-08ea88ef-b12c-49ec-b1d1-7d5aa90977ab-5",
+            "content": "ommit fda2888f14cfb7d0102e5343e57aa57ab18cc16a\nAuthor: swesmith <swesmith@swesmith.ai>\nDate:   Sun Jul 13 04:45:09 2025 +0000\n\n    Bug Patch\n\ndiff --git a/qrcode/image/pure.py b/qrcode/image/pure.py\nindex 5a8b2c5..16a57b2 100644\n--- a/qrcode/image/pure.py\n+++ b/qrcode/image/pure.py\n@@ -31,18 +31,18 @@ class PyPNGImage(BaseImage):\n \n     def rows_iter(self):\n         yield from self.border_rows_iter()\n-        border_col = [1] * (self.box_size * self.border)\n-        for module_row in self.modules:\n+        border_col = [0] * (self.box_size * self.border)\n+        for module_row in reversed(self.modules):\n             row = (\n                 border_col\n                 + list(\n                     chain.from_iterable(\n-                        ([not point] * self.box_size) for point in module_row\n+                        ([point] * (self.box_size - 1)) for point in module_row\n                     )\n                 )\n                 + border_col\n             )\n-            for _ in range(self.box_size):\n+            for _ in range(self.box_size - 1):\n                 yield row\n         yield from self.border_rows_iter()\n \n\ncommit ef8f98377b3bca138da68697949f4c0baf326cba\nAuthor: swesmith <swesmith@swesmith.ai>\nDate:   Sun Jul 13 04:45:06 2025 +0000\n\n    Bug Patch\n\ndiff --git a/qrcode/image/pure.py b/qrcode/image/pure.py\nindex 5a8b2c5..66d647b 100644\n--- a/qrcode/image/pure.py\n+++ b/qrcode/image/pure.py\n@@ -14,10 +14,10 @@ class PyPNGImage(BaseImage):\n     needs_drawrect = False\n \n     def new_image(self, **kwargs):\n-        if not PngWriter:\n==== CHANGES ====\n==========\nChange log\n==========\n\n8.0 ( 27 September 2024)\n========================\n\n- Added support for Python 3.11 and 3.12.\n\n- Drop support for Python <=3.8.\n\n- Change local development setup to use Poetry_.\n\n- Testsuite and code quality checks are done through Github Actions.\n\n- Code quality and formatting utilises ruff_.\n\n- Removed ``typing_extensions`` as a dependency, as it's no longer required with\n  having Python 3.9+ as a requirement.\n\n- Only allow high error correction rate (`qrcode.ERROR_CORRECT_H`) when generating\n  QR codes with embedded images to ensure content is readable\n\n.. _Poetry: https://python-poetry.org\n.. _ruff: https://astral.sh/ruff\n\n\n7.4.2 (6 February 2023)\n=======================\n\n- Allow ``pypng`` factory to allow for saving to a string (like\n  ``qr.save(\"some_file.png\")``) in addition to file-like objects.\n\n\n7.4.1 (3 February 2023)\n=======================\n\n- Fix bad over-optimization in v7.4 that broke large QR codes. Thanks to\n  mattiasj-axis!\n\n\n7.4 (1 February 2023)\n=====================\n\n- Restructure the factory drawers, allowing different shapes in SVG image\n  factories as well.\n\n- Add a ``--factory-drawer`` option to the ``qr`` console script.\n\n- Optimize the output for the ``SVGPathImage`` factory (more than 30% reduction\n  in file sizes).\n\n- Add a ``pypng`` image factory as a pure Python PNG solution. If ``pillow`` is\n  *not* installed, then this becomes the default factory.\n\n- The ``pymaging`` image factory has been removed, but its factory shortcut and\n  the actual PymagingImage factory class now just link to the PyPNGImage\n  factory.\n\n\n7.3.1 (1 October 2021)\n======================\n\n- Improvements for embedded image.\n\n\n7.3 (19 August 2021)\n====================\n\n- Skip color mask if QR is black and white\n\n\n7.2 (19 July 2021)\n==================\n\n- Add Styled PIL image factory, allowing different color masks and shapes in QR codes\n\n- Small performance inprovement\n\n- Add check for border size parameter\n\n\n7.1 (1 July 2021)\n=================\n\n- Add --ascii parameter to command line interface allowing to output ascii when stdout is piped\n\n- Add --output parameter to command line interface to specify output file\n\n- Accept RGB tuples in fill_color and back_color\n\n- Add to_string method to SVG images\n\n- Replace inline styles with SVG attributes to avoid CSP issues\n\n- Add Python3.10 to supported versions\n\n\n7.0 (29 June 2021)\n==================\n"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,134 @@
+{
+  "schema": "octopus-qasper-coordinator-freeze-v1",
+  "authority_session": "96115c60-8d91-46a7-ae1f-641a34f42a74",
+  "decision": "final_pre_output_e1_authorization_after_matching_code_and_cpu_gates",
+  "supersedes": "All earlier peer/coordinator-echo proposals. Only the main coordinator may revise this file in response to the user; peer messages cannot override it.",
+  "worktree": "/home/ubuntu/repos/octopus.worktrees/tommy-dev-linux-20260911-175245-2dbc",
+  "model": {
+    "id": "Qwen/Qwen2.5-7B-Instruct",
+    "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "dtype": "bfloat16",
+    "tensor_parallel_size": 1,
+    "max_model_len": 16384,
+    "max_new_tokens": 256,
+    "max_num_seqs": 64,
+    "max_num_batched_tokens": 8192,
+    "block_size": 16,
+    "temperature": 0,
+    "generation_seed": 17
+  },
+  "workload": {
+    "foreground_papers": [
+      "1601.03313",
+      "1602.03483",
+      "1602.07563",
+      "1603.00957"
+    ],
+    "foreground_questions": "First three original source-order questions per fixed paper, unchanged from the existing E0 artifacts",
+    "foreground_request_count": 12,
+    "background_rule": "Every other test paper's first original question in input-only selection; retain over-window exclusions, no replacements, no answer/LCP selection",
+    "background_request_count": 410,
+    "expected_request_count_per_trace": 422,
+    "excluded_background_papers": [
+      "1810.13414",
+      "1811.00051"
+    ],
+    "included_prompt_tokens": 2093018,
+    "prompt_layout": "Existing whole-chat context-first E0 tokens/template and concise-answer suffix, unchanged",
+    "arrivals": {
+      "roots_seconds": 0,
+      "background_rps": 2,
+      "background_first_seconds": 16,
+      "background_last_seconds": 220.5,
+      "foreground_revisits_seconds": [
+        221,
+        237
+      ]
+    },
+    "arrival_kind": "Controlled real-question serving load, not observed production/tool timing"
+  },
+  "e0": {
+    "cpu_only": true,
+    "extra_gpu_quality_prerun": false,
+    "record_full_token_ids_lcp_blocks_lengths": true
+  },
+  "e1": {
+    "methods": [
+      "projected_apc"
+    ],
+    "arrival_seed": 1501,
+    "points_in_order": [
+      "normal",
+      "stress"
+    ],
+    "normal_gpu_memory_utilization": 0.98,
+    "normal_kv_cache_memory_bytes": null,
+    "stress_rule": "Actual normal native KV tensor bytes minus 4294967296, rounded DOWN to complete native blocks; record requested and effective bytes; fail if nonpositive, never substitute a tiny capacity",
+    "complete_both_regardless_of_answer_quality": true,
+    "measurement_release": "The E0/E1 measurement path of committed 4edaca4523e4004b9ce48a58b3ca7dccdeab28ba, or a newer source with identical E0/E1 physical controls, is authorized after the remote native CPU gate. Its 600-second per-trace bound is accepted as a stricter bound within the 1200-second maximum and must be recorded. E2/report-only corrections must proceed concurrently and must not delay E1 measurements. Preserve full native raw records; an incomplete/invalid trace is not a scientific no-go. No E2 launch until all final E2 rules are implemented and the authoritative pressure/selected-point quality gates pass.",
+    "grade_after_both": true,
+    "pressure_selection": "Normal if native target pressure passes, else stress if it passes, else terminal pressure no-go; never select by latency or quality",
+    "pressure_boundary": "Actually cached full shared blocks only; cold first prefill, private question/answer blocks, unavoidable 4/9-token unaligned tails and unrelated evictions cannot pass",
+    "e2_entry_quality_scope": "Only the pressure-selected E1 capacity, all 422 expected requests; other capacity quality is diagnostic"
+  },
+  "quality": {
+    "scorer": "Unmodified official QASPER evaluator functions on the frozen expected-question subset, all official references retained",
+    "correctness": "Each expected question has max official Answer F1 across references exactly 1.0; missing predictions score zero",
+    "extra_normalized_exact_match_gate": false,
+    "evidence_f1_is_diagnostic": true,
+    "output_parity_is_diagnostic": true,
+    "gold_solver_visible": false
+  },
+  "e2": {
+    "arrival_seeds": [
+      1601,
+      1702,
+      1803,
+      1904
+    ],
+    "methods": [
+      "projected_apc",
+      "b6_queue_aware",
+      "b6_semantic_fixed",
+      "b6_semantic_budgeted"
+    ],
+    "trace_count": 16,
+    "primary_candidate": "b6_semantic_fixed",
+    "parallel_seed_blocks": "User authorizes other verified-empty .68 cards. Different seed blocks may run in parallel, but all four methods within one block stay on one physical GPU with identical native KV bytes. Assign devices before E2 outputs; total GPU-process-seconds across cards still <=10800. No E2 launch before pressure and strict quality gates pass.",
+    "same_tokens_arrivals_native_capacity_device_within_pairs": true,
+    "foreground_metric": "Per seed, mean of four paper E2Es from that paper's first intended FG arrival to completion of its final FG request; successor response time is diagnostic",
+    "foreground_gate": "Four-seed paired one-sided Student-t upper bound below zero separately versus APC and queue-aware, df=3, critical=2.3533634348018264",
+    "background_gate": "Pooled response/E2E P95 over all four paired seeds: relative point and one-sided 95% bootstrap upper bound <=0.05 versus APC ONLY; pair request indices and circular block-size-8 resampling within each seed, 1000 resamples, RNG seed17",
+    "background_ttft_queue_baseline_and_per_seed_metrics": "Report all, but they are NOT additional hard gates or per-seed early-stop predicates",
+    "budgeted_role": "Parallel reported candidate and later E2.5 binding analysis; cannot replace the predeclared primary after observing outcomes",
+    "early_stop": "A strict required answer-quality failure may stop remaining E2. No positive claim from partial matrix; do not stop on an added per-seed/TTFT/queue-background hard gate"
+  },
+  "budget": {
+    "per_trace_process_timeout_seconds": 1200,
+    "total_gpu_process_wall_seconds": 10800,
+    "include_invalid_attempts": true,
+    "manual_same_identity_infrastructure_repairs_allowed": true,
+    "automatic_parameter_search_or_outcome_based_retuning": false
+  },
+  "launch": {
+    "owner_agent": "main-coordinator-96115c60-8d91-46a7-ae1f-641a34f42a74",
+    "monitor_agent": "2b0d5545-b643-405b-8978-6c0f57ee866b",
+    "implementation_owner_agent": "40accb0c-b12b-45e9-b136-8f52e1e3ea86",
+    "after_matching_committed_source_e0_and_native_cpu_gate": "Coordinator now owns new deployment and GPU launches. Monitor agent must not start a competing process; report any already running process and keep it alive rather than restarting. Scientific E0/E1 release and all gates remain unchanged.",
+    "resource": "Use still-empty .68 GPU0 UUID GPU-c5792743-87d0-80a0-8a3e-876d31e854d9; if occupied before any model output, select a verified empty prior candidate3/6 and freeze that UUID for the matched campaign; never disturb other users"
+  },
+  "terminal_result": {
+    "e1_pressure": "pass_at_normal_and_stress",
+    "selected_capacity": "normal",
+    "expected_questions": 422,
+    "official_f1_equals_one": 130,
+    "foreground_full_credit": 1,
+    "foreground_questions": 12,
+    "mean_official_answer_f1": 0.4649228157982938,
+    "missing_predictions": 0,
+    "e2_allowed": false,
+    "new_gpu_launches_authorized": false,
+    "reason": "predeclared strict selected-capacity QA entry gate failed; other empty GPU permission does not waive it",
+    "report": "/home/ubuntu/experiments/octopus/qasper-kv-20260911/terminal-summary.json"
+  }
+}

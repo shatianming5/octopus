@@ -1,0 +1,42 @@
+{
+  "schema": "octopus-lighthouse-recovery-source-provenance-v1",
+  "git_base": "e42f7170b015e39f64612ae2731fd59edc59d5ef",
+  "phases": {
+    "attribution": {
+      "freeze": "results/model-intent/lighthouse-recovery/attribution/freeze.json",
+      "freeze_sha256": "97c30d0c04fa25770e1a091cc2cabc83bc5493dbab6d188ed1b216376762fe39",
+      "recovery_method": "deterministic base-plus-recorded-attribution-change reconstruction",
+      "reconstruction": "results/model-intent/lighthouse-recovery/source-provenance/reconstruct_attribution.py",
+      "sources": {
+        "lighthouse_quality.py": {
+          "path": "results/model-intent/lighthouse-recovery/source-provenance/historical/attribution/benchmarks/lighthouse_quality.py",
+          "sha256": "c1d164647fd40c7bfbf18647056ceff8939934c83e55bda088bc0b62ec13ef23"
+        },
+        "lighthouse_quality_solver.py": {
+          "path": "results/model-intent/lighthouse-recovery/source-provenance/historical/attribution/benchmarks/lighthouse_quality_solver.py",
+          "sha256": "fe8e679f784621329c9ad20f7812352f92ac39b43b4a87ba388c3716c80b93e3"
+        }
+      }
+    },
+    "runtime": {
+      "freeze": "results/model-intent/lighthouse-recovery/runtime/freeze.json",
+      "freeze_sha256": "b77590461c43f21ca177b42bf81b4f84343d843f2c35c13aec6c7992992cf8bc",
+      "recovery_method": "exact copy from retained owned execution overlay",
+      "source_origin": "/home/user/octopus-lighthouse-runtime-recovery-v1-20260915/benchmarks",
+      "sources": {
+        "lighthouse_quality.py": {
+          "path": "results/model-intent/lighthouse-recovery/source-provenance/historical/runtime/benchmarks/lighthouse_quality.py",
+          "sha256": "7f7bf0b6331491b840fd2e9786ea5e17d627d9e35f3ed1ec62417c8f31895f49"
+        },
+        "lighthouse_quality_solver.py": {
+          "path": "results/model-intent/lighthouse-recovery/source-provenance/historical/runtime/benchmarks/lighthouse_quality_solver.py",
+          "sha256": "f2bbeb4eb6a908da4fbfd91a52c0f55554973b5f8ebf4c5ff3cfa0d765afd98a"
+        }
+      }
+    }
+  },
+  "verification": "python3 results/model-intent/lighthouse-recovery/source-provenance/verify.py",
+  "contains_model_weights": false,
+  "contains_secrets": false,
+  "freezes_or_outcomes_modified": false
+}

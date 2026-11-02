@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "adrienverge__yamllint.8513d9b9.l__vxipMGv__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# Cannot use both extra-required and extra-allowed in quoted-strings rule\n\n## Issue\nWhen trying to use both `extra-required` and `extra-allowed` in the quoted-strings rule configuration, I'm getting an error.\n\n## Configuration\n```yaml\nquoted-strings:\n  required: only-when-needed\n  extra-allowed: [^ftp://]\n  extra-required: [^http://]\n```\n\n## Error\nWhen using this configuration, I get an error message:\n```\ncannot use both extra-required and extra-allowed\n```\n\nHowever, this configuration used to work before. I was able to use both `extra-allowed` and `extra-required` together with `required: only-when-needed` to specify patterns that should always be quoted and patterns that can optionally be quoted.\n\n## Reproduction\nHere's a simple YAML file I'm trying to lint:\n```yaml\n---\n- 123\n- \"123\"\n- localhost\n- \"localhost\"\n- http://localhost\n- \"http://localhost\"\n- ftp://localhost\n- \"ftp://localhost\"\n```\n\nWith the configuration above, I expect `http://` URLs to be required to be quoted, `ftp://` URLs to be allowed to be quoted, and everything else to follow the `only-when-needed` rule."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository and the quoted-strings rule to see why `extra-required` and `extra-allowed` can't be used together.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-6ac5fbac-653a-47b2-ac68-090bb0175eac-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.md\" -o -name \"*.yml\" -o -name \"*.yaml\" -o -name \"*.py\" -o -name \"*.go\" -o -name \"*.rs\" -o -name \"*.toml\" -o -name \"Cargo.toml\" -o -name \"package.json\" -o -name \"go.mod\" | head -100"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-6ac5fbac-653a-47b2-ac68-090bb0175eac-0",
+            "content": "total 108\ndrwxr-xr-x 1 root root  4096 Sep 22 17:14 .\ndrwxr-xr-x 1 root root  4096 Sep 22 17:14 ..\n-rw-r--r-- 1 root root    90 Jul 12  2025 .flake8\ndrwxr-xr-x 8 root root  4096 Jul 12  2025 .git\n-rw-r--r-- 1 root root    74 Jul 12  2025 .gitignore\n-rw-rw-r-- 1 1005 1005     0 Sep 22 15:44 .gitkeep\n-rw-r--r-- 1 root root   215 Jul 12  2025 .pre-commit-hooks.yaml\n-rw-r--r-- 1 root root   168 Jul 12  2025 .readthedocs.yaml\n-rw-r--r-- 1 root root  9653 Jul 12  2025 CHANGELOG.rst\n-rw-r--r-- 1 root root  1160 Jul 12  2025 CONTRIBUTING.rst\n-rw-r--r-- 1 root root 35149 Jul 12  2025 LICENSE\n-rw-r--r-- 1 root root  3032 Jul 12  2025 README.rst\ndrwxr-xr-x 2 root root  4096 Jul 12  2025 docs\n-rw-r--r-- 1 root root  1461 Jul 12  2025 pyproject.toml\n-rw-r--r-- 1 root root   849 Jul 12  2025 setup.py\ndrwxr-xr-x 4 root root  4096 Jul 12  2025 tests\ndrwxr-xr-x 5 root root  4096 Jul 12  2025 yamllint\ndrwxr-xr-x 2 root root  4096 Jul 12  2025 yamllint.egg-info\n/testbed/.pre-commit-hooks.yaml\n/testbed/.readthedocs.yaml\n/testbed/pyproject.toml\n/testbed/tests/test_linter.py\n/testbed/tests/test_syntax_errors.py\n/testbed/tests/rules/test_document_end.py\n/testbed/tests/rules/test_new_line_at_end_of_file.py\n/testbed/tests/rules/test_comments.py\n/testbed/tests/rules/test_new_lines.py\n/testbed/tests/rules/test_commas.py\n/testbed/tests/rules/test_hyphens.py\n/testbed/tests/rules/test_quoted_strings.py\n/testbed/tests/rules/test_indentation.py\n/testbed/tests/rules/__init__.py\n/testbed/tests/rules/test_key_ordering.py\n/testbed/tests/rules/test_octal_values.py\n/testbed/tests/rules/test_float_values.py\n/testbed/tests/rules/test_colons.py\n/testbed/tests/rules/test_empty_lines.py\n/testbed/tests/rules/test_comments_indentation.py\n/testbed/tests/rules/test_empty_values.py\n/testbed/tests/rules/test_key_duplicates.py\n/testbed/tests/rules/test_anchors.py\n/testbed/tests/rules/test_trailing_spaces.py\n/testbed/tests/rules/test_line_length.py\n/testbed/tests/rules/test_document_start.py\n/testbed/tests/rules/test_common.py\n/testbed/tests/rules/test_brackets.py\n/testbed/tests/rules/test_truthy.py\n/testbed/tests/rules/test_braces.py\n/testbed/tests/test_parser.py\n/testbed/tests/test_config.py\n/testbed/tests/test_spec_examples.py\n/testbed/tests/__init__.py\n/testbed/tests/common.py\n/testbed/tests/test_yamllint_directives.py\n/testbed/tests/test_cli.py\n/testbed/tests/test_module.py\n/testbed/yamllint/linter.py\n/testbed/yamllint/rules/anchors.py\n/testbed/yamllint/rules/key_ordering.py\n/testbed/yamllint/rules/document_end.py\n/testbed/yamllint/rules/quoted_strings.py\n/testbed/yamllint/rules/empty_values.py\n/testbed/yamllint/rules/new_line_at_end_of_file.py\n/testbed/yamllint/rules/brackets.py\n/testbed/yamllint/rules/new_lines.py\n/testbed/yamllint/rules/empty_lines.py\n/testbed/yamllint/rules/key_duplicates.py\n/testbed/yamllint/rules/__init__.py\n/testbed/yamllint/rules/common.py\n/testbed/yamllint/rules/float_values.py\n/testbed/yamllint/rules/comments.py\n/testbed/yamllint/rules/trailing_spaces.py\n/testbed/yamllint/rules/hyphens.py\n/testbed/yamllint/rules/colons.py\n/testbed/yamllint/rules/octal_values.py\n/testbed/yamllint/rules/truthy.py\n/testbed/yamllint/rules/document_start.py\n/testbed/yamllint/rules/braces.py\n/testbed/yamllint/rules/indentation.py\n/testbed/yamllint/rules/line_length.py\n/testbed/yamllint/rules/comments_indentation.py\n/testbed/yamllint/rules/commas.py\n/testbed/yamllint/__main__.py\n/testbed/yamllint/__init__.py\n/testbed/yamllint/config.py\n/testbed/yamllint/conf/default.yaml\n/testbed/yamllint/conf/relaxed.yaml\n/testbed/yamllint/cli.py\n/testbed/yamllint/parser.py\n/testbed/setup.py\n/testbed/docs/conf.py\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-a0d1ef2a-009f-47e8-b739-bef15ca088dd-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/yamllint/rules/quoted_strings.py && echo \"===== TESTS =====\" && cat /testbed/tests/rules/test_quoted_strings.py && echo \"===== CHANGELOG =====\" && cat /testbed/CHANGELOG.rst | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-a0d1ef2a-009f-47e8-b739-bef15ca088dd-1",
+            "content": "'  required: true\\n'\n                '  allow-quoted-quotes: true\\n')\n        self.check(\"---\\n\"\n                   \"'[barbaz]': 2\\n\"            # fails\n                   \"'[bar\\\"baz]': 3\\n\",\n                   conf, problem1=(2, 1))\n\n        conf = ('quoted-strings:\\n'\n                '  check-keys: true\\n'\n                '  quote-type: double\\n'\n                '  required: only-when-needed\\n'\n                '  allow-quoted-quotes: false\\n')\n        self.check(\"---\\n\"\n                   \"'[barbaz]': 2\\n\"            # fails\n                   \"'[bar\\\"baz]': 3\\n\",         # fails\n                   conf, problem1=(2, 1), problem2=(3, 1))\n\n        conf = ('quoted-strings:\\n'\n                '  check-keys: true\\n'\n                '  quote-type: double\\n'\n                '  required: only-when-needed\\n'\n                '  allow-quoted-quotes: true\\n')\n        self.check(\"---\\n\"\n                   \"'[barbaz]': 2\\n\"            # fails\n                   \"'[bar\\\"baz]': 3\\n\",\n                   conf, problem1=(2, 1))\n\n        conf = ('quoted-strings:\\n'\n                '  check-keys: true\\n'\n                '  quote-type: any\\n')\n        self.check(\"---\\n\"\n                   \"'[barbaz]': 2\\n\"\n                   \"'[bar\\\"baz]': 3\\n\",\n                   conf)\n===== CHANGELOG =====\nChangelog\n=========\n\n1.35.1 (2024-02-16)\n-------------------\n\n- Restore ignoration of files passed as command-line arguments\n- Revert API change from version 1.35.0\n\n1.35.0 (2024-02-15)\n-------------------\n\n- Fix failure on broken symlinks that should be ignored\n- API change: ``linter.run(stream, config)`` doesn't filter files anymore\n- Docs: Restore official Read the Docs theme\n\n1.34.0 (2024-02-06)\n-------------------\n\n- Config: validate ``ignore-from-file`` inside rules\n- Rule ``quoted-strings``: fix ``only-when-needed`` in flow maps and sequences\n- Rule ``key-duplicates``: add ``forbid-duplicated-merge-keys`` option\n- Rule ``quoted-strings``: add ``check-keys`` option\n- Docs: add GitLab CI example\n- Rule ``truthy``: adapt forbidden values based on YAML version\n\n1.33.0 (2023-11-09)\n-------------------\n\n- Add support for Python 3.12, drop support for Python 3.7\n- Rule ``document-end``: fix spurious \"missing document end\"\n- Rule ``empty-values``: add ``forbid-in-block-sequences`` option\n\n1.32.0 (2023-05-22)\n-------------------\n\n- Look for configuration file in parent directories\n- Rule ``anchors``: add new option ``forbid-unused-anchors``\n\n1.31.0 (2023-04-21)\n-------------------\n\n- Build: migrate from ``setup.py`` to ``pyproject.toml``\n- Docs: update some outdated URLs\n- Rule ``colons``: prevent error when space before is mandatory\n\n1.30.0 (2023-03-22)\n-------------------\n\n- Rule ``anchors``: add new rule to detect undeclared or duplicated anchors\n- Python API: prevent using ``is_file_ignored()`` with null ``filepath``\n- Docs: fix misleading Python API example\n- Docs: fix plain text code snippet example\n- Docs: update pre-commit hook example\n\n1.29.0 (2023-01-10)\n-------------------\n\n- Add support for Python 3.11, drop support for Python 3.6\n- Rule ``float-values``: fix bug on strings containing fordidden values\n- Stop releasing universal wheels\n- Use proper Python 3 I/O type for file reading\n- Rule ``indentation``: fix ``indent-sequences`` in nested collections\n- Docs: clarify ``disable-line`` and parser errors, give a workaround\n- Refactors to apply some pyupgrade suggestions\n- Allow using a list of strings in ``ignore`` configuration\n- Add ``--list-files`` command line option\n\n1.28.0 (2022-09-12)\n-------------------\n\n- Better compress PNG image in documentation\n- Remove ``__future__`` imports specific to Python 2\n- Remove inheritance from ``object`` specific to Python 2\n- Simplify GitHub Actions example in documentation\n- Update ALE vim plugin link in documentation\n- Update license to latest version of GPLv3\n- Pre-compile disable/enable rules regexes\n- Rule ``quoted-strings``: add ``allow-quoted-quotes`` option\n- Add option ``ignore-from-file`` in config\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-d55e0558-1eeb-42ea-9369-abd1ce5ecfca-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/yamllint/rules/quoted_strings.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-d55e0558-1eeb-42ea-9369-abd1ce5ecfca-2",
+            "content": "    return True\n\n\ndef _has_quoted_quotes(token):\n    return ((not token.plain) and\n            ((token.style == \"'\" and '\"' in token.value) or\n             (token.style == '\"' and \"'\" in token.value)))\n\n\ndef check(conf, token, prev, next, nextnext, context):\n    if 'flow_nest_count' not in context:\n        context['flow_nest_count'] = 0\n\n    if isinstance(token, (yaml.FlowMappingStartToken,\n                          yaml.FlowSequenceStartToken)):\n        context['flow_nest_count'] += 1\n    elif isinstance(token, (yaml.FlowMappingEndToken,\n                            yaml.FlowSequenceEndToken)):\n        context['flow_nest_count'] -= 1\n\n    if not (isinstance(token, yaml.tokens.ScalarToken) and\n            isinstance(prev, (yaml.BlockEntryToken, yaml.FlowEntryToken,\n                              yaml.FlowSequenceStartToken, yaml.TagToken,\n                              yaml.ValueToken, yaml.KeyToken))):\n\n        return\n\n    node = 'key' if isinstance(prev, yaml.KeyToken) else 'value'\n    if node == 'key' and not conf['check-keys']:\n        return\n\n    # Ignore explicit types, e.g. !!str testtest or !!int 42\n    if (prev and isinstance(prev, yaml.tokens.TagToken) and\n            prev.value[0] == '!!'):\n        return\n\n    # Ignore numbers, booleans, etc.\n    resolver = yaml.resolver.Resolver()\n    tag = resolver.resolve(yaml.nodes.ScalarNode, token.value, (True, False))\n    if token.plain and tag != DEFAULT_SCALAR_TAG:\n        return\n\n    # Ignore multi-line strings\n    if not token.plain and token.style in (\"|\", \">\"):\n        return\n\n    quote_type = conf['quote-type']\n\n    msg = None\n    if conf['required'] is True:\n\n        # Quotes are mandatory and need to match config\n        if (token.style is None or\n            not (_quote_match(quote_type, token.style) or\n                 (conf['allow-quoted-quotes'] and _has_quoted_quotes(token)))):\n            msg = f\"string {node} is not quoted with {quote_type} quotes\"\n\n    elif conf['required'] is False:\n\n        # Quotes are not mandatory but when used need to match config\n        if (token.style and\n                not _quote_match(quote_type, token.style) and\n                not (conf['allow-quoted-quotes'] and\n                     _has_quoted_quotes(token))):\n            msg = f\"string {node} is not quoted with {quote_type} quotes\"\n\n        elif not token.style:\n            is_extra_required = any(re.search(r, token.value)\n                                    for r in conf['extra-required'])\n            if is_extra_required:\n                msg = f\"string {node} is not quoted\"\n\n    elif conf['required'] == 'only-when-needed':\n\n        # Quotes are not strictly needed here\n        if (token.style and tag == DEFAULT_SCALAR_TAG and token.value and\n                not _quotes_are_needed(token.value,\n                                       context['flow_nest_count'] > 0)):\n            is_extra_required = any(re.search(r, token.value)\n                                    for r in conf['extra-required'])\n            is_extra_allowed = any(re.search(r, token.value)\n                                   for r in conf['extra-allowed'])\n            if not (is_extra_required or is_extra_allowed):\n                msg = f\"string {node} is redundantly quoted with \" \\\n                      f\"{quote_type} quotes\"\n\n        # But when used need to match config\n        elif (token.style and\n              not _quote_match(quote_type, token.style) and\n              not (conf['allow-quoted-quotes'] and _has_quoted_quotes(token))):\n            msg = f\"string {node} is not quoted with {quote_type} quotes\"\n\n        elif not token.style:\n            is_extra_required = len(conf['extra-required']) and any(\n                re.search(r, token.value) for r in conf['extra-required'])\n            if is_extra_required:\n                msg = f\"string {node} is not quoted\"\n\n    if msg is not None:\n        yield LintProblem(\n            token.start_mark.line + 1,\n            token.start_mark.column + 1,\n            msg)\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-14ac985c-6f56-403e-92b1-061ca629ca9a-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "wc -l /testbed/yamllint/rules/quoted_strings.py && head -n 200 /testbed/yamllint/rules/quoted_strings.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-14ac985c-6f56-403e-92b1-061ca629ca9a-3",
+            "content": "RuntimeError: Command timed out after 20 seconds"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-f2e2740f-c6d3-4302-8204-7898fa0b644f-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '1,200p' /testbed/yamllint/rules/quoted_strings.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-f2e2740f-c6d3-4302-8204-7898fa0b644f-4",
+            "content": "``) using disallowed quotes for strings\n  with allowed quotes inside. Default ``false``.\n* ``check-keys`` defines whether to apply the rules to keys in mappings. By\n  default, ``quoted-strings`` rules apply only to values. Set this option to\n  ``true`` to apply the rules to keys as well.\n\n**Note**: Multi-line strings (with ``|`` or ``>``) will not be checked.\n\n.. rubric:: Default values (when enabled)\n\n.. code-block:: yaml\n\n rules:\n   quoted-strings:\n     quote-type: any\n     required: true\n     extra-required: []\n     extra-allowed: []\n     allow-quoted-quotes: false\n     check-keys: false\n\n.. rubric:: Examples\n\n#. With ``quoted-strings: {quote-type: any, required: true}``\n\n   the following code snippet would **PASS**:\n   ::\n\n    foo: \"bar\"\n    bar: 'foo'\n    number: 123\n    boolean: true\n\n   the following code snippet would **FAIL**:\n   ::\n\n    foo: bar\n\n#. With ``quoted-strings: {quote-type: single, required: only-when-needed}``\n\n   the following code snippet would **PASS**:\n   ::\n\n    foo: bar\n    bar: foo\n    not_number: '123'\n    not_boolean: 'true'\n    not_comment: '# comment'\n    not_list: '[1, 2, 3]'\n    not_map: '{a: 1, b: 2}'\n\n   the following code snippet would **FAIL**:\n   ::\n\n    foo: 'bar'\n\n#. With ``quoted-strings: {required: false, extra-required: [^http://,\n   ^ftp://]}``\n\n   the following code snippet would **PASS**:\n   ::\n\n    - localhost\n    - \"localhost\"\n    - \"http://localhost\"\n    - \"ftp://localhost\"\n\n   the following code snippet would **FAIL**:\n   ::\n\n    - http://localhost\n    - ftp://localhost\n\n#. With ``quoted-strings: {required: only-when-needed, extra-allowed:\n   [^http://, ^ftp://], extra-required: [QUOTED]}``\n\n   the following code snippet would **PASS**:\n   ::\n\n    - localhost\n    - \"http://localhost\"\n    - \"ftp://localhost\"\n    - \"this is a string that needs to be QUOTED\"\n\n   the following code snippet would **FAIL**:\n   ::\n\n    - \"localhost\"\n    - this is a string that needs to be QUOTED\n\n#. With ``quoted-strings: {quote-type: double, allow-quoted-quotes: false}``\n\n   the following code snippet would **PASS**:\n   ::\n\n    foo: \"bar\\\\\"baz\"\n\n   the following code snippet would **FAIL**:\n   ::\n\n    foo: 'bar\"baz'\n\n#. With ``quoted-strings: {quote-type: double, allow-quoted-quotes: true}``\n\n   the following code snippet would **PASS**:\n   ::\n\n    foo: 'bar\"baz'\n\n#. With ``quoted-strings: {required: only-when-needed, check-keys: true,\n   extra-required: [\"[:]\"]}``\n\n   the following code snippet would **FAIL**:\n   ::\n\n    foo:bar: baz\n\n   the following code snippet would **PASS**:\n   ::\n\n    \"foo:bar\": baz\n\"\"\"\n\nimport re\n\nimport yaml\n\nfrom yamllint.linter import LintProblem\n\nID = 'quoted-strings'\nTYPE = 'token'\nCONF = {'quote-type': ('any', 'single', 'double'),\n        'required': (True, False, 'only-when-needed'),\n        'extra-required': [str],\n        'extra-allowed': [str],\n        'allow-quoted-quotes': bool,\n        'check-keys': bool}\nDEFAULT = {'quote-type': 'any',\n           'required': True,\n           'extra-required': [],\n           'extra-allowed': [],\n           'allow-quoted-quotes': False,\n           'check-keys': False}\n\n\ndef VALIDATE(conf):\n    if conf['required'] is True and len(conf['extra-allowed']) > 0:\n        return 'cannot use both \"required: true\" and \"extra-allowed\"'\n    if conf['required'] is True and len(conf['extra-required']) > 0:\n        return 'cannot use both \"required: true\" and \"extra-required\"'\n    if conf['required'] is False and len(conf['extra-allowed']) > 0:\n        return 'cannot use both \"required: false\" and \"extra-allowed\"'\n\n\nDEFAULT_SCALAR_TAG = 'tag:yaml.org,2002:str'\n\n# https://stackoverflow.com/a/36514274\nyaml.resolver.Resolver.add_implicit_resolver(\n    'tag:yaml.org,2002:int',\n    re.compile(r'''^(?:[-+]?0b[0-1_]+\n               |[-+]?0o?[0-7_]+\n               |[-+]?0[0-7_]+\n               |[-+]?(?:0|[1-9][0-9_]*)\n               |[-+]?0x[0-9a-fA-F_]+\n               |[-+]?[1-9][0-9_]*(?::[0-5]?[0-9])+)$''', re.VERBOSE),\n    list('-+0123456789'))\n\n\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-ed560bfc-2365-4ed7-bea6-d06a60a01314-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "grep -n \"extra-required\\|extra-allowed\\|cannot use both\" /testbed -r --include=\"*.py\" --include=\"*.rst\" --include=\"*.yaml\" --include=\"*.yml\""
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-ed560bfc-2365-4ed7-bea6-d06a60a01314-5",
+            "content": "/testbed/tests/rules/test_quoted_strings.py:405:                '  extra-allowed: [^http://]\\n')\n/testbed/tests/rules/test_quoted_strings.py:410:                '  extra-required: [^http://]\\n')\n/testbed/tests/rules/test_quoted_strings.py:415:                '  extra-allowed: [^http://]\\n')\n/testbed/tests/rules/test_quoted_strings.py:433:                '  extra-allowed: [^ftp://]\\n'\n/testbed/tests/rules/test_quoted_strings.py:434:                '  extra-required: [^http://]\\n')\n/testbed/tests/rules/test_quoted_strings.py:448:                '  extra-required: [^http://, ^ftp://]\\n')\n/testbed/tests/rules/test_quoted_strings.py:462:                '  extra-allowed: [^ftp://, \";$\", \" \"]\\n')\n/testbed/tests/rules/test_quoted_strings.py:1090:                '  extra-allowed: [^http://]\\n')\n/testbed/tests/rules/test_quoted_strings.py:1096:                '  extra-required: [^http://]\\n')\n/testbed/tests/rules/test_quoted_strings.py:1102:                '  extra-allowed: [^http://]\\n')\n/testbed/tests/rules/test_quoted_strings.py:1122:                '  extra-allowed: [^ftp://]\\n'\n/testbed/tests/rules/test_quoted_strings.py:1123:                '  extra-required: [^http://]\\n')\n/testbed/tests/rules/test_quoted_strings.py:1138:                '  extra-required: [^http://, ^ftp://]\\n')\n/testbed/tests/rules/test_quoted_strings.py:1153:                '  extra-allowed: [^ftp://, \";$\", \" \"]\\n')\n/testbed/yamllint/rules/quoted_strings.py:28:* ``extra-required`` is a list of PCRE regexes to force string values to be\n/testbed/yamllint/rules/quoted_strings.py:31:* ``extra-allowed`` is a list of PCRE regexes to allow quoted string values,\n/testbed/yamllint/rules/quoted_strings.py:49:     extra-required: []\n/testbed/yamllint/rules/quoted_strings.py:50:     extra-allowed: []\n/testbed/yamllint/rules/quoted_strings.py:89:#. With ``quoted-strings: {required: false, extra-required: [^http://,\n/testbed/yamllint/rules/quoted_strings.py:106:#. With ``quoted-strings: {required: only-when-needed, extra-allowed:\n/testbed/yamllint/rules/quoted_strings.py:107:   [^http://, ^ftp://], extra-required: [QUOTED]}``\n/testbed/yamllint/rules/quoted_strings.py:143:   extra-required: [\"[:]\"]}``\n/testbed/yamllint/rules/quoted_strings.py:166:        'extra-required': [str],\n/testbed/yamllint/rules/quoted_strings.py:167:        'extra-allowed': [str],\n/testbed/yamllint/rules/quoted_strings.py:172:           'extra-required': [],\n/testbed/yamllint/rules/quoted_strings.py:173:           'extra-allowed': [],\n/testbed/yamllint/rules/quoted_strings.py:179:    if conf['required'] is True and len(conf['extra-allowed']) > 0:\n/testbed/yamllint/rules/quoted_strings.py:180:        return 'cannot use both \"required: true\" and \"extra-allowed\"'\n/testbed/yamllint/rules/quoted_strings.py:181:    if conf['required'] is True and len(conf['extra-required']) > 0:\n/testbed/yamllint/rules/quoted_strings.py:182:        return 'cannot use both \"required: true\" and \"extra-required\"'\n/testbed/yamllint/rules/quoted_strings.py:183:    if conf['required'] is False and len(conf['extra-allowed']) > 0:\n/testbed/yamllint/rules/quoted_strings.py:184:        return 'cannot use both \"required: false\" and \"extra-allowed\"'\n/testbed/yamllint/rules/quoted_strings.py:293:                                    for r in conf['extra-required'])\n/testbed/yamllint/rules/quoted_strings.py:304:                                    for r in conf['extra-required'])\n/testbed/yamllint/rules/quoted_strings.py:306:                                   for r in conf['extra-allowed'])\n/testbed/yamllint/rules/quoted_strings.py:318:            is_extra_required = len(conf['extra-required']) and any(\n/testbed/yamllint/rules/quoted_strings.py:319:                re.search(r, token.value) for r in conf['extra-required'])\n/testbed/CHANGELOG.rst:172:- Add options ``extra-required`` and ``extra-allowed`` to ``quoted-strings``\n"
+          }
+        ]
+      }
+    }
+  ]
+}

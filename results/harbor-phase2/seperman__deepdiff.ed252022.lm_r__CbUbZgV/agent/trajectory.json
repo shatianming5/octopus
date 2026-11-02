@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "seperman__deepdiff.ed252022.lm_r__CbUbZgV__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "# Delta deserialization breaks when using custom serializer\n\nWhen using a custom serializer with Delta, the deserialization process fails to properly handle iterable opcodes. This happens because the wrapper function for the deserializer doesn't process the opcodes correctly.\n\n## Steps to reproduce\n\n1. Create a Delta object with iterable changes\n2. Serialize it using a custom serializer (like JSON)\n3. Try to deserialize it back\n\n```python\nfrom deepdiff import DeepDiff\nfrom deepdiff.delta import Delta\nimport json\n\n# Create objects with iterable differences\nt1 = [1, 2, 3, 4]\nt2 = [1, 2, 5, 6, 7]\n\n# Create diff and delta\ndiff = DeepDiff(t1, t2)\ndelta = Delta(diff)\n\n# Custom JSON serializer\ndef custom_serializer(obj):\n    return json.dumps(obj)\n\ndef custom_deserializer(obj, safe_to_import=None):\n    return json.loads(obj)\n\n# Serialize\nserialized = delta.dumps(serializer=custom_serializer)\n\n# Try to deserialize - this will fail\ntry:\n    deserialized = Delta.loads(serialized, deserializer=custom_deserializer)\n    print(\"Success!\")\nexcept Exception as e:\n    print(f\"Failed with error: {e}\")\n```\n\nThe deserialization fails because the custom deserializer wrapper doesn't properly convert the iterable opcodes back to Opcode objects."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository and the Delta deserialization path to find why custom serializers break iterable opcodes.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-72b0dec6-95c3-48b4-a081-7fe2f9d1ab78-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -50 && cat /testbed/README.md 2>/dev/null | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-72b0dec6-95c3-48b4-a081-7fe2f9d1ab78-0",
+            "content": "l.py\n/testbed/tests/test_path.py\n/testbed/tests/__init__.py\n/testbed/tests/test_delta.py\n/testbed/tests/test_cache.py\n/testbed/tests/test_diff_numpy.py\n/testbed/tests/test_ignore_order.py\n/testbed/tests/test_operators.py\n/testbed/tests/test_anyset.py\n/testbed/tests/test_command.py\n/testbed/tests/test_helper.py\n/testbed/tests/test_diff_datetime.py\n/testbed/tests/test_hash.py\n/testbed/tests/test_diff_tree.py\n/testbed/tests/test_search.py\n/testbed/tests/test_diff_other.py\n/testbed/tests/test_diff_math.py\n/testbed/conftest.py\n/testbed/setup.py\n/testbed/docs/buildme.py\n/testbed/docs/conf.py\n# DeepDiff v 8.2.0\n\n![Downloads](https://img.shields.io/pypi/dm/deepdiff.svg?style=flat)\n![Python Versions](https://img.shields.io/pypi/pyversions/deepdiff.svg?style=flat)\n![License](https://img.shields.io/pypi/l/deepdiff.svg?version=latest)\n[![Build Status](https://github.com/seperman/deepdiff/workflows/Unit%20Tests/badge.svg)](https://github.com/seperman/deepdiff/actions)\n[![codecov](https://codecov.io/gh/seperman/deepdiff/branch/master/graph/badge.svg?token=KkHZ3siA3m)](https://codecov.io/gh/seperman/deepdiff)\n\n## Modules\n\n- [DeepDiff](https://zepworks.com/deepdiff/current/diff.html): Deep Difference of dictionaries, iterables, strings, and ANY other object.\n- [DeepSearch](https://zepworks.com/deepdiff/current/dsearch.html): Search for objects within other objects.\n- [DeepHash](https://zepworks.com/deepdiff/current/deephash.html): Hash any object based on their content.\n- [Delta](https://zepworks.com/deepdiff/current/delta.html): Store the difference of objects and apply them to other objects.\n- [Extract](https://zepworks.com/deepdiff/current/extract.html): Extract an item from a nested Python object using its path.\n- [commandline](https://zepworks.com/deepdiff/current/commandline.html): Use DeepDiff from commandline.\n\nTested on Python 3.8+ and PyPy3.\n\n- **[Documentation](https://zepworks.com/deepdiff/8.2.0/)**\n\n## What is new?\n\nPlease check the [ChangeLog](CHANGELOG.md) file for the detailed information.\n\nDeepDiff 8-2-0\n\n- Small optimizations so we don't load functions that are not needed\n- Updated the minimum version of Orderly-set \n- Normalize all datetimes into UTC. Assume timezone naive datetimes are UTC. \n\nDeepDiff 8-1-0\n\n- Removing deprecated lines from setup.py\n- Added `prefix` option to `pretty()`\n- Fixes hashing of numpy boolean values.\n- Fixes __slots__ comparison when the attribute doesn't exist.\n- Relaxing orderly-set reqs\n- Added Python 3.13 support\n- Only lower if clean_key is instance of str #504\n- Fixes issue where the key deep_distance is not returned when both compared items are equal #510\n- Fixes exclude_paths fails to work in certain cases\n- exclude_paths fails to work #509\n- Fixes to_json() method chokes on standard json.dumps() kwargs such as sort_keys\n- to_dict() method chokes on standard json.dumps() kwargs  #490\n- Fixes accessing the affected_root_keys property on the diff object returned by DeepDiff fails when one of the dicts is empty\n- Fixes accessing the affected_root_keys property on the diff object returned by DeepDiff fails when one of the dicts is empty #508\n\n\n## Installation\n\n### Install from PyPi:\n\n`pip install deepdiff`\n\nIf you want to use DeepDiff from commandline:\n\n`pip install \"deepdiff[cli]\"`\n\nIf you want to improve the performance of DeepDiff with certain functionalities such as improved json serialization:\n\n`pip install \"deepdiff[optimize]\"`\n\nInstall optional packages:\n- [yaml](https://pypi.org/project/PyYAML/)\n- [tomli](https://pypi.org/project/tomli/) (python 3.10 and older) and [tomli-w](https://pypi.org/project/tomli-w/) for writing\n- [clevercsv](https://pypi.org/project/clevercsv/) for more rubust CSV parsing\n- [orjson](https://pypi.org/project/orjson/) for speed and memory optimized parsing\n- [pydantic](https://pypi.org/project/pydantic/)\n\n\n# Documentation\n\n<https://zepworks.com/deepdiff/current/>\n\n### A message from Sep, the creator of DeepDiff\n\n> 👋 Hi there,\n>\n> Thank you for using DeepDiff!\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-027ca084-b708-4e54-9953-f182a326fd05-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed/deepdiff && cat /testbed/deepdiff/delta.py | head -200"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-027ca084-b708-4e54-9953-f182a326fd05-1",
+            "content": "code\n                                )\n                            )\n                    result['_iterable_opcodes'] = _iterable_opcodes\n                return result\n\n\n        self._reversed_diff = None\n\n        if verify_symmetry is not None:\n            logger.warning(\n                \"DeepDiff Deprecation: use bidirectional instead of verify_symmetry parameter.\"\n            )\n            bidirectional = verify_symmetry\n\n        self.bidirectional = bidirectional\n        if bidirectional:\n            self.always_include_values = True  # We need to include the values in bidirectional deltas\n        else:\n            self.always_include_values = always_include_values\n\n        if diff is not None:\n            if isinstance(diff, DeepDiff):\n                self.diff = diff._to_delta_dict(directed=not bidirectional, always_include_values=self.always_include_values)\n            elif isinstance(diff, Mapping):\n                self.diff = diff\n            elif isinstance(diff, strings):\n                self.diff = _deserializer(diff, safe_to_import=safe_to_import)\n        elif delta_path:\n            with open(delta_path, 'rb') as the_file:\n                content = the_file.read()\n            self.diff = _deserializer(content, safe_to_import=safe_to_import)\n        elif delta_diff:\n            self.diff = delta_diff\n        elif delta_file:\n            try:\n                content = delta_file.read()\n            except UnicodeDecodeError as e:\n                raise ValueError(BINIARY_MODE_NEEDED_MSG.format(e)) from None\n            self.diff = _deserializer(content, safe_to_import=safe_to_import)\n        elif flat_dict_list:\n            # Use copy to preserve original value of flat_dict_list in calling module\n            self.diff = self._from_flat_dicts(copy.deepcopy(flat_dict_list))\n        elif flat_rows_list:\n            self.diff = self._from_flat_rows(copy.deepcopy(flat_rows_list))\n        else:\n            raise ValueError(DELTA_AT_LEAST_ONE_ARG_NEEDED)\n\n        self.mutate = mutate\n        self.raise_errors = raise_errors\n        self.log_errors = log_errors\n        self._numpy_paths = self.diff.get('_numpy_paths', False)\n        # When we create the delta from a list of flat dictionaries, details such as iterable_compare_func_was_used get lost.\n        # That's why we allow iterable_compare_func_was_used to be explicitly set.\n        self._iterable_compare_func_was_used = self.diff.get('_iterable_compare_func_was_used', iterable_compare_func_was_used)\n        self.serializer = serializer\n        self.deserializer = deserializer\n        self.force = force\n        if force:\n            self.get_nested_obj = _get_nested_obj_and_force\n        else:\n            self.get_nested_obj = _get_nested_obj\n        self.reset()\n\n    def __repr__(self):\n        return \"<Delta: {}>\".format(short_repr(self.diff, max_length=100))\n\n    def reset(self):\n        self.post_process_paths_to_convert = dict_()\n\n    def __add__(self, other):\n        if isinstance(other, numbers) and self._numpy_paths:\n            raise DeltaNumpyOperatorOverrideError(DELTA_NUMPY_OPERATOR_OVERRIDE_MSG)\n        if self.mutate:\n            self.root = other\n        else:\n            self.root = deepcopy(other)\n        self._do_pre_process()\n        self._do_values_changed()\n        self._do_set_item_added()\n        self._do_set_item_removed()\n        self._do_type_changes()\n        # NOTE: the remove iterable action needs to happen BEFORE\n        # all the other iterables to match the reverse of order of operations in DeepDiff\n        self._do_iterable_opcodes()\n        self._do_iterable_item_removed()\n        self._do_iterable_item_added()\n        self._do_ignore_order()\n        self._do_dictionary_item_added()\n        self._do_dictionary_item_removed()\n        self._do_attribute_added()\n        self._do_attribute_removed()\n        self._do_post_process()\n\n        other = self.root\n        # removing the reference to other\n        del self.root\n        self.reset()\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-060773a6-456f-46ea-b558-17ef2588acdc-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "rg -n \"dumps|loads|deserializer|_iterable_opcodes|Opcode|custom_serializer|serializer\" /testbed/deepdiff --type py | head -100"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-060773a6-456f-46ea-b558-17ef2588acdc-2",
+            "content": "bash: line 1: rg: command not found\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-0d015a11-b019-45d2-8523-336e10b72141-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "grep -n \"dumps\\|loads\\|deserializer\\|_iterable_opcodes\\|Opcode\\|serializer\" /testbed/deepdiff/*.py | head -150"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-0d015a11-b019-45d2-8523-336e10b72141-3",
+            "content": "1:                    result['_iterable_opcodes'][path_str] = []\n/testbed/deepdiff/delta.py:1022:                result['_iterable_opcodes'][path_str].append(\n/testbed/deepdiff/delta.py:1023:                    Opcode(\n/testbed/deepdiff/delta.py:1066:            dump = Delta(DeepDiff(t1, t2)).dumps()\n/testbed/deepdiff/delta.py:1132:            if action == '_iterable_opcodes':\n/testbed/deepdiff/delta.py:1133:                result.extend(self._flatten_iterable_opcodes(_parse_path=_parse_path))\n/testbed/deepdiff/diff.py:30:                             PydanticBaseModel, Opcode, SetOrdered)\n/testbed/deepdiff/diff.py:316:        self._iterable_opcodes = {}\n/testbed/deepdiff/diff.py:855:                    self._iterable_opcodes[level.path(force=FORCE_DEFAULT)] = opcodes_with_values\n/testbed/deepdiff/diff.py:968:                opcodes_with_values.append(Opcode(\n/testbed/deepdiff/diff.py:975:            opcodes_with_values.append(Opcode(\n/testbed/deepdiff/helper.py:753:class OpcodeTag(EnumBase):\n/testbed/deepdiff/helper.py:761:class Opcode(NamedTuple):\n/testbed/deepdiff/helper.py:794:    OpcodeTag.insert: FlatDataAction.iterable_items_inserted,\n/testbed/deepdiff/helper.py:795:    OpcodeTag.delete: FlatDataAction.iterable_items_deleted,\n/testbed/deepdiff/helper.py:796:    OpcodeTag.replace: FlatDataAction.iterable_items_replaced,\n/testbed/deepdiff/helper.py:797:    OpcodeTag.equal: FlatDataAction.iterable_items_equal,\n/testbed/deepdiff/model.py:150:    def _from_tree_default(self, tree, report_type, ignore_if_in_iterable_opcodes=False):\n/testbed/deepdiff/model.py:156:                    ignore_if_in_iterable_opcodes\n/testbed/deepdiff/model.py:158:                    and change.up.path(force=FORCE_DEFAULT) in self[\"_iterable_opcodes\"]\n/testbed/deepdiff/model.py:293:    def __init__(self, tree_results=None, ignore_order=None, always_include_values=False, _iterable_opcodes=None):\n/testbed/deepdiff/model.py:311:            \"_iterable_opcodes\": _iterable_opcodes or {},\n/testbed/deepdiff/model.py:333:            self._from_tree_default(tree, 'iterable_item_added', ignore_if_in_iterable_opcodes=True)\n/testbed/deepdiff/model.py:334:            self._from_tree_default(tree, 'iterable_item_removed', ignore_if_in_iterable_opcodes=True)\n/testbed/deepdiff/model.py:429:                    change.up.path(force=FORCE_DEFAULT) not in self[\"_iterable_opcodes\"]\n/testbed/deepdiff/serialization.py:27:    Opcode,\n/testbed/deepdiff/serialization.py:83:    'deepdiff.helper.Opcode',\n/testbed/deepdiff/serialization.py:164:        If you have a certain object type that the json serializer can not serialize it, please pass the appropriate type\n/testbed/deepdiff/serialization.py:172:        kwargs: Any other kwargs you pass will be passed on to Python's json.dumps()\n/testbed/deepdiff/serialization.py:194:        return json_dumps(\n/testbed/deepdiff/serialization.py:242:            _iterable_opcodes = {}\n/testbed/deepdiff/serialization.py:243:            for path, op_codes in self._iterable_opcodes.items():\n/testbed/deepdiff/serialization.py:244:                _iterable_opcodes[path] = []\n/testbed/deepdiff/serialization.py:246:                    new_op_code = Opcode(\n/testbed/deepdiff/serialization.py:254:                    _iterable_opcodes[path].append(new_op_code)\n/testbed/deepdiff/serialization.py:256:            _iterable_opcodes = self._iterable_opcodes\n/testbed/deepdiff/serialization.py:262:            _iterable_opcodes=_iterable_opcodes,\n/testbed/deepdiff/serialization.py:464:            content = json_loads(the_file.read())\n/testbed/deepdiff/serialization.py:538:            content = json_dumps(content)\n/testbed/deepdiff/serialization.py:643:def json_dumps(item, default_mapping=None, force_use_builtin_json: bool=False, **kwargs):\n/testbed/deepdiff/serialization.py:663:        return orjson.dumps(\n/testbed/deepdiff/serialization.py:668:        return json.dumps(\n/testbed/deepdiff/serialization.py:674:json_loads = partial(json.loads, cls=JSONDecoder)\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-a22c0e23-d77c-4801-926e-22e0aab7669e-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "grep -n \"def dumps\\|def loads\\|def dump\\|def load\\|pickle_dump\\|pickle_load\\|_deserializer\\|_serializer\\|def pickle\" /testbed/deepdiff/*.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-a22c0e23-d77c-4801-926e-22e0aab7669e-4",
+            "content": "/testbed/deepdiff/delta.py:8:from deepdiff.serialization import pickle_load, pickle_dump\n/testbed/deepdiff/delta.py:78:        deserializer: Callable=pickle_load,\n/testbed/deepdiff/delta.py:83:        serializer: Callable=pickle_dump,\n/testbed/deepdiff/delta.py:92:            _deserializer = deserializer\n/testbed/deepdiff/delta.py:94:            def _deserializer(obj, safe_to_import=None):\n/testbed/deepdiff/delta.py:130:                self.diff = _deserializer(diff, safe_to_import=safe_to_import)\n/testbed/deepdiff/delta.py:134:            self.diff = _deserializer(content, safe_to_import=safe_to_import)\n/testbed/deepdiff/delta.py:142:            self.diff = _deserializer(content, safe_to_import=safe_to_import)\n/testbed/deepdiff/delta.py:858:    def dump(self, file):\n/testbed/deepdiff/delta.py:867:        param_names_of_serializer = set(self.serializer.__code__.co_varnames)\n/testbed/deepdiff/delta.py:868:        if 'file_obj' in param_names_of_serializer:\n/testbed/deepdiff/delta.py:873:    def dumps(self):\n/testbed/deepdiff/lfucache.py:173:    def dump_cache(self):\n/testbed/deepdiff/serialization.py:351:def pickle_dump(obj, file_obj=None, protocol=4):\n/testbed/deepdiff/serialization.py:353:    **pickle_dump**\n/testbed/deepdiff/serialization.py:374:def pickle_load(content=None, file_obj=None, safe_to_import=None):\n/testbed/deepdiff/serialization.py:376:    **pickle_load**\n/testbed/deepdiff/serialization.py:403:        raise ValueError('Please either pass the content or the file_obj to pickle_load.') \n/testbed/deepdiff/serialization.py:455:def load_path_content(path, file_type=None):\n/testbed/deepdiff/serialization.py:485:            content = pickle_load(content)\n/testbed/deepdiff/serialization.py:556:            content = pickle_dump(content, file_obj=the_file)\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-263daed8-b0b6-4b3e-8ade-c640da46d08b-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '1,160p' /testbed/deepdiff/delta.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-263daed8-b0b6-4b3e-8ade-c640da46d08b-5",
+            "content": "\n        delta_path: Optional[str]=None,\n        delta_file: Optional[IO]=None,\n        delta_diff: Optional[dict]=None,\n        flat_dict_list: Optional[List[Dict]]=None,\n        flat_rows_list: Optional[List[FlatDeltaRow]]=None,\n        deserializer: Callable=pickle_load,\n        log_errors: bool=True,\n        mutate: bool=False,\n        raise_errors: bool=False,\n        safe_to_import: Optional[Set[str]]=None,\n        serializer: Callable=pickle_dump,\n        verify_symmetry: Optional[bool]=None,\n        bidirectional: bool=False,\n        always_include_values: bool=False,\n        iterable_compare_func_was_used: Optional[bool]=None,\n        force: bool=False,\n    ):\n        # for pickle deserializer:\n        if hasattr(deserializer, '__code__') and 'safe_to_import' in set(deserializer.__code__.co_varnames):\n            _deserializer = deserializer\n        else:\n            def _deserializer(obj, safe_to_import=None):\n                result = deserializer(obj)\n                if result.get('_iterable_opcodes'):\n                    _iterable_opcodes = {}\n                    for path, op_codes in result['_iterable_opcodes'].items():\n                        _iterable_opcodes[path] = []\n                        for op_code in op_codes:\n                            _iterable_opcodes[path].append(\n                                Opcode(\n                                    **op_code\n                                )\n                            )\n                    result['_iterable_opcodes'] = _iterable_opcodes\n                return result\n\n\n        self._reversed_diff = None\n\n        if verify_symmetry is not None:\n            logger.warning(\n                \"DeepDiff Deprecation: use bidirectional instead of verify_symmetry parameter.\"\n            )\n            bidirectional = verify_symmetry\n\n        self.bidirectional = bidirectional\n        if bidirectional:\n            self.always_include_values = True  # We need to include the values in bidirectional deltas\n        else:\n            self.always_include_values = always_include_values\n\n        if diff is not None:\n            if isinstance(diff, DeepDiff):\n                self.diff = diff._to_delta_dict(directed=not bidirectional, always_include_values=self.always_include_values)\n            elif isinstance(diff, Mapping):\n                self.diff = diff\n            elif isinstance(diff, strings):\n                self.diff = _deserializer(diff, safe_to_import=safe_to_import)\n        elif delta_path:\n            with open(delta_path, 'rb') as the_file:\n                content = the_file.read()\n            self.diff = _deserializer(content, safe_to_import=safe_to_import)\n        elif delta_diff:\n            self.diff = delta_diff\n        elif delta_file:\n            try:\n                content = delta_file.read()\n            except UnicodeDecodeError as e:\n                raise ValueError(BINIARY_MODE_NEEDED_MSG.format(e)) from None\n            self.diff = _deserializer(content, safe_to_import=safe_to_import)\n        elif flat_dict_list:\n            # Use copy to preserve original value of flat_dict_list in calling module\n            self.diff = self._from_flat_dicts(copy.deepcopy(flat_dict_list))\n        elif flat_rows_list:\n            self.diff = self._from_flat_rows(copy.deepcopy(flat_rows_list))\n        else:\n            raise ValueError(DELTA_AT_LEAST_ONE_ARG_NEEDED)\n\n        self.mutate = mutate\n        self.raise_errors = raise_errors\n        self.log_errors = log_errors\n        self._numpy_paths = self.diff.get('_numpy_paths', False)\n        # When we create the delta from a list of flat dictionaries, details such as iterable_compare_func_was_used get lost.\n        # That's why we allow iterable_compare_func_was_used to be explicitly set.\n        self._iterable_compare_func_was_used = self.diff.get('_iterable_compare_func_was_used', iterable_compare_func_was_used)\n        self.serializer = serializer\n        self.deserializer = deserializer\n        self.force = force\n"
+          }
+        ]
+      }
+    }
+  ]
+}

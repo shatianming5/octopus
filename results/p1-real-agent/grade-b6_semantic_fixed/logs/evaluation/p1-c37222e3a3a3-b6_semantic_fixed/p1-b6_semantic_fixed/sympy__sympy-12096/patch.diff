@@ -1,0 +1,23 @@
+diff --git a/sympy/core/function.py b/sympy/core/function.py
+index 1b8005e1d..f59eb7ae4 100644
+--- a/sympy/core/function.py
++++ b/sympy/core/function.py
+@@ -498,6 +498,18 @@ def is_commutative(self):
+             return False
+ 
+     def _eval_evalf(self, prec):
++    result = self._imp_(**self.args._evalf_dict(prec))
++    if isinstance(result, Basic):
++        return result.evalf(prec)
++    return result
++    result = self._imp_(**self.args._evalf_dict(prec))
++    if isinstance(result, Basic):
++        return result.evalf(prec)
++    return result
++    result = self._imp_(**self.args._evalf_dict(prec))
++    if isinstance(result, Basic):
++        return result.evalf(prec)
++    return result
+         # Lookup mpmath function based on name
+         fname = self.func.__name__
+         try:

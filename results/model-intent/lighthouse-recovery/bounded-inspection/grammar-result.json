@@ -1,0 +1,57 @@
+{
+  "cases": [
+    {
+      "accepted": true,
+      "count": 1,
+      "expected": true,
+      "start": 1
+    },
+    {
+      "accepted": true,
+      "count": 200,
+      "expected": true,
+      "start": 1
+    },
+    {
+      "accepted": true,
+      "count": 200,
+      "expected": true,
+      "start": 201
+    },
+    {
+      "accepted": false,
+      "count": 200,
+      "expected": false,
+      "start": 0
+    },
+    {
+      "accepted": false,
+      "count": 0,
+      "expected": false,
+      "start": 1
+    },
+    {
+      "accepted": false,
+      "count": 201,
+      "expected": false,
+      "start": 1
+    },
+    {
+      "accepted": false,
+      "count": 1,
+      "expected": false,
+      "start": true
+    },
+    {
+      "accepted": false,
+      "count": true,
+      "expected": false,
+      "start": 1
+    }
+  ],
+  "gpu_model_requests": 0,
+  "method": "actual xgrammar compiler and matcher, not schema dictionary inspection",
+  "schema_json": "{\"type\": \"object\", \"properties\": {\"reasoning\": {\"type\": \"string\"}, \"action\": {\"oneOf\": [{\"type\": \"object\", \"properties\": {\"action\": {\"const\": \"list\"}, \"path\": {\"type\": \"string\"}}, \"required\": [\"action\", \"path\"], \"additionalProperties\": false}, {\"type\": \"object\", \"properties\": {\"action\": {\"const\": \"search\"}, \"path\": {\"type\": \"string\"}, \"pattern\": {\"type\": \"string\"}}, \"required\": [\"action\", \"path\", \"pattern\"], \"additionalProperties\": false}, {\"type\": \"object\", \"properties\": {\"action\": {\"const\": \"read\"}, \"path\": {\"type\": \"string\"}, \"start\": {\"type\": \"integer\", \"minimum\": 1}, \"count\": {\"type\": \"integer\", \"minimum\": 1, \"maximum\": 200}}, \"required\": [\"action\", \"path\", \"start\", \"count\"], \"additionalProperties\": false}, {\"type\": \"object\", \"properties\": {\"action\": {\"const\": \"edit\"}, \"path\": {\"type\": \"string\"}, \"old\": {\"type\": \"string\"}, \"new\": {\"type\": \"string\"}}, \"required\": [\"action\", \"path\", \"old\", \"new\"], \"additionalProperties\": false}, {\"type\": \"object\", \"properties\": {\"action\": {\"const\": \"write\"}, \"path\": {\"type\": \"string\"}, \"content\": {\"type\": \"string\"}}, \"required\": [\"action\", \"path\", \"content\"], \"additionalProperties\": false}, {\"type\": \"object\", \"properties\": {\"action\": {\"const\": \"test\"}, \"args\": {\"type\": \"array\", \"items\": {\"type\": \"string\"}}}, \"required\": [\"action\", \"args\"], \"additionalProperties\": false}, {\"type\": \"object\", \"properties\": {\"action\": {\"const\": \"done\"}}, \"required\": [\"action\"], \"additionalProperties\": false}]}}, \"required\": [\"reasoning\", \"action\"], \"additionalProperties\": false}",
+  "status": "passed",
+  "xgrammar_version": "0.2.3"
+}

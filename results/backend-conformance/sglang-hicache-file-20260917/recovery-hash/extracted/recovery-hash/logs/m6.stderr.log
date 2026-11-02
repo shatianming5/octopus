@@ -1,0 +1,42 @@
+
+Multi-thread loading shards:   0% Completed | 0/4 [00:00<?, ?it/s]
+Multi-thread loading shards:  25% Completed | 1/4 [00:00<00:01,  1.93it/s]
+Multi-thread loading shards:  50% Completed | 2/4 [00:01<00:01,  1.64it/s]
+Multi-thread loading shards:  75% Completed | 3/4 [00:01<00:00,  1.65it/s]
+Multi-thread loading shards: 100% Completed | 4/4 [00:02<00:00,  2.17it/s]
+Multi-thread loading shards: 100% Completed | 4/4 [00:02<00:00,  1.97it/s]
+
+Multi-thread loading shards:   0% Completed | 0/4 [00:00<?, ?it/s]
+Multi-thread loading shards:  25% Completed | 1/4 [00:00<00:01,  1.93it/s]
+Multi-thread loading shards:  50% Completed | 2/4 [00:01<00:01,  1.64it/s]
+Multi-thread loading shards:  75% Completed | 3/4 [00:01<00:00,  1.67it/s]
+Multi-thread loading shards: 100% Completed | 4/4 [00:02<00:00,  2.19it/s]
+Multi-thread loading shards: 100% Completed | 4/4 [00:02<00:00,  1.99it/s]
+
+Multi-thread loading shards:   0% Completed | 0/4 [00:00<?, ?it/s]
+Multi-thread loading shards:  25% Completed | 1/4 [00:00<00:01,  1.95it/s]
+Multi-thread loading shards:  50% Completed | 2/4 [00:01<00:01,  1.64it/s]
+Multi-thread loading shards:  75% Completed | 3/4 [00:01<00:00,  1.67it/s]
+Multi-thread loading shards: 100% Completed | 4/4 [00:02<00:00,  2.19it/s]
+Multi-thread loading shards: 100% Completed | 4/4 [00:02<00:00,  1.99it/s]
+[2026-09-18 06:33:09] Native placement prefetch IO failed
+Traceback (most recent call last):
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/managers/cache_controller.py", line 1151, in prefetch_io_aux_func
+    self._page_transfer(operation)
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/mem_cache/hybrid_cache/hybrid_cache_controller.py", line 635, in _page_transfer
+    kv_completed_pages = super()._page_transfer(operation)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/managers/cache_controller.py", line 1081, in _page_transfer
+    hit_pages = self._page_transfer_kv_batch(
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/managers/cache_controller.py", line 1118, in _page_transfer_kv_batch
+    kv_hits = self.page_get_func(
+              ^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/managers/cache_controller.py", line 1037, in _generic_page_get
+    page_data = self.storage_backend.batch_get(hash_values, dummy_page_dst)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/mem_cache/hicache_storage.py", line 503, in batch_get
+    self.get(key, target_location)
+  File "/home/user/octopus-sglang-hicache-138-20260917/recovery-tokenizer/sglang-source/python/sglang/srt/mem_cache/hicache_storage.py", line 485, in get
+    raise IOError(f"Short read for {suffixed}")
+OSError: Short read for cd2c0358ad06e7857c75cf44310ac5393d48c6674c3fc757e7c152fa40143260_octopus-20fe1cfdb9975e120cb0cccfac81d39eeaeec125b8880cd27dbeae649ac24df6_0_1

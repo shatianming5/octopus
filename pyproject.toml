@@ -1,0 +1,43 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "octopus-runtime"
+version = "0.1.0"
+description = "Fork/join agent runtime with attention-only KV reads between threads, and outcome-reward RL over the fork tree"
+readme = "README.md"
+requires-python = ">=3.10,<3.15"
+dependencies = [
+  "jinja2>=3.1",
+  "tokenizers>=0.22,<0.24",  # core.clip_results (the answer reserve); 0.22.2 is sglang 0.5.19's pin, harbor venvs 0.23.x
+]
+
+[project.optional-dependencies]
+sglang = [
+  "sglang==0.5.19; sys_platform == 'linux' and platform_machine == 'x86_64'",
+]
+tiny-lora = [
+  "transformers>=5.16,<6",
+  "peft>=0.15,<1",
+  "accelerate>=1.2,<2",
+]
+test = [
+  "pytest>=8.0",
+  "fastapi",
+  "tiktoken",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["octopus"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+  "gpu: requires a CUDA GPU and the configured model",
+]
+
+[tool.uv]
+conflicts = [
+  [{ extra = "sglang" }, { extra = "tiny-lora" }],
+]

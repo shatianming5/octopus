@@ -1,0 +1,20 @@
+{
+  "schema": "octopus-lighthouse-bounded-inspection-counterfactual-v1",
+  "before_model_outputs": true,
+  "claim": "Repair the concrete inspection-contract failures exposed by the improved-policy base trajectory, then test actual same-task quality.",
+  "reference_freeze": "../base-improved-policy/freeze.json",
+  "task": "GoogleChrome__lighthouse-10176",
+  "protocol_delta": {"inspection_contract": "bounded_v1"},
+  "read_delta": "Model explicitly chooses 1-based start and count1..200; actual xgrammar enforces scalar bounds. Tool validates without clamping and returns that exact window. Legacy start/end remains available.",
+  "search_bug_fix": "A nonexistent path raises explicit FileNotFoundError instead of an empty successful search. Existing paths with no matches still return an empty successful result.",
+  "other_conditions": "Same unmerged base model, seed17,12actions,512tokens per output, raw reads, single-call deliberation, failure memory, strict edit semantics and original official evaluator.",
+  "model_episodes_max": 1,
+  "phase_gpu_seconds_max": 1200,
+  "training_runs_added": 0,
+  "action_rewriting": false,
+  "pre_output_validation": "54 targeted tests passed; real xgrammar compiler/matcher accepted3legal and rejected5illegal read arguments on CPU, without model inference.",
+  "metrics": ["read_argument_failures", "missing_path_errors", "successful_nonempty_inspection", "distinct_proposals", "failed_external_repeats", "patch_bytes", "official_resolved", "native_cost"],
+  "quality_gate": "Original official resolved=true; valid inspection alone is not quality success.",
+  "stop": "One terminal episode or real execution/budget blocker; no outcome-driven retry or retuning. No downstream multibranch/formal before quality.",
+  "authorization_context": "User requested continued implementation toward the actual blocker, not only PR merge or another negative summary. This generic tool-contract repair follows measured real failures and adds no task-specific hints or chosen patch."
+}

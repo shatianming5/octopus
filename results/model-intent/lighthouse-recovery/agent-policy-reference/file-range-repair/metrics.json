@@ -1,0 +1,227 @@
+{
+  "actions": {
+    "action_types": {
+      "invalid_decision": 11,
+      "view": 39
+    },
+    "canonical_action_records": 39,
+    "controller_actions": 50,
+    "controller_rejections": 0,
+    "edits": 0,
+    "failed_actions": 14,
+    "finish": 0,
+    "physical_tool_actions": 39,
+    "raw_model_requests": 50,
+    "successful_actions": 36,
+    "tests": 0,
+    "unique_canonical_actions": 13
+  },
+  "active_gpu_sample": {
+    "device_index": 0,
+    "device_uuid": "GPU-f0e105ce-3965-e444-e4ae-0b8511bed250",
+    "engine_loaded_event_observed": true,
+    "memory_used_mib": 43170,
+    "note": "Sample triggered after the engine-init log event; zero instantaneous utilization was between decode steps while model memory and power were active.",
+    "power_watts": 216.81,
+    "relay_process_observed": true,
+    "schema": "octopus-file-range-quality-active-gpu-sample-v1",
+    "utilization_percent": 0
+  },
+  "budget_seconds": {
+    "gpu_remaining": 1058.1685096930014,
+    "gpu_used": 111.8314903069986,
+    "official_grading_remaining": 1790.675306339981,
+    "official_grading_used": 9.324693660018966,
+    "phase_gpu_remaining": 1088.1685096930014
+  },
+  "json": {
+    "errors": [
+      {
+        "count": 11,
+        "error": "view_range requires a positive start and at most200lines",
+        "error_type": "invalid_function_call"
+      },
+      {
+        "count": 2,
+        "error": "ValueError: view_range is only valid for a file, not a directory; omit it to list directory paths",
+        "error_type": "tool_error"
+      },
+      {
+        "count": 1,
+        "error": "ValueError: view_range [80, 100] exceeds the file extent of 91 lines; start and finite end must be within the file (end=-1 requests the bounded remainder)",
+        "error_type": "view_range_out_of_bounds"
+      }
+    ],
+    "invalid_or_truncated_json_outputs": 0,
+    "runtime_engine_structured_outputs": "xgrammar with disable_any_whitespace=true",
+    "runtime_request_schema_metadata_available": false,
+    "schema_sha256": "a97f1e16cb58364edd1f1558f4c21564893c955243a54e253c02b5726af2a4de",
+    "semantic_mapper_acceptances": 39,
+    "semantic_mapper_rejections": 11,
+    "structurally_complete_function_objects": 50,
+    "valid_json_outputs": 50
+  },
+  "native": {
+    "actual_decode_tokens": 2223,
+    "actual_prefill_tokens": 218938,
+    "adopted_prefix_tokens": 71344,
+    "allocation_rejections": 0,
+    "cache_evictions": 0,
+    "capsule_tokens": 18565,
+    "max_actual_decode_tokens": 47,
+    "max_actual_prefill_tokens": 5462,
+    "max_prompt_tokens": 6918,
+    "max_simultaneous_scheduler_requests": 1,
+    "preemptions": 0,
+    "request_records": 50,
+    "selected_parent_tokens": 70609,
+    "terminal_pool": {
+      "active_blocks": 0,
+      "cold_free_blocks": 17983,
+      "free_blocks": 31790,
+      "request_owned_blocks": 0,
+      "retention_only_blocks": 0,
+      "shared_request_retention_blocks": 0,
+      "total_blocks": 31790,
+      "warm_cached_blocks": 13807
+    }
+  },
+  "quality": {
+    "decision": "QUALITY_FAIL",
+    "legitimate_product_patch": false,
+    "official_fail_to_pass": {
+      "lighthouse-core/test/audits/dobetterweb/js-libraries-test.js": "FAILED"
+    },
+    "official_resolved": false,
+    "patch_bytes": 0,
+    "stop_reason": "action_limit"
+  },
+  "range_contract": {
+    "boundary_action": {
+      "action": "view",
+      "count": 21,
+      "path": "lighthouse-core/lib/stack-collector.js",
+      "start": 80,
+      "view_range": [
+        80,
+        100
+      ]
+    },
+    "boundary_action_index": 3,
+    "boundary_error": "ValueError: view_range [80, 100] exceeds the file extent of 91 lines; start and finite end must be within the file (end=-1 requests the bounded remainder)",
+    "boundary_error_type": "view_range_out_of_bounds",
+    "boundary_exercised": true,
+    "boundary_failure_revision": 0,
+    "boundary_failure_scope": "resource",
+    "boundary_total_lines": 91,
+    "decisive_trace": "The corrected explicit-range boundary rejected [80,100] against total_lines=91 with a resource-scoped certificate. The model then used only in-bounds views, but repeated [1,20] 27 times and never edited, tested or finished.",
+    "distinct_nonempty_evidence": 10,
+    "dominant_successful_view": {
+      "action": "view",
+      "count": 20,
+      "path": "lighthouse-core/lib/stack-collector.js",
+      "start": 1,
+      "view_range": [
+        1,
+        20
+      ]
+    },
+    "dominant_successful_view_count": 27,
+    "empty_successful_views": 0,
+    "maximum_journal_deduplication": 32,
+    "maximum_journal_dropped": 0,
+    "repeated_nonempty_evidence_excess": 26,
+    "successful_views": 36
+  },
+  "schema": "octopus-file-range-quality-metrics-v1",
+  "state": {
+    "active_failures": [
+      {
+        "action": {
+          "action": "view",
+          "count": 20,
+          "path": ".",
+          "start": 1,
+          "view_range": [
+            1,
+            20
+          ]
+        },
+        "action_hash": "27821c955e8ff7cc1a15ea82708ca886caa71bc77e8d13ed86ce25ab48e38747",
+        "affected_resource": ".",
+        "error_type": "tool_error",
+        "failure_revision": null,
+        "failure_scope": "permanent",
+        "success": false
+      },
+      {
+        "action": {
+          "action": "view",
+          "count": 100,
+          "path": ".",
+          "start": 1,
+          "view_range": [
+            1,
+            100
+          ]
+        },
+        "action_hash": "1a7293e6295c290eb7ce8b6506969eebdcca59c749c09f8742acfc1c3adccdf3",
+        "affected_resource": ".",
+        "error_type": "tool_error",
+        "failure_revision": null,
+        "failure_scope": "permanent",
+        "success": false
+      },
+      {
+        "action": {
+          "action": "view",
+          "count": 21,
+          "path": "lighthouse-core/lib/stack-collector.js",
+          "start": 80,
+          "view_range": [
+            80,
+            100
+          ]
+        },
+        "action_hash": "93fea9aa1af213679f3891defae47f953c0623a5a00356f4c86082f1bd741c1f",
+        "affected_resource": "lighthouse-core/lib/stack-collector.js",
+        "error_type": "view_range_out_of_bounds",
+        "failure_revision": 0,
+        "failure_scope": "resource",
+        "success": false
+      }
+    ],
+    "path_discovery_required": false,
+    "resource_revisions": {},
+    "verification_required": false,
+    "workspace_revision": 0
+  },
+  "timing_seconds": {
+    "child_process_wall": 139.1615177160129,
+    "gpu_engine_scope": 111.8314903069986,
+    "official_grading": 9.324693660018966,
+    "runner_wall": 153,
+    "solver_e2e": 113.96240204398055,
+    "solver_parent": 139.38511722511612
+  },
+  "validation": {
+    "actual_first_prompt_ids_sha256": "51f70abb751f29dbdf15b32584ce0e2d39ad946be65c0b16548376eb0222a3e5",
+    "actual_first_prompt_tokens": 1580,
+    "bounds_valid": true,
+    "capsule_present_in_every_context": true,
+    "difference_tokens": 0,
+    "feedback_records_complete": true,
+    "initial_empty_capsule_tokens": 36,
+    "limits_valid": true,
+    "matches_fresh_record": true,
+    "record_created_before_inference": true,
+    "recorded_prompt_ids_sha256": "51f70abb751f29dbdf15b32584ce0e2d39ad946be65c0b16548376eb0222a3e5",
+    "recorded_prompt_tokens": 1580,
+    "recorded_schema_sha256": "a97f1e16cb58364edd1f1558f4c21564893c955243a54e253c02b5726af2a4de",
+    "request_schema_exact": null,
+    "request_schema_metadata_available": false,
+    "request_schema_present": null,
+    "request_schema_records": 50,
+    "schema": "octopus-json-function-quality-input-validation-v1"
+  }
+}

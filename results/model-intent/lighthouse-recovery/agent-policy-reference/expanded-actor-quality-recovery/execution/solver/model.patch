@@ -1,0 +1,17 @@
+diff --git a/stack-packs/packs/react.js b/stack-packs/packs/react.js
+index 157add3..ae3e6d1 100644
+--- a/stack-packs/packs/react.js
++++ b/stack-packs/packs/react.js
+@@ -30,6 +30,12 @@ const UIStrings = {
+ 
+ const str_ = i18n.createMessageInstanceIdFn(__filename, UIStrings);
+ 
++// Ensure only non-user-visible descriptions are exposed
++const nonUserVisibleDescriptions = {
++  'user-timings': true,
++  'dom-size': true,
++};
++
+ module.exports = {
+   id: 'react',
+   iconDataURL: reactIcon,

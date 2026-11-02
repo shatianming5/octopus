@@ -1,0 +1,62 @@
+{
+  "schema": "octopus-b7-host-migration-amendment-v1",
+  "scientific_protocol_changed": false,
+  "source_commit": "e8ad69f76dee9f08c571b420e5fd1ec27a11f25a",
+  "failed_start_epoch": {
+    "host": "198.51.100.10:20068",
+    "gpu_uuid": "GPU-c5792743-87d0-80a0-8a3e-876d31e854d9",
+    "selector": "discovery-1024-c2-2501-projected_apc",
+    "status": "invalid_startup",
+    "resource_wall_seconds": 12.247993414988741,
+    "evidence_directory": "results/b7-online-horizon"
+  },
+  "replacement_epoch": {
+    "host": "198.51.100.10:20183",
+    "gpu_index": 2,
+    "gpu_uuid": "GPU-53e85207-9c8d-91f6-ba27-992fff75dc7f",
+    "valid_scientific_selectors": {
+      "discovery": 16,
+      "confirmation_if_selected": 16,
+      "maximum_total": 32
+    }
+  },
+  "authorization": "One scoped scientific replacement of the .68 startup-failed selector on the selected replacement host. Three additional .183 process attempts were invalid task-local infrastructure repairs before valid workload execution; they are preserved and charged, not counted as scientific selectors. No tuning, extra point, model, or seed.",
+  "accounting": {
+    "total_gpu_host_wall_seconds_cap": 10800,
+    "failed_start_child_ledger_seconds": 12.247993414988741,
+    "replacement_instrumentation_child_ledger_seconds": 85.65851533302339,
+    "valid_selector_child_ledger_seconds": 2987.8704828580376,
+    "total_child_ledger_seconds": 3085.7769916060497,
+    "child_ledger_is_all_inclusive_host_wall": false,
+    "combined_outer_driver_seconds_approx": 3616,
+    "outer_timestamp_truncation_allowance_seconds": 5,
+    "conservative_outer_upper_seconds": 3621,
+    "remaining_at_least_seconds": 7179,
+    "exact_execute_loop_elapsed_persisted": false,
+    "definitions": "terminal-summary.json#/accounting",
+    "actual_process_attempts": 20,
+    "valid_scientific_selectors": 16,
+    "invalid_infrastructure_starts": 4,
+    "original_no_retry_envelope_unchanged": false,
+    "scientific_protocol_or_source_changed": false,
+    "actual_run_below_cap": true,
+    "further_gpu_work_authorized": false
+  },
+  "instrumentation_epochs": [
+    {
+      "path": "failed-epochs/relocation-failure",
+      "resource_wall_seconds": 38.438710921036545,
+      "failure": "relocated venv launcher PATH omitted ninja"
+    },
+    {
+      "path": "failed-epochs/cuda-cache-failure",
+      "resource_wall_seconds": 25.16057726298459,
+      "failure": "path-keyed FlashInfer cache attempted JIT with the default incompatible CUDA/GCC toolchain"
+    },
+    {
+      "path": "failed-epochs/cuda-toolchain-failure",
+      "resource_wall_seconds": 22.059227149002254,
+      "failure": "stale CUDA 11.8 build path remained before the CUDA 12.2/GCC11 cache rebuild"
+    }
+  ]
+}

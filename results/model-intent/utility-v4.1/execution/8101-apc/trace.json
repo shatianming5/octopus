@@ -1,0 +1,3931 @@
+{
+  "cohort": "e2e-8101",
+  "decision": "TRACE_COMPLETE",
+  "environment": {
+    "cuda_visible_devices": "GPU-3e940a5a-a24d-b615-dc69-df141ced7af0",
+    "device_name": "NVIDIA GeForce RTX 4090 D",
+    "device_uuid": "3e940a5a-a24d-b615-dc69-df141ced7af0",
+    "effective_engine_config": {
+      "admission_calibration_id": null,
+      "async_scheduling": false,
+      "block_size": 16,
+      "dtype": "torch.bfloat16",
+      "enable_chunked_prefill": true,
+      "enable_prefix_caching": true,
+      "enforce_eager": true,
+      "kv_cache_memory_bytes": 294518784,
+      "max_model_len": 4096,
+      "max_num_batched_tokens": 512,
+      "max_num_seqs": 2,
+      "retention_implementation": "stock-dense-apc-lru",
+      "retention_policy": "apc",
+      "structured_outputs_backend": "xgrammar",
+      "structured_outputs_disable_any_whitespace": true,
+      "upstream_vllm_tag_commit": "2cf0a6915ce544dc493a0990f2ea38d81601128a"
+    },
+    "kv_allocated_capacity_bytes": 294518784,
+    "kv_block_bytes": 917504,
+    "model_id": "Qwen/Qwen2.5-7B-Instruct",
+    "model_revision": null,
+    "semantic_value_cost": {
+      "formula": "W_D(t)=D*t+t*(t+1)/2",
+      "hidden_size": 3584,
+      "units": "analytic normalized prefill-work proxy; not measured FLOPs or seconds"
+    },
+    "tokenizer_revision": null,
+    "vllm_version": "0.28.0"
+  },
+  "input_sha256": "6fde6242737193b267399990a13aaf3f570f9445f4de8d88d11dcd8684a044fa",
+  "merged_weights": {
+    "adapter_sha256": "afbaddcb5387cbd084c58efeb596b0be0091664ebf75445b8bd038d8c63cc4d3",
+    "dtype": "bfloat16",
+    "merge_seconds": 14.19881481397897,
+    "model_path": "merged-qwen-lora",
+    "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "training_runs": 0
+  },
+  "method": "apc",
+  "rows": [
+    {
+      "adapter_cpu_seconds": 0.005799827049486339,
+      "bg_seconds": 0.2670127209275961,
+      "candidate_materialization": {
+        "candidate-0": {
+          "output_token_ids": [
+            785
+          ],
+          "prompt_sha256": "95f44cacfdbcb9411e0ece7a3a174ab8073b2f5d96c2e48c3954602699541f1a"
+        },
+        "candidate-1": {
+          "output_token_ids": [
+            785
+          ],
+          "prompt_sha256": "a84ab2ff7e7f28bc051036cbc81cfbd4d8fcc88cde9b4173d8bd555f373dfd35"
+        }
+      },
+      "continuation_text": "{\"answer\": 23}",
+      "decision_id": "d-37aebaa24fff291d",
+      "dispatch_correct": true,
+      "dispatch_index": 1,
+      "expected_index": 1,
+      "family": "freight_dispatch",
+      "fg_e2e_seconds": 1.3973161519970745,
+      "final_pool": {
+        "active_blocks": 0,
+        "cold_free_blocks": 0,
+        "free_blocks": 320,
+        "request_owned_blocks": 0,
+        "retention_only_blocks": 0,
+        "shared_request_retention_blocks": 0,
+        "total_blocks": 320,
+        "warm_cached_blocks": 320
+      },
+      "goal_index": 0,
+      "hinted_index": 1,
+      "inline_applied": false,
+      "inline_body_matches_hint": true,
+      "metrics": {
+        "candidate-0": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727355.604943887,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "candidate-1": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727355.843088224,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "continuation": {
+          "actual_decode_tokens": 7,
+          "actual_prefill_tokens": 25,
+          "adopted_prefix_tokens": 2048,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": 2048,
+          "consumer_id": "request:apc-d-37aebaa24fff291d-brain-4-9a45dfe4",
+          "enqueued_at": 727356.769338306,
+          "finish_status": "FINISHED_STOPPED",
+          "first_scheduled_at": 727356.772800124,
+          "inherited_tokens": 2048,
+          "last_scheduled_event": [
+            0,
+            2079,
+            2080
+          ],
+          "parent_checkpoint_id": "checkpoint:apc-d-37aebaa24fff291d-brain-2",
+          "preemptions": 0,
+          "prompt_tokens": 2073,
+          "scheduled_ranges": [
+            [
+              2048,
+              2073
+            ],
+            [
+              2073,
+              2074
+            ],
+            [
+              2074,
+              2075
+            ],
+            [
+              2075,
+              2076
+            ],
+            [
+              2076,
+              2077
+            ],
+            [
+              2077,
+              2078
+            ],
+            [
+              2078,
+              2079
+            ],
+            [
+              2079,
+              2080
+            ]
+          ],
+          "selected_parent_tokens": 2049
+        },
+        "normal": {
+          "actual_decode_tokens": 7,
+          "actual_prefill_tokens": 455,
+          "adopted_prefix_tokens": 32,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": 32,
+          "consumer_id": "request:apc-d-37aebaa24fff291d-brain-3-80070b7f",
+          "enqueued_at": 727356.355540883,
+          "finish_status": "FINISHED_STOPPED",
+          "first_scheduled_at": 727356.359314923,
+          "inherited_tokens": 32,
+          "last_scheduled_event": [
+            0,
+            493,
+            494
+          ],
+          "parent_checkpoint_id": "checkpoint:apc-d-37aebaa24fff291d-brain-0",
+          "preemptions": 0,
+          "prompt_tokens": 487,
+          "scheduled_ranges": [
+            [
+              32,
+              487
+            ],
+            [
+              487,
+              488
+            ],
+            [
+              488,
+              489
+            ],
+            [
+              489,
+              490
+            ],
+            [
+              490,
+              491
+            ],
+            [
+              491,
+              492
+            ],
+            [
+              492,
+              493
+            ],
+            [
+              493,
+              494
+            ]
+          ],
+          "selected_parent_tokens": 42
+        },
+        "pressure": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727356.52560906,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            2046,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              511
+            ],
+            [
+              511,
+              1022
+            ],
+            [
+              1022,
+              1534
+            ],
+            [
+              1534,
+              2046
+            ],
+            [
+              2046,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "root": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 41,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727355.552471641,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            0,
+            41
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 41,
+          "scheduled_ranges": [
+            [
+              0,
+              41
+            ]
+          ],
+          "selected_parent_tokens": 0
+        }
+      },
+      "minimum_continuation_prefill": 25,
+      "native_after": [
+        544,
+        2048
+      ],
+      "native_before": [
+        2048,
+        2048
+      ],
+      "normal_complete_seconds": 0.7034110779641196,
+      "normal_ready_before_complete": true,
+      "normal_ready_before_pressure": true,
+      "normal_ready_output_tokens": 6,
+      "normal_ready_seconds": 0.4348665450233966,
+      "normal_text": "{\"dispatch_index\": 1}",
+      "policy_cpu_seconds": 0.005799827049486339,
+      "preference_provider_cpu_seconds": 0.0,
+      "quality_pass": true,
+      "selection_correct": true
+    },
+    {
+      "adapter_cpu_seconds": 0.005748641677200794,
+      "bg_seconds": 0.26381569099612534,
+      "candidate_materialization": {
+        "candidate-0": {
+          "output_token_ids": [
+            785
+          ],
+          "prompt_sha256": "2d1b7ef5140edd448a6a6dc20fee017551ab262117e718da1fb494b90c4969ee"
+        },
+        "candidate-1": {
+          "output_token_ids": [
+            785
+          ],
+          "prompt_sha256": "c2a3799779a1922df3dbc2048018de127e33fd303019495f1aa17a2385e8bba3"
+        }
+      },
+      "continuation_text": "{\"answer\": 231}",
+      "decision_id": "d-d292ef88bd5ebc99",
+      "dispatch_correct": true,
+      "dispatch_index": 0,
+      "expected_index": 0,
+      "family": "grid_monitoring",
+      "fg_e2e_seconds": 1.2811074560740963,
+      "final_pool": {
+        "active_blocks": 0,
+        "cold_free_blocks": 1,
+        "free_blocks": 320,
+        "request_owned_blocks": 0,
+        "retention_only_blocks": 0,
+        "shared_request_retention_blocks": 0,
+        "total_blocks": 320,
+        "warm_cached_blocks": 319
+      },
+      "goal_index": 0,
+      "hinted_index": 0,
+      "inline_applied": false,
+      "inline_body_matches_hint": true,
+      "metrics": {
+        "candidate-0": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727356.968306819,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "candidate-1": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727357.211905295,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "continuation": {
+          "actual_decode_tokens": 8,
+          "actual_prefill_tokens": 1545,
+          "adopted_prefix_tokens": 528,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": 2048,
+          "consumer_id": "request:apc-d-d292ef88bd5ebc99-brain-4-b836ad2b",
+          "enqueued_at": 727357.865462376,
+          "finish_status": "FINISHED_STOPPED",
+          "first_scheduled_at": 727357.866649845,
+          "inherited_tokens": 528,
+          "last_scheduled_event": [
+            0,
+            2080,
+            2081
+          ],
+          "parent_checkpoint_id": "checkpoint:apc-d-d292ef88bd5ebc99-brain-1",
+          "preemptions": 0,
+          "prompt_tokens": 2073,
+          "scheduled_ranges": [
+            [
+              528,
+              1040
+            ],
+            [
+              1040,
+              1552
+            ],
+            [
+              1552,
+              2064
+            ],
+            [
+              2064,
+              2073
+            ],
+            [
+              2073,
+              2074
+            ],
+            [
+              2074,
+              2075
+            ],
+            [
+              2075,
+              2076
+            ],
+            [
+              2076,
+              2077
+            ],
+            [
+              2077,
+              2078
+            ],
+            [
+              2078,
+              2079
+            ],
+            [
+              2079,
+              2080
+            ],
+            [
+              2080,
+              2081
+            ]
+          ],
+          "selected_parent_tokens": 2049
+        },
+        "normal": {
+          "actual_decode_tokens": 7,
+          "actual_prefill_tokens": 463,
+          "adopted_prefix_tokens": 32,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": 32,
+          "consumer_id": "request:apc-d-d292ef88bd5ebc99-brain-3-9fc52b78",
+          "enqueued_at": 727357.435864465,
+          "finish_status": "FINISHED_STOPPED",
+          "first_scheduled_at": 727357.436538511,
+          "inherited_tokens": 32,
+          "last_scheduled_event": [
+            0,
+            501,
+            502
+          ],
+          "parent_checkpoint_id": "checkpoint:apc-d-d292ef88bd5ebc99-brain-0",
+          "preemptions": 0,
+          "prompt_tokens": 495,
+          "scheduled_ranges": [
+            [
+              32,
+              495
+            ],
+            [
+              495,
+              496
+            ],
+            [
+              496,
+              497
+            ],
+            [
+              497,
+              498
+            ],
+            [
+              498,
+              499
+            ],
+            [
+              499,
+              500
+            ],
+            [
+              500,
+              501
+            ],
+            [
+              501,
+              502
+            ]
+          ],
+          "selected_parent_tokens": 42
+        },
+        "pressure": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727357.623682418,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            2046,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              511
+            ],
+            [
+              511,
+              1022
+            ],
+            [
+              1022,
+              1534
+            ],
+            [
+              1534,
+              2046
+            ],
+            [
+              2046,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "root": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 41,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727356.933649265,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            0,
+            41
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 41,
+          "scheduled_ranges": [
+            [
+              0,
+              41
+            ]
+          ],
+          "selected_parent_tokens": 0
+        }
+      },
+      "minimum_continuation_prefill": 25,
+      "native_after": [
+        528,
+        2048
+      ],
+      "native_before": [
+        2048,
+        2048
+      ],
+      "normal_complete_seconds": 0.42988440196495503,
+      "normal_ready_before_complete": true,
+      "normal_ready_before_pressure": true,
+      "normal_ready_output_tokens": 6,
+      "normal_ready_seconds": 0.16476278100162745,
+      "normal_text": "{\"dispatch_index\": 0}",
+      "policy_cpu_seconds": 0.005748641677200794,
+      "preference_provider_cpu_seconds": 0.0,
+      "quality_pass": true,
+      "selection_correct": true
+    },
+    {
+      "adapter_cpu_seconds": 0.004939199308864772,
+      "bg_seconds": 0.2676200660644099,
+      "candidate_materialization": {
+        "candidate-0": {
+          "output_token_ids": [
+            785
+          ],
+          "prompt_sha256": "2aa93b4e544b3a085e0fb9a7aec12096d7226430422f0ec914ae501d30018bbf"
+        },
+        "candidate-1": {
+          "output_token_ids": [
+            785
+          ],
+          "prompt_sha256": "441e0a476d3238c13b43a561f7271f4e4124f0c0cf3afc2fade45e190c0f3736"
+        }
+      },
+      "continuation_text": "{\"answer\": 6}",
+      "decision_id": "d-7c5e297d29bceeaa",
+      "dispatch_correct": true,
+      "dispatch_index": 1,
+      "expected_index": 1,
+      "family": "pharmacy_inventory",
+      "fg_e2e_seconds": 1.08147000905592,
+      "final_pool": {
+        "active_blocks": 0,
+        "cold_free_blocks": 0,
+        "free_blocks": 320,
+        "request_owned_blocks": 0,
+        "retention_only_blocks": 0,
+        "shared_request_retention_blocks": 0,
+        "total_blocks": 320,
+        "warm_cached_blocks": 320
+      },
+      "goal_index": 0,
+      "hinted_index": 1,
+      "inline_applied": false,
+      "inline_body_matches_hint": true,
+      "metrics": {
+        "candidate-0": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727358.250696555,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "candidate-1": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727358.495945119,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "continuation": {
+          "actual_decode_tokens": 6,
+          "actual_prefill_tokens": 26,
+          "adopted_prefix_tokens": 2048,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": 2048,
+          "consumer_id": "request:apc-d-7c5e297d29bceeaa-brain-4-89973ba9",
+          "enqueued_at": 727359.154367503,
+          "finish_status": "FINISHED_STOPPED",
+          "first_scheduled_at": 727359.155835595,
+          "inherited_tokens": 2048,
+          "last_scheduled_event": [
+            0,
+            2079,
+            2080
+          ],
+          "parent_checkpoint_id": "checkpoint:apc-d-7c5e297d29bceeaa-brain-2",
+          "preemptions": 0,
+          "prompt_tokens": 2074,
+          "scheduled_ranges": [
+            [
+              2048,
+              2074
+            ],
+            [
+              2074,
+              2075
+            ],
+            [
+              2075,
+              2076
+            ],
+            [
+              2076,
+              2077
+            ],
+            [
+              2077,
+              2078
+            ],
+            [
+              2078,
+              2079
+            ],
+            [
+              2079,
+              2080
+            ]
+          ],
+          "selected_parent_tokens": 2049
+        },
+        "normal": {
+          "actual_decode_tokens": 7,
+          "actual_prefill_tokens": 462,
+          "adopted_prefix_tokens": 32,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": 32,
+          "consumer_id": "request:apc-d-7c5e297d29bceeaa-brain-3-8f701a96",
+          "enqueued_at": 727358.720247685,
+          "finish_status": "FINISHED_STOPPED",
+          "first_scheduled_at": 727358.720949771,
+          "inherited_tokens": 32,
+          "last_scheduled_event": [
+            0,
+            500,
+            501
+          ],
+          "parent_checkpoint_id": "checkpoint:apc-d-7c5e297d29bceeaa-brain-0",
+          "preemptions": 0,
+          "prompt_tokens": 494,
+          "scheduled_ranges": [
+            [
+              32,
+              494
+            ],
+            [
+              494,
+              495
+            ],
+            [
+              495,
+              496
+            ],
+            [
+              496,
+              497
+            ],
+            [
+              497,
+              498
+            ],
+            [
+              498,
+              499
+            ],
+            [
+              499,
+              500
+            ],
+            [
+              500,
+              501
+            ]
+          ],
+          "selected_parent_tokens": 43
+        },
+        "pressure": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727358.909156453,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            2046,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              511
+            ],
+            [
+              511,
+              1022
+            ],
+            [
+              1022,
+              1534
+            ],
+            [
+              1534,
+              2046
+            ],
+            [
+              2046,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "root": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 42,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727358.215677899,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            0,
+            42
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 42,
+          "scheduled_ranges": [
+            [
+              0,
+              42
+            ]
+          ],
+          "selected_parent_tokens": 0
+        }
+      },
+      "minimum_continuation_prefill": 26,
+      "native_after": [
+        528,
+        2048
+      ],
+      "native_before": [
+        2048,
+        2048
+      ],
+      "normal_complete_seconds": 0.434411559952423,
+      "normal_ready_before_complete": true,
+      "normal_ready_before_pressure": true,
+      "normal_ready_output_tokens": 6,
+      "normal_ready_seconds": 0.16551855206489563,
+      "normal_text": "{\"dispatch_index\": 1}",
+      "policy_cpu_seconds": 0.004939199308864772,
+      "preference_provider_cpu_seconds": 0.0,
+      "quality_pass": true,
+      "selection_correct": true
+    },
+    {
+      "adapter_cpu_seconds": 0.004971817834302783,
+      "bg_seconds": 0.2654363149777055,
+      "candidate_materialization": {
+        "candidate-0": {
+          "output_token_ids": [
+            785
+          ],
+          "prompt_sha256": "a3da43910d1acfa80fa1ca4c01d22657e813c62b84c3152dba23032bf412c1b5"
+        },
+        "candidate-1": {
+          "output_token_ids": [
+            785
+          ],
+          "prompt_sha256": "e4cd5916ad48b472bae877810b72635218dd89accd55e23ab220fd3f1db58827"
+        }
+      },
+      "continuation_text": "{\"answer\": 7}",
+      "decision_id": "d-00c1bb509b1a9d38",
+      "dispatch_correct": true,
+      "dispatch_index": 1,
+      "expected_index": 1,
+      "family": "wetland_survey",
+      "fg_e2e_seconds": 1.094799694023095,
+      "final_pool": {
+        "active_blocks": 0,
+        "cold_free_blocks": 1,
+        "free_blocks": 320,
+        "request_owned_blocks": 0,
+        "retention_only_blocks": 0,
+        "shared_request_retention_blocks": 0,
+        "total_blocks": 320,
+        "warm_cached_blocks": 319
+      },
+      "goal_index": 0,
+      "hinted_index": 1,
+      "inline_applied": false,
+      "inline_body_matches_hint": true,
+      "metrics": {
+        "candidate-0": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727359.333594274,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "candidate-1": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727359.57712248,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "continuation": {
+          "actual_decode_tokens": 6,
+          "actual_prefill_tokens": 25,
+          "adopted_prefix_tokens": 2048,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": 2048,
+          "consumer_id": "request:apc-d-00c1bb509b1a9d38-brain-4-9304f35e",
+          "enqueued_at": 727360.245148618,
+          "finish_status": "FINISHED_STOPPED",
+          "first_scheduled_at": 727360.24660658,
+          "inherited_tokens": 2048,
+          "last_scheduled_event": [
+            0,
+            2078,
+            2079
+          ],
+          "parent_checkpoint_id": "checkpoint:apc-d-00c1bb509b1a9d38-brain-2",
+          "preemptions": 0,
+          "prompt_tokens": 2073,
+          "scheduled_ranges": [
+            [
+              2048,
+              2073
+            ],
+            [
+              2073,
+              2074
+            ],
+            [
+              2074,
+              2075
+            ],
+            [
+              2075,
+              2076
+            ],
+            [
+              2076,
+              2077
+            ],
+            [
+              2077,
+              2078
+            ],
+            [
+              2078,
+              2079
+            ]
+          ],
+          "selected_parent_tokens": 2049
+        },
+        "normal": {
+          "actual_decode_tokens": 7,
+          "actual_prefill_tokens": 465,
+          "adopted_prefix_tokens": 32,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": 32,
+          "consumer_id": "request:apc-d-00c1bb509b1a9d38-brain-3-ab03db1d",
+          "enqueued_at": 727359.801435563,
+          "finish_status": "FINISHED_STOPPED",
+          "first_scheduled_at": 727359.802213759,
+          "inherited_tokens": 32,
+          "last_scheduled_event": [
+            0,
+            503,
+            504
+          ],
+          "parent_checkpoint_id": "checkpoint:apc-d-00c1bb509b1a9d38-brain-0",
+          "preemptions": 0,
+          "prompt_tokens": 497,
+          "scheduled_ranges": [
+            [
+              32,
+              497
+            ],
+            [
+              497,
+              498
+            ],
+            [
+              498,
+              499
+            ],
+            [
+              499,
+              500
+            ],
+            [
+              500,
+              501
+            ],
+            [
+              501,
+              502
+            ],
+            [
+              502,
+              503
+            ],
+            [
+              503,
+              504
+            ]
+          ],
+          "selected_parent_tokens": 42
+        },
+        "pressure": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727360.001544715,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            2046,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              511
+            ],
+            [
+              511,
+              1022
+            ],
+            [
+              1022,
+              1534
+            ],
+            [
+              1534,
+              2046
+            ],
+            [
+              2046,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "root": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 41,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727359.298209735,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            0,
+            41
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 41,
+          "scheduled_ranges": [
+            [
+              0,
+              41
+            ]
+          ],
+          "selected_parent_tokens": 0
+        }
+      },
+      "minimum_continuation_prefill": 25,
+      "native_after": [
+        528,
+        2048
+      ],
+      "native_before": [
+        2048,
+        2048
+      ],
+      "normal_complete_seconds": 0.44398828805424273,
+      "normal_ready_before_complete": true,
+      "normal_ready_before_pressure": true,
+      "normal_ready_output_tokens": 6,
+      "normal_ready_seconds": 0.1772987130098045,
+      "normal_text": "{\"dispatch_index\": 1}",
+      "policy_cpu_seconds": 0.004971817834302783,
+      "preference_provider_cpu_seconds": 0.0,
+      "quality_pass": true,
+      "selection_correct": true
+    },
+    {
+      "adapter_cpu_seconds": 0.0047687586629763246,
+      "bg_seconds": 0.2656985829817131,
+      "candidate_materialization": {
+        "candidate-0": {
+          "output_token_ids": [
+            785
+          ],
+          "prompt_sha256": "0d0eb3442529a0b469e174b870a0aa33cc1baefd9042918686543bdc981e1cf9"
+        },
+        "candidate-1": {
+          "output_token_ids": [
+            785
+          ],
+          "prompt_sha256": "23a29fd85ce9594d901b8b4773ed58c161940ad4fd017e91b5835047da2467ad"
+        }
+      },
+      "continuation_text": "{\"answer\": 50}",
+      "decision_id": "d-2346951df01fc696",
+      "dispatch_correct": true,
+      "dispatch_index": 1,
+      "expected_index": 1,
+      "family": "grid_monitoring",
+      "fg_e2e_seconds": 1.0978725590975955,
+      "final_pool": {
+        "active_blocks": 0,
+        "cold_free_blocks": 0,
+        "free_blocks": 320,
+        "request_owned_blocks": 0,
+        "retention_only_blocks": 0,
+        "shared_request_retention_blocks": 0,
+        "total_blocks": 320,
+        "warm_cached_blocks": 320
+      },
+      "goal_index": 1,
+      "hinted_index": 1,
+      "inline_applied": false,
+      "inline_body_matches_hint": true,
+      "metrics": {
+        "candidate-0": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727360.429310465,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "candidate-1": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727360.673973415,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "continuation": {
+          "actual_decode_tokens": 7,
+          "actual_prefill_tokens": 25,
+          "adopted_prefix_tokens": 2048,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": 2048,
+          "consumer_id": "request:apc-d-2346951df01fc696-brain-4-9628c046",
+          "enqueued_at": 727361.33149153,
+          "finish_status": "FINISHED_STOPPED",
+          "first_scheduled_at": 727361.332966871,
+          "inherited_tokens": 2048,
+          "last_scheduled_event": [
+            0,
+            2079,
+            2080
+          ],
+          "parent_checkpoint_id": "checkpoint:apc-d-2346951df01fc696-brain-2",
+          "preemptions": 0,
+          "prompt_tokens": 2073,
+          "scheduled_ranges": [
+            [
+              2048,
+              2073
+            ],
+            [
+              2073,
+              2074
+            ],
+            [
+              2074,
+              2075
+            ],
+            [
+              2075,
+              2076
+            ],
+            [
+              2076,
+              2077
+            ],
+            [
+              2077,
+              2078
+            ],
+            [
+              2078,
+              2079
+            ],
+            [
+              2079,
+              2080
+            ]
+          ],
+          "selected_parent_tokens": 2049
+        },
+        "normal": {
+          "actual_decode_tokens": 7,
+          "actual_prefill_tokens": 471,
+          "adopted_prefix_tokens": 32,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": 32,
+          "consumer_id": "request:apc-d-2346951df01fc696-brain-3-adb610bc",
+          "enqueued_at": 727360.898114702,
+          "finish_status": "FINISHED_STOPPED",
+          "first_scheduled_at": 727360.898834158,
+          "inherited_tokens": 32,
+          "last_scheduled_event": [
+            0,
+            509,
+            510
+          ],
+          "parent_checkpoint_id": "checkpoint:apc-d-2346951df01fc696-brain-0",
+          "preemptions": 0,
+          "prompt_tokens": 503,
+          "scheduled_ranges": [
+            [
+              32,
+              503
+            ],
+            [
+              503,
+              504
+            ],
+            [
+              504,
+              505
+            ],
+            [
+              505,
+              506
+            ],
+            [
+              506,
+              507
+            ],
+            [
+              507,
+              508
+            ],
+            [
+              508,
+              509
+            ],
+            [
+              509,
+              510
+            ]
+          ],
+          "selected_parent_tokens": 42
+        },
+        "pressure": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727361.08783352,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            2046,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              511
+            ],
+            [
+              511,
+              1022
+            ],
+            [
+              1022,
+              1534
+            ],
+            [
+              1534,
+              2046
+            ],
+            [
+              2046,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "root": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 41,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727360.394162489,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            0,
+            41
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 41,
+          "scheduled_ranges": [
+            [
+              0,
+              41
+            ]
+          ],
+          "selected_parent_tokens": 0
+        }
+      },
+      "minimum_continuation_prefill": 25,
+      "native_after": [
+        528,
+        2048
+      ],
+      "native_before": [
+        2048,
+        2048
+      ],
+      "normal_complete_seconds": 0.43359718890860677,
+      "normal_ready_before_complete": true,
+      "normal_ready_before_pressure": true,
+      "normal_ready_output_tokens": 6,
+      "normal_ready_seconds": 0.16670190694276243,
+      "normal_text": "{\"dispatch_index\": 1}",
+      "policy_cpu_seconds": 0.0047687586629763246,
+      "preference_provider_cpu_seconds": 0.0,
+      "quality_pass": true,
+      "selection_correct": true
+    },
+    {
+      "adapter_cpu_seconds": 0.005994660314172506,
+      "bg_seconds": 0.2713901639217511,
+      "candidate_materialization": {
+        "candidate-0": {
+          "output_token_ids": [
+            785
+          ],
+          "prompt_sha256": "a32925b9ec99068093a9a4556484a5cdc51118b180acec9bbcac853bc6b18689"
+        },
+        "candidate-1": {
+          "output_token_ids": [
+            785
+          ],
+          "prompt_sha256": "f6c9d9f8dac19c80d01e6e12f0ba7397066af04de19f3648da07ed84fa6d085f"
+        }
+      },
+      "continuation_text": "{\"answer\": 73}",
+      "decision_id": "d-6417a523c7d3684d",
+      "dispatch_correct": true,
+      "dispatch_index": 0,
+      "expected_index": 0,
+      "family": "fabrication_inspection",
+      "fg_e2e_seconds": 1.2955862829694524,
+      "final_pool": {
+        "active_blocks": 0,
+        "cold_free_blocks": 1,
+        "free_blocks": 320,
+        "request_owned_blocks": 0,
+        "retention_only_blocks": 0,
+        "shared_request_retention_blocks": 0,
+        "total_blocks": 320,
+        "warm_cached_blocks": 319
+      },
+      "goal_index": 0,
+      "hinted_index": 0,
+      "inline_applied": false,
+      "inline_body_matches_hint": true,
+      "metrics": {
+        "candidate-0": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727361.527645907,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "candidate-1": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727361.77213869,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "continuation": {
+          "actual_decode_tokens": 7,
+          "actual_prefill_tokens": 1562,
+          "adopted_prefix_tokens": 512,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": 2048,
+          "consumer_id": "request:apc-d-6417a523c7d3684d-brain-4-bee37683",
+          "enqueued_at": 727362.455406546,
+          "finish_status": "FINISHED_STOPPED",
+          "first_scheduled_at": 727362.456625606,
+          "inherited_tokens": 512,
+          "last_scheduled_event": [
+            0,
+            2080,
+            2081
+          ],
+          "parent_checkpoint_id": "checkpoint:apc-d-6417a523c7d3684d-brain-1",
+          "preemptions": 0,
+          "prompt_tokens": 2074,
+          "scheduled_ranges": [
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ],
+            [
+              2048,
+              2074
+            ],
+            [
+              2074,
+              2075
+            ],
+            [
+              2075,
+              2076
+            ],
+            [
+              2076,
+              2077
+            ],
+            [
+              2077,
+              2078
+            ],
+            [
+              2078,
+              2079
+            ],
+            [
+              2079,
+              2080
+            ],
+            [
+              2080,
+              2081
+            ]
+          ],
+          "selected_parent_tokens": 2049
+        },
+        "normal": {
+          "actual_decode_tokens": 7,
+          "actual_prefill_tokens": 486,
+          "adopted_prefix_tokens": 32,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": 32,
+          "consumer_id": "request:apc-d-6417a523c7d3684d-brain-3-8d09e42c",
+          "enqueued_at": 727361.996588366,
+          "finish_status": "FINISHED_STOPPED",
+          "first_scheduled_at": 727361.997315162,
+          "inherited_tokens": 32,
+          "last_scheduled_event": [
+            0,
+            524,
+            525
+          ],
+          "parent_checkpoint_id": "checkpoint:apc-d-6417a523c7d3684d-brain-0",
+          "preemptions": 0,
+          "prompt_tokens": 518,
+          "scheduled_ranges": [
+            [
+              32,
+              518
+            ],
+            [
+              518,
+              519
+            ],
+            [
+              519,
+              520
+            ],
+            [
+              520,
+              521
+            ],
+            [
+              521,
+              522
+            ],
+            [
+              522,
+              523
+            ],
+            [
+              523,
+              524
+            ],
+            [
+              524,
+              525
+            ]
+          ],
+          "selected_parent_tokens": 43
+        },
+        "pressure": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727362.212628727,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            2046,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              511
+            ],
+            [
+              511,
+              1022
+            ],
+            [
+              1022,
+              1534
+            ],
+            [
+              1534,
+              2046
+            ],
+            [
+              2046,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "root": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 42,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727361.493240188,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            0,
+            42
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 42,
+          "scheduled_ranges": [
+            [
+              0,
+              42
+            ]
+          ],
+          "selected_parent_tokens": 0
+        }
+      },
+      "minimum_continuation_prefill": 26,
+      "native_after": [
+        512,
+        2048
+      ],
+      "native_before": [
+        2048,
+        2048
+      ],
+      "normal_complete_seconds": 0.45909938297700137,
+      "normal_ready_before_complete": true,
+      "normal_ready_before_pressure": true,
+      "normal_ready_output_tokens": 6,
+      "normal_ready_seconds": 0.18643677898216993,
+      "normal_text": "{\"dispatch_index\": 0}",
+      "policy_cpu_seconds": 0.005994660314172506,
+      "preference_provider_cpu_seconds": 0.0,
+      "quality_pass": true,
+      "selection_correct": true
+    },
+    {
+      "adapter_cpu_seconds": 0.00581014237832278,
+      "bg_seconds": 0.2736199520295486,
+      "candidate_materialization": {
+        "candidate-0": {
+          "output_token_ids": [
+            785
+          ],
+          "prompt_sha256": "cc3cc057d575cb2acff3b69bd3aac3c521ab431a1c46789fd232087210c0413b"
+        },
+        "candidate-1": {
+          "output_token_ids": [
+            785
+          ],
+          "prompt_sha256": "e41caf75a8bf2b77b796f0f1df1b76c8f0ab191a2146bde57e2db02227174299"
+        }
+      },
+      "continuation_text": "{\"answer\": 84}",
+      "decision_id": "d-0bf0fc7a724654f8",
+      "dispatch_correct": true,
+      "dispatch_index": 0,
+      "expected_index": 0,
+      "family": "pharmacy_inventory",
+      "fg_e2e_seconds": 1.2965912339277565,
+      "final_pool": {
+        "active_blocks": 0,
+        "cold_free_blocks": 1,
+        "free_blocks": 320,
+        "request_owned_blocks": 0,
+        "retention_only_blocks": 0,
+        "shared_request_retention_blocks": 0,
+        "total_blocks": 320,
+        "warm_cached_blocks": 319
+      },
+      "goal_index": 1,
+      "hinted_index": 0,
+      "inline_applied": false,
+      "inline_body_matches_hint": true,
+      "metrics": {
+        "candidate-0": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727362.824338168,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "candidate-1": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727363.068862857,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "continuation": {
+          "actual_decode_tokens": 7,
+          "actual_prefill_tokens": 1547,
+          "adopted_prefix_tokens": 528,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": 2048,
+          "consumer_id": "request:apc-d-0bf0fc7a724654f8-brain-4-b6b2dcfc",
+          "enqueued_at": 727363.754470016,
+          "finish_status": "FINISHED_STOPPED",
+          "first_scheduled_at": 727363.755739256,
+          "inherited_tokens": 528,
+          "last_scheduled_event": [
+            0,
+            2081,
+            2082
+          ],
+          "parent_checkpoint_id": "checkpoint:apc-d-0bf0fc7a724654f8-brain-1",
+          "preemptions": 0,
+          "prompt_tokens": 2075,
+          "scheduled_ranges": [
+            [
+              528,
+              1040
+            ],
+            [
+              1040,
+              1552
+            ],
+            [
+              1552,
+              2064
+            ],
+            [
+              2064,
+              2075
+            ],
+            [
+              2075,
+              2076
+            ],
+            [
+              2076,
+              2077
+            ],
+            [
+              2077,
+              2078
+            ],
+            [
+              2078,
+              2079
+            ],
+            [
+              2079,
+              2080
+            ],
+            [
+              2080,
+              2081
+            ],
+            [
+              2081,
+              2082
+            ]
+          ],
+          "selected_parent_tokens": 2049
+        },
+        "normal": {
+          "actual_decode_tokens": 7,
+          "actual_prefill_tokens": 467,
+          "adopted_prefix_tokens": 32,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": 32,
+          "consumer_id": "request:apc-d-0bf0fc7a724654f8-brain-3-8021dd4f",
+          "enqueued_at": 727363.293587581,
+          "finish_status": "FINISHED_STOPPED",
+          "first_scheduled_at": 727363.294377008,
+          "inherited_tokens": 32,
+          "last_scheduled_event": [
+            0,
+            505,
+            506
+          ],
+          "parent_checkpoint_id": "checkpoint:apc-d-0bf0fc7a724654f8-brain-0",
+          "preemptions": 0,
+          "prompt_tokens": 499,
+          "scheduled_ranges": [
+            [
+              32,
+              499
+            ],
+            [
+              499,
+              500
+            ],
+            [
+              500,
+              501
+            ],
+            [
+              501,
+              502
+            ],
+            [
+              502,
+              503
+            ],
+            [
+              503,
+              504
+            ],
+            [
+              504,
+              505
+            ],
+            [
+              505,
+              506
+            ]
+          ],
+          "selected_parent_tokens": 44
+        },
+        "pressure": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727363.509628398,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            2046,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              511
+            ],
+            [
+              511,
+              1022
+            ],
+            [
+              1022,
+              1534
+            ],
+            [
+              1534,
+              2046
+            ],
+            [
+              2046,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "root": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 43,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727362.789667927,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            0,
+            43
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 43,
+          "scheduled_ranges": [
+            [
+              0,
+              43
+            ]
+          ],
+          "selected_parent_tokens": 0
+        }
+      },
+      "minimum_continuation_prefill": 27,
+      "native_after": [
+        528,
+        2048
+      ],
+      "native_before": [
+        2048,
+        2048
+      ],
+      "normal_complete_seconds": 0.4610529360361397,
+      "normal_ready_before_complete": true,
+      "normal_ready_before_pressure": true,
+      "normal_ready_output_tokens": 6,
+      "normal_ready_seconds": 0.18625445407815278,
+      "normal_text": "{\"dispatch_index\": 0}",
+      "policy_cpu_seconds": 0.00581014237832278,
+      "preference_provider_cpu_seconds": 0.0,
+      "quality_pass": true,
+      "selection_correct": true
+    },
+    {
+      "adapter_cpu_seconds": 0.005890986532904208,
+      "bg_seconds": 0.2654684840235859,
+      "candidate_materialization": {
+        "candidate-0": {
+          "output_token_ids": [
+            785
+          ],
+          "prompt_sha256": "6f6711c348a7402618cbaf129434d10382bab0411aa1349f05261fe1fa8e187c"
+        },
+        "candidate-1": {
+          "output_token_ids": [
+            785
+          ],
+          "prompt_sha256": "8aed40475dfaac0af806ed5c7981d6531b0087593a0734baaffbd79d06d93059"
+        }
+      },
+      "continuation_text": "{\"answer\": 36}",
+      "decision_id": "d-c63c8963ddab45e4",
+      "dispatch_correct": true,
+      "dispatch_index": 0,
+      "expected_index": 0,
+      "family": "meteorology_observation",
+      "fg_e2e_seconds": 1.2727879940066487,
+      "final_pool": {
+        "active_blocks": 0,
+        "cold_free_blocks": 0,
+        "free_blocks": 320,
+        "request_owned_blocks": 0,
+        "retention_only_blocks": 0,
+        "shared_request_retention_blocks": 0,
+        "total_blocks": 320,
+        "warm_cached_blocks": 320
+      },
+      "goal_index": 0,
+      "hinted_index": 0,
+      "inline_applied": false,
+      "inline_body_matches_hint": true,
+      "metrics": {
+        "candidate-0": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727364.122207192,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "candidate-1": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727364.368523781,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "continuation": {
+          "actual_decode_tokens": 7,
+          "actual_prefill_tokens": 1561,
+          "adopted_prefix_tokens": 512,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": 2048,
+          "consumer_id": "request:apc-d-c63c8963ddab45e4-brain-4-8c938c32",
+          "enqueued_at": 727365.027103034,
+          "finish_status": "FINISHED_STOPPED",
+          "first_scheduled_at": 727365.028429624,
+          "inherited_tokens": 512,
+          "last_scheduled_event": [
+            0,
+            2079,
+            2080
+          ],
+          "parent_checkpoint_id": "checkpoint:apc-d-c63c8963ddab45e4-brain-1",
+          "preemptions": 0,
+          "prompt_tokens": 2073,
+          "scheduled_ranges": [
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ],
+            [
+              2048,
+              2073
+            ],
+            [
+              2073,
+              2074
+            ],
+            [
+              2074,
+              2075
+            ],
+            [
+              2075,
+              2076
+            ],
+            [
+              2076,
+              2077
+            ],
+            [
+              2077,
+              2078
+            ],
+            [
+              2078,
+              2079
+            ],
+            [
+              2079,
+              2080
+            ]
+          ],
+          "selected_parent_tokens": 2049
+        },
+        "normal": {
+          "actual_decode_tokens": 7,
+          "actual_prefill_tokens": 475,
+          "adopted_prefix_tokens": 32,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": 32,
+          "consumer_id": "request:apc-d-c63c8963ddab45e4-brain-3-b262481a",
+          "enqueued_at": 727364.593505682,
+          "finish_status": "FINISHED_STOPPED",
+          "first_scheduled_at": 727364.594389759,
+          "inherited_tokens": 32,
+          "last_scheduled_event": [
+            0,
+            513,
+            514
+          ],
+          "parent_checkpoint_id": "checkpoint:apc-d-c63c8963ddab45e4-brain-0",
+          "preemptions": 0,
+          "prompt_tokens": 507,
+          "scheduled_ranges": [
+            [
+              32,
+              507
+            ],
+            [
+              507,
+              508
+            ],
+            [
+              508,
+              509
+            ],
+            [
+              509,
+              510
+            ],
+            [
+              510,
+              511
+            ],
+            [
+              511,
+              512
+            ],
+            [
+              512,
+              513
+            ],
+            [
+              513,
+              514
+            ]
+          ],
+          "selected_parent_tokens": 42
+        },
+        "pressure": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727364.783312988,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            2046,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              511
+            ],
+            [
+              511,
+              1022
+            ],
+            [
+              1022,
+              1534
+            ],
+            [
+              1534,
+              2046
+            ],
+            [
+              2046,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "root": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 41,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727364.08738036,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            0,
+            41
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 41,
+          "scheduled_ranges": [
+            [
+              0,
+              41
+            ]
+          ],
+          "selected_parent_tokens": 0
+        }
+      },
+      "minimum_continuation_prefill": 25,
+      "native_after": [
+        512,
+        2048
+      ],
+      "native_before": [
+        2048,
+        2048
+      ],
+      "normal_complete_seconds": 0.43387783400248736,
+      "normal_ready_before_complete": true,
+      "normal_ready_before_pressure": true,
+      "normal_ready_output_tokens": 6,
+      "normal_ready_seconds": 0.1671371100237593,
+      "normal_text": "{\"dispatch_index\": 0}",
+      "policy_cpu_seconds": 0.005890986532904208,
+      "preference_provider_cpu_seconds": 0.0,
+      "quality_pass": true,
+      "selection_correct": true
+    },
+    {
+      "adapter_cpu_seconds": 0.004562432644888759,
+      "bg_seconds": 0.2646526439348236,
+      "candidate_materialization": {
+        "candidate-0": {
+          "output_token_ids": [
+            785
+          ],
+          "prompt_sha256": "1b693aa4d22d06885239b27275f1eb2f4473245ba9037ab6f493fb3b50502693"
+        },
+        "candidate-1": {
+          "output_token_ids": [
+            785
+          ],
+          "prompt_sha256": "d0cec844c0bb937a654999c2a18df3172971c37dce9df43178bcf0210647a581"
+        }
+      },
+      "continuation_text": "{\"answer\": 9}",
+      "decision_id": "d-6cf595bc8a2bbe1d",
+      "dispatch_correct": true,
+      "dispatch_index": 1,
+      "expected_index": 1,
+      "family": "fabrication_inspection",
+      "fg_e2e_seconds": 1.080758199095726,
+      "final_pool": {
+        "active_blocks": 0,
+        "cold_free_blocks": 0,
+        "free_blocks": 320,
+        "request_owned_blocks": 0,
+        "retention_only_blocks": 0,
+        "shared_request_retention_blocks": 0,
+        "total_blocks": 320,
+        "warm_cached_blocks": 320
+      },
+      "goal_index": 1,
+      "hinted_index": 1,
+      "inline_applied": false,
+      "inline_body_matches_hint": true,
+      "metrics": {
+        "candidate-0": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727365.396069303,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "candidate-1": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727365.641877602,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "continuation": {
+          "actual_decode_tokens": 6,
+          "actual_prefill_tokens": 26,
+          "adopted_prefix_tokens": 2048,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": 2048,
+          "consumer_id": "request:apc-d-6cf595bc8a2bbe1d-brain-4-b3cb5e93",
+          "enqueued_at": 727366.29886059,
+          "finish_status": "FINISHED_STOPPED",
+          "first_scheduled_at": 727366.300400642,
+          "inherited_tokens": 2048,
+          "last_scheduled_event": [
+            0,
+            2079,
+            2080
+          ],
+          "parent_checkpoint_id": "checkpoint:apc-d-6cf595bc8a2bbe1d-brain-2",
+          "preemptions": 0,
+          "prompt_tokens": 2074,
+          "scheduled_ranges": [
+            [
+              2048,
+              2074
+            ],
+            [
+              2074,
+              2075
+            ],
+            [
+              2075,
+              2076
+            ],
+            [
+              2076,
+              2077
+            ],
+            [
+              2077,
+              2078
+            ],
+            [
+              2078,
+              2079
+            ],
+            [
+              2079,
+              2080
+            ]
+          ],
+          "selected_parent_tokens": 2049
+        },
+        "normal": {
+          "actual_decode_tokens": 7,
+          "actual_prefill_tokens": 470,
+          "adopted_prefix_tokens": 32,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": 32,
+          "consumer_id": "request:apc-d-6cf595bc8a2bbe1d-brain-3-916bec80",
+          "enqueued_at": 727365.866699136,
+          "finish_status": "FINISHED_STOPPED",
+          "first_scheduled_at": 727365.867515752,
+          "inherited_tokens": 32,
+          "last_scheduled_event": [
+            0,
+            508,
+            509
+          ],
+          "parent_checkpoint_id": "checkpoint:apc-d-6cf595bc8a2bbe1d-brain-0",
+          "preemptions": 0,
+          "prompt_tokens": 502,
+          "scheduled_ranges": [
+            [
+              32,
+              502
+            ],
+            [
+              502,
+              503
+            ],
+            [
+              503,
+              504
+            ],
+            [
+              504,
+              505
+            ],
+            [
+              505,
+              506
+            ],
+            [
+              506,
+              507
+            ],
+            [
+              507,
+              508
+            ],
+            [
+              508,
+              509
+            ]
+          ],
+          "selected_parent_tokens": 43
+        },
+        "pressure": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727366.05655235,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            2046,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              511
+            ],
+            [
+              511,
+              1022
+            ],
+            [
+              1022,
+              1534
+            ],
+            [
+              1534,
+              2046
+            ],
+            [
+              2046,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "root": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 42,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727365.361426033,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            0,
+            42
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 42,
+          "scheduled_ranges": [
+            [
+              0,
+              42
+            ]
+          ],
+          "selected_parent_tokens": 0
+        }
+      },
+      "minimum_continuation_prefill": 26,
+      "native_after": [
+        528,
+        2048
+      ],
+      "native_before": [
+        2048,
+        2048
+      ],
+      "normal_complete_seconds": 0.43239438510499895,
+      "normal_ready_before_complete": true,
+      "normal_ready_before_pressure": true,
+      "normal_ready_output_tokens": 6,
+      "normal_ready_seconds": 0.16654899204149842,
+      "normal_text": "{\"dispatch_index\": 1}",
+      "policy_cpu_seconds": 0.004562432644888759,
+      "preference_provider_cpu_seconds": 0.0,
+      "quality_pass": true,
+      "selection_correct": true
+    },
+    {
+      "adapter_cpu_seconds": 0.005940853850916028,
+      "bg_seconds": 0.266657185042277,
+      "candidate_materialization": {
+        "candidate-0": {
+          "output_token_ids": [
+            785
+          ],
+          "prompt_sha256": "daa84066ceec134909f09700ad4452e7b17178f66fcab8898e7b9089df4c1c3b"
+        },
+        "candidate-1": {
+          "output_token_ids": [
+            785
+          ],
+          "prompt_sha256": "b9ac39a0e5287137e6062e77c652dceec9a33b04ee77e7c319ff0d614c182de8"
+        }
+      },
+      "continuation_text": "{\"answer\": 16}",
+      "decision_id": "d-d0f0b7610126c97b",
+      "dispatch_correct": true,
+      "dispatch_index": 0,
+      "expected_index": 0,
+      "family": "freight_dispatch",
+      "fg_e2e_seconds": 1.2779281039256603,
+      "final_pool": {
+        "active_blocks": 0,
+        "cold_free_blocks": 0,
+        "free_blocks": 320,
+        "request_owned_blocks": 0,
+        "retention_only_blocks": 0,
+        "shared_request_retention_blocks": 0,
+        "total_blocks": 320,
+        "warm_cached_blocks": 320
+      },
+      "goal_index": 1,
+      "hinted_index": 0,
+      "inline_applied": false,
+      "inline_body_matches_hint": true,
+      "metrics": {
+        "candidate-0": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727366.478706405,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "candidate-1": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727366.722932437,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "continuation": {
+          "actual_decode_tokens": 7,
+          "actual_prefill_tokens": 1545,
+          "adopted_prefix_tokens": 528,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": 2048,
+          "consumer_id": "request:apc-d-d0f0b7610126c97b-brain-4-80f4751a",
+          "enqueued_at": 727367.382551535,
+          "finish_status": "FINISHED_STOPPED",
+          "first_scheduled_at": 727367.383860225,
+          "inherited_tokens": 528,
+          "last_scheduled_event": [
+            0,
+            2079,
+            2080
+          ],
+          "parent_checkpoint_id": "checkpoint:apc-d-d0f0b7610126c97b-brain-1",
+          "preemptions": 0,
+          "prompt_tokens": 2073,
+          "scheduled_ranges": [
+            [
+              528,
+              1040
+            ],
+            [
+              1040,
+              1552
+            ],
+            [
+              1552,
+              2064
+            ],
+            [
+              2064,
+              2073
+            ],
+            [
+              2073,
+              2074
+            ],
+            [
+              2074,
+              2075
+            ],
+            [
+              2075,
+              2076
+            ],
+            [
+              2076,
+              2077
+            ],
+            [
+              2077,
+              2078
+            ],
+            [
+              2078,
+              2079
+            ],
+            [
+              2079,
+              2080
+            ]
+          ],
+          "selected_parent_tokens": 2049
+        },
+        "normal": {
+          "actual_decode_tokens": 7,
+          "actual_prefill_tokens": 467,
+          "adopted_prefix_tokens": 32,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": 32,
+          "consumer_id": "request:apc-d-d0f0b7610126c97b-brain-3-a3301f8b",
+          "enqueued_at": 727366.948564274,
+          "finish_status": "FINISHED_STOPPED",
+          "first_scheduled_at": 727366.94934161,
+          "inherited_tokens": 32,
+          "last_scheduled_event": [
+            0,
+            505,
+            506
+          ],
+          "parent_checkpoint_id": "checkpoint:apc-d-d0f0b7610126c97b-brain-0",
+          "preemptions": 0,
+          "prompt_tokens": 499,
+          "scheduled_ranges": [
+            [
+              32,
+              499
+            ],
+            [
+              499,
+              500
+            ],
+            [
+              500,
+              501
+            ],
+            [
+              501,
+              502
+            ],
+            [
+              502,
+              503
+            ],
+            [
+              503,
+              504
+            ],
+            [
+              504,
+              505
+            ],
+            [
+              505,
+              506
+            ]
+          ],
+          "selected_parent_tokens": 42
+        },
+        "pressure": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727367.138286143,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            2046,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              511
+            ],
+            [
+              511,
+              1022
+            ],
+            [
+              1022,
+              1534
+            ],
+            [
+              1534,
+              2046
+            ],
+            [
+              2046,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "root": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 41,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727366.443304941,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            0,
+            41
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 41,
+          "scheduled_ranges": [
+            [
+              0,
+              41
+            ]
+          ],
+          "selected_parent_tokens": 0
+        }
+      },
+      "minimum_continuation_prefill": 25,
+      "native_after": [
+        528,
+        2048
+      ],
+      "native_before": [
+        2048,
+        2048
+      ],
+      "normal_complete_seconds": 0.4341994218993932,
+      "normal_ready_before_complete": true,
+      "normal_ready_before_pressure": true,
+      "normal_ready_output_tokens": 6,
+      "normal_ready_seconds": 0.1663324279943481,
+      "normal_text": "{\"dispatch_index\": 0}",
+      "policy_cpu_seconds": 0.005940853850916028,
+      "preference_provider_cpu_seconds": 0.0,
+      "quality_pass": true,
+      "selection_correct": true
+    },
+    {
+      "adapter_cpu_seconds": 0.0057449431624263525,
+      "bg_seconds": 0.2667584290029481,
+      "candidate_materialization": {
+        "candidate-0": {
+          "output_token_ids": [
+            785
+          ],
+          "prompt_sha256": "56c5e9d59ff598f327cabd647a5d1d1596290eecfc7be900f822e058bc035a15"
+        },
+        "candidate-1": {
+          "output_token_ids": [
+            785
+          ],
+          "prompt_sha256": "c583e4116331a65c5e132afda5aaa3ab2d822aef829e92cb1cdac2cce111aa06"
+        }
+      },
+      "continuation_text": "{\"answer\": 12}",
+      "decision_id": "d-51fed46089e611d4",
+      "dispatch_correct": true,
+      "dispatch_index": 0,
+      "expected_index": 0,
+      "family": "wetland_survey",
+      "fg_e2e_seconds": 1.2727519070031121,
+      "final_pool": {
+        "active_blocks": 0,
+        "cold_free_blocks": 0,
+        "free_blocks": 320,
+        "request_owned_blocks": 0,
+        "retention_only_blocks": 0,
+        "shared_request_retention_blocks": 0,
+        "total_blocks": 320,
+        "warm_cached_blocks": 320
+      },
+      "goal_index": 1,
+      "hinted_index": 0,
+      "inline_applied": false,
+      "inline_body_matches_hint": true,
+      "metrics": {
+        "candidate-0": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727367.757943328,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "candidate-1": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727368.003083082,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "continuation": {
+          "actual_decode_tokens": 7,
+          "actual_prefill_tokens": 1545,
+          "adopted_prefix_tokens": 528,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": 2048,
+          "consumer_id": "request:apc-d-51fed46089e611d4-brain-4-aafb0d8a",
+          "enqueued_at": 727368.662612676,
+          "finish_status": "FINISHED_STOPPED",
+          "first_scheduled_at": 727368.663900366,
+          "inherited_tokens": 528,
+          "last_scheduled_event": [
+            0,
+            2079,
+            2080
+          ],
+          "parent_checkpoint_id": "checkpoint:apc-d-51fed46089e611d4-brain-1",
+          "preemptions": 0,
+          "prompt_tokens": 2073,
+          "scheduled_ranges": [
+            [
+              528,
+              1040
+            ],
+            [
+              1040,
+              1552
+            ],
+            [
+              1552,
+              2064
+            ],
+            [
+              2064,
+              2073
+            ],
+            [
+              2073,
+              2074
+            ],
+            [
+              2074,
+              2075
+            ],
+            [
+              2075,
+              2076
+            ],
+            [
+              2076,
+              2077
+            ],
+            [
+              2077,
+              2078
+            ],
+            [
+              2078,
+              2079
+            ],
+            [
+              2079,
+              2080
+            ]
+          ],
+          "selected_parent_tokens": 2049
+        },
+        "normal": {
+          "actual_decode_tokens": 7,
+          "actual_prefill_tokens": 461,
+          "adopted_prefix_tokens": 32,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": 32,
+          "consumer_id": "request:apc-d-51fed46089e611d4-brain-3-978592ff",
+          "enqueued_at": 727368.228702526,
+          "finish_status": "FINISHED_STOPPED",
+          "first_scheduled_at": 727368.229490732,
+          "inherited_tokens": 32,
+          "last_scheduled_event": [
+            0,
+            499,
+            500
+          ],
+          "parent_checkpoint_id": "checkpoint:apc-d-51fed46089e611d4-brain-0",
+          "preemptions": 0,
+          "prompt_tokens": 493,
+          "scheduled_ranges": [
+            [
+              32,
+              493
+            ],
+            [
+              493,
+              494
+            ],
+            [
+              494,
+              495
+            ],
+            [
+              495,
+              496
+            ],
+            [
+              496,
+              497
+            ],
+            [
+              497,
+              498
+            ],
+            [
+              498,
+              499
+            ],
+            [
+              499,
+              500
+            ]
+          ],
+          "selected_parent_tokens": 42
+        },
+        "pressure": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727368.417729476,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            2046,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              511
+            ],
+            [
+              511,
+              1022
+            ],
+            [
+              1022,
+              1534
+            ],
+            [
+              1534,
+              2046
+            ],
+            [
+              2046,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "root": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 41,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727367.722462943,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            0,
+            41
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 41,
+          "scheduled_ranges": [
+            [
+              0,
+              41
+            ]
+          ],
+          "selected_parent_tokens": 0
+        }
+      },
+      "minimum_continuation_prefill": 25,
+      "native_after": [
+        528,
+        2048
+      ],
+      "native_before": [
+        2048,
+        2048
+      ],
+      "normal_complete_seconds": 0.43407601199578494,
+      "normal_ready_before_complete": true,
+      "normal_ready_before_pressure": true,
+      "normal_ready_output_tokens": 6,
+      "normal_ready_seconds": 0.16613073402550071,
+      "normal_text": "{\"dispatch_index\": 0}",
+      "policy_cpu_seconds": 0.0057449431624263525,
+      "preference_provider_cpu_seconds": 0.0,
+      "quality_pass": true,
+      "selection_correct": true
+    },
+    {
+      "adapter_cpu_seconds": 0.005448670708574355,
+      "bg_seconds": 0.2657075149472803,
+      "candidate_materialization": {
+        "candidate-0": {
+          "output_token_ids": [
+            785
+          ],
+          "prompt_sha256": "700ec23081b504257129b973189a911adcb7de72d35c4cfb326a0fb2ef81e23d"
+        },
+        "candidate-1": {
+          "output_token_ids": [
+            785
+          ],
+          "prompt_sha256": "ec49ec0b9dcb0ad4137bd0947a93040b91e8db8fe054eab5403870e30d01f81a"
+        }
+      },
+      "continuation_text": "{\"answer\": 58}",
+      "decision_id": "d-ba7e5c48ea227a53",
+      "dispatch_correct": true,
+      "dispatch_index": 1,
+      "expected_index": 1,
+      "family": "meteorology_observation",
+      "fg_e2e_seconds": 1.1007390200393274,
+      "final_pool": {
+        "active_blocks": 0,
+        "cold_free_blocks": 1,
+        "free_blocks": 320,
+        "request_owned_blocks": 0,
+        "retention_only_blocks": 0,
+        "shared_request_retention_blocks": 0,
+        "total_blocks": 320,
+        "warm_cached_blocks": 319
+      },
+      "goal_index": 1,
+      "hinted_index": 1,
+      "inline_applied": false,
+      "inline_body_matches_hint": true,
+      "metrics": {
+        "candidate-0": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727369.031716893,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "candidate-1": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727369.2777766,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            1536,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              1024
+            ],
+            [
+              1024,
+              1536
+            ],
+            [
+              1536,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "continuation": {
+          "actual_decode_tokens": 7,
+          "actual_prefill_tokens": 26,
+          "adopted_prefix_tokens": 2048,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": 2048,
+          "consumer_id": "request:apc-d-ba7e5c48ea227a53-brain-4-b5c971b3",
+          "enqueued_at": 727369.93741607,
+          "finish_status": "FINISHED_STOPPED",
+          "first_scheduled_at": 727369.938969682,
+          "inherited_tokens": 2048,
+          "last_scheduled_event": [
+            0,
+            2080,
+            2081
+          ],
+          "parent_checkpoint_id": "checkpoint:apc-d-ba7e5c48ea227a53-brain-2",
+          "preemptions": 0,
+          "prompt_tokens": 2074,
+          "scheduled_ranges": [
+            [
+              2048,
+              2074
+            ],
+            [
+              2074,
+              2075
+            ],
+            [
+              2075,
+              2076
+            ],
+            [
+              2076,
+              2077
+            ],
+            [
+              2077,
+              2078
+            ],
+            [
+              2078,
+              2079
+            ],
+            [
+              2079,
+              2080
+            ],
+            [
+              2080,
+              2081
+            ]
+          ],
+          "selected_parent_tokens": 2049
+        },
+        "normal": {
+          "actual_decode_tokens": 7,
+          "actual_prefill_tokens": 480,
+          "adopted_prefix_tokens": 32,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": 32,
+          "consumer_id": "request:apc-d-ba7e5c48ea227a53-brain-3-805c26c5",
+          "enqueued_at": 727369.503459791,
+          "finish_status": "FINISHED_STOPPED",
+          "first_scheduled_at": 727369.504272637,
+          "inherited_tokens": 32,
+          "last_scheduled_event": [
+            0,
+            518,
+            519
+          ],
+          "parent_checkpoint_id": "checkpoint:apc-d-ba7e5c48ea227a53-brain-0",
+          "preemptions": 0,
+          "prompt_tokens": 512,
+          "scheduled_ranges": [
+            [
+              32,
+              512
+            ],
+            [
+              512,
+              513
+            ],
+            [
+              513,
+              514
+            ],
+            [
+              514,
+              515
+            ],
+            [
+              515,
+              516
+            ],
+            [
+              516,
+              517
+            ],
+            [
+              517,
+              518
+            ],
+            [
+              518,
+              519
+            ]
+          ],
+          "selected_parent_tokens": 43
+        },
+        "pressure": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 2048,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727369.693869356,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            2046,
+            2048
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 2048,
+          "scheduled_ranges": [
+            [
+              0,
+              511
+            ],
+            [
+              511,
+              1022
+            ],
+            [
+              1022,
+              1534
+            ],
+            [
+              1534,
+              2046
+            ],
+            [
+              2046,
+              2048
+            ]
+          ],
+          "selected_parent_tokens": 0
+        },
+        "root": {
+          "actual_decode_tokens": 0,
+          "actual_prefill_tokens": 42,
+          "adopted_prefix_tokens": 0,
+          "capsule_tokens": 0,
+          "checkpoint_frontier_tokens": null,
+          "consumer_id": null,
+          "enqueued_at": null,
+          "finish_status": "FINISHED_LENGTH_CAPPED",
+          "first_scheduled_at": 727368.99634015,
+          "inherited_tokens": 0,
+          "last_scheduled_event": [
+            0,
+            0,
+            42
+          ],
+          "parent_checkpoint_id": null,
+          "preemptions": 0,
+          "prompt_tokens": 42,
+          "scheduled_ranges": [
+            [
+              0,
+              42
+            ]
+          ],
+          "selected_parent_tokens": 0
+        }
+      },
+      "minimum_continuation_prefill": 26,
+      "native_after": [
+        512,
+        2048
+      ],
+      "native_before": [
+        2048,
+        2048
+      ],
+      "normal_complete_seconds": 0.4341902119340375,
+      "normal_ready_before_complete": true,
+      "normal_ready_before_pressure": true,
+      "normal_ready_output_tokens": 6,
+      "normal_ready_seconds": 0.1672633570851758,
+      "normal_text": "{\"dispatch_index\": 1}",
+      "policy_cpu_seconds": 0.005448670708574355,
+      "preference_provider_cpu_seconds": 0.0,
+      "quality_pass": true,
+      "selection_correct": true
+    }
+  ],
+  "schema": "octopus-utility-v4.1-gpu-trace-v1"
+}

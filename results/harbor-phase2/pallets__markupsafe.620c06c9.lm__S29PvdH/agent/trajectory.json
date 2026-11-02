@@ -1,0 +1,175 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "pallets__markupsafe.620c06c9.lm__S29PvdH__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "striptags() doesn't handle HTML comments correctly\n\n## Issue\nThe `striptags()` method doesn't properly handle HTML comments in the markup.\n\n## Code\n```python\nfrom markupsafe import Markup\n\n# This should return 'Foo & Bar' but doesn't\nresult = Markup(\"<!-- outer comment --><em>Foo &amp; Bar <!-- inner comment about <em> -->\\n </em><!-- comment\\nwith\\nnewlines\\n--><meta content='tag\\nwith\\nnewlines'>\").striptags()\nprint(result)\n```\n\n## Expected vs Actual\nExpected: `'Foo & Bar'`\nActual: The output includes content from inside the HTML comments\n\nIt seems like the `striptags()` method is not properly removing HTML comments before stripping the tags. This is especially noticeable with comments that contain HTML tags or span multiple lines.\n\nThe issue doesn't happen with simple HTML tags, but becomes apparent when HTML comments are present in the markup."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository and how `striptags()` currently handles HTML comments.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-3db26529-2fcf-4575-ac91-57a05bc61314-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" -o -name \"*.md\" -o -name \"setup.py\" -o -name \"pyproject.toml\" -o -name \"setup.cfg\" | head -50"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-3db26529-2fcf-4575-ac91-57a05bc61314-0",
+            "content": "total 96\ndrwxr-xr-x 1 root root 4096 Sep 22 16:34 .\ndrwxr-xr-x 1 root root 4096 Sep 22 16:34 ..\ndrwxr-xr-x 2 root root 4096 Jul 13  2025 .devcontainer\n-rw-r--r-- 1 root root  233 Jul 13  2025 .editorconfig\ndrwxr-xr-x 8 root root 4096 Jul 13  2025 .git\ndrwxr-xr-x 3 root root 4096 Jul 13  2025 .github\n-rw-r--r-- 1 root root  113 Jul 13  2025 .gitignore\n-rw-rw-r-- 1 1005 1005    0 Sep 22 15:44 .gitkeep\n-rw-r--r-- 1 root root  372 Jul 13  2025 .pre-commit-config.yaml\n-rw-r--r-- 1 root root  209 Jul 13  2025 .readthedocs.yaml\n-rw-r--r-- 1 root root 4834 Jul 13  2025 CHANGES.rst\n-rw-r--r-- 1 root root 6649 Jul 13  2025 CONTRIBUTING.rst\n-rw-r--r-- 1 root root 1475 Jul 13  2025 LICENSE.txt\n-rw-r--r-- 1 root root  186 Jul 13  2025 MANIFEST.in\n-rw-r--r-- 1 root root 1280 Jul 13  2025 README.md\n-rw-r--r-- 1 root root  927 Jul 13  2025 bench.py\ndrwxr-xr-x 2 root root 4096 Jul 13  2025 docs\n-rw-r--r-- 1 root root 1966 Jul 13  2025 pyproject.toml\ndrwxr-xr-x 2 root root 4096 Jul 13  2025 requirements\n-rw-r--r-- 1 root root 2268 Jul 13  2025 setup.py\ndrwxr-xr-x 4 root root 4096 Jul 13  2025 src\ndrwxr-xr-x 2 root root 4096 Jul 13  2025 tests\n-rw-r--r-- 1 root root 1122 Jul 13  2025 tox.ini\n/testbed/src/markupsafe/_native.py\n/testbed/src/markupsafe/__init__.py\n/testbed/pyproject.toml\n/testbed/tests/test_escape.py\n/testbed/tests/__init__.py\n/testbed/tests/test_markupsafe.py\n/testbed/tests/test_leak.py\n/testbed/tests/conftest.py\n/testbed/tests/test_exception_custom_html.py\n/testbed/bench.py\n/testbed/README.md\n/testbed/setup.py\n/testbed/docs/conf.py\n/testbed/.github/ISSUE_TEMPLATE/bug-report.md\n/testbed/.github/ISSUE_TEMPLATE/feature-request.md\n/testbed/.github/pull_request_template.md\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-d994fb5e-d5b5-4b5a-abbd-6e7d28d5c7ae-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/src/markupsafe/__init__.py && echo \"======= NATIVE =======\" && cat /testbed/src/markupsafe/_native.py && echo \"======= TESTS =======\" && cat /testbed/tests/test_markupsafe.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-d994fb5e-d5b5-4b5a-abbd-6e7d28d5c7ae-1",
+            "content": "\": \"<bar>\"}\n    expect = Markup(\"<em>&lt;foo&gt;:&lt;bar&gt;</em>\")\n    assert result == expect\n\n\ndef test_escaping() -> None:\n    assert escape(\"\\\"<>&'\") == \"&#34;&lt;&gt;&amp;&#39;\"\n    assert (\n        Markup(\n            \"<!-- outer comment -->\"\n            \"<em>Foo &amp; Bar\"\n            \" <!-- inner comment about <em> -->\\n \"\n            \"</em>\"\n            \"<!-- comment\\nwith\\nnewlines\\n-->\"\n            \"<meta content='tag\\nwith\\nnewlines'>\"\n        ).striptags()\n        == \"Foo & Bar\"\n    )\n\n\ndef test_unescape() -> None:\n    assert Markup(\"&lt;test&gt;\").unescape() == \"<test>\"\n\n    result = Markup(\"jack & tavi are cooler than mike &amp; russ\").unescape()\n    expect = \"jack & tavi are cooler than mike & russ\"\n    assert result == expect\n\n    original = \"&foo&#x3b;\"\n    once = Markup(original).unescape()\n    twice = Markup(once).unescape()\n    expect = \"&foo;\"\n    assert once == expect\n    assert twice == expect\n\n\ndef test_format() -> None:\n    result = Markup(\"<em>{awesome}</em>\").format(awesome=\"<awesome>\")\n    assert result == \"<em>&lt;awesome&gt;</em>\"\n\n    result = Markup(\"{0[1][bar]}\").format([0, {\"bar\": \"<bar/>\"}])\n    assert result == \"&lt;bar/&gt;\"\n\n    result = Markup(\"{0[1][bar]}\").format([0, {\"bar\": Markup(\"<bar/>\")}])\n    assert result == \"<bar/>\"\n\n\ndef test_format_map() -> None:\n    result = Markup(\"<em>{value}</em>\").format_map({\"value\": \"<value>\"})\n    assert result == \"<em>&lt;value&gt;</em>\"\n\n\ndef test_formatting_empty() -> None:\n    formatted = Markup(\"{}\").format(0)\n    assert formatted == Markup(\"0\")\n\n\ndef test_custom_formatting() -> None:\n    class HasHTMLOnly:\n        def __html__(self) -> Markup:\n            return Markup(\"<foo>\")\n\n    class HasHTMLAndFormat:\n        def __html__(self) -> Markup:\n            return Markup(\"<foo>\")\n\n        def __html_format__(self, spec: str) -> Markup:\n            return Markup(\"<FORMAT>\")\n\n    assert Markup(\"{0}\").format(HasHTMLOnly()) == Markup(\"<foo>\")\n    assert Markup(\"{0}\").format(HasHTMLAndFormat()) == Markup(\"<FORMAT>\")\n\n\ndef test_complex_custom_formatting() -> None:\n    class User:\n        def __init__(self, id: int, username: str) -> None:\n            self.id = id\n            self.username = username\n\n        def __html_format__(self, format_spec: str) -> Markup:\n            if format_spec == \"link\":\n                return Markup('<a href=\"/user/{0}\">{1}</a>').format(\n                    self.id, self.__html__()\n                )\n            elif format_spec:\n                raise ValueError(\"Invalid format spec\")\n\n            return self.__html__()\n\n        def __html__(self) -> Markup:\n            return Markup(\"<span class=user>{0}</span>\").format(self.username)\n\n    user = User(1, \"foo\")\n    result = Markup(\"<p>User: {0:link}\").format(user)\n    expect = Markup('<p>User: <a href=\"/user/1\"><span class=user>foo</span></a>')\n    assert result == expect\n\n\ndef test_formatting_with_objects() -> None:\n    class Stringable:\n        def __str__(self) -> str:\n            return \"строка\"\n\n    assert Markup(\"{s}\").format(s=Stringable()) == Markup(\"строка\")\n\n\ndef test_escape_silent() -> None:\n    assert escape_silent(None) == Markup()\n    assert escape(None) == Markup(None)\n    assert escape_silent(\"<foo>\") == Markup(\"&lt;foo&gt;\")\n\n\ndef test_splitting() -> None:\n    expect = [Markup(\"a\"), Markup(\"b\")]\n    assert Markup(\"a b\").split() == expect\n    assert Markup(\"a b\").rsplit() == expect\n    assert Markup(\"a\\nb\").splitlines() == expect\n\n\ndef test_mul() -> None:\n    assert Markup(\"a\") * 3 == Markup(\"aaa\")\n\n\ndef test_escape_return_type() -> None:\n    assert isinstance(escape(\"a\"), Markup)\n    assert isinstance(escape(Markup(\"a\")), Markup)\n\n    class Foo:\n        def __html__(self) -> str:\n            return \"<strong>Foo</strong>\"\n\n    assert isinstance(escape(Foo()), Markup)\n\n\ndef test_soft_str() -> None:\n    assert type(soft_str(\"\")) is str  # noqa: E721\n    assert type(soft_str(Markup())) is Markup  # noqa: E721\n    assert type(soft_str(15)) is str  # noqa: E721\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-9f0b6a08-436c-4543-af49-3794fdf4a2c3-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cat /testbed/src/markupsafe/__init__.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-9f0b6a08-436c-4543-af49-3794fdf4a2c3-2",
+            "content": "hars))\n\n    def translate(\n        self,\n        table: cabc.Mapping[int, str | int | None],  # type: ignore[override]\n        /,\n    ) -> str:\n        return self.__class__(super().translate(table))\n\n    def expandtabs(self, /, tabsize: t.SupportsIndex = 8) -> te.Self:\n        return self.__class__(super().expandtabs(tabsize))\n\n    def swapcase(self, /) -> te.Self:\n        return self.__class__(super().swapcase())\n\n    def zfill(self, width: t.SupportsIndex, /) -> te.Self:\n        return self.__class__(super().zfill(width))\n\n    def casefold(self, /) -> te.Self:\n        return self.__class__(super().casefold())\n\n    def removeprefix(self, prefix: str, /) -> te.Self:\n        return self.__class__(super().removeprefix(prefix))\n\n    def removesuffix(self, suffix: str) -> te.Self:\n        return self.__class__(super().removesuffix(suffix))\n\n    def partition(self, sep: str, /) -> tuple[te.Self, te.Self, te.Self]:\n        left, sep, right = super().partition(sep)\n        cls = self.__class__\n        return cls(left), cls(sep), cls(right)\n\n    def rpartition(self, sep: str, /) -> tuple[te.Self, te.Self, te.Self]:\n        left, sep, right = super().rpartition(sep)\n        cls = self.__class__\n        return cls(left), cls(sep), cls(right)\n\n    def format(self, *args: t.Any, **kwargs: t.Any) -> te.Self:\n        formatter = EscapeFormatter(self.escape)\n        return self.__class__(formatter.vformat(self, args, kwargs))\n\n    def format_map(\n        self,\n        mapping: cabc.Mapping[str, t.Any],  # type: ignore[override]\n        /,\n    ) -> te.Self:\n        formatter = EscapeFormatter(self.escape)\n        return self.__class__(formatter.vformat(self, (), mapping))\n\n    def __html_format__(self, format_spec: str, /) -> te.Self:\n        if format_spec:\n            raise ValueError(\"Unsupported format specification for Markup.\")\n\n        return self\n\n\nclass EscapeFormatter(string.Formatter):\n    __slots__ = (\"escape\",)\n\n    def __init__(self, escape: _TPEscape) -> None:\n        self.escape: _TPEscape = escape\n        super().__init__()\n\n    def format_field(self, value: t.Any, format_spec: str) -> str:\n        if hasattr(value, \"__html_format__\"):\n            rv = value.__html_format__(format_spec)\n        elif hasattr(value, \"__html__\"):\n            if format_spec:\n                raise ValueError(\n                    f\"Format specifier {format_spec} given, but {type(value)} does not\"\n                    \" define __html_format__. A class that defines __html__ must define\"\n                    \" __html_format__ to work with format specifiers.\"\n                )\n            rv = value.__html__()\n        else:\n            # We need to make sure the format spec is str here as\n            # otherwise the wrong callback methods are invoked.\n            rv = super().format_field(value, str(format_spec))\n        return str(self.escape(rv))\n\n\nclass _MarkupEscapeHelper:\n    \"\"\"Helper for :meth:`Markup.__mod__`.\"\"\"\n\n    __slots__ = (\"obj\", \"escape\")\n\n    def __init__(self, obj: t.Any, escape: _TPEscape) -> None:\n        self.obj: t.Any = obj\n        self.escape: _TPEscape = escape\n\n    def __getitem__(self, key: t.Any, /) -> te.Self:\n        return self.__class__(self.obj[key], self.escape)\n\n    def __str__(self, /) -> str:\n        return str(self.escape(self.obj))\n\n    def __repr__(self, /) -> str:\n        return str(self.escape(repr(self.obj)))\n\n    def __int__(self, /) -> int:\n        return int(self.obj)\n\n    def __float__(self, /) -> float:\n        return float(self.obj)\n\n\ndef __getattr__(name: str) -> t.Any:\n    if name == \"__version__\":\n        import importlib.metadata\n        import warnings\n\n        warnings.warn(\n            \"The '__version__' attribute is deprecated and will be removed in\"\n            \" MarkupSafe 3.1. Use feature detection, or\"\n            ' `importlib.metadata.version(\"markupsafe\")`, instead.',\n            stacklevel=2,\n        )\n        return importlib.metadata.version(\"markupsafe\")\n\n    raise AttributeError(name)\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 5,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-073c96e7-8dcf-4b41-a43e-d2d39777f426-3",
+          "function_name": "shell",
+          "arguments": {
+            "command": "grep -n \"striptags\\|unescape\\|class Markup\" /testbed/src/markupsafe/__init__.py /testbed/src/markupsafe/_native.py /testbed/tests/*.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-073c96e7-8dcf-4b41-a43e-d2d39777f426-3",
+            "content": "/testbed/src/markupsafe/__init__.py:84:class Markup(str):\n/testbed/src/markupsafe/__init__.py:188:    def unescape(self, /) -> str:\n/testbed/src/markupsafe/__init__.py:192:        >>> Markup(\"Main &raquo; <em>About</em>\").unescape()\n/testbed/src/markupsafe/__init__.py:195:        from html import unescape\n/testbed/src/markupsafe/__init__.py:197:        return unescape(str(self))\n/testbed/src/markupsafe/__init__.py:199:    def striptags(self, /) -> str:\n/testbed/src/markupsafe/__init__.py:200:        \"\"\":meth:`unescape` the markup, remove tags, and normalize\n/testbed/src/markupsafe/__init__.py:203:        >>> Markup(\"Main &raquo;\\t<em>About</em>\").striptags()\n/testbed/src/markupsafe/__init__.py:228:        return self.__class__(value).unescape()\n/testbed/tests/test_markupsafe.py:87:        ).striptags()\n/testbed/tests/test_markupsafe.py:92:def test_unescape() -> None:\n/testbed/tests/test_markupsafe.py:93:    assert Markup(\"&lt;test&gt;\").unescape() == \"<test>\"\n/testbed/tests/test_markupsafe.py:95:    result = Markup(\"jack & tavi are cooler than mike &amp; russ\").unescape()\n/testbed/tests/test_markupsafe.py:100:    once = Markup(original).unescape()\n/testbed/tests/test_markupsafe.py:101:    twice = Markup(once).unescape()\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 6,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-a3e52977-ae3b-440d-9644-9f47b5ed8503-4",
+          "function_name": "shell",
+          "arguments": {
+            "command": "sed -n '180,250p' /testbed/src/markupsafe/__init__.py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-a3e52977-ae3b-440d-9644-9f47b5ed8503-4",
+            "content": "    ) -> list[te.Self]:\n        return [self.__class__(v) for v in super().rsplit(sep, maxsplit)]\n\n    def splitlines(  # type: ignore[override]\n        self, /, keepends: bool = False\n    ) -> list[te.Self]:\n        return [self.__class__(v) for v in super().splitlines(keepends)]\n\n    def unescape(self, /) -> str:\n        \"\"\"Convert escaped markup back into a text string. This replaces\n        HTML entities with the characters they represent.\n\n        >>> Markup(\"Main &raquo; <em>About</em>\").unescape()\n        'Main » <em>About</em>'\n        \"\"\"\n        from html import unescape\n\n        return unescape(str(self))\n\n    def striptags(self, /) -> str:\n        \"\"\":meth:`unescape` the markup, remove tags, and normalize\n        whitespace to single spaces.\n\n        >>> Markup(\"Main &raquo;\\t<em>About</em>\").striptags()\n        'Main » About'\n        \"\"\"\n        value = str(self)\n\n        # Look for comments then tags separately. Otherwise, a comment that\n        # contains a tag would end early, leaving some of the comment behind.\n\n        # keep finding comment start marks\n        while (start := value.find(\"<!--\")) != -1:\n            # find a comment end mark beyond the start, otherwise stop\n            if (end := value.find(\"-->\", start)) == -1:\n                break\n\n            value = f\"{value[:start]}{value[end + 3:]}\"\n\n        # remove tags using the same method\n        while (start := value.find(\"<\")) != -1:\n            if (end := value.find(\">\", start)) == -1:\n                break\n\n            value = f\"{value[:start]}{value[end + 1:]}\"\n\n        # collapse spaces\n        value = \" \".join(value.split())\n        return self.__class__(value).unescape()\n\n    @classmethod\n    def escape(cls, s: t.Any, /) -> te.Self:\n        \"\"\"Escape a string. Calls :func:`escape` and ensures that for\n        subclasses the correct type is returned.\n        \"\"\"\n        rv = escape(s)\n\n        if rv.__class__ is not cls:\n            return cls(rv)\n\n        return rv  # type: ignore[return-value]\n\n    def __getitem__(self, key: t.SupportsIndex | slice, /) -> te.Self:\n        return self.__class__(super().__getitem__(key))\n\n    def capitalize(self, /) -> te.Self:\n        return self.__class__(super().capitalize())\n\n    def title(self, /) -> te.Self:\n        return self.__class__(super().title())\n\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 7,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "The current `striptags` already tries to strip comments — I'll run tests and check git history to see what's actually failing.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-755011a3-ee4c-4521-9c71-1ce7383a6f05-5",
+          "function_name": "shell",
+          "arguments": {
+            "command": "cd /testbed && git log --oneline -20 && echo \"==== CHANGES ====\" && cat CHANGES.rst | head -80 && echo \"==== GIT DIFF ====\" && git log -p --all -- src/markupsafe/__init__.py | head -200"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-755011a3-ee4c-4521-9c71-1ce7383a6f05-5",
+            "content": " value is assumed to already be safe for HTML.\n-\n-    :param s: An object to be converted to a string and escaped.\n-    :return: A :class:`Markup` string with the escaped text.\n-    \"\"\"\n-    # If the object is already a plain string, skip __html__ check and string\n-    # conversion. This is the most common use case.\n-    # Use type(s) instead of s.__class__ because a proxy object may be reporting\n-    # the __class__ of the proxied value.\n-    if type(s) is str:\n-        return Markup(_escape_inner(s))\n-\n-    if hasattr(s, \"__html__\"):\n-        return Markup(s.__html__())\n-\n-    return Markup(_escape_inner(str(s)))\n-\n-\n-def escape_silent(s: t.Any | None, /) -> Markup:\n-    \"\"\"Like :func:`escape` but treats ``None`` as the empty string.\n-    Useful with optional values, as otherwise you get the string\n-    ``'None'`` when the value is ``None``.\n-\n-    >>> escape(None)\n-    Markup('None')\n-    >>> escape_silent(None)\n-    Markup('')\n-    \"\"\"\n-    if s is None:\n-        return Markup()\n-\n-    return escape(s)\n-\n-\n-def soft_str(s: t.Any, /) -> str:\n-    \"\"\"Convert an object to a string if it isn't already. This preserves\n-    a :class:`Markup` string rather than converting it back to a basic\n-    string, so it will still be marked as safe and won't be escaped\n-    again.\n-\n-    >>> value = escape(\"<User 1>\")\n-    >>> value\n-    Markup('&lt;User 1&gt;')\n-    >>> escape(str(value))\n-    Markup('&amp;lt;User 1&amp;gt;')\n-    >>> escape(soft_str(value))\n-    Markup('&lt;User 1&gt;')\n-    \"\"\"\n-    if not isinstance(s, str):\n-        return str(s)\n-\n-    return s\n-\n-\n class Markup(str):\n     \"\"\"A string that is ready to be safely inserted into an HTML or XML\n     document, either because it was escaped or because it was marked\n\ncommit 1bc2bc70c04697225253e881262c7a50a8bc2c6d\nAuthor: swesmith <swesmith@swesmith.ai>\nDate:   Sun Jul 13 10:27:35 2025 +0000\n\n    Bug Patch\n\ndiff --git a/src/markupsafe/__init__.py b/src/markupsafe/__init__.py\nindex fee8dc7..38f924b 100644\n--- a/src/markupsafe/__init__.py\n+++ b/src/markupsafe/__init__.py\n@@ -203,7 +203,8 @@ class Markup(str):\n         >>> Markup(\"Main &raquo;\\t<em>About</em>\").striptags()\n         'Main » About'\n         \"\"\"\n-        value = str(self)\n+        # collapse spaces\n+        value = \" \".join(self.split())\n \n         # Look for comments then tags separately. Otherwise, a comment that\n         # contains a tag would end early, leaving some of the comment behind.\n@@ -223,8 +224,6 @@ class Markup(str):\n \n             value = f\"{value[:start]}{value[end + 1:]}\"\n \n-        # collapse spaces\n-        value = \" \".join(value.split())\n         return self.__class__(value).unescape()\n \n     @classmethod\n\ncommit 649404a3dfdabd134198c0c66027a7329f4d0970\nAuthor: swesmith <swesmith@swesmith.ai>\nDate:   Sun Jul 13 10:27:33 2025 +0000\n\n    Bug Patch\n\ndiff --git a/src/markupsafe/__init__.py b/src/markupsafe/__init__.py\nindex fee8dc7..7cfd5e3 100644\n--- a/src/markupsafe/__init__.py\n+++ b/src/markupsafe/__init__.py\n@@ -379,6 +379,11 @@ class _MarkupEscapeHelper:\n         return float(self.obj)\n \n \n+__version__ = \"2.2.0.dev\"\n+\n+_strip_comments_re = re.compile(r\"<!--.*?-->\", re.DOTALL)\n+_strip_tags_re = re.compile(r\"<.*?>\", re.DOTALL)\n+\n def __getattr__(name: str) -> t.Any:\n     if name == \"__version__\":\n         import importlib.metadata\n\ncommit 15048f4f66434457baa1dde14712f4438832208b\nAuthor: swesmith <swesmith@swesmith.ai>\nDate:   Sun Jul 13 10:27:31 2025 +0000\n\n    Bug Patch\n\ndiff --git a/src/markupsafe/__init__.py b/src/markupsafe/__init__.py\nindex fee8dc7..db5d4d8 100644\n--- a/src/markupsafe/__init__.py\n+++ b/src/markupsafe/__init__.py\n@@ -1,84 +1,31 @@\n-from __future__ import annotations\n-\n-import collections.abc as cabc\n+import functools\n+import re\n import string\n+import sys\n import typing as t\n \n-try:\n-    from ._speedups import _escape_inner\n-except ImportError:\n-    from ._native import _escape_inner\n-\n if t.TYPE_CHECKING:\n     import typing_extensions as te\n \n+    class HasHTML(te.Protocol):\n"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,3351 @@
+{
+  "audit_visibility": "full existing future; old request timings are observations, not semantic_soft outcomes",
+  "five_percent_slo_validated": false,
+  "gpu_performance_validated": false,
+  "independent_held_out_evidence": false,
+  "inputs": [
+    "results/checkpoint-admission/traces/real_tool-tight_burst-101-apc.json",
+    "results/checkpoint-admission/traces/real_tool-tight_burst-101-cost_greedy.json",
+    "results/checkpoint-admission/traces/real_tool-tight_burst-202-apc.json",
+    "results/checkpoint-admission/traces/real_tool-tight_burst-202-cost_greedy.json",
+    "results/checkpoint-admission/traces/real_tool-tight_burst-303-apc.json",
+    "results/checkpoint-admission/traces/real_tool-tight_burst-303-cost_greedy.json"
+  ],
+  "kind": "cpu_trace_audit",
+  "limits": "No new inference. No counterfactual P95, realized savings, or per-checkpoint causal latency attribution.",
+  "online_visibility": "declared fixed DAG, independent tool priors, events at or before t only",
+  "pairs": [
+    {
+      "clock_bridge": {
+        "bridge_spread_seconds": 0.005058501847088337,
+        "limitation": "approximate bridge includes dispatcher lag; never supplied to online policy",
+        "origin": 1629293.1099647281,
+        "source": "legacy_min_dispatch_complete_minus_request_complete"
+      },
+      "no_consumer_diagnostics": [
+        {
+          "checkpoint_id": "task-0-redundant",
+          "declared_consumers": [],
+          "first_drop_offset": 0.9744854317978024,
+          "first_keep_offset": 0.7446334948763251,
+          "first_predicted_benefit_seconds": 0.08000613122008163,
+          "first_retention_window_seconds": 0.22985193692147732,
+          "full_future_gpu_submissions": 0,
+          "online": {
+            "future_consumers": [],
+            "future_preference": false,
+            "neutral_reason": "legacy trace lacks causal preparation/queue history and current cache identity",
+            "reason": "no_live_gpu_consumer"
+          },
+          "predicted_benefits_are_not_cumulative_savings": true
+        },
+        {
+          "checkpoint_id": "task-1-redundant",
+          "declared_consumers": [],
+          "first_drop_offset": 32.34387022792362,
+          "first_keep_offset": 32.331923657795414,
+          "first_predicted_benefit_seconds": 0.10299230255057279,
+          "first_retention_window_seconds": 0.011946570128202438,
+          "full_future_gpu_submissions": 0,
+          "online": {
+            "future_consumers": [],
+            "future_preference": false,
+            "neutral_reason": "legacy trace lacks causal preparation/queue history and current cache identity",
+            "reason": "no_live_gpu_consumer"
+          },
+          "predicted_benefits_are_not_cumulative_savings": true
+        },
+        {
+          "checkpoint_id": "task-2-redundant",
+          "declared_consumers": [],
+          "first_drop_offset": 44.67707361583598,
+          "first_keep_offset": 44.646419101860374,
+          "first_predicted_benefit_seconds": 0.057198147264245436,
+          "first_retention_window_seconds": 0.03065451397560537,
+          "full_future_gpu_submissions": 0,
+          "online": {
+            "future_consumers": [],
+            "future_preference": false,
+            "neutral_reason": "legacy trace lacks causal preparation/queue history and current cache identity",
+            "reason": "no_live_gpu_consumer"
+          },
+          "predicted_benefits_are_not_cumulative_savings": true
+        },
+        {
+          "checkpoint_id": "task-3-redundant",
+          "declared_consumers": [],
+          "first_drop_offset": 48.36910309898667,
+          "first_keep_offset": 48.33358397195116,
+          "first_predicted_benefit_seconds": 0.057198147264245436,
+          "first_retention_window_seconds": 0.03551912703551352,
+          "full_future_gpu_submissions": 0,
+          "online": {
+            "future_consumers": [],
+            "future_preference": false,
+            "neutral_reason": "legacy trace lacks causal preparation/queue history and current cache identity",
+            "reason": "no_live_gpu_consumer"
+          },
+          "predicted_benefits_are_not_cumulative_savings": true
+        }
+      ],
+      "paired_requests": 124,
+      "request_latency_deltas": {
+        "background-000": {
+          "engine_queue": -0.0005124909803271294,
+          "enqueue": 0.0017551220953464508,
+          "schedule_to_first_token": 0.003541705897077918,
+          "ttft": 0.0047843370120972395
+        },
+        "background-001": {
+          "engine_queue": 0.0008137049153447151,
+          "enqueue": 0.00828252313658595,
+          "schedule_to_first_token": 0.0012502660974860191,
+          "ttft": 0.010346494149416685
+        },
+        "background-002": {
+          "engine_queue": 0.00026664091274142265,
+          "enqueue": 0.013384809019044042,
+          "schedule_to_first_token": 0.0008427910506725311,
+          "ttft": 0.014494240982457995
+        },
+        "background-003": {
+          "engine_queue": 0.00010659382678568363,
+          "enqueue": -0.01193947484716773,
+          "schedule_to_first_token": 0.0006364311557263136,
+          "ttft": -0.011196449864655733
+        },
+        "background-004": {
+          "engine_queue": 0.037990293931216,
+          "enqueue": 0.007744475034996867,
+          "schedule_to_first_token": -0.0007083348464220762,
+          "ttft": 0.04502643411979079
+        },
+        "background-005": {
+          "engine_queue": 0.09873045491985977,
+          "enqueue": 0.01066158409230411,
+          "schedule_to_first_token": 0.0004061011131852865,
+          "ttft": 0.10979814012534916
+        },
+        "background-006": {
+          "engine_queue": 0.1813530211802572,
+          "enqueue": -0.008059946121647954,
+          "schedule_to_first_token": 0.00020061410032212734,
+          "ttft": 0.17349368915893137
+        },
+        "background-007": {
+          "engine_queue": 0.14373136404901743,
+          "enqueue": 0.05286222603172064,
+          "schedule_to_first_token": 0.002269360003992915,
+          "ttft": 0.19886295008473098
+        },
+        "background-008": {
+          "engine_queue": 0.29631427698768675,
+          "enqueue": -0.009575159987434745,
+          "schedule_to_first_token": -0.00045384280383586884,
+          "ttft": 0.28628527419641614
+        },
+        "background-009": {
+          "engine_queue": 0.44290554872713983,
+          "enqueue": -0.10421119583770633,
+          "schedule_to_first_token": 0.0001829131506383419,
+          "ttft": 0.33887726604007185
+        },
+        "background-010": {
+          "engine_queue": 0.22907289024442434,
+          "enqueue": 0.17329459893517196,
+          "schedule_to_first_token": 0.00040609179995954037,
+          "ttft": 0.40277358097955585
+        },
+        "background-011": {
+          "engine_queue": 0.4125183701980859,
+          "enqueue": 0.061223180033266544,
+          "schedule_to_first_token": 0.0006465618498623371,
+          "ttft": 0.4743881120812148
+        },
+        "background-012": {
+          "engine_queue": 0.4949839520268142,
+          "enqueue": 0.04269547504372895,
+          "schedule_to_first_token": -0.0006182310171425343,
+          "ttft": 0.5370611960534006
+        },
+        "background-013": {
+          "engine_queue": 0.6077627770137042,
+          "enqueue": 0.0057485890574753284,
+          "schedule_to_first_token": 0.001979879103600979,
+          "ttft": 0.6154912451747805
+        },
+        "background-014": {
+          "engine_queue": 0.5963576808571815,
+          "enqueue": 0.017155544133856893,
+          "schedule_to_first_token": 0.0019780201837420464,
+          "ttft": 0.6154912451747805
+        },
+        "background-015": {
+          "engine_queue": 0.7025566587690264,
+          "enqueue": -0.1277242477517575,
+          "schedule_to_first_token": 0.0009872070513665676,
+          "ttft": 0.5758196180686355
+        },
+        "background-016": {
+          "engine_queue": 0.5583249218761921,
+          "enqueue": 0.1202197961974889,
+          "schedule_to_first_token": 7.945788092911243e-05,
+          "ttft": 0.6786241759546101
+        },
+        "background-017": {
+          "engine_queue": 0.7315414259210229,
+          "enqueue": -0.008403260027989745,
+          "schedule_to_first_token": 0.009021245175972581,
+          "ttft": 0.7321594110690057
+        },
+        "background-018": {
+          "engine_queue": 0.8583500019740313,
+          "enqueue": -0.13520943582989275,
+          "schedule_to_first_token": 0.009018844924867153,
+          "ttft": 0.7321594110690057
+        },
+        "background-019": {
+          "engine_queue": 0.29584874282591045,
+          "enqueue": 0.003642774187028408,
+          "schedule_to_first_token": -0.19491859106346965,
+          "ttft": 0.10457292594946921
+        },
+        "background-020": {
+          "engine_queue": 0.7511828150600195,
+          "enqueue": -0.1738987050484866,
+          "schedule_to_first_token": -0.20003542490303516,
+          "ttft": 0.37724868510849774
+        },
+        "background-021": {
+          "engine_queue": 0.07004848471842706,
+          "enqueue": -0.15168113284744322,
+          "schedule_to_first_token": 0.0005914121866226196,
+          "ttft": -0.08104123594239354
+        },
+        "background-022": {
+          "engine_queue": -0.14661411102861166,
+          "enqueue": 0.06498166313394904,
+          "schedule_to_first_token": 0.0005912119522690773,
+          "ttft": -0.08104123594239354
+        },
+        "background-023": {
+          "engine_queue": 0.19734803796745837,
+          "enqueue": 0.004411972127854824,
+          "schedule_to_first_token": -0.19752807798795402,
+          "ttft": 0.004231932107359171
+        },
+        "background-024": {
+          "engine_queue": 0.6111266929656267,
+          "enqueue": -0.012198713840916753,
+          "schedule_to_first_token": 0.21411912888288498,
+          "ttft": 0.8130471080075949
+        },
+        "background-025": {
+          "engine_queue": 0.6917440590914339,
+          "enqueue": -0.15063967485912144,
+          "schedule_to_first_token": 0.009344409918412566,
+          "ttft": 0.550448794150725
+        },
+        "background-026": {
+          "engine_queue": 0.6076700419653207,
+          "enqueue": -0.06656576786190271,
+          "schedule_to_first_token": 0.009344520047307014,
+          "ttft": 0.550448794150725
+        },
+        "background-027": {
+          "engine_queue": 1.187785963760689,
+          "enqueue": 0.03744205320253968,
+          "schedule_to_first_token": 0.006343703251332045,
+          "ttft": 1.2315717202145606
+        },
+        "background-028": {
+          "engine_queue": 1.259497351013124,
+          "enqueue": -0.034269163850694895,
+          "schedule_to_first_token": 0.006343533052131534,
+          "ttft": 1.2315717202145606
+        },
+        "background-029": {
+          "engine_queue": 1.5162678267806768,
+          "enqueue": -0.2762984607834369,
+          "schedule_to_first_token": 0.0013416430447250605,
+          "ttft": 1.241311009041965
+        },
+        "background-030": {
+          "engine_queue": 1.135739624267444,
+          "enqueue": 0.10422988096252084,
+          "schedule_to_first_token": 0.0013415038120001554,
+          "ttft": 1.241311009041965
+        },
+        "background-031": {
+          "engine_queue": 1.4965582790318877,
+          "enqueue": -0.15407724399119616,
+          "schedule_to_first_token": 0.0004130240995436907,
+          "ttft": 1.3428940591402352
+        },
+        "background-032": {
+          "engine_queue": 1.0121887538116425,
+          "enqueue": 0.3302922712173313,
+          "schedule_to_first_token": 0.0004130341112613678,
+          "ttft": 1.3428940591402352
+        },
+        "background-033": {
+          "engine_queue": 1.3816467442084104,
+          "enqueue": -0.007737111067399383,
+          "schedule_to_first_token": -8.91759991645813e-05,
+          "ttft": 1.3738204571418464
+        },
+        "background-034": {
+          "engine_queue": 1.381031989119947,
+          "enqueue": -0.007122586015611887,
+          "schedule_to_first_token": -8.894596248865128e-05,
+          "ttft": 1.3738204571418464
+        },
+        "background-035": {
+          "engine_queue": 1.4190937401726842,
+          "enqueue": 0.0035746688954532146,
+          "schedule_to_first_token": 0.003535735886543989,
+          "ttft": 1.4262041449546814
+        },
+        "background-036": {
+          "engine_queue": 1.6340305309277028,
+          "enqueue": -0.21136140171438456,
+          "schedule_to_first_token": 0.0035350157413631678,
+          "ttft": 1.4262041449546814
+        },
+        "background-037": {
+          "engine_queue": 1.3944111291784793,
+          "enqueue": 0.004064335022121668,
+          "schedule_to_first_token": 0.001018980983644724,
+          "ttft": 1.3994944451842457
+        },
+        "background-038": {
+          "engine_queue": 1.394317656988278,
+          "enqueue": 0.0041579981334507465,
+          "schedule_to_first_token": 0.0010187900625169277,
+          "ttft": 1.3994944451842457
+        },
+        "background-039": {
+          "engine_queue": 1.380215812008828,
+          "enqueue": 0.1273374070879072,
+          "schedule_to_first_token": 0.004658042918890715,
+          "ttft": 1.5122112620156258
+        },
+        "background-040": {
+          "engine_queue": 1.3801981920842081,
+          "enqueue": 0.1273550670593977,
+          "schedule_to_first_token": 0.004658002872020006,
+          "ttft": 1.5122112620156258
+        },
+        "background-041": {
+          "engine_queue": 1.4096854398958385,
+          "enqueue": 0.12735034711658955,
+          "schedule_to_first_token": -0.10457288380712271,
+          "ttft": 1.4324629032053053
+        },
+        "background-042": {
+          "engine_queue": 0.9101839039940387,
+          "enqueue": 0.10800153808668256,
+          "schedule_to_first_token": 0.19798371708020568,
+          "ttft": 1.216169159160927
+        },
+        "background-043": {
+          "engine_queue": 1.1650742162019014,
+          "enqueue": 0.10794076486490667,
+          "schedule_to_first_token": 0.0078048850409686565,
+          "ttft": 1.2808198661077768
+        },
+        "background-044": {
+          "engine_queue": 1.239612037083134,
+          "enqueue": 0.033402903005480766,
+          "schedule_to_first_token": 0.00780492601916194,
+          "ttft": 1.2808198661077768
+        },
+        "background-045": {
+          "engine_queue": 1.2575561550911516,
+          "enqueue": 0.014460821868851781,
+          "schedule_to_first_token": 0.19977837288752198,
+          "ttft": 1.4717953498475254
+        },
+        "background-046": {
+          "engine_queue": 0.6793551018927246,
+          "enqueue": 0.3797371140681207,
+          "schedule_to_first_token": 0.19861799501813948,
+          "ttft": 1.2577102109789848
+        },
+        "background-047": {
+          "engine_queue": 1.4735799957998097,
+          "enqueue": -0.10125207086093724,
+          "schedule_to_first_token": 0.0007804210763424635,
+          "ttft": 1.373108346015215
+        },
+        "background-048": {
+          "engine_queue": 1.2473729359917343,
+          "enqueue": 0.12495513912290335,
+          "schedule_to_first_token": 0.0007802709005773067,
+          "ttft": 1.373108346015215
+        },
+        "background-049": {
+          "engine_queue": 1.2854898718651384,
+          "enqueue": 0.050141435116529465,
+          "schedule_to_first_token": 0.2011667510960251,
+          "ttft": 1.536798058077693
+        },
+        "background-050": {
+          "engine_queue": 1.267830432858318,
+          "enqueue": -0.14484922378323972,
+          "schedule_to_first_token": 0.20049403212033212,
+          "ttft": 1.3234752411954105
+        },
+        "background-051": {
+          "engine_queue": 1.4138028861489147,
+          "enqueue": -0.02177669294178486,
+          "schedule_to_first_token": 0.10610591783188283,
+          "ttft": 1.4981321110390127
+        },
+        "background-052": {
+          "engine_queue": 1.583809952950105,
+          "enqueue": 0.3307871171273291,
+          "schedule_to_first_token": -0.19467854197137058,
+          "ttft": 1.7199185281060636
+        },
+        "background-053": {
+          "engine_queue": 1.3073035422712564,
+          "enqueue": 0.39550121990032494,
+          "schedule_to_first_token": 0.1990583820734173,
+          "ttft": 1.9018631442449987
+        },
+        "background-054": {
+          "engine_queue": 1.5234867876861244,
+          "enqueue": -0.03495558979921043,
+          "schedule_to_first_token": 0.19799937633797526,
+          "ttft": 1.6865305742248893
+        },
+        "background-055": {
+          "engine_queue": 1.7623361831065267,
+          "enqueue": -0.005578896030783653,
+          "schedule_to_first_token": -0.19551133690401912,
+          "ttft": 1.561245950171724
+        },
+        "background-056": {
+          "engine_queue": 1.9808391779661179,
+          "enqueue": -0.003786655841395259,
+          "schedule_to_first_token": -0.19734888500533998,
+          "ttft": 1.7797036371193826
+        },
+        "background-057": {
+          "engine_queue": 1.9603076670318842,
+          "enqueue": 0.04651955305598676,
+          "schedule_to_first_token": 0.1998028908856213,
+          "ttft": 2.2066301109734923
+        },
+        "background-058": {
+          "engine_queue": 1.7471069982275367,
+          "enqueue": 0.04676485201343894,
+          "schedule_to_first_token": 0.19858969072811306,
+          "ttft": 1.9924615409690887
+        },
+        "background-059": {
+          "engine_queue": 2.197014491073787,
+          "enqueue": 0.04696333105675876,
+          "schedule_to_first_token": -0.19181403098627925,
+          "ttft": 2.0521637911442667
+        },
+        "background-060": {
+          "engine_queue": 2.4188351877965033,
+          "enqueue": 0.04715731926262379,
+          "schedule_to_first_token": -0.19723745784722269,
+          "ttft": 2.2687550492119044
+        },
+        "background-061": {
+          "engine_queue": 2.487551252823323,
+          "enqueue": 0.009766798233613372,
+          "schedule_to_first_token": 0.2064495701342821,
+          "ttft": 2.7037676211912185
+        },
+        "background-062": {
+          "engine_queue": 1.9967648410238326,
+          "enqueue": 0.006015073973685503,
+          "schedule_to_first_token": -0.3190622739493847,
+          "ttft": 1.6837176410481334
+        },
+        "background-063": {
+          "engine_queue": 2.1682455751579255,
+          "enqueue": 0.012559836963191628,
+          "schedule_to_first_token": -0.21424763416871428,
+          "ttft": 1.9665577779524028
+        },
+        "background-064": {
+          "engine_queue": 2.0911134989000857,
+          "enqueue": 0.3046314411330968,
+          "schedule_to_first_token": -0.21334919705986977,
+          "ttft": 2.1823957429733127
+        },
+        "background-065": {
+          "engine_queue": 1.6507939749862999,
+          "enqueue": -0.10600532684475183,
+          "schedule_to_first_token": -0.0021319689694792032,
+          "ttft": 1.5426566791720688
+        },
+        "background-066": {
+          "engine_queue": 1.54838413791731,
+          "enqueue": -0.0035953798796981573,
+          "schedule_to_first_token": -0.002132078865543008,
+          "ttft": 1.5426566791720688
+        },
+        "background-067": {
+          "engine_queue": 1.4055764079093933,
+          "enqueue": -0.1280810448806733,
+          "schedule_to_first_token": -0.18872930901125073,
+          "ttft": 1.0887660540174693
+        },
+        "background-068": {
+          "engine_queue": 1.5165933868847787,
+          "enqueue": -0.01294795679859817,
+          "schedule_to_first_token": -0.1979330840986222,
+          "ttft": 1.3057123459875584
+        },
+        "background-069": {
+          "engine_queue": 0.8172804450150579,
+          "enqueue": 0.15233025304041803,
+          "schedule_to_first_token": -0.001651058904826641,
+          "ttft": 0.9679596391506493
+        },
+        "background-070": {
+          "engine_queue": 0.8165888760704547,
+          "enqueue": 0.15302206203341484,
+          "schedule_to_first_token": -0.0016512989532202482,
+          "ttft": 0.9679596391506493
+        },
+        "background-071": {
+          "engine_queue": 0.5411631220486015,
+          "enqueue": 0.15368771995417774,
+          "schedule_to_first_token": -0.19951928895898163,
+          "ttft": 0.4953315530437976
+        },
+        "background-072": {
+          "engine_queue": 1.0991409169510007,
+          "enqueue": 0.11199055891484022,
+          "schedule_to_first_token": 0.32490479410625994,
+          "ttft": 1.5360362699721009
+        },
+        "background-073": {
+          "engine_queue": 0.9053389108739793,
+          "enqueue": 0.03660567314364016,
+          "schedule_to_first_token": 0.012563757132738829,
+          "ttft": 0.9545083411503583
+        },
+        "background-074": {
+          "engine_queue": 0.7938575251027942,
+          "enqueue": 0.14808713900856674,
+          "schedule_to_first_token": 0.012563677038997412,
+          "ttft": 0.9545083411503583
+        },
+        "background-075": {
+          "engine_queue": 1.809923121938482,
+          "enqueue": -0.31731015676632524,
+          "schedule_to_first_token": 0.0029273140244185925,
+          "ttft": 1.4955402791965753
+        },
+        "background-076": {
+          "engine_queue": 1.5386418181005865,
+          "enqueue": -0.04602877306751907,
+          "schedule_to_first_token": 0.002927234163507819,
+          "ttft": 1.4955402791965753
+        },
+        "background-077": {
+          "engine_queue": 2.0548613350838423,
+          "enqueue": 0.023343757959082723,
+          "schedule_to_first_token": 0.0019415521528571844,
+          "ttft": 2.080146645195782
+        },
+        "background-078": {
+          "engine_queue": 2.4099132190458477,
+          "enqueue": -0.3317077658139169,
+          "schedule_to_first_token": 0.0019411919638514519,
+          "ttft": 2.080146645195782
+        },
+        "background-079": {
+          "engine_queue": 2.213265046942979,
+          "enqueue": 0.011189262149855494,
+          "schedule_to_first_token": 0.007646511076018214,
+          "ttft": 2.232100820168853
+        },
+        "background-080": {
+          "engine_queue": 2.332020790083334,
+          "enqueue": -0.10756489099003375,
+          "schedule_to_first_token": 0.007644921075552702,
+          "ttft": 2.232100820168853
+        },
+        "background-081": {
+          "engine_queue": 2.9482203661464155,
+          "enqueue": -0.08670407603494823,
+          "schedule_to_first_token": -0.0012852740474045277,
+          "ttft": 2.8602310160640627
+        },
+        "background-082": {
+          "engine_queue": 2.9412062522023916,
+          "enqueue": -0.07968994206748903,
+          "schedule_to_first_token": -0.001285294070839882,
+          "ttft": 2.8602310160640627
+        },
+        "background-083": {
+          "engine_queue": 2.9793919678777456,
+          "enqueue": 0.007188744144514203,
+          "schedule_to_first_token": -0.00280809891410172,
+          "ttft": 2.983772613108158
+        },
+        "background-084": {
+          "engine_queue": 2.9920439410489053,
+          "enqueue": -0.00546740903519094,
+          "schedule_to_first_token": -0.002803918905556202,
+          "ttft": 2.983772613108158
+        },
+        "background-085": {
+          "engine_queue": 3.4874630400445312,
+          "enqueue": -0.005299316952005029,
+          "schedule_to_first_token": -0.0017208429053425789,
+          "ttft": 3.4804428801871836
+        },
+        "background-086": {
+          "engine_queue": 3.330896426923573,
+          "enqueue": 0.15126728522591293,
+          "schedule_to_first_token": -0.0017208319623023272,
+          "ttft": 3.4804428801871836
+        },
+        "background-087": {
+          "engine_queue": 3.0727563640102744,
+          "enqueue": -0.00033070193603634834,
+          "schedule_to_first_token": 0.0029255428817123175,
+          "ttft": 3.0753512049559504
+        },
+        "background-088": {
+          "engine_queue": 3.072911218041554,
+          "enqueue": -0.0004850758705288172,
+          "schedule_to_first_token": 0.002925062784925103,
+          "ttft": 3.0753512049559504
+        },
+        "background-089": {
+          "engine_queue": 3.603128937073052,
+          "enqueue": 0.013328175991773605,
+          "schedule_to_first_token": -0.0037384480237960815,
+          "ttft": 3.6127186650410295
+        },
+        "background-090": {
+          "engine_queue": 3.482312757289037,
+          "enqueue": 0.13414422585628927,
+          "schedule_to_first_token": -0.0037383181042969227,
+          "ttft": 3.6127186650410295
+        },
+        "background-091": {
+          "engine_queue": 3.142594181932509,
+          "enqueue": 0.05716864415444434,
+          "schedule_to_first_token": 0.004212608095258474,
+          "ttft": 3.2039754341822118
+        },
+        "background-092": {
+          "engine_queue": 3.180991704110056,
+          "enqueue": 0.018771272152662277,
+          "schedule_to_first_token": 0.004212457919493318,
+          "ttft": 3.2039754341822118
+        },
+        "background-093": {
+          "engine_queue": 3.976130607072264,
+          "enqueue": -0.36232493491843343,
+          "schedule_to_first_token": 0.19962249789386988,
+          "ttft": 3.8134281700477004
+        },
+        "background-094": {
+          "engine_queue": 2.8480293101165444,
+          "enqueue": 0.07238202006556094,
+          "schedule_to_first_token": -0.21500268415547907,
+          "ttft": 2.7054086460266262
+        },
+        "background-095": {
+          "engine_queue": 2.643123430898413,
+          "enqueue": 0.03074430814012885,
+          "schedule_to_first_token": -0.006680292077362537,
+          "ttft": 2.6671874469611794
+        },
+        "task-0-fast-commit": {
+          "engine_queue": 0.008404863066971302,
+          "enqueue": 0.012320121983066201,
+          "schedule_to_first_token": -0.004432282876223326,
+          "ttft": 0.016292702173814178
+        },
+        "task-0-final": {
+          "engine_queue": 0.7101892200298607,
+          "enqueue": 0.00015915604308247566,
+          "schedule_to_first_token": -0.005042293108999729,
+          "ttft": 0.7053060829639435
+        },
+        "task-0-redundant": {
+          "engine_queue": -0.0004042170476168394,
+          "enqueue": 7.5499992817640305e-06,
+          "schedule_to_first_token": 0.0035417459439486265,
+          "ttft": 0.003145078895613551
+        },
+        "task-0-repeat": {
+          "engine_queue": 2.0302449020091444,
+          "enqueue": 0.0013343559112399817,
+          "schedule_to_first_token": 0.19993365602567792,
+          "ttft": 2.2315129139460623
+        },
+        "task-0-root": {
+          "engine_queue": 1.8630875274538994e-05,
+          "enqueue": 2.194102853536606e-05,
+          "schedule_to_first_token": 0.0012609423138201237,
+          "ttft": 0.0013015142176300287
+        },
+        "task-0-slow-commit": {
+          "engine_queue": 0.008168552769348025,
+          "enqueue": 5.087093450129032e-05,
+          "schedule_to_first_token": -0.0044323718175292015,
+          "ttft": 0.003787051886320114
+        },
+        "task-0-useful": {
+          "engine_queue": -0.0002915728837251663,
+          "enqueue": 1.8540769815444946e-05,
+          "schedule_to_first_token": 0.0035416060127317905,
+          "ttft": 0.003268573898822069
+        },
+        "task-1-fast-commit": {
+          "engine_queue": 0.12812347407452762,
+          "enqueue": 8.929288014769554e-05,
+          "schedule_to_first_token": 0.0018450410570949316,
+          "ttft": 0.13005780801177025
+        },
+        "task-1-final": {
+          "engine_queue": -0.00012287497520446777,
+          "enqueue": 3.880122676491737e-06,
+          "schedule_to_first_token": -0.00024170614778995514,
+          "ttft": -0.0003607010003179312
+        },
+        "task-1-redundant": {
+          "engine_queue": 1.17690913612023,
+          "enqueue": 1.2689968571066856e-05,
+          "schedule_to_first_token": -0.0003154831938445568,
+          "ttft": 1.1766063428949565
+        },
+        "task-1-repeat": {
+          "engine_queue": -2.849795378977433,
+          "enqueue": 7.839291356503963e-05,
+          "schedule_to_first_token": -0.20032506017014384,
+          "ttft": -3.0500420462340117
+        },
+        "task-1-root": {
+          "engine_queue": 2.96109508886002,
+          "enqueue": 2.2081025182269514,
+          "schedule_to_first_token": 0.0018557850271463394,
+          "ttft": 5.171053392114118
+        },
+        "task-1-slow-commit": {
+          "engine_queue": 0.12776541919447482,
+          "enqueue": 5.8372970670461655e-05,
+          "schedule_to_first_token": 0.0018434510566294193,
+          "ttft": 0.1296672432217747
+        },
+        "task-1-useful": {
+          "engine_queue": 1.1769945789128542,
+          "enqueue": 0.00012654508464038372,
+          "schedule_to_first_token": -0.00031523313373327255,
+          "ttft": 1.1768058908637613
+        },
+        "task-2-fast-commit": {
+          "engine_queue": 0.009997822809964418,
+          "enqueue": -0.00016160891391336918,
+          "schedule_to_first_token": -0.0014476999640464783,
+          "ttft": 0.008388513932004571
+        },
+        "task-2-final": {
+          "engine_queue": 0.00041999807581305504,
+          "enqueue": 0.00020872801542282104,
+          "schedule_to_first_token": 0.008957298938184977,
+          "ttft": 0.009586025029420853
+        },
+        "task-2-redundant": {
+          "engine_queue": -0.0006834089290350676,
+          "enqueue": 1.9150087609887123e-05,
+          "schedule_to_first_token": 0.00024835183285176754,
+          "ttft": -0.0004159070085734129
+        },
+        "task-2-repeat": {
+          "engine_queue": -0.00010406505316495895,
+          "enqueue": -4.631001502275467e-06,
+          "schedule_to_first_token": 4.517519846558571e-05,
+          "ttft": -6.352085620164871e-05
+        },
+        "task-2-root": {
+          "engine_queue": -4.141218960285187e-05,
+          "enqueue": 3.6809904891997576,
+          "schedule_to_first_token": -0.007025060942396522,
+          "ttft": 3.673924016067758
+        },
+        "task-2-slow-commit": {
+          "engine_queue": -0.00860556703992188,
+          "enqueue": 0.0004294880200177431,
+          "schedule_to_first_token": -0.0022446028888225555,
+          "ttft": -0.010420681908726692
+        },
+        "task-2-useful": {
+          "engine_queue": -0.0005645540077239275,
+          "enqueue": 2.3011118173599243e-05,
+          "schedule_to_first_token": 0.00024906196631491184,
+          "ttft": -0.0002924809232354164
+        },
+        "task-3-fast-commit": {
+          "engine_queue": 0.004363861866295338,
+          "enqueue": -0.00013536587357521057,
+          "schedule_to_first_token": -0.000184185104444623,
+          "ttft": 0.004044310888275504
+        },
+        "task-3-final": {
+          "engine_queue": 0.0004827601369470358,
+          "enqueue": 7.944181561470032e-05,
+          "schedule_to_first_token": 0.00035382993519306183,
+          "ttft": 0.0009160318877547979
+        },
+        "task-3-redundant": {
+          "engine_queue": 0.0011581780854612589,
+          "enqueue": 0.0007624009158462286,
+          "schedule_to_first_token": 0.003679366782307625,
+          "ttft": 0.005599945783615112
+        },
+        "task-3-repeat": {
+          "engine_queue": 4.152115434408188e-05,
+          "enqueue": 6.362283602356911e-05,
+          "schedule_to_first_token": 2.3162923753261566e-05,
+          "ttft": 0.00012830691412091255
+        },
+        "task-3-root": {
+          "engine_queue": 3.52917704731226e-05,
+          "enqueue": 3.7026142212562263,
+          "schedule_to_first_token": 0.003327696118503809,
+          "ttft": 3.7059772091452032
+        },
+        "task-3-slow-commit": {
+          "engine_queue": 0.009870429988950491,
+          "enqueue": 0.0008779461495578289,
+          "schedule_to_first_token": 9.055505506694317e-05,
+          "ttft": 0.010838931193575263
+        },
+        "task-3-useful": {
+          "engine_queue": 0.00290652085095644,
+          "enqueue": 0.0009241590742021799,
+          "schedule_to_first_token": 0.0036805770359933376,
+          "ttft": 0.0075112569611519575
+        }
+      },
+      "seed": 101,
+      "task_latency_deltas": {
+        "task-0": {
+          "e2e_delta": 3.998901299200952,
+          "own_service_delta": 3.9989005690440536,
+          "start_delay_delta": 7.301568984985352e-07
+        },
+        "task-1": {
+          "e2e_delta": 3.6809493580367416,
+          "own_service_delta": 1.4730202271603048,
+          "start_delay_delta": 2.207929130876437
+        },
+        "task-2": {
+          "e2e_delta": 3.702222245046869,
+          "own_service_delta": 0.02118123392574489,
+          "start_delay_delta": 3.681041011121124
+        },
+        "task-3": {
+          "e2e_delta": 3.8550462909042835,
+          "own_service_delta": 0.15256231371313334,
+          "start_delay_delta": 3.70248397719115
+        }
+      },
+      "tool_to_adoption_stages": [
+        {
+          "actual_adopted_prefix_tokens": null,
+          "actual_saved_work_vs_apc": null,
+          "actual_trunk_recomputed_tokens": 976,
+          "checkpoint_drop_offsets": [
+            {
+              "at": 1.2550109359435737,
+              "reason": "ttl_expired"
+            }
+          ],
+          "consumer_id": "task-0-fast-commit",
+          "dispatcher_completed": 0.9730653618462384,
+          "enqueued": 1.2551198799628764,
+          "first_scheduled": 2.0281561149749905,
+          "node_id": "task-0-fast-tool",
+          "probe_max_tokens": 3120,
+          "request_preparation_started": 0.9757273939903826,
+          "scheduled_ranges": null,
+          "tool_completed": 0.7812028089538217,
+          "tool_prior_seconds": 0.02545046992599964,
+          "tool_process_seconds": 0.02862657094374299
+        },
+        {
+          "actual_adopted_prefix_tokens": null,
+          "actual_saved_work_vs_apc": null,
+          "actual_trunk_recomputed_tokens": 0,
+          "checkpoint_drop_offsets": [
+            {
+              "at": 0.973106233868748,
+              "reason": "ttl_expired"
+            },
+            {
+              "at": 2.6744895598385483,
+              "reason": "ttl_expired"
+            }
+          ],
+          "consumer_id": "task-0-slow-commit",
+          "dispatcher_completed": 1.2553363498300314,
+          "enqueued": 1.2576548070646822,
+          "first_scheduled": 2.028157823951915,
+          "node_id": "task-0-slow-tool",
+          "probe_max_tokens": 3072,
+          "request_preparation_started": 1.255926154088229,
+          "scheduled_ranges": null,
+          "tool_completed": 0.7810555729083717,
+          "tool_prior_seconds": 0.02227746113203466,
+          "tool_process_seconds": 0.02648645080626011
+        },
+        {
+          "actual_adopted_prefix_tokens": null,
+          "actual_saved_work_vs_apc": null,
+          "actual_trunk_recomputed_tokens": 3056,
+          "checkpoint_drop_offsets": [
+            {
+              "at": 32.34286974580027,
+              "reason": "native_allocation_rejected"
+            }
+          ],
+          "consumer_id": "task-1-fast-commit",
+          "dispatcher_completed": 32.772614411776885,
+          "enqueued": 32.776940003968775,
+          "first_scheduled": 33.485640017082915,
+          "node_id": "task-1-fast-tool",
+          "probe_max_tokens": 1072,
+          "request_preparation_started": 32.77542042010464,
+          "scheduled_ranges": null,
+          "tool_completed": 32.373607283923775,
+          "tool_prior_seconds": 0.02545046992599964,
+          "tool_process_seconds": 0.028023913968354464
+        },
+        {
+          "actual_adopted_prefix_tokens": null,
+          "actual_saved_work_vs_apc": null,
+          "actual_trunk_recomputed_tokens": 0,
+          "checkpoint_drop_offsets": [
+            {
+              "at": 23.19687496498227,
+              "reason": "native_allocation_rejected"
+            },
+            {
+              "at": 31.59691276983358,
+              "reason": "native_allocation_rejected"
+            },
+            {
+              "at": 33.48421952687204,
+              "reason": "native_allocation_rejected"
+            },
+            {
+              "at": 44.09906287188642,
+              "reason": "nonpositive_incremental_value"
+            }
+          ],
+          "consumer_id": "task-1-slow-commit",
+          "dispatcher_completed": 32.77735315077007,
+          "enqueued": 32.7794980709441,
+          "first_scheduled": 33.485643076943234,
+          "node_id": "task-1-slow-tool",
+          "probe_max_tokens": 3072,
+          "request_preparation_started": 32.77826399891637,
+          "scheduled_ranges": null,
+          "tool_completed": 32.370733954012394,
+          "tool_prior_seconds": 0.02227746113203466,
+          "tool_process_seconds": 0.024083469063043594
+        },
+        {
+          "actual_adopted_prefix_tokens": null,
+          "actual_saved_work_vs_apc": null,
+          "actual_trunk_recomputed_tokens": 0,
+          "checkpoint_drop_offsets": [
+            {
+              "at": 44.921480369986966,
+              "reason": "ttl_expired"
+            },
+            {
+              "at": 47.77414190978743,
+              "reason": "nonpositive_incremental_value"
+            }
+          ],
+          "consumer_id": "task-2-slow-commit",
+          "dispatcher_completed": 44.677500013960525,
+          "enqueued": 44.679877982940525,
+          "first_scheduled": 44.69061525189318,
+          "node_id": "task-2-slow-tool",
+          "probe_max_tokens": 3072,
+          "request_preparation_started": 44.67828701599501,
+          "scheduled_ranges": null,
+          "tool_completed": 44.67599835107103,
+          "tool_prior_seconds": 0.02227746113203466,
+          "tool_process_seconds": 0.024052317952737212
+        },
+        {
+          "actual_adopted_prefix_tokens": null,
+          "actual_saved_work_vs_apc": null,
+          "actual_trunk_recomputed_tokens": 0,
+          "checkpoint_drop_offsets": [
+            {
+              "at": 45.15901205595583,
+              "reason": "ttl_expired"
+            },
+            {
+              "at": 47.77441341080703,
+              "reason": "nonpositive_incremental_value"
+            }
+          ],
+          "consumer_id": "task-2-fast-commit",
+          "dispatcher_completed": 44.681230609770864,
+          "enqueued": 44.68316756002605,
+          "first_scheduled": 44.71407697489485,
+          "node_id": "task-2-fast-tool",
+          "probe_max_tokens": 4096,
+          "request_preparation_started": 44.68185692606494,
+          "scheduled_ranges": null,
+          "tool_completed": 44.67879254790023,
+          "tool_prior_seconds": 0.02545046992599964,
+          "tool_process_seconds": 0.027362515917047858
+        },
+        {
+          "actual_adopted_prefix_tokens": null,
+          "actual_saved_work_vs_apc": null,
+          "actual_trunk_recomputed_tokens": 0,
+          "checkpoint_drop_offsets": [
+            {
+              "at": 48.60141009395011,
+              "reason": "ttl_expired"
+            },
+            {
+              "at": 51.785153350792825,
+              "reason": "nonpositive_incremental_value"
+            }
+          ],
+          "consumer_id": "task-3-slow-commit",
+          "dispatcher_completed": 48.363433501916006,
+          "enqueued": 48.36675813095644,
+          "first_scheduled": 48.38763313507661,
+          "node_id": "task-3-slow-tool",
+          "probe_max_tokens": 3072,
+          "request_preparation_started": 48.36453568795696,
+          "scheduled_ranges": null,
+          "tool_completed": 48.362979732919484,
+          "tool_prior_seconds": 0.02227746113203466,
+          "tool_process_seconds": 0.024186692899093032
+        },
+        {
+          "actual_adopted_prefix_tokens": null,
+          "actual_saved_work_vs_apc": null,
+          "actual_trunk_recomputed_tokens": 0,
+          "checkpoint_drop_offsets": [
+            {
+              "at": 48.84114215080626,
+              "reason": "ttl_expired"
+            },
+            {
+              "at": 51.662229135865346,
+              "reason": "ttl_expired"
+            }
+          ],
+          "consumer_id": "task-3-fast-commit",
+          "dispatcher_completed": 48.37306985491887,
+          "enqueued": 48.37518606404774,
+          "first_scheduled": 48.41140964999795,
+          "node_id": "task-3-fast-tool",
+          "probe_max_tokens": 4096,
+          "request_preparation_started": 48.37376185390167,
+          "scheduled_ranges": null,
+          "tool_completed": 48.372690689051524,
+          "tool_prior_seconds": 0.02545046992599964,
+          "tool_process_seconds": 0.034268194111064076
+        }
+      ],
+      "zero_reclaim_drops": [
+        {
+          "action": "DROP",
+          "at": 1629324.706877498,
+          "checkpoint_id": "task-1-root",
+          "interpretation": "owner overlap: logical DROP is not prefix-sized physical release",
+          "offset": 31.59691276983358,
+          "physical_blocks_reclaimed": 0,
+          "reason": "native_allocation_rejected",
+          "reclaimed_blocks": 0
+        },
+        {
+          "action": "DROP",
+          "at": 1629326.594184255,
+          "checkpoint_id": "task-1-root",
+          "interpretation": "owner overlap: logical DROP is not prefix-sized physical release",
+          "offset": 33.48421952687204,
+          "physical_blocks_reclaimed": 0,
+          "reason": "native_allocation_rejected",
+          "reclaimed_blocks": 0
+        }
+      ]
+    },
+    {
+      "clock_bridge": {
+        "bridge_spread_seconds": 0.000607816968113184,
+        "limitation": "approximate bridge includes dispatcher lag; never supplied to online policy",
+        "origin": 1628804.3069250542,
+        "source": "legacy_min_dispatch_complete_minus_request_complete"
+      },
+      "no_consumer_diagnostics": [
+        {
+          "checkpoint_id": "task-0-redundant",
+          "declared_consumers": [],
+          "first_drop_offset": 0.7598705769050866,
+          "first_keep_offset": 0.546049723867327,
+          "first_predicted_benefit_seconds": 0.057198147264245436,
+          "first_retention_window_seconds": 0.21382085303775966,
+          "full_future_gpu_submissions": 0,
+          "online": {
+            "future_consumers": [],
+            "future_preference": false,
+            "neutral_reason": "legacy trace lacks causal preparation/queue history and current cache identity",
+            "reason": "no_live_gpu_consumer"
+          },
+          "predicted_benefits_are_not_cumulative_savings": true
+        },
+        {
+          "checkpoint_id": "task-1-redundant",
+          "declared_consumers": [],
+          "first_drop_offset": 19.22243573074229,
+          "first_keep_offset": 19.21433156589046,
+          "first_predicted_benefit_seconds": 0.10317048992522776,
+          "first_retention_window_seconds": 0.00810416485182941,
+          "full_future_gpu_submissions": 0,
+          "online": {
+            "future_consumers": [],
+            "future_preference": false,
+            "neutral_reason": "legacy trace lacks causal preparation/queue history and current cache identity",
+            "reason": "no_live_gpu_consumer"
+          },
+          "predicted_benefits_are_not_cumulative_savings": true
+        },
+        {
+          "checkpoint_id": "task-2-redundant",
+          "declared_consumers": [],
+          "first_drop_offset": 41.93629774893634,
+          "first_keep_offset": 41.89140583877452,
+          "first_predicted_benefit_seconds": 0.1035268646745377,
+          "first_retention_window_seconds": 0.044891910161823034,
+          "full_future_gpu_submissions": 0,
+          "online": {
+            "future_consumers": [],
+            "future_preference": false,
+            "neutral_reason": "legacy trace lacks causal preparation/queue history and current cache identity",
+            "reason": "no_live_gpu_consumer"
+          },
+          "predicted_benefits_are_not_cumulative_savings": true
+        },
+        {
+          "checkpoint_id": "task-3-redundant",
+          "declared_consumers": [],
+          "first_drop_offset": 46.021700942888856,
+          "first_keep_offset": 45.98736651591025,
+          "first_predicted_benefit_seconds": 0.057198147264245436,
+          "first_retention_window_seconds": 0.034334426978603005,
+          "full_future_gpu_submissions": 0,
+          "online": {
+            "future_consumers": [],
+            "future_preference": false,
+            "neutral_reason": "legacy trace lacks causal preparation/queue history and current cache identity",
+            "reason": "no_live_gpu_consumer"
+          },
+          "predicted_benefits_are_not_cumulative_savings": true
+        }
+      ],
+      "paired_requests": 124,
+      "request_latency_deltas": {
+        "background-000": {
+          "engine_queue": 0.0002694020513445139,
+          "enqueue": -0.0008891939651221037,
+          "schedule_to_first_token": -0.0003168091643601656,
+          "ttft": -0.0009366010781377554
+        },
+        "background-001": {
+          "engine_queue": -0.0015076440759003162,
+          "enqueue": -0.10292674601078033,
+          "schedule_to_first_token": -0.20068678888492286,
+          "ttft": -0.3051211789716035
+        },
+        "background-002": {
+          "engine_queue": -0.0013243160210549831,
+          "enqueue": -0.10311086405999959,
+          "schedule_to_first_token": -0.20068599889054894,
+          "ttft": -0.3051211789716035
+        },
+        "background-003": {
+          "engine_queue": -0.0009374299552291632,
+          "enqueue": 0.30456178495660424,
+          "schedule_to_first_token": -0.39616863592527807,
+          "ttft": -0.09254428092390299
+        },
+        "background-004": {
+          "engine_queue": -0.0413331869058311,
+          "enqueue": -0.09423968498595059,
+          "schedule_to_first_token": -0.005986995995044708,
+          "ttft": -0.1415598678868264
+        },
+        "background-005": {
+          "engine_queue": -0.0010010830592364073,
+          "enqueue": -0.14290195610374212,
+          "schedule_to_first_token": -0.004339361796155572,
+          "ttft": -0.1482424009591341
+        },
+        "background-006": {
+          "engine_queue": -0.1345764601137489,
+          "enqueue": -0.14836708595976233,
+          "schedule_to_first_token": 9.572017006576061e-05,
+          "ttft": -0.2828478259034455
+        },
+        "background-007": {
+          "engine_queue": -0.4273458819370717,
+          "enqueue": 0.1443367898464203,
+          "schedule_to_first_token": -0.0031663018744438887,
+          "ttft": -0.2861753939650953
+        },
+        "background-008": {
+          "engine_queue": -0.8114109558518976,
+          "enqueue": 0.12503347196616232,
+          "schedule_to_first_token": -0.007703378098085523,
+          "ttft": -0.6940808619838208
+        },
+        "background-009": {
+          "engine_queue": -0.6277544929180294,
+          "enqueue": -0.06786166504025459,
+          "schedule_to_first_token": -0.005412208149209619,
+          "ttft": -0.7010283661074936
+        },
+        "background-010": {
+          "engine_queue": -1.0194504419341683,
+          "enqueue": -0.06786661501973867,
+          "schedule_to_first_token": -0.013755419990047812,
+          "ttft": -1.1010724769439548
+        },
+        "background-011": {
+          "engine_queue": -1.0554715970065445,
+          "enqueue": -0.04725840105675161,
+          "schedule_to_first_token": -0.0019116559997200966,
+          "ttft": -1.1046416540630162
+        },
+        "background-012": {
+          "engine_queue": -1.1286582790780813,
+          "enqueue": -0.004117006901651621,
+          "schedule_to_first_token": 9.902194142341614e-05,
+          "ttft": -1.1326762640383095
+        },
+        "background-013": {
+          "engine_queue": -1.1240597129799426,
+          "enqueue": -0.009399984031915665,
+          "schedule_to_first_token": -0.0013997850473970175,
+          "ttft": -1.1348594820592552
+        },
+        "background-014": {
+          "engine_queue": -1.0284050540067255,
+          "enqueue": -0.19031959702260792,
+          "schedule_to_first_token": 8.167000487446785e-06,
+          "ttft": -1.218716484028846
+        },
+        "background-015": {
+          "engine_queue": -1.1958342450670898,
+          "enqueue": -0.022890405962243676,
+          "schedule_to_first_token": 8.167000487446785e-06,
+          "ttft": -1.218716484028846
+        },
+        "background-016": {
+          "engine_queue": -1.4296836780849844,
+          "enqueue": 0.16141185397282243,
+          "schedule_to_first_token": -0.0002539949491620064,
+          "ttft": -1.268525819061324
+        },
+        "background-017": {
+          "engine_queue": -1.392412621062249,
+          "enqueue": 0.12388993403874338,
+          "schedule_to_first_token": -0.0018825759179890156,
+          "ttft": -1.2704052629414946
+        },
+        "background-018": {
+          "engine_queue": -1.4315936691127717,
+          "enqueue": 0.10487626399844885,
+          "schedule_to_first_token": -0.0007374349515885115,
+          "ttft": -1.3274548400659114
+        },
+        "background-019": {
+          "engine_queue": -1.3197609100025147,
+          "enqueue": -0.006956515135243535,
+          "schedule_to_first_token": -0.0007374149281531572,
+          "ttft": -1.3274548400659114
+        },
+        "background-020": {
+          "engine_queue": -0.7752391491085291,
+          "enqueue": -0.11062045209109783,
+          "schedule_to_first_token": 0.1995280710980296,
+          "ttft": -0.6863315301015973
+        },
+        "background-021": {
+          "engine_queue": -0.9878041988704354,
+          "enqueue": -0.11066200397908688,
+          "schedule_to_first_token": 0.19829072686843574,
+          "ttft": -0.9001754759810865
+        },
+        "background-022": {
+          "engine_queue": -0.5104951201938093,
+          "enqueue": -0.053815380902960896,
+          "schedule_to_first_token": -0.0026475009508430958,
+          "ttft": -0.5669580020476133
+        },
+        "background-023": {
+          "engine_queue": -0.6008106959052384,
+          "enqueue": 0.036499214824289083,
+          "schedule_to_first_token": -0.0026465209666639566,
+          "ttft": -0.5669580020476133
+        },
+        "background-024": {
+          "engine_queue": -0.8948740928899497,
+          "enqueue": 0.19023172790184617,
+          "schedule_to_first_token": 0.19880439504049718,
+          "ttft": -0.5058379699476063
+        },
+        "background-025": {
+          "engine_queue": -1.5598323459271342,
+          "enqueue": 0.16747708385810256,
+          "schedule_to_first_token": -0.21873831003904343,
+          "ttft": -1.611093572108075
+        },
+        "background-026": {
+          "engine_queue": -1.495780406985432,
+          "enqueue": 0.16745603294111788,
+          "schedule_to_first_token": 0.1961635600309819,
+          "ttft": -1.1321608140133321
+        },
+        "background-027": {
+          "engine_queue": -1.826546875294298,
+          "enqueue": 0.16742891212925315,
+          "schedule_to_first_token": -0.001458686776459217,
+          "ttft": -1.660576649941504
+        },
+        "background-028": {
+          "engine_queue": -1.5843805421609432,
+          "enqueue": 0.3906084580812603,
+          "schedule_to_first_token": 0.0010938141494989395,
+          "ttft": -1.1926782699301839
+        },
+        "background-029": {
+          "engine_queue": -1.899684946751222,
+          "enqueue": 0.0038832707796245813,
+          "schedule_to_first_token": 0.1994641749188304,
+          "ttft": -1.696337501052767
+        },
+        "background-030": {
+          "engine_queue": -1.6769437887705863,
+          "enqueue": 0.3285738828126341,
+          "schedule_to_first_token": 0.19598151091486216,
+          "ttft": -1.15238839504309
+        },
+        "background-031": {
+          "engine_queue": -2.0534938198979944,
+          "enqueue": 0.3285464409273118,
+          "schedule_to_first_token": -0.0023054140619933605,
+          "ttft": -1.727252793032676
+        },
+        "background-032": {
+          "engine_queue": -1.281684109941125,
+          "enqueue": 0.021367453038692474,
+          "schedule_to_first_token": 0.001299732830375433,
+          "ttft": -1.259016924072057
+        },
+        "background-033": {
+          "engine_queue": -1.9600645247846842,
+          "enqueue": -0.031126381130889058,
+          "schedule_to_first_token": 0.19686436094343662,
+          "ttft": -1.7943265449721366
+        },
+        "background-034": {
+          "engine_queue": -1.3797525789123029,
+          "enqueue": -0.0630593381356448,
+          "schedule_to_first_token": 0.29991120006889105,
+          "ttft": -1.1429007169790566
+        },
+        "background-035": {
+          "engine_queue": -1.2535045568365604,
+          "enqueue": -0.026336280163377523,
+          "schedule_to_first_token": -0.19765173108316958,
+          "ttft": -1.4774925680831075
+        },
+        "background-036": {
+          "engine_queue": -1.393947040895,
+          "enqueue": 0.3647406699601561,
+          "schedule_to_first_token": 0.01085084886290133,
+          "ttft": -1.0183555220719427
+        },
+        "background-037": {
+          "engine_queue": -2.069863307988271,
+          "enqueue": 0.2750601270236075,
+          "schedule_to_first_token": 0.2078610889147967,
+          "ttft": -1.586942092049867
+        },
+        "background-038": {
+          "engine_queue": -1.2562963659875095,
+          "enqueue": -0.2456997251138091,
+          "schedule_to_first_token": -0.0031614028848707676,
+          "ttft": -1.5051574939861894
+        },
+        "background-039": {
+          "engine_queue": -1.3747973020654172,
+          "enqueue": -0.2470268220640719,
+          "schedule_to_first_token": -0.3038275958970189,
+          "ttft": -1.925651720026508
+        },
+        "background-040": {
+          "engine_queue": -1.9575910191051662,
+          "enqueue": 0.06298928195610642,
+          "schedule_to_first_token": 0.1874103059526533,
+          "ttft": -1.7071914311964065
+        },
+        "background-041": {
+          "engine_queue": -2.495493915164843,
+          "enqueue": 0.00657726707868278,
+          "schedule_to_first_token": 0.20028945500962436,
+          "ttft": -2.288627193076536
+        },
+        "background-042": {
+          "engine_queue": -1.9333632292691618,
+          "enqueue": 0.011292718118056655,
+          "schedule_to_first_token": -0.0029513929039239883,
+          "ttft": -1.9250219040550292
+        },
+        "background-043": {
+          "engine_queue": -1.8603218088392168,
+          "enqueue": -0.18340520304627717,
+          "schedule_to_first_token": 0.0014303878415375948,
+          "ttft": -2.0422966240439564
+        },
+        "background-044": {
+          "engine_queue": -1.788879365194589,
+          "enqueue": 0.3330680960789323,
+          "schedule_to_first_token": 0.20778888021595776,
+          "ttft": -1.2480223888996989
+        },
+        "background-045": {
+          "engine_queue": -2.3133789501152933,
+          "enqueue": 0.3748816561419517,
+          "schedule_to_first_token": 0.2092075019609183,
+          "ttft": -1.7292897920124233
+        },
+        "background-046": {
+          "engine_queue": -0.9614077508449554,
+          "enqueue": -0.021654208190739155,
+          "schedule_to_first_token": 0.19383406080305576,
+          "ttft": -0.7892278982326388
+        },
+        "background-047": {
+          "engine_queue": -1.3097009540069848,
+          "enqueue": -0.01322901388630271,
+          "schedule_to_first_token": 0.1992075126618147,
+          "ttft": -1.1237224552314728
+        },
+        "background-048": {
+          "engine_queue": -0.6218741300981492,
+          "enqueue": 0.10746874008327723,
+          "schedule_to_first_token": 0.19637353881262243,
+          "ttft": -0.3180318512022495
+        },
+        "background-049": {
+          "engine_queue": -1.1374110961332917,
+          "enqueue": 0.08757552807219326,
+          "schedule_to_first_token": 0.19889364787377417,
+          "ttft": -0.8509419201873243
+        },
+        "background-050": {
+          "engine_queue": -0.4527289841789752,
+          "enqueue": 0.014165413100272417,
+          "schedule_to_first_token": 0.19975345325656235,
+          "ttft": -0.23881011782214046
+        },
+        "background-051": {
+          "engine_queue": -1.43630514992401,
+          "enqueue": 0.053961727768182755,
+          "schedule_to_first_token": -0.016179877799004316,
+          "ttft": -1.3985232999548316
+        },
+        "background-052": {
+          "engine_queue": -0.4268354061059654,
+          "enqueue": 0.05356823210604489,
+          "schedule_to_first_token": -0.015783902956172824,
+          "ttft": -0.3890510769560933
+        },
+        "background-053": {
+          "engine_queue": -1.9746286689769477,
+          "enqueue": 0.24814260797575116,
+          "schedule_to_first_token": -0.007392334984615445,
+          "ttft": -1.733878395985812
+        },
+        "background-054": {
+          "engine_queue": -0.8592188749462366,
+          "enqueue": 0.14070839807391167,
+          "schedule_to_first_token": -0.0069381073117256165,
+          "ttft": -0.7254485841840506
+        },
+        "background-055": {
+          "engine_queue": -1.8930480869021267,
+          "enqueue": 0.08321970491670072,
+          "schedule_to_first_token": 8.110888302326202e-05,
+          "ttft": -1.8097472731024027
+        },
+        "background-056": {
+          "engine_queue": -0.8230258000548929,
+          "enqueue": -0.13045597611926496,
+          "schedule_to_first_token": -0.00242444290779531,
+          "ttft": -0.9559062190819532
+        },
+        "background-057": {
+          "engine_queue": -2.0172738642431796,
+          "enqueue": 0.001123892143368721,
+          "schedule_to_first_token": -0.0042659020982682705,
+          "ttft": -2.020415874198079
+        },
+        "background-058": {
+          "engine_queue": -1.283983735134825,
+          "enqueue": -0.18796010594815016,
+          "schedule_to_first_token": -0.0016397680155932903,
+          "ttft": -1.4735836090985686
+        },
+        "background-059": {
+          "engine_queue": -2.5543507570400834,
+          "enqueue": -0.006272942991927266,
+          "schedule_to_first_token": -0.0002460549585521221,
+          "ttft": -2.560869754990563
+        },
+        "background-060": {
+          "engine_queue": -1.946251138811931,
+          "enqueue": 0.23252592491917312,
+          "schedule_to_first_token": -0.0027769182343035936,
+          "ttft": -1.7165021321270615
+        },
+        "background-061": {
+          "engine_queue": -3.079012090805918,
+          "enqueue": 0.23241448891349137,
+          "schedule_to_first_token": -0.002519365167245269,
+          "ttft": -2.849116967059672
+        },
+        "background-062": {
+          "engine_queue": -2.4689678959548473,
+          "enqueue": 0.16571616288274527,
+          "schedule_to_first_token": 6.462703458964825e-05,
+          "ttft": -2.3031871060375124
+        },
+        "background-063": {
+          "engine_queue": -2.711781939957291,
+          "enqueue": -0.3698039040900767,
+          "schedule_to_first_token": -0.0021518280263990164,
+          "ttft": -3.0837376720737666
+        },
+        "background-064": {
+          "engine_queue": -2.217581515898928,
+          "enqueue": -0.017791710095480084,
+          "schedule_to_first_token": -0.20361430710181594,
+          "ttft": -2.438987533096224
+        },
+        "background-065": {
+          "engine_queue": -2.5944242998957634,
+          "enqueue": 0.0488060899078846,
+          "schedule_to_first_token": 0.21461281785741448,
+          "ttft": -2.3310053921304643
+        },
+        "background-066": {
+          "engine_queue": -1.9231476378627121,
+          "enqueue": 0.009653452783823013,
+          "schedule_to_first_token": 0.0070819430984556675,
+          "ttft": -1.9064122419804335
+        },
+        "background-067": {
+          "engine_queue": -2.6046588919125497,
+          "enqueue": -0.09035770711489022,
+          "schedule_to_first_token": 0.009870504960417747,
+          "ttft": -2.685146094067022
+        },
+        "background-068": {
+          "engine_queue": -1.3524676978122443,
+          "enqueue": -0.03382225404493511,
+          "schedule_to_first_token": 0.0017978388350456953,
+          "ttft": -1.3844921130221337
+        },
+        "background-069": {
+          "engine_queue": -1.9595604352653027,
+          "enqueue": -0.08339566993527114,
+          "schedule_to_first_token": 0.00022619240917265415,
+          "ttft": -2.042729912791401
+        },
+        "background-070": {
+          "engine_queue": -1.3409124279860407,
+          "enqueue": 0.010562469018623233,
+          "schedule_to_first_token": -0.0007999548688530922,
+          "ttft": -1.3311499138362706
+        },
+        "background-071": {
+          "engine_queue": -2.4088177629746497,
+          "enqueue": 0.21577837807126343,
+          "schedule_to_first_token": 0.00047712400555610657,
+          "ttft": -2.19256226089783
+        },
+        "background-072": {
+          "engine_queue": -1.4834129910450429,
+          "enqueue": 0.07755897799506783,
+          "schedule_to_first_token": 0.00018050801008939743,
+          "ttft": -1.4056735050398856
+        },
+        "background-073": {
+          "engine_queue": -2.235717925010249,
+          "enqueue": 0.13121965480968356,
+          "schedule_to_first_token": 0.19903142121620476,
+          "ttft": -1.9054668489843607
+        },
+        "background-074": {
+          "engine_queue": -1.5731206750497222,
+          "enqueue": -0.3687281229067594,
+          "schedule_to_first_token": -0.21092792018316686,
+          "ttft": -2.1527767181396484
+        },
+        "background-075": {
+          "engine_queue": -2.8980114120058715,
+          "enqueue": 0.04481146205216646,
+          "schedule_to_first_token": 0.20167795685119927,
+          "ttft": -2.651521993102506
+        },
+        "background-076": {
+          "engine_queue": -2.390291874296963,
+          "enqueue": 0.044559592148289084,
+          "schedule_to_first_token": -0.0007325888145714998,
+          "ttft": -2.3464648709632456
+        },
+        "background-077": {
+          "engine_queue": -2.390056913951412,
+          "enqueue": 0.04432456195354462,
+          "schedule_to_first_token": -0.0007325189653784037,
+          "ttft": -2.3464648709632456
+        },
+        "background-078": {
+          "engine_queue": -2.4331384350080043,
+          "enqueue": 0.0046391598880290985,
+          "schedule_to_first_token": 0.1978930390905589,
+          "ttft": -2.2306062360294163
+        },
+        "background-079": {
+          "engine_queue": -2.866584419971332,
+          "enqueue": -0.014426375040784478,
+          "schedule_to_first_token": 0.200273941969499,
+          "ttft": -2.6807368530426174
+        },
+        "background-080": {
+          "engine_queue": -2.053694003028795,
+          "enqueue": -0.30914679705165327,
+          "schedule_to_first_token": 0.10284305294044316,
+          "ttft": -2.2599977471400052
+        },
+        "background-081": {
+          "engine_queue": -1.9470876059494913,
+          "enqueue": 0.10356459999457002,
+          "schedule_to_first_token": -0.19853164115920663,
+          "ttft": -2.042054647114128
+        },
+        "background-082": {
+          "engine_queue": -2.2098533019889146,
+          "enqueue": 0.016468666028231382,
+          "schedule_to_first_token": 0.20127000380307436,
+          "ttft": -1.9921146321576089
+        },
+        "background-083": {
+          "engine_queue": -2.278247663984075,
+          "enqueue": -0.3538771921303123,
+          "schedule_to_first_token": 0.2028070909436792,
+          "ttft": -2.4293177651707083
+        },
+        "background-084": {
+          "engine_queue": -2.2525728549808264,
+          "enqueue": 0.11397622199729085,
+          "schedule_to_first_token": -0.19942993787117302,
+          "ttft": -2.3380265708547086
+        },
+        "background-085": {
+          "engine_queue": -2.038832740858197,
+          "enqueue": 0.11432821792550385,
+          "schedule_to_first_token": -0.19842734490521252,
+          "ttft": -2.122931867837906
+        },
+        "background-086": {
+          "engine_queue": -2.237933157943189,
+          "enqueue": 0.11468053399585187,
+          "schedule_to_first_token": 0.19878894393332303,
+          "ttft": -1.9244636800140142
+        },
+        "background-087": {
+          "engine_queue": -2.2191407668869942,
+          "enqueue": -0.35804807115346193,
+          "schedule_to_first_token": 0.1983829450327903,
+          "ttft": -2.378805893007666
+        },
+        "background-088": {
+          "engine_queue": -1.7068006589543074,
+          "enqueue": -0.2923725510481745,
+          "schedule_to_first_token": -0.20045116101391613,
+          "ttft": -2.199624371016398
+        },
+        "background-089": {
+          "engine_queue": -1.4927409319207072,
+          "enqueue": -0.292526647914201,
+          "schedule_to_first_token": -0.19887499324977398,
+          "ttft": -1.9841425730846822
+        },
+        "background-090": {
+          "engine_queue": -1.721321903867647,
+          "enqueue": -0.27419545594602823,
+          "schedule_to_first_token": 0.20360250188969076,
+          "ttft": -1.7919148579239845
+        },
+        "background-091": {
+          "engine_queue": -2.55490365694277,
+          "enqueue": 0.11286548594944179,
+          "schedule_to_first_token": 0.20123944990336895,
+          "ttft": -2.240798721089959
+        },
+        "background-092": {
+          "engine_queue": -1.7397292850073427,
+          "enqueue": -0.14573940192349255,
+          "schedule_to_first_token": -0.193901555147022,
+          "ttft": -2.0793702420778573
+        },
+        "background-093": {
+          "engine_queue": -1.8548240750096738,
+          "enqueue": 0.19277214189060032,
+          "schedule_to_first_token": -0.18440497084520757,
+          "ttft": -1.846456903964281
+        },
+        "background-094": {
+          "engine_queue": -2.121958024101332,
+          "enqueue": 0.1932652739342302,
+          "schedule_to_first_token": 0.20057781809009612,
+          "ttft": -1.7281149320770055
+        },
+        "background-095": {
+          "engine_queue": -2.5215850591193885,
+          "enqueue": 0.11593680502846837,
+          "schedule_to_first_token": 0.20151340821757913,
+          "ttft": -2.204134845873341
+        },
+        "task-0-fast-commit": {
+          "engine_queue": -0.033654959872365,
+          "enqueue": -0.10209958907216787,
+          "schedule_to_first_token": -0.0059877559542655945,
+          "ttft": -0.14174230489879847
+        },
+        "task-0-final": {
+          "engine_queue": 0.7812777762301266,
+          "enqueue": -0.0019234041683375835,
+          "schedule_to_first_token": 0.19927018391899765,
+          "ttft": 0.9786245559807867
+        },
+        "task-0-redundant": {
+          "engine_queue": -0.0010353350080549717,
+          "enqueue": -0.000276010949164629,
+          "schedule_to_first_token": 0.00039060204289853573,
+          "ttft": -0.000920743914321065
+        },
+        "task-0-repeat": {
+          "engine_queue": -2.3009807160124183,
+          "enqueue": -4.593213088810444e-05,
+          "schedule_to_first_token": -0.20587856997735798,
+          "ttft": -2.5069052181206644
+        },
+        "task-0-root": {
+          "engine_queue": 2.650078386068344e-06,
+          "enqueue": 2.6420922949910164e-05,
+          "schedule_to_first_token": -0.001164883142337203,
+          "ttft": -0.0011358121410012245
+        },
+        "task-0-slow-commit": {
+          "engine_queue": -0.03403498791158199,
+          "enqueue": 1.2651784345507622e-05,
+          "schedule_to_first_token": -0.005987175740301609,
+          "ttft": -0.040009511867538095
+        },
+        "task-0-useful": {
+          "engine_queue": -0.0013207970187067986,
+          "enqueue": -0.0002603307366371155,
+          "schedule_to_first_token": 0.0003901619929820299,
+          "ttft": -0.0011909657623618841
+        },
+        "task-1-fast-commit": {
+          "engine_queue": 0.10219649225473404,
+          "enqueue": 0.0002928737085312605,
+          "schedule_to_first_token": 0.00010149180889129639,
+          "ttft": 0.1025908577721566
+        },
+        "task-1-final": {
+          "engine_queue": 1.0523086797911674,
+          "enqueue": -0.0001455969177186489,
+          "schedule_to_first_token": 0.20533158420585096,
+          "ttft": 1.2574946670792997
+        },
+        "task-1-redundant": {
+          "engine_queue": -1.229108639061451,
+          "enqueue": -0.0006415070965886116,
+          "schedule_to_first_token": -0.004155983915552497,
+          "ttft": -1.233906130073592
+        },
+        "task-1-repeat": {
+          "engine_queue": -1.0805460819974542,
+          "enqueue": 1.4320947229862213e-05,
+          "schedule_to_first_token": 0.0018605119548738003,
+          "ttft": -1.0786712490953505
+        },
+        "task-1-root": {
+          "engine_queue": -1.5208691679872572,
+          "enqueue": -2.0095432370435447,
+          "schedule_to_first_token": -0.0028867549262940884,
+          "ttft": -3.533299159957096
+        },
+        "task-1-slow-commit": {
+          "engine_queue": 0.1017668021377176,
+          "enqueue": 0.0002693429123610258,
+          "schedule_to_first_token": 0.00010149180889129639,
+          "ttft": 0.10213763685896993
+        },
+        "task-1-useful": {
+          "engine_queue": -1.230122750857845,
+          "enqueue": -0.0006824501324445009,
+          "schedule_to_first_token": -0.004155914997681975,
+          "ttft": -1.2349611159879714
+        },
+        "task-2-fast-commit": {
+          "engine_queue": 0.002220106078311801,
+          "enqueue": 0.00022679008543491364,
+          "schedule_to_first_token": 0.00042125885374844074,
+          "ttft": 0.0028681550174951553
+        },
+        "task-2-final": {
+          "engine_queue": 0.0004370301030576229,
+          "enqueue": -9.373482316732407e-05,
+          "schedule_to_first_token": 0.0003355217631906271,
+          "ttft": 0.0006788170430809259
+        },
+        "task-2-redundant": {
+          "engine_queue": 5.828405186068267,
+          "enqueue": -8.95909033715725e-06,
+          "schedule_to_first_token": 0.3031236210372299,
+          "ttft": 6.131519848015159
+        },
+        "task-2-repeat": {
+          "engine_queue": -0.00019081821665167809,
+          "enqueue": -1.3397075235843658e-06,
+          "schedule_to_first_token": -0.00021366099826991558,
+          "ttft": -0.00040581892244517803
+        },
+        "task-2-root": {
+          "engine_queue": -3.464568972121924,
+          "enqueue": -4.6657309788279235,
+          "schedule_to_first_token": 0.19637184194289148,
+          "ttft": -7.933928109006956
+        },
+        "task-2-slow-commit": {
+          "engine_queue": 0.0021072891540825367,
+          "enqueue": -6.466102786362171e-05,
+          "schedule_to_first_token": 0.00042089889757335186,
+          "ttft": 0.002463527023792267
+        },
+        "task-2-useful": {
+          "engine_queue": 5.828681519022211,
+          "enqueue": 1.0839896276593208e-05,
+          "schedule_to_first_token": 0.30312404106371105,
+          "ttft": 6.131816399982199
+        },
+        "task-3-fast-commit": {
+          "engine_queue": -0.0016174779739230871,
+          "enqueue": -5.8592064306139946e-05,
+          "schedule_to_first_token": -0.0002793930470943451,
+          "ttft": -0.001955463085323572
+        },
+        "task-3-final": {
+          "engine_queue": 0.0014041108079254627,
+          "enqueue": 0.0006173972506076097,
+          "schedule_to_first_token": 0.002544419141486287,
+          "ttft": 0.00456592720001936
+        },
+        "task-3-redundant": {
+          "engine_queue": -0.00043037813156843185,
+          "enqueue": 2.1560117602348328e-05,
+          "schedule_to_first_token": 0.0024539469741284847,
+          "ttft": 0.002045128960162401
+        },
+        "task-3-repeat": {
+          "engine_queue": 0.00010042497888207436,
+          "enqueue": 1.9050901755690575e-05,
+          "schedule_to_first_token": -8.84749460965395e-05,
+          "ttft": 3.100093454122543e-05
+        },
+        "task-3-root": {
+          "engine_queue": -1.2507662177085876e-06,
+          "enqueue": -1.7950024311430752,
+          "schedule_to_first_token": 0.0009310299064964056,
+          "ttft": -1.7940726520027965
+        },
+        "task-3-slow-commit": {
+          "engine_queue": -0.0005453089252114296,
+          "enqueue": -1.8210848793387413e-05,
+          "schedule_to_first_token": -0.0001515683252364397,
+          "ttft": -0.0007150880992412567
+        },
+        "task-3-useful": {
+          "engine_queue": -0.00031736306846141815,
+          "enqueue": -1.1859927326440811e-05,
+          "schedule_to_first_token": 0.0024540568701922894,
+          "ttft": 0.0021248338744044304
+        }
+      },
+      "seed": 202,
+      "task_latency_deltas": {
+        "task-0": {
+          "e2e_delta": -2.5683292818721384,
+          "own_service_delta": -2.568327020853758,
+          "start_delay_delta": -2.261018380522728e-06
+        },
+        "task-1": {
+          "e2e_delta": -4.6663645170629025,
+          "own_service_delta": -2.656823528930545,
+          "start_delay_delta": -2.0095409881323576
+        },
+        "task-2": {
+          "e2e_delta": -1.7951847091317177,
+          "own_service_delta": 2.8706501259002835,
+          "start_delay_delta": -4.665834835032001
+        },
+        "task-3": {
+          "e2e_delta": -1.605848354054615,
+          "own_service_delta": 0.1891687388997525,
+          "start_delay_delta": -1.7950170929543674
+        }
+      },
+      "tool_to_adoption_stages": [
+        {
+          "actual_adopted_prefix_tokens": null,
+          "actual_saved_work_vs_apc": null,
+          "actual_trunk_recomputed_tokens": 3072,
+          "checkpoint_drop_offsets": [
+            {
+              "at": 1.054328239755705,
+              "reason": "ttl_expired"
+            }
+          ],
+          "consumer_id": "task-0-fast-commit",
+          "dispatcher_completed": 0.7588551929220557,
+          "enqueued": 1.0295481719076633,
+          "first_scheduled": 2.2375177959911525,
+          "node_id": "task-0-fast-tool",
+          "probe_max_tokens": 1088,
+          "request_preparation_started": 0.7608934219460934,
+          "scheduled_ranges": null,
+          "tool_completed": 0.5776221191044897,
+          "tool_prior_seconds": 0.02545046992599964,
+          "tool_process_seconds": 0.027010435005649924
+        },
+        {
+          "actual_adopted_prefix_tokens": null,
+          "actual_saved_work_vs_apc": null,
+          "actual_trunk_recomputed_tokens": 0,
+          "checkpoint_drop_offsets": [
+            {
+              "at": 1.0294423268642277,
+              "reason": "ttl_expired"
+            },
+            {
+              "at": 2.7664856628980488,
+              "reason": "ttl_expired"
+            }
+          ],
+          "consumer_id": "task-0-slow-commit",
+          "dispatcher_completed": 1.029857805930078,
+          "enqueued": 1.0321924278978258,
+          "first_scheduled": 2.2375195459462702,
+          "node_id": "task-0-slow-tool",
+          "probe_max_tokens": 3072,
+          "request_preparation_started": 1.0305094940122217,
+          "scheduled_ranges": null,
+          "tool_completed": 0.5773150359746069,
+          "tool_prior_seconds": 0.02227746113203466,
+          "tool_process_seconds": 0.02543803700245917
+        },
+        {
+          "actual_adopted_prefix_tokens": null,
+          "actual_saved_work_vs_apc": null,
+          "actual_trunk_recomputed_tokens": 3072,
+          "checkpoint_drop_offsets": [
+            {
+              "at": 19.221867605810985,
+              "reason": "native_allocation_rejected"
+            }
+          ],
+          "consumer_id": "task-1-fast-commit",
+          "dispatcher_completed": 19.64597666892223,
+          "enqueued": 19.64983637793921,
+          "first_scheduled": 20.180276836035773,
+          "node_id": "task-1-fast-tool",
+          "probe_max_tokens": 1088,
+          "request_preparation_started": 19.64810568210669,
+          "scheduled_ranges": null,
+          "tool_completed": 19.250480158021674,
+          "tool_prior_seconds": 0.02545046992599964,
+          "tool_process_seconds": 0.02659736410714686
+        },
+        {
+          "actual_adopted_prefix_tokens": null,
+          "actual_saved_work_vs_apc": null,
+          "actual_trunk_recomputed_tokens": 0,
+          "checkpoint_drop_offsets": [
+            {
+              "at": 15.631549255922437,
+              "reason": "native_allocation_rejected"
+            },
+            {
+              "at": 18.677305716788396,
+              "reason": "native_allocation_rejected"
+            },
+            {
+              "at": 20.179674989776686,
+              "reason": "native_allocation_rejected"
+            }
+          ],
+          "consumer_id": "task-1-slow-commit",
+          "dispatcher_completed": 19.65008553978987,
+          "enqueued": 19.652314126957208,
+          "first_scheduled": 20.18027841602452,
+          "node_id": "task-1-slow-tool",
+          "probe_max_tokens": 3072,
+          "request_preparation_started": 19.650867283111438,
+          "scheduled_ranges": null,
+          "tool_completed": 19.248529283097014,
+          "tool_prior_seconds": 0.02227746113203466,
+          "tool_process_seconds": 0.024277493124827743
+        },
+        {
+          "actual_adopted_prefix_tokens": null,
+          "actual_saved_work_vs_apc": null,
+          "actual_trunk_recomputed_tokens": 0,
+          "checkpoint_drop_offsets": [
+            {
+              "at": 42.39461856079288,
+              "reason": "ttl_expired"
+            },
+            {
+              "at": 45.40334560885094,
+              "reason": "ttl_expired"
+            }
+          ],
+          "consumer_id": "task-2-fast-commit",
+          "dispatcher_completed": 41.93551536486484,
+          "enqueued": 41.93888260098174,
+          "first_scheduled": 41.962867038091645,
+          "node_id": "task-2-fast-tool",
+          "probe_max_tokens": 4096,
+          "request_preparation_started": 41.93707392201759,
+          "scheduled_ranges": null,
+          "tool_completed": 41.93091277289204,
+          "tool_prior_seconds": 0.02545046992599964,
+          "tool_process_seconds": 0.034250834956765175
+        },
+        {
+          "actual_adopted_prefix_tokens": null,
+          "actual_saved_work_vs_apc": null,
+          "actual_trunk_recomputed_tokens": 0,
+          "checkpoint_drop_offsets": [
+            {
+              "at": 35.527495910879225,
+              "reason": "native_allocation_rejected"
+            },
+            {
+              "at": 41.89037916390225,
+              "reason": "ttl_expired"
+            },
+            {
+              "at": 42.47103651589714,
+              "reason": "ttl_expired"
+            },
+            {
+              "at": 45.43913250975311,
+              "reason": "nonpositive_incremental_value"
+            }
+          ],
+          "consumer_id": "task-2-slow-commit",
+          "dispatcher_completed": 41.93897067476064,
+          "enqueued": 41.94078803504817,
+          "first_scheduled": 41.96286882809363,
+          "node_id": "task-2-slow-tool",
+          "probe_max_tokens": 3072,
+          "request_preparation_started": 41.939549850067124,
+          "scheduled_ranges": null,
+          "tool_completed": 41.92283099098131,
+          "tool_prior_seconds": 0.02227746113203466,
+          "tool_process_seconds": 0.025731192901730537
+        },
+        {
+          "actual_adopted_prefix_tokens": null,
+          "actual_saved_work_vs_apc": null,
+          "actual_trunk_recomputed_tokens": 0,
+          "checkpoint_drop_offsets": [
+            {
+              "at": 46.27520346082747,
+              "reason": "ttl_expired"
+            },
+            {
+              "at": 49.80662584374659,
+              "reason": "nonpositive_incremental_value"
+            }
+          ],
+          "consumer_id": "task-3-slow-commit",
+          "dispatcher_completed": 46.02277260972187,
+          "enqueued": 46.024914113106206,
+          "first_scheduled": 46.03494040109217,
+          "node_id": "task-3-slow-tool",
+          "probe_max_tokens": 3072,
+          "request_preparation_started": 46.02348106098361,
+          "scheduled_ranges": null,
+          "tool_completed": 46.022591481916606,
+          "tool_prior_seconds": 0.02227746113203466,
+          "tool_process_seconds": 0.028013081988319755
+        },
+        {
+          "actual_adopted_prefix_tokens": null,
+          "actual_saved_work_vs_apc": null,
+          "actual_trunk_recomputed_tokens": 0,
+          "checkpoint_drop_offsets": [
+            {
+              "at": 46.49308694386855,
+              "reason": "ttl_expired"
+            },
+            {
+              "at": 49.55689444579184,
+              "reason": "ttl_expired"
+            }
+          ],
+          "consumer_id": "task-3-fast-commit",
+          "dispatcher_completed": 46.02634063572623,
+          "enqueued": 46.028309230925515,
+          "first_scheduled": 46.0586383540649,
+          "node_id": "task-3-fast-tool",
+          "probe_max_tokens": 4096,
+          "request_preparation_started": 46.02697180304676,
+          "scheduled_ranges": null,
+          "tool_completed": 46.026128575904295,
+          "tool_prior_seconds": 0.02545046992599964,
+          "tool_process_seconds": 0.03224737592972815
+        }
+      ],
+      "zero_reclaim_drops": [
+        {
+          "action": "DROP",
+          "at": 1628822.984230771,
+          "checkpoint_id": "task-1-root",
+          "interpretation": "owner overlap: logical DROP is not prefix-sized physical release",
+          "offset": 18.677305716788396,
+          "physical_blocks_reclaimed": 0,
+          "reason": "native_allocation_rejected",
+          "reclaimed_blocks": 0
+        },
+        {
+          "action": "DROP",
+          "at": 1628824.486600044,
+          "checkpoint_id": "task-1-root",
+          "interpretation": "owner overlap: logical DROP is not prefix-sized physical release",
+          "offset": 20.179674989776686,
+          "physical_blocks_reclaimed": 0,
+          "reason": "native_allocation_rejected",
+          "reclaimed_blocks": 0
+        }
+      ]
+    },
+    {
+      "clock_bridge": {
+        "bridge_spread_seconds": 0.0011808606795966625,
+        "limitation": "approximate bridge includes dispatcher lag; never supplied to online policy",
+        "origin": 1628948.9522647022,
+        "source": "legacy_min_dispatch_complete_minus_request_complete"
+      },
+      "no_consumer_diagnostics": [
+        {
+          "checkpoint_id": "task-0-redundant",
+          "declared_consumers": [],
+          "first_drop_offset": 0.7977978908456862,
+          "first_keep_offset": 0.7459803067613393,
+          "first_predicted_benefit_seconds": 0.08000613122008163,
+          "first_retention_window_seconds": 0.05181758408434689,
+          "full_future_gpu_submissions": 0,
+          "online": {
+            "future_consumers": [],
+            "future_preference": false,
+            "neutral_reason": "legacy trace lacks causal preparation/queue history and current cache identity",
+            "reason": "no_live_gpu_consumer"
+          },
+          "predicted_benefits_are_not_cumulative_savings": true
+        },
+        {
+          "checkpoint_id": "task-1-redundant",
+          "declared_consumers": [],
+          "first_drop_offset": 16.43799925572239,
+          "first_keep_offset": 16.431871271925047,
+          "first_predicted_benefit_seconds": 0.10317048992522776,
+          "first_retention_window_seconds": 0.006127983797341585,
+          "full_future_gpu_submissions": 0,
+          "online": {
+            "future_consumers": [],
+            "future_preference": false,
+            "neutral_reason": "legacy trace lacks causal preparation/queue history and current cache identity",
+            "reason": "no_live_gpu_consumer"
+          },
+          "predicted_benefits_are_not_cumulative_savings": true
+        },
+        {
+          "checkpoint_id": "task-2-redundant",
+          "declared_consumers": [],
+          "first_drop_offset": 24.822731494903564,
+          "first_keep_offset": 24.809587648836896,
+          "first_predicted_benefit_seconds": 0.10334867729988273,
+          "first_retention_window_seconds": 0.01314384606666863,
+          "full_future_gpu_submissions": 0,
+          "online": {
+            "future_consumers": [],
+            "future_preference": false,
+            "neutral_reason": "legacy trace lacks causal preparation/queue history and current cache identity",
+            "reason": "no_live_gpu_consumer"
+          },
+          "predicted_benefits_are_not_cumulative_savings": true
+        },
+        {
+          "checkpoint_id": "task-3-redundant",
+          "declared_consumers": [],
+          "first_drop_offset": 41.79781892593019,
+          "first_keep_offset": 41.7858084498439,
+          "first_predicted_benefit_seconds": 0.10334867729988273,
+          "first_retention_window_seconds": 0.01201047608628869,
+          "full_future_gpu_submissions": 0,
+          "online": {
+            "future_consumers": [],
+            "future_preference": false,
+            "neutral_reason": "legacy trace lacks causal preparation/queue history and current cache identity",
+            "reason": "no_live_gpu_consumer"
+          },
+          "predicted_benefits_are_not_cumulative_savings": true
+        }
+      ],
+      "paired_requests": 124,
+      "request_latency_deltas": {
+        "background-000": {
+          "engine_queue": -0.0009081792086362839,
+          "enqueue": 0.0028917300514876842,
+          "schedule_to_first_token": 0.00023309909738600254,
+          "ttft": 0.002216649940237403
+        },
+        "background-001": {
+          "engine_queue": 0.000274142948910594,
+          "enqueue": -0.0041865508537739515,
+          "schedule_to_first_token": 0.0006201097276061773,
+          "ttft": -0.00329229817725718
+        },
+        "background-002": {
+          "engine_queue": 0.00011187465861439705,
+          "enqueue": -0.0032646458130329847,
+          "schedule_to_first_token": -0.0006481546442955732,
+          "ttft": -0.003800925798714161
+        },
+        "background-003": {
+          "engine_queue": -0.0001405759248882532,
+          "enqueue": 0.013165344018489122,
+          "schedule_to_first_token": 0.00020584301091730595,
+          "ttft": 0.013230611104518175
+        },
+        "background-004": {
+          "engine_queue": 1.8362188711762428e-05,
+          "enqueue": 0.0031604429241269827,
+          "schedule_to_first_token": -0.002541746012866497,
+          "ttft": 0.0006370590999722481
+        },
+        "background-005": {
+          "engine_queue": -0.000777191948145628,
+          "enqueue": -0.0023334079887717962,
+          "schedule_to_first_token": -0.0006674150936305523,
+          "ttft": -0.0037780150305479765
+        },
+        "background-006": {
+          "engine_queue": 0.0008619041182100773,
+          "enqueue": -0.003659249981865287,
+          "schedule_to_first_token": -0.0004858672618865967,
+          "ttft": -0.0032832131255418062
+        },
+        "background-007": {
+          "engine_queue": 0.003843985963612795,
+          "enqueue": -0.0071192889008671045,
+          "schedule_to_first_token": 9.754905477166176e-05,
+          "ttft": -0.003177753882482648
+        },
+        "background-008": {
+          "engine_queue": -0.17779879923909903,
+          "enqueue": 0.0064196460880339146,
+          "schedule_to_first_token": -0.19853644305840135,
+          "ttft": -0.36991559620946646
+        },
+        "background-009": {
+          "engine_queue": -0.16810810007154942,
+          "enqueue": -0.0032710928935557604,
+          "schedule_to_first_token": -0.19853640324436128,
+          "ttft": -0.36991559620946646
+        },
+        "background-010": {
+          "engine_queue": 0.3551538020838052,
+          "enqueue": -0.0013851150870323181,
+          "schedule_to_first_token": -0.3970170470420271,
+          "ttft": -0.04324836004525423
+        },
+        "background-011": {
+          "engine_queue": 0.1346864178776741,
+          "enqueue": 0.35350074199959636,
+          "schedule_to_first_token": 0.4086734210141003,
+          "ttft": 0.8968605808913708
+        },
+        "background-012": {
+          "engine_queue": 0.6800831740256399,
+          "enqueue": -0.36946428706869483,
+          "schedule_to_first_token": -0.2010984008666128,
+          "ttft": 0.10952048609033227
+        },
+        "background-013": {
+          "engine_queue": -0.27187905879691243,
+          "enqueue": -0.04364727716892958,
+          "schedule_to_first_token": -0.1996589668560773,
+          "ttft": -0.5151853028219193
+        },
+        "background-014": {
+          "engine_queue": 0.9134769500233233,
+          "enqueue": 0.02723243599757552,
+          "schedule_to_first_token": -0.20832608290947974,
+          "ttft": 0.7323833031114191
+        },
+        "background-015": {
+          "engine_queue": 0.9301792171318084,
+          "enqueue": 0.010531158884987235,
+          "schedule_to_first_token": -0.20832707290537655,
+          "ttft": 0.7323833031114191
+        },
+        "background-016": {
+          "engine_queue": -0.04467258392833173,
+          "enqueue": 0.3673839350230992,
+          "schedule_to_first_token": -0.24113817512989044,
+          "ttft": 0.08157317596487701
+        },
+        "background-017": {
+          "engine_queue": 0.6380799799226224,
+          "enqueue": -0.31536845909431577,
+          "schedule_to_first_token": -0.24113834486342967,
+          "ttft": 0.08157317596487701
+        },
+        "background-018": {
+          "engine_queue": 0.35630380688235164,
+          "enqueue": -0.17681456496939063,
+          "schedule_to_first_token": -0.0004396389704197645,
+          "ttft": 0.17904960294254124
+        },
+        "background-019": {
+          "engine_queue": -0.1191057818941772,
+          "enqueue": 0.2985950340516865,
+          "schedule_to_first_token": -0.0004396492149680853,
+          "ttft": 0.17904960294254124
+        },
+        "background-020": {
+          "engine_queue": 0.611696848878637,
+          "enqueue": -0.4849034259095788,
+          "schedule_to_first_token": 0.0034467282239347696,
+          "ttft": 0.13024015119299293
+        },
+        "background-021": {
+          "engine_queue": 0.5150806361343712,
+          "enqueue": -0.38828630303032696,
+          "schedule_to_first_token": 0.0034458180889487267,
+          "ttft": 0.13024015119299293
+        },
+        "background-022": {
+          "engine_queue": -0.004731731954962015,
+          "enqueue": 0.17901202198117971,
+          "schedule_to_first_token": -0.001032383879646659,
+          "ttft": 0.17324790614657104
+        },
+        "background-023": {
+          "engine_queue": 0.015016731806099415,
+          "enqueue": 0.15926454705186188,
+          "schedule_to_first_token": -0.0010333727113902569,
+          "ttft": 0.17324790614657104
+        },
+        "background-024": {
+          "engine_queue": 0.05054216692224145,
+          "enqueue": 0.021806817036122084,
+          "schedule_to_first_token": 0.000610866118222475,
+          "ttft": 0.07295985007658601
+        },
+        "background-025": {
+          "engine_queue": 0.06608777982182801,
+          "enqueue": 0.0062618141528218985,
+          "schedule_to_first_token": 0.0006102561019361019,
+          "ttft": 0.07295985007658601
+        },
+        "background-026": {
+          "engine_queue": -0.04181389301083982,
+          "enqueue": 0.12986475601792336,
+          "schedule_to_first_token": -0.002611842006444931,
+          "ttft": 0.0854390210006386
+        },
+        "background-027": {
+          "engine_queue": 0.4019615678116679,
+          "enqueue": -0.31391185498796403,
+          "schedule_to_first_token": -0.002610691823065281,
+          "ttft": 0.0854390210006386
+        },
+        "background-028": {
+          "engine_queue": -0.09140061400830746,
+          "enqueue": 0.07587263104505837,
+          "schedule_to_first_token": -0.0005280610639601946,
+          "ttft": -0.016056044027209282
+        },
+        "background-029": {
+          "engine_queue": -0.08871997077949345,
+          "enqueue": 0.07294887979514897,
+          "schedule_to_first_token": -0.0006124239880591631,
+          "ttft": -0.016383514972403646
+        },
+        "background-030": {
+          "engine_queue": 0.429979964857921,
+          "enqueue": -0.3448518868535757,
+          "schedule_to_first_token": -0.0010390151292085648,
+          "ttft": 0.08408906287513673
+        },
+        "background-031": {
+          "engine_queue": 0.019539854023605585,
+          "enqueue": 0.06558838300406933,
+          "schedule_to_first_token": -0.0010391741525381804,
+          "ttft": 0.08408906287513673
+        },
+        "background-032": {
+          "engine_queue": 0.04503207514062524,
+          "enqueue": -0.016017812071368098,
+          "schedule_to_first_token": -0.0016972310841083527,
+          "ttft": 0.027317031985148787
+        },
+        "background-033": {
+          "engine_queue": -0.055005807895213366,
+          "enqueue": 0.08402055106125772,
+          "schedule_to_first_token": -0.001697711180895567,
+          "ttft": 0.027317031985148787
+        },
+        "background-034": {
+          "engine_queue": 0.0958164727780968,
+          "enqueue": -0.010287036886438727,
+          "schedule_to_first_token": -0.0023085898719727993,
+          "ttft": 0.08322084601968527
+        },
+        "background-035": {
+          "engine_queue": -0.09254685207270086,
+          "enqueue": 0.17807644791901112,
+          "schedule_to_first_token": -0.0023087498266249895,
+          "ttft": 0.08322084601968527
+        },
+        "background-036": {
+          "engine_queue": -0.00010395399294793606,
+          "enqueue": -0.0067592510022223,
+          "schedule_to_first_token": -0.0010485430248081684,
+          "ttft": -0.007911748019978404
+        },
+        "background-037": {
+          "engine_queue": 1.620105467736721e-05,
+          "enqueue": -0.001488555921241641,
+          "schedule_to_first_token": 9.090593084692955e-05,
+          "ttft": -0.0013814489357173443
+        },
+        "background-038": {
+          "engine_queue": -5.585211329162121e-05,
+          "enqueue": 0.0034326950553804636,
+          "schedule_to_first_token": -0.0021471600048244,
+          "ttft": 0.0012296829372644424
+        },
+        "background-039": {
+          "engine_queue": -0.00021167797967791557,
+          "enqueue": 0.0026575569063425064,
+          "schedule_to_first_token": -0.00017865700647234917,
+          "ttft": 0.0022672219201922417
+        },
+        "background-040": {
+          "engine_queue": -0.01773696788586676,
+          "enqueue": 0.0168801739346236,
+          "schedule_to_first_token": 0.03563014487735927,
+          "ttft": 0.03477335092611611
+        },
+        "background-041": {
+          "engine_queue": 0.07713050907477736,
+          "enqueue": 0.0015527259092777967,
+          "schedule_to_first_token": 0.0014522930141538382,
+          "ttft": 0.080135527998209
+        },
+        "background-042": {
+          "engine_queue": 0.27418348588980734,
+          "enqueue": -0.17391455080360174,
+          "schedule_to_first_token": -0.000674587907269597,
+          "ttft": 0.099594347178936
+        },
+        "background-043": {
+          "engine_queue": 1.5750061720609665e-05,
+          "enqueue": -0.0076576529536396265,
+          "schedule_to_first_token": -1.5668105334043503e-05,
+          "ttft": -0.00765757099725306
+        },
+        "background-044": {
+          "engine_queue": -0.0033708459232002497,
+          "enqueue": -0.00779511802829802,
+          "schedule_to_first_token": -0.0023198670241981745,
+          "ttft": -0.013485830975696445
+        },
+        "background-045": {
+          "engine_queue": 0.050493655959144235,
+          "enqueue": -0.013447668869048357,
+          "schedule_to_first_token": -0.0021784829441457987,
+          "ttft": 0.03486750414595008
+        },
+        "background-046": {
+          "engine_queue": -0.09751115110702813,
+          "enqueue": 0.030935825081542134,
+          "schedule_to_first_token": -0.012087957933545113,
+          "ttft": -0.0786632839590311
+        },
+        "background-047": {
+          "engine_queue": -0.24371993215754628,
+          "enqueue": 0.17714299610815942,
+          "schedule_to_first_token": -0.012086347909644246,
+          "ttft": -0.0786632839590311
+        },
+        "background-048": {
+          "engine_queue": -0.585910189896822,
+          "enqueue": -0.08032312500290573,
+          "schedule_to_first_token": -0.0014024712145328522,
+          "ttft": -0.6676357861142606
+        },
+        "background-049": {
+          "engine_queue": -0.6278416141867638,
+          "enqueue": -0.038391761016100645,
+          "schedule_to_first_token": -0.0014024109113961458,
+          "ttft": -0.6676357861142606
+        },
+        "background-050": {
+          "engine_queue": -0.5895390878431499,
+          "enqueue": -0.03426790004596114,
+          "schedule_to_first_token": -0.0002351510338485241,
+          "ttft": -0.6240421389229596
+        },
+        "background-051": {
+          "engine_queue": -0.6024316248949617,
+          "enqueue": -0.021375423995777965,
+          "schedule_to_first_token": -0.00023509003221988678,
+          "ttft": -0.6240421389229596
+        },
+        "background-052": {
+          "engine_queue": -0.5028427061624825,
+          "enqueue": 0.001045007025822997,
+          "schedule_to_first_token": -0.0007411506958305836,
+          "ttft": -0.5025388498324901
+        },
+        "background-053": {
+          "engine_queue": -2.2892141714692116e-05,
+          "enqueue": -0.00900251790881157,
+          "schedule_to_first_token": 0.0006475490517914295,
+          "ttft": -0.008377860998734832
+        },
+        "background-054": {
+          "engine_queue": -0.15541595593094826,
+          "enqueue": 0.000928949099034071,
+          "schedule_to_first_token": -0.0009301691316068172,
+          "ttft": -0.155417175963521
+        },
+        "background-055": {
+          "engine_queue": 0.1256586741656065,
+          "enqueue": -0.1360698549542576,
+          "schedule_to_first_token": -0.000565582187846303,
+          "ttft": -0.010976762976497412
+        },
+        "background-056": {
+          "engine_queue": -0.28637292701750994,
+          "enqueue": -0.07745523401536047,
+          "schedule_to_first_token": -0.11418946599587798,
+          "ttft": -0.4780176270287484
+        },
+        "background-057": {
+          "engine_queue": 0.16970542492344975,
+          "enqueue": -0.18127323989756405,
+          "schedule_to_first_token": -0.0010013831779360771,
+          "ttft": -0.012569198152050376
+        },
+        "background-058": {
+          "engine_queue": -0.03445675689727068,
+          "enqueue": -0.1815665429458022,
+          "schedule_to_first_token": 0.0007075897883623838,
+          "ttft": -0.2153157100547105
+        },
+        "background-059": {
+          "engine_queue": 0.0005355831235647202,
+          "enqueue": -0.04882381297647953,
+          "schedule_to_first_token": 0.00021282094530761242,
+          "ttft": -0.0480754089076072
+        },
+        "background-060": {
+          "engine_queue": -0.1128699688706547,
+          "enqueue": 0.004780513932928443,
+          "schedule_to_first_token": -0.0028103599324822426,
+          "ttft": -0.1108998148702085
+        },
+        "background-061": {
+          "engine_queue": -0.11485735629685223,
+          "enqueue": 0.12611036514863372,
+          "schedule_to_first_token": 0.004901461070403457,
+          "ttft": 0.016154469922184944
+        },
+        "background-062": {
+          "engine_queue": -0.07029907312244177,
+          "enqueue": -0.1113283229060471,
+          "schedule_to_first_token": 0.0007379429880529642,
+          "ttft": -0.1808894530404359
+        },
+        "background-063": {
+          "engine_queue": -0.06753069697879255,
+          "enqueue": 0.017257728148251772,
+          "schedule_to_first_token": -0.0021701741497963667,
+          "ttft": -0.05244314298033714
+        },
+        "background-064": {
+          "engine_queue": -0.0929832300171256,
+          "enqueue": 0.03381915297359228,
+          "schedule_to_first_token": 0.0005394229665398598,
+          "ttft": -0.058624654076993465
+        },
+        "background-065": {
+          "engine_queue": -0.12423811224289238,
+          "enqueue": 0.16296492307446897,
+          "schedule_to_first_token": -0.0007160096429288387,
+          "ttft": 0.03801080118864775
+        },
+        "background-066": {
+          "engine_queue": -0.11288063088431954,
+          "enqueue": -0.05208089714869857,
+          "schedule_to_first_token": -0.0016427107620984316,
+          "ttft": -0.16660423879511654
+        },
+        "background-067": {
+          "engine_queue": 0.025788038270547986,
+          "enqueue": -0.05199065315537155,
+          "schedule_to_first_token": -0.009340529097244143,
+          "ttft": -0.035543143982067704
+        },
+        "background-068": {
+          "engine_queue": -0.04851283598691225,
+          "enqueue": -0.05189337907359004,
+          "schedule_to_first_token": 0.001711323857307434,
+          "ttft": -0.09869489120319486
+        },
+        "background-069": {
+          "engine_queue": 0.060364868957549334,
+          "enqueue": -0.05865555512718856,
+          "schedule_to_first_token": -0.002087739761918783,
+          "ttft": -0.00037842593155801296
+        },
+        "background-070": {
+          "engine_queue": -0.14836888574063778,
+          "enqueue": -0.058694396167993546,
+          "schedule_to_first_token": -0.0015487761702388525,
+          "ttft": -0.20861205807887018
+        },
+        "background-071": {
+          "engine_queue": 0.09604187309741974,
+          "enqueue": -0.16839473508298397,
+          "schedule_to_first_token": 0.004233232932165265,
+          "ttft": -0.06811962905339897
+        },
+        "background-072": {
+          "engine_queue": -0.07805311772972345,
+          "enqueue": -0.03565955813974142,
+          "schedule_to_first_token": -0.004300663946196437,
+          "ttft": -0.11801333981566131
+        },
+        "background-073": {
+          "engine_queue": -0.04609757196158171,
+          "enqueue": 0.002398301847279072,
+          "schedule_to_first_token": 0.0006708391010761261,
+          "ttft": -0.04302843101322651
+        },
+        "background-074": {
+          "engine_queue": -0.2424965319223702,
+          "enqueue": -0.005108533194288611,
+          "schedule_to_first_token": 0.0003377532120794058,
+          "ttft": -0.2472673119045794
+        },
+        "background-075": {
+          "engine_queue": -0.10414293594658375,
+          "enqueue": -0.010441595921292901,
+          "schedule_to_first_token": -0.000209299148991704,
+          "ttft": -0.11479383101686835
+        },
+        "background-076": {
+          "engine_queue": -0.16751899430528283,
+          "enqueue": -0.0003074128180742264,
+          "schedule_to_first_token": 0.0002087792381644249,
+          "ttft": -0.16761762788519263
+        },
+        "background-077": {
+          "engine_queue": -0.161480151116848,
+          "enqueue": 0.17436088807880878,
+          "schedule_to_first_token": -0.0008999190758913755,
+          "ttft": 0.011980817886069417
+        },
+        "background-078": {
+          "engine_queue": -0.1949713488575071,
+          "enqueue": -0.0028844960033893585,
+          "schedule_to_first_token": 0.003690197831019759,
+          "ttft": -0.1941656470298767
+        },
+        "background-079": {
+          "engine_queue": -0.025227079866454005,
+          "enqueue": -0.022364099975675344,
+          "schedule_to_first_token": -0.001396471168845892,
+          "ttft": -0.04898765101097524
+        },
+        "background-080": {
+          "engine_queue": -0.06870188098400831,
+          "enqueue": -0.04294249601662159,
+          "schedule_to_first_token": 4.469882696866989e-06,
+          "ttft": -0.11163990711793303
+        },
+        "background-081": {
+          "engine_queue": 0.07042356906458735,
+          "enqueue": 0.009429466910660267,
+          "schedule_to_first_token": 0.0007203998975455761,
+          "ttft": 0.0805734358727932
+        },
+        "background-082": {
+          "engine_queue": -0.1456538571510464,
+          "enqueue": 0.011085824109613895,
+          "schedule_to_first_token": 0.0036112540401518345,
+          "ttft": -0.13095677900128067
+        },
+        "background-083": {
+          "engine_queue": 0.03404612489975989,
+          "enqueue": 0.012316282140091062,
+          "schedule_to_first_token": 0.0011761169880628586,
+          "ttft": 0.04753852402791381
+        },
+        "background-084": {
+          "engine_queue": 0.033916368847712874,
+          "enqueue": 0.012446198146790266,
+          "schedule_to_first_token": 0.0011759570334106684,
+          "ttft": 0.04753852402791381
+        },
+        "background-085": {
+          "engine_queue": 0.017361531034111977,
+          "enqueue": 0.012210818007588387,
+          "schedule_to_first_token": -0.0016107030678540468,
+          "ttft": 0.027961645973846316
+        },
+        "background-086": {
+          "engine_queue": 0.01731574907898903,
+          "enqueue": 0.012256141053512692,
+          "schedule_to_first_token": -0.001610244158655405,
+          "ttft": 0.027961645973846316
+        },
+        "background-087": {
+          "engine_queue": -0.15487154084257782,
+          "enqueue": 0.15156421600840986,
+          "schedule_to_first_token": -0.003776156110689044,
+          "ttft": -0.007083480944857001
+        },
+        "background-088": {
+          "engine_queue": 0.1246107469778508,
+          "enqueue": -0.12792049208655953,
+          "schedule_to_first_token": -0.003773735836148262,
+          "ttft": -0.007083480944857001
+        },
+        "background-089": {
+          "engine_queue": 0.027160486206412315,
+          "enqueue": -0.04890008713118732,
+          "schedule_to_first_token": -0.0003241680096834898,
+          "ttft": -0.022063768934458494
+        },
+        "background-090": {
+          "engine_queue": -0.011440099216997623,
+          "enqueue": -0.010299529880285263,
+          "schedule_to_first_token": -0.0003241398371756077,
+          "ttft": -0.022063768934458494
+        },
+        "background-091": {
+          "engine_queue": -0.21941677201539278,
+          "enqueue": 0.1638344780076295,
+          "schedule_to_first_token": 0.00026756501756608486,
+          "ttft": -0.05531472899019718
+        },
+        "background-092": {
+          "engine_queue": -0.005331393796950579,
+          "enqueue": -0.05025109997950494,
+          "schedule_to_first_token": 0.0002677647862583399,
+          "ttft": -0.05531472899019718
+        },
+        "background-093": {
+          "engine_queue": -0.08745610015466809,
+          "enqueue": 0.08057182608172297,
+          "schedule_to_first_token": -0.0021201479248702526,
+          "ttft": -0.00900442199781537
+        },
+        "background-094": {
+          "engine_queue": -0.1293911701068282,
+          "enqueue": 0.12250700499862432,
+          "schedule_to_first_token": -0.0021202568896114826,
+          "ttft": -0.00900442199781537
+        },
+        "background-095": {
+          "engine_queue": -0.25259602698497474,
+          "enqueue": 0.029013900086283684,
+          "schedule_to_first_token": -0.007319664116948843,
+          "ttft": -0.2309017910156399
+        },
+        "task-0-fast-commit": {
+          "engine_queue": -0.011225939029827714,
+          "enqueue": -0.011180573143064976,
+          "schedule_to_first_token": -0.004148098872974515,
+          "ttft": -0.026554611045867205
+        },
+        "task-0-final": {
+          "engine_queue": -0.2847627231385559,
+          "enqueue": 0.00012237508781254292,
+          "schedule_to_first_token": -0.39908702904358506,
+          "ttft": -0.6837273770943284
+        },
+        "task-0-redundant": {
+          "engine_queue": -0.0008492358028888702,
+          "enqueue": -8.172309026122093e-05,
+          "schedule_to_first_token": 0.00023285881616175175,
+          "ttft": -0.0006981000769883394
+        },
+        "task-0-repeat": {
+          "engine_queue": -0.2218727560248226,
+          "enqueue": -2.6830704882740974e-05,
+          "schedule_to_first_token": 0.0010859419126063585,
+          "ttft": -0.22081364481709898
+        },
+        "task-0-root": {
+          "engine_queue": -7.84031581133604e-05,
+          "enqueue": -0.0001201957929879427,
+          "schedule_to_first_token": 0.0030856081284582615,
+          "ttft": 0.0028870091773569584
+        },
+        "task-0-slow-commit": {
+          "engine_queue": -0.01169083989225328,
+          "enqueue": 0.00012981588952243328,
+          "schedule_to_first_token": -0.004148278851062059,
+          "ttft": -0.015709302853792906
+        },
+        "task-0-useful": {
+          "engine_queue": -0.0009637002367526293,
+          "enqueue": -0.0001924079842865467,
+          "schedule_to_first_token": 0.00023319898173213005,
+          "ttft": -0.0009229092393070459
+        },
+        "task-1-fast-commit": {
+          "engine_queue": 0.156837766058743,
+          "enqueue": -0.00023668911308050156,
+          "schedule_to_first_token": -0.0040940470062196255,
+          "ttft": 0.15250702993944287
+        },
+        "task-1-final": {
+          "engine_queue": 0.001279613934457302,
+          "enqueue": -0.000269539887085557,
+          "schedule_to_first_token": 0.20165211986750364,
+          "ttft": 0.2026621939148754
+        },
+        "task-1-redundant": {
+          "engine_queue": 0.04125122516416013,
+          "enqueue": -0.00010159309022128582,
+          "schedule_to_first_token": 0.0016397777944803238,
+          "ttft": 0.04278940986841917
+        },
+        "task-1-repeat": {
+          "engine_queue": -8.464325219392776e-05,
+          "enqueue": -9.590992704033852e-06,
+          "schedule_to_first_token": -0.0008188378997147083,
+          "ttft": -0.0009130721446126699
+        },
+        "task-1-root": {
+          "engine_queue": 0.29845660482533276,
+          "enqueue": -0.3139836478512734,
+          "schedule_to_first_token": -0.0005290010012686253,
+          "ttft": -0.016056044027209282
+        },
+        "task-1-slow-commit": {
+          "engine_queue": 0.15678740479052067,
+          "enqueue": 3.28822061419487e-05,
+          "schedule_to_first_token": -0.0040955981239676476,
+          "ttft": 0.15272468887269497
+        },
+        "task-1-useful": {
+          "engine_queue": 0.041319738142192364,
+          "enqueue": -9.418325498700142e-05,
+          "schedule_to_first_token": 0.0016389579977840185,
+          "ttft": 0.04286451288498938
+        },
+        "task-2-fast-commit": {
+          "engine_queue": -0.466822677757591,
+          "enqueue": -0.0034125852398574352,
+          "schedule_to_first_token": -0.0033373762853443623,
+          "ttft": -0.4735726392827928
+        },
+        "task-2-final": {
+          "engine_queue": -0.002984296763315797,
+          "enqueue": -1.4019198715686798e-05,
+          "schedule_to_first_token": 0.0011472329497337341,
+          "ttft": -0.0018510830122977495
+        },
+        "task-2-redundant": {
+          "engine_queue": -0.11754458677023649,
+          "enqueue": -6.681075319647789e-06,
+          "schedule_to_first_token": -0.002614513970911503,
+          "ttft": -0.12016578181646764
+        },
+        "task-2-repeat": {
+          "engine_queue": 0.42614883882924914,
+          "enqueue": -5.476200021803379e-05,
+          "schedule_to_first_token": -0.2007969489786774,
+          "ttft": 0.22529712785035372
+        },
+        "task-2-root": {
+          "engine_queue": 0.019133262103423476,
+          "enqueue": 0.033993158023804426,
+          "schedule_to_first_token": -0.0024221111088991165,
+          "ttft": 0.050704309018328786
+        },
+        "task-2-slow-commit": {
+          "engine_queue": -0.45466000912711024,
+          "enqueue": -0.010482457932084799,
+          "schedule_to_first_token": -0.0033363550901412964,
+          "ttft": -0.46847882214933634
+        },
+        "task-2-useful": {
+          "engine_queue": -0.1174567227717489,
+          "enqueue": -1.7230166122317314e-05,
+          "schedule_to_first_token": -0.0026144939474761486,
+          "ttft": -0.12008844688534737
+        },
+        "task-3-fast-commit": {
+          "engine_queue": -0.09768964606337249,
+          "enqueue": 0.0008358170744031668,
+          "schedule_to_first_token": 0.0020231001544743776,
+          "ttft": -0.09483072883449495
+        },
+        "task-3-final": {
+          "engine_queue": 0.02101202099584043,
+          "enqueue": 0.0001688178163021803,
+          "schedule_to_first_token": 0.00012902007438242435,
+          "ttft": 0.021309858886525035
+        },
+        "task-3-redundant": {
+          "engine_queue": 0.031969883013516665,
+          "enqueue": -0.00017874711193144321,
+          "schedule_to_first_token": -0.00041125714778900146,
+          "ttft": 0.03137987875379622
+        },
+        "task-3-repeat": {
+          "engine_queue": 0.40542666683904827,
+          "enqueue": -0.00016836682334542274,
+          "schedule_to_first_token": -0.0009692870080471039,
+          "ttft": 0.40428901300765574
+        },
+        "task-3-root": {
+          "engine_queue": 0.01229759119451046,
+          "enqueue": -0.0006372770294547081,
+          "schedule_to_first_token": 0.0008851068560034037,
+          "ttft": 0.012545421021059155
+        },
+        "task-3-slow-commit": {
+          "engine_queue": -0.09945828304626048,
+          "enqueue": 0.0011165777686983347,
+          "schedule_to_first_token": 0.0020228801295161247,
+          "ttft": -0.09631882514804602
+        },
+        "task-3-useful": {
+          "engine_queue": 0.03170781279914081,
+          "enqueue": -1.7440877854824066e-05,
+          "schedule_to_first_token": -0.00041198707185685635,
+          "ttft": 0.03127838484942913
+        }
+      },
+      "seed": 303,
+      "task_latency_deltas": {
+        "task-0": {
+          "e2e_delta": -0.5933988010510802,
+          "own_service_delta": -0.5933735899161547,
+          "start_delay_delta": -2.5211134925484657e-05
+        },
+        "task-1": {
+          "e2e_delta": 0.3325225489679724,
+          "own_service_delta": 0.6464355238713324,
+          "start_delay_delta": -0.31391297490336
+        },
+        "task-2": {
+          "e2e_delta": -0.2159668980166316,
+          "own_service_delta": -0.2506833360530436,
+          "start_delay_delta": 0.034716438036412
+        },
+        "task-3": {
+          "e2e_delta": -0.0480821649543941,
+          "own_service_delta": -0.047774102073162794,
+          "start_delay_delta": -0.000308062881231308
+        }
+      },
+      "tool_to_adoption_stages": [
+        {
+          "actual_adopted_prefix_tokens": null,
+          "actual_saved_work_vs_apc": null,
+          "actual_trunk_recomputed_tokens": 992,
+          "checkpoint_drop_offsets": [
+            {
+              "at": 1.440819496754557,
+              "reason": "ttl_expired"
+            }
+          ],
+          "consumer_id": "task-0-fast-commit",
+          "dispatcher_completed": 0.7968695408198982,
+          "enqueued": 1.0857115150429308,
+          "first_scheduled": 2.022884411038831,
+          "node_id": "task-0-fast-tool",
+          "probe_max_tokens": 3152,
+          "request_preparation_started": 0.7986884790007025,
+          "scheduled_ranges": null,
+          "tool_completed": 0.7825491039548069,
+          "tool_prior_seconds": 0.02545046992599964,
+          "tool_process_seconds": 0.031774631002917886
+        },
+        {
+          "actual_adopted_prefix_tokens": null,
+          "actual_saved_work_vs_apc": null,
+          "actual_trunk_recomputed_tokens": 0,
+          "checkpoint_drop_offsets": [
+            {
+              "at": 1.0855989197734743,
+              "reason": "ttl_expired"
+            },
+            {
+              "at": 2.5396888717077672,
+              "reason": "ttl_expired"
+            }
+          ],
+          "consumer_id": "task-0-slow-commit",
+          "dispatcher_completed": 1.086012767860666,
+          "enqueued": 1.0887320248875767,
+          "first_scheduled": 2.0228861609939486,
+          "node_id": "task-0-slow-tool",
+          "probe_max_tokens": 3072,
+          "request_preparation_started": 1.086652996018529,
+          "scheduled_ranges": null,
+          "tool_completed": 0.7816824158653617,
+          "tool_prior_seconds": 0.02227746113203466,
+          "tool_process_seconds": 0.02949076099321246
+        },
+        {
+          "actual_adopted_prefix_tokens": null,
+          "actual_saved_work_vs_apc": null,
+          "actual_trunk_recomputed_tokens": 3040,
+          "checkpoint_drop_offsets": [
+            {
+              "at": 16.437634320929646,
+              "reason": "native_allocation_rejected"
+            },
+            {
+              "at": 22.2423848467879,
+              "reason": "ttl_expired"
+            }
+          ],
+          "consumer_id": "task-1-fast-commit",
+          "dispatcher_completed": 16.856849875766784,
+          "enqueued": 16.85943452687934,
+          "first_scheduled": 17.244528432842344,
+          "node_id": "task-1-fast-tool",
+          "probe_max_tokens": 1056,
+          "request_preparation_started": 16.857767294859514,
+          "scheduled_ranges": null,
+          "tool_completed": 16.50731422007084,
+          "tool_prior_seconds": 0.02545046992599964,
+          "tool_process_seconds": 0.06810659216716886
+        },
+        {
+          "actual_adopted_prefix_tokens": null,
+          "actual_saved_work_vs_apc": null,
+          "actual_trunk_recomputed_tokens": 0,
+          "checkpoint_drop_offsets": [
+            {
+              "at": 14.66183280874975,
+              "reason": "native_allocation_rejected"
+            },
+            {
+              "at": 15.89765704376623,
+              "reason": "native_allocation_rejected"
+            },
+            {
+              "at": 17.243764320854098,
+              "reason": "native_allocation_rejected"
+            },
+            {
+              "at": 22.39553899690509,
+              "reason": "native_allocation_rejected"
+            }
+          ],
+          "consumer_id": "task-1-slow-commit",
+          "dispatcher_completed": 16.859419336775318,
+          "enqueued": 16.86129154707305,
+          "first_scheduled": 17.24453151389025,
+          "node_id": "task-1-slow-tool",
+          "probe_max_tokens": 3072,
+          "request_preparation_started": 16.8599517790135,
+          "scheduled_ranges": null,
+          "tool_completed": 16.504683807026595,
+          "tool_prior_seconds": 0.02227746113203466,
+          "tool_process_seconds": 0.06500384816899896
+        },
+        {
+          "actual_adopted_prefix_tokens": null,
+          "actual_saved_work_vs_apc": null,
+          "actual_trunk_recomputed_tokens": 3056,
+          "checkpoint_drop_offsets": [
+            {
+              "at": 24.82229539589025,
+              "reason": "native_allocation_rejected"
+            }
+          ],
+          "consumer_id": "task-2-fast-commit",
+          "dispatcher_completed": 25.237688501831144,
+          "enqueued": 25.240033532958478,
+          "first_scheduled": 25.604964978061616,
+          "node_id": "task-2-fast-tool",
+          "probe_max_tokens": 1072,
+          "request_preparation_started": 25.238581320038065,
+          "scheduled_ranges": null,
+          "tool_completed": 24.852813477860764,
+          "tool_prior_seconds": 0.02545046992599964,
+          "tool_process_seconds": 0.028903362806886435
+        },
+        {
+          "actual_adopted_prefix_tokens": null,
+          "actual_saved_work_vs_apc": null,
+          "actual_trunk_recomputed_tokens": 0,
+          "checkpoint_drop_offsets": [
+            {
+              "at": 24.424929554807022,
+              "reason": "native_allocation_rejected"
+            },
+            {
+              "at": 24.44501123880036,
+              "reason": "native_allocation_rejected"
+            },
+            {
+              "at": 24.46415889193304,
+              "reason": "native_allocation_rejected"
+            },
+            {
+              "at": 24.48321473179385,
+              "reason": "native_allocation_rejected"
+            },
+            {
+              "at": 24.50228629191406,
+              "reason": "native_allocation_rejected"
+            },
+            {
+              "at": 24.52135642291978,
+              "reason": "native_allocation_rejected"
+            },
+            {
+              "at": 24.54035868984647,
+              "reason": "native_allocation_rejected"
+            },
+            {
+              "at": 24.559338385704905,
+              "reason": "native_allocation_rejected"
+            },
+            {
+              "at": 24.57867068774067,
+              "reason": "native_allocation_rejected"
+            },
+            {
+              "at": 25.604575871722773,
+              "reason": "native_allocation_rejected"
+            },
+            {
+              "at": 31.17865065089427,
+              "reason": "native_allocation_rejected"
+            }
+          ],
+          "consumer_id": "task-2-slow-commit",
+          "dispatcher_completed": 25.240025612758473,
+          "enqueued": 25.241646121954545,
+          "first_scheduled": 25.604966607876122,
+          "node_id": "task-2-slow-tool",
+          "probe_max_tokens": 3072,
+          "request_preparation_started": 25.240483291912824,
+          "scheduled_ranges": null,
+          "tool_completed": 24.850176974898204,
+          "tool_prior_seconds": 0.02227746113203466,
+          "tool_process_seconds": 0.02552570798434317
+        },
+        {
+          "actual_adopted_prefix_tokens": null,
+          "actual_saved_work_vs_apc": null,
+          "actual_trunk_recomputed_tokens": 3040,
+          "checkpoint_drop_offsets": [
+            {
+              "at": 41.7966169337742,
+              "reason": "native_allocation_rejected"
+            }
+          ],
+          "consumer_id": "task-3-fast-commit",
+          "dispatcher_completed": 42.222319691907614,
+          "enqueued": 42.22802626690827,
+          "first_scheduled": 42.55704659386538,
+          "node_id": "task-3-fast-tool",
+          "probe_max_tokens": 1056,
+          "request_preparation_started": 42.22514049289748,
+          "scheduled_ranges": null,
+          "tool_completed": 41.831302312901244,
+          "tool_prior_seconds": 0.02545046992599964,
+          "tool_process_seconds": 0.033271078020334244
+        },
+        {
+          "actual_adopted_prefix_tokens": null,
+          "actual_saved_work_vs_apc": null,
+          "actual_trunk_recomputed_tokens": 0,
+          "checkpoint_drop_offsets": [
+            {
+              "at": 38.95471771177836,
+              "reason": "native_allocation_rejected"
+            },
+            {
+              "at": 41.2497445018962,
+              "reason": "native_allocation_rejected"
+            },
+            {
+              "at": 42.55616082577035,
+              "reason": "native_allocation_rejected"
+            },
+            {
+              "at": 49.043466517934576,
+              "reason": "nonpositive_incremental_value"
+            }
+          ],
+          "consumer_id": "task-3-slow-commit",
+          "dispatcher_completed": 42.22850644774735,
+          "enqueued": 42.232083251932636,
+          "first_scheduled": 42.55704843392596,
+          "node_id": "task-3-slow-tool",
+          "probe_max_tokens": 3072,
+          "request_preparation_started": 42.229711530031636,
+          "scheduled_ranges": null,
+          "tool_completed": 41.82807556493208,
+          "tool_prior_seconds": 0.02227746113203466,
+          "tool_process_seconds": 0.02684242301620543
+        }
+      ],
+      "zero_reclaim_drops": [
+        {
+          "action": "DROP",
+          "at": 1628964.849921746,
+          "checkpoint_id": "task-1-root",
+          "interpretation": "owner overlap: logical DROP is not prefix-sized physical release",
+          "offset": 15.89765704376623,
+          "physical_blocks_reclaimed": 0,
+          "reason": "native_allocation_rejected",
+          "reclaimed_blocks": 0
+        },
+        {
+          "action": "DROP",
+          "at": 1628966.196029023,
+          "checkpoint_id": "task-1-root",
+          "interpretation": "owner overlap: logical DROP is not prefix-sized physical release",
+          "offset": 17.243764320854098,
+          "physical_blocks_reclaimed": 0,
+          "reason": "native_allocation_rejected",
+          "reclaimed_blocks": 0
+        },
+        {
+          "action": "DROP",
+          "at": 1628971.347803699,
+          "checkpoint_id": "task-1-root",
+          "interpretation": "owner overlap: logical DROP is not prefix-sized physical release",
+          "offset": 22.39553899690509,
+          "physical_blocks_reclaimed": 0,
+          "reason": "native_allocation_rejected",
+          "reclaimed_blocks": 0
+        },
+        {
+          "action": "DROP",
+          "at": 1628973.53093539,
+          "checkpoint_id": "task-2-root",
+          "interpretation": "owner overlap: logical DROP is not prefix-sized physical release",
+          "offset": 24.57867068774067,
+          "physical_blocks_reclaimed": 0,
+          "reason": "native_allocation_rejected",
+          "reclaimed_blocks": 0
+        },
+        {
+          "action": "DROP",
+          "at": 1628974.556840574,
+          "checkpoint_id": "task-2-root",
+          "interpretation": "owner overlap: logical DROP is not prefix-sized physical release",
+          "offset": 25.604575871722773,
+          "physical_blocks_reclaimed": 0,
+          "reason": "native_allocation_rejected",
+          "reclaimed_blocks": 0
+        },
+        {
+          "action": "DROP",
+          "at": 1628980.130915353,
+          "checkpoint_id": "task-2-root",
+          "interpretation": "owner overlap: logical DROP is not prefix-sized physical release",
+          "offset": 31.17865065089427,
+          "physical_blocks_reclaimed": 0,
+          "reason": "native_allocation_rejected",
+          "reclaimed_blocks": 0
+        },
+        {
+          "action": "DROP",
+          "at": 1628990.202009204,
+          "checkpoint_id": "task-3-root",
+          "interpretation": "owner overlap: logical DROP is not prefix-sized physical release",
+          "offset": 41.2497445018962,
+          "physical_blocks_reclaimed": 0,
+          "reason": "native_allocation_rejected",
+          "reclaimed_blocks": 0
+        },
+        {
+          "action": "DROP",
+          "at": 1628991.508425528,
+          "checkpoint_id": "task-3-root",
+          "interpretation": "owner overlap: logical DROP is not prefix-sized physical release",
+          "offset": 42.55616082577035,
+          "physical_blocks_reclaimed": 0,
+          "reason": "native_allocation_rejected",
+          "reclaimed_blocks": 0
+        }
+      ]
+    }
+  ]
+}

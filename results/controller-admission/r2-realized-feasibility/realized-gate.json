@@ -1,0 +1,65 @@
+{
+  "schema": "octopus-r2-realized-feasibility-gate-v1",
+  "status": "blocked_value_admission_not_identified",
+  "policy_ready": false,
+  "exact_recorded_native_validation": {
+    "allocations": 20248,
+    "frees": 1696
+  },
+  "cases": [
+    {
+      "seed": 1601,
+      "matched_fixed_FG_savings": 33888,
+      "leading75_FG_recompute": 8464,
+      "leading75_preserved_fraction": 0.7502360717658169,
+      "leading75_BG_recompute_saved": 0,
+      "leading75_FG_savings_sacrificed": 8464,
+      "leading75_net_recompute_reduction_vs_fixed": -8464,
+      "observed_union_FG_recompute": 0,
+      "observed_union_BG_recompute_saved": 13376,
+      "observed_union_max_free_keys": 2954,
+      "observed_union_is_all_KEEP_control": true
+    },
+    {
+      "seed": 1702,
+      "matched_fixed_FG_savings": 33888,
+      "leading75_FG_recompute": 8464,
+      "leading75_preserved_fraction": 0.7502360717658169,
+      "leading75_BG_recompute_saved": 0,
+      "leading75_FG_savings_sacrificed": 8464,
+      "leading75_net_recompute_reduction_vs_fixed": -8464,
+      "observed_union_FG_recompute": 0,
+      "observed_union_BG_recompute_saved": 0,
+      "observed_union_max_free_keys": 2954,
+      "observed_union_is_all_KEEP_control": true
+    }
+  ],
+  "rank_diagnostic_1601": {
+    "window_cached_evictions": 10701,
+    "cached_evictions_after_leading_body_loss": 1199,
+    "extra_older_cached_victims_to_defer_any_body_loss": 1200,
+    "extra_older_cached_victims_to_defer_all_body_loss": 2035,
+    "FG_unique_body_hashes": 2118,
+    "max_FG_donation_for_75pct_matched_savings": 529,
+    "non_root_FG_body_adoptions_before_test": 0,
+    "FG_roots_released_before_BG_body_free": true,
+    "scope": "FIFO/LRU rank diagnostic for the frozen event stream, FG-only donation and no added BG preference; not a universal bound on different policies or changed serving times."
+  },
+  "positive_candidate_headroom_1601": {
+    "minimum_free_minus_native_draw": 28765,
+    "FG_plus_observed_BG_body_keys": 2954,
+    "interpretation": "All positive semantic/history candidates fit with large ordinary-free headroom. The history-union control recovers the BG benefit without rejecting any FG prefix."
+  },
+  "blocking_distinction": [
+    "The real seed1601 opportunity is preserved, not reinterpreted as absent.",
+    "The native prefix-closed75% FG-only counterfactual recovers no BG work; it is not a ready admission rule.",
+    "Confirmed native-adoption history supports a history-aware all-KEEP retention control with100% FG preservation and BG recovery.",
+    "That control supplies no value rejection or binding admission tradeoff and does not demonstrate reduced exposure versus the existing fixed semantic arm. Claiming it as R2 admission would conflate information/candidate expansion with admission.",
+    "No quota or posthoc horizon was introduced to manufacture a passing rejection. A fair history-aware fixed control or a demonstrably scarce eligible-candidate opportunity needs coordinator direction."
+  ],
+  "limits": [
+    "Counterfactual frees, scheduled opportunities and outputs are frozen to the actual fixed trajectory; changed compute is not translated into new GPU times.",
+    "Source replay validates actual hashes, IDs, refcounts, links and adoptions; counterfactual physical IDs are allowed to differ.",
+    "No GPU, policy production code, prospective KEEP/DROP or live-free exposure acceptance was produced."
+  ]
+}

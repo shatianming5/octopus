@@ -1,0 +1,80 @@
+{
+  "schema": "octopus-software-agent7-resource-recovery-quality-v1",
+  "scope_id": "software-agent7-resource-recovery-quality-v1",
+  "frozen_at": "2026-09-16T15:15:00Z",
+  "before_model_outputs": true,
+  "authorization": "The user explicitly authorized one separately prospective same-Lighthouse quality episode for the published V4 resource-recovery and invalid-proposal identity correction.",
+  "claim": "One episode tests source 2ea84cf2e258ac93b2ba41261eedbb81aa9be205. The prior workspace-input episode remains closed QUALITY_FAIL and its 621-byte model patch is not seeded.",
+  "source": {
+    "business_commit": "2ea84cf2e258ac93b2ba41261eedbb81aa9be205",
+    "remote_deployment": "/home/user/octopus-lighthouse-agent7-resource-recovery-v1-20260916",
+    "task_repo_commit": "8d3ed32f37af9ceb8b5778b92a0088384ed057d4",
+    "source_image": "sha256:b8d51faee583632569625837d3f5b1a8a58f19c90f659597bd33234b145f7eae",
+    "base_commit": "a5dbdd2eff4238213dcaad404d0e06d8d5d2489b",
+    "deployment_delta": "Remove only the obsolete OpenHands `Repository root: /testbed.` clarification to preserve the prior actual workspace-input treatment."
+  },
+  "model": {
+    "name": "SWE-Gym/OpenHands-7B-Agent",
+    "revision": "97054e70501d79c27499518af5ce613be6278bcb",
+    "path": "/home/user/octopus-swe-gym-agent7-reference-v1-20260916/model/snapshots/97054e70501d79c27499518af5ce613be6278bcb",
+    "tokenizer_name": "Qwen/Qwen2.5-Coder-7B-Instruct",
+    "tokenizer_revision": "c03e6d358207e414f1eca0bb1891e29f1db0e242",
+    "tokenizer_path": "/home/user/octopus-qwen-coder-reference-v1-20260915/model/snapshots/c03e6d358207e414f1eca0bb1891e29f1db0e242"
+  },
+  "task": {
+    "instance_id": "GoogleChrome__lighthouse-10176",
+    "logical_repo": "GoogleChrome/lighthouse",
+    "uploaded_checkout": "/testbed",
+    "masked_from_model": ["eval.sh", "test.patch", "gold.patch", "hints.md"]
+  },
+  "episode": {
+    "model_episodes_max": 1,
+    "seed": 17,
+    "temperature": 0,
+    "dtype": "bfloat16",
+    "single_method": "apc",
+    "equivalent_single_gpu": true,
+    "max_model_len": 16384,
+    "max_journal_tokens": 8192,
+    "max_actions": 50,
+    "max_output_tokens_per_action": 512,
+    "gpu_episode_timeout_seconds": 1070,
+    "gpu_budget_seconds": 1170,
+    "cpu_evaluator_timeout_seconds": 1800,
+    "cpu_evaluator_budget_seconds": 1800,
+    "phase_gpu_seconds_max": 1200,
+    "environment": {"VLLM_USE_FLASHINFER_SAMPLER": "0"}
+  },
+  "interface": {
+    "decision_format": "openhands_xml_v1",
+    "agent_policy": "failure_aware_v4",
+    "read_output_format": "raw",
+    "edit_feedback": "match_count",
+    "inspection_contract": "bounded_v1",
+    "history_format": "chat_turns_v1",
+    "journal_compaction": "deduplicate_v1",
+    "directory_search_format": "matching_files_v1",
+    "search_pattern_syntax": "regex_v1",
+    "observation_memory": "latest_v1",
+    "preserved_behavior": "Workspace-input, directory, command, parser, verification, feedback and hidden-label behavior remain unchanged.",
+    "only_new_model_visible_delta": "During V4 missing-path recovery, bounded list/search/read/view/find of an existing repository resource may clear recovery only after successful nonempty evidence; mutations, tests, completion and active failure certificates remain blocked. V1-V3 remain root-only.",
+    "journal_identity_delta": "invalid_decision journal identity includes raw proposal text so distinct malformed proposals do not compact as identical; truly identical malformed proposals still compact. This is audit identity, not a quality claim."
+  },
+  "initial_input": {
+    "required_before_inference": true,
+    "compiler": "octopus.context.compile_context",
+    "record": "initial-input-record.json",
+    "validation": "Save the full pinned-tokenizer prompt IDs with the deterministic empty PREFIX_CAPSULE before inference and compare exactly with the first real request. Never rewrite after output."
+  },
+  "quality_gate": "Only original official resolved=true plus a nonempty legitimate product diff is QUALITY_PASS. Developer and official tests remain enabled and hidden labels remain masked.",
+  "stopping": "One terminal official episode or one concrete blocker. On false, retain decisive evidence and do not run another episode.",
+  "required_reporting": [
+    "known-resource recovery use and exact evidence",
+    "raw, canonical, physical and controller counts; first 12 proposals",
+    "valid inspections, edits, tests, finish, product diff and official grade",
+    "state-scoped retries and malformed raw-identity compaction",
+    "feedback, capsule and limit validation",
+    "native token, concurrency, eviction, timing and active-GPU units",
+    "job identity, durable terminal source and exact cleanup"
+  ]
+}

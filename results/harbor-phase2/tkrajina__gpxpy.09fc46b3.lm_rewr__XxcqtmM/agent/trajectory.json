@@ -1,0 +1,106 @@
+{
+  "schema_version": "ATIF-v1.8",
+  "session_id": "tkrajina__gpxpy.09fc46b3.lm_rewr__XxcqtmM__agent",
+  "agent": {
+    "name": "grok-harbor",
+    "version": "1",
+    "model_name": "grok-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "function": {
+          "name": "shell",
+          "description": "Run a bash command in the task container.",
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "source": "user",
+      "message": "IndexError when filtering speed extremes with percentiles\n\n```\nIn [1]: import gpxpy\nIn [2]: gpx = gpxpy.parse(open('korita-zbevnica.gpx'))\nIn [3]: gpx.get_moving_data(speed_extreemes_percentiles=5)\n---------------------------------------------------------------------------\nIndexError                                Traceback (most recent call last)\n<ipython-input-3-a5b3c7d8e9f0> in <module>\n----> 1 gpx.get_moving_data(speed_extreemes_percentiles=5)\n\n/path/to/gpxpy/gpx.py in get_moving_data(self, speed_extreemes_percentiles)\n    XXX in get_moving_data\n        # Filter speed extremes:\n        if speed_extreemes_percentiles > 0:\n            speeds = []\n            for point, speed in all_moving:\n                if speed:\n                    speeds.append(speed)\n            if speeds:\n                speeds.sort()\n                # Here's where the error occurs - using percentile as an integer\n                # when it should be a float between 0 and 1\n                limit = int(len(speeds) * speed_extreemes_percentiles)\n                filtered_speeds = speeds[:-limit]\n                max_speed = filtered_speeds[-1]\n\nIndexError: list index out of range\n```\n\nI was trying to filter out speed extremes when calculating max speed in my GPX track. When I use a percentile value like 5 or 10, I get an IndexError. It seems like the function is treating the percentile as a whole number (5%) rather than a decimal (0.05).\n\nThe error happens when trying to calculate the max speed after filtering out the top percentile of speeds. I expected that using `speed_extreemes_percentiles=5` would filter out the top 5% of speeds, but instead it's causing an index error."
+    },
+    {
+      "step_id": 2,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "I'll inspect the repository and the `get_moving_data` implementation to find why percentile filtering raises IndexError.",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-e5d1293c-dadc-4f3a-b056-46dd464cd576-0",
+          "function_name": "shell",
+          "arguments": {
+            "command": "ls -la /testbed && find /testbed -type f -name \"*.py\" | head -50 && cat /testbed/README.md 2>/dev/null | head -80"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-e5d1293c-dadc-4f3a-b056-46dd464cd576-0",
+            "content": "info\n-rw-r--r-- 1 root root   1070 Jul 14  2025 makefile\n-rwxr-xr-x 1 root root   1516 Jul 14  2025 setup.py\n-rw-r--r-- 1 root root 169770 Jul 14  2025 test.py\ndrwxr-xr-x 2 root root   4096 Jul 14  2025 test_files\ndrwxr-xr-x 2 root root   4096 Jul 14  2025 xsd\n/testbed/gpxpy/geo.py\n/testbed/gpxpy/__init__.py\n/testbed/gpxpy/gpx.py\n/testbed/gpxpy/utils.py\n/testbed/gpxpy/parser.py\n/testbed/gpxpy/gpxfield.py\n/testbed/gpxpy/gpxxml.py\n/testbed/xsd/pretty_print_schemas.py\n/testbed/test.py\n/testbed/setup.py\n/testbed/examples/waypoints_example.py\n/testbed/examples/extension_write_example.py\n[![Run Tests](https://github.com/tkrajina/gpxpy/actions/workflows/test.yml/badge.svg)](https://github.com/tkrajina/gpxpy/actions/workflows/test.yml)\n\n# gpxpy -- GPX file parser\n\nThis is a simple Python library for parsing and manipulating GPX files. GPX is an XML based format for GPS tracks.\n\nYou can see it in action on [my online GPS track editor and organizer](http://www.trackprofiler.com).\n\nThere is also a Golang port of gpxpy: [gpxgo](http://github.com/tkrajina/gpxgo).\n\nSee also [srtm.py](https://github.com/tkrajina/srtm.py) if your track lacks elevation data.\n\n## Usage\n\n```python\nimport gpxpy\nimport gpxpy.gpx\n\n# Parsing an existing file:\n# -------------------------\n\ngpx_file = open('test_files/cerknicko-jezero.gpx', 'r')\n\ngpx = gpxpy.parse(gpx_file)\n\nfor track in gpx.tracks:\n    for segment in track.segments:\n        for point in segment.points:\n            print(f'Point at ({point.latitude},{point.longitude}) -> {point.elevation}')\n\nfor waypoint in gpx.waypoints:\n    print(f'waypoint {waypoint.name} -> ({waypoint.latitude},{waypoint.longitude})')\n\nfor route in gpx.routes:\n    print('Route:')\n    for point in route.points:\n        print(f'Point at ({point.latitude},{point.longitude}) -> {point.elevtion}')\n\n# There are many more utility methods and functions:\n# You can manipulate/add/remove tracks, segments, points, waypoints and routes and\n# get the GPX XML file from the resulting object:\n\nprint('GPX:', gpx.to_xml())\n\n# Creating a new file:\n# --------------------\n\ngpx = gpxpy.gpx.GPX()\n\n# Create first track in our GPX:\ngpx_track = gpxpy.gpx.GPXTrack()\ngpx.tracks.append(gpx_track)\n\n# Create first segment in our GPX track:\ngpx_segment = gpxpy.gpx.GPXTrackSegment()\ngpx_track.segments.append(gpx_segment)\n\n# Create points:\ngpx_segment.points.append(gpxpy.gpx.GPXTrackPoint(2.1234, 5.1234, elevation=1234))\ngpx_segment.points.append(gpxpy.gpx.GPXTrackPoint(2.1235, 5.1235, elevation=1235))\ngpx_segment.points.append(gpxpy.gpx.GPXTrackPoint(2.1236, 5.1236, elevation=1236))\n\n# You can add routes and waypoints, too...\n\nprint('Created GPX:', gpx.to_xml())\n```\n\n## GPX version\n\ngpx.py can parse and generate GPX 1.0 and 1.1 files. The generated file will always be a valid XML document, but it may not be (strictly speaking) a valid GPX document. For example, if you set gpx.email to \"my.email AT mail.com\" the generated GPX tag won't confirm to the regex pattern. And the file won't be valid. Most applications will ignore such errors, but... Be aware of this!\n\nBe aware that the gpxpy object model *is not 100% equivalent* with the underlying GPX XML file schema. That's because the library object model works with both GPX 1.0 and 1.1.\n\nFor example, GPX 1.0 specified a `speed` attribute for every track point, but that was removed in GPX 1.1. If you parse GPX 1.0 and serialize back with `gpx.to_xml()` everything will work fine. But if you have a GPX 1.1 object, changes in the `speed` attribute will be lost after `gpx.to_xml()`. If you want to force using 1.0, you can `gpx.to_xml(version=\"1.0\")`. Another possibility is to use `extensions` to save the speed in GPX 1.1.\n\n## GPX extensions\n\ngpx.py preserves GPX extensions. They are stored as [ElementTree](https://docs.python.org/2/library/xml.etree.elementtree.html#module-xml.etree.ElementTree) DOM objects. Extensions are part of GPX 1.1, and will be ignored when serializing a GPX object in a GPX 1.0 file.\n\n## XML parsing\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 3,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-64332fc8-9804-4fcc-8be8-2778700605cb-1",
+          "function_name": "shell",
+          "arguments": {
+            "command": "rg -n \"get_moving_data|speed_extreemes|speed_extremes|percentiles\" /testbed --type py"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-64332fc8-9804-4fcc-8be8-2778700605cb-1",
+            "content": "bash: line 1: rg: command not found\n"
+          }
+        ]
+      }
+    },
+    {
+      "step_id": 4,
+      "source": "agent",
+      "model_name": "grok-4.6",
+      "message": "shell",
+      "tool_calls": [
+        {
+          "tool_call_id": "call-d2658eaf-8dba-4670-9222-cfc2d28d6370-2",
+          "function_name": "shell",
+          "arguments": {
+            "command": "grep -n \"get_moving_data\\|speed_extreemes\\|speed_extremes\\|percentiles\" /testbed -r --include=\"*.py\""
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "call-d2658eaf-8dba-4670-9222-cfc2d28d6370-2",
+            "content": "/testbed/gpxpy/gpx.py:854:    def get_moving_data(self, stopped_speed_threshold: Optional[float]=None, raw: bool=False, speed_extreemes_percentiles: float=IGNORE_TOP_SPEED_PERCENTILES, ignore_nonstandard_distances: bool = True) -> Optional[MovingData]:\n/testbed/gpxpy/gpx.py:888:            speed_extreemes_percentiles=0\n/testbed/gpxpy/gpx.py:929:            max_speed = mod_geo.calculate_max_speed(speeds_and_distances, speed_extreemes_percentiles, ignore_nonstandard_distances)\n/testbed/gpxpy/gpx.py:1673:    def get_moving_data(self, stopped_speed_threshold: Optional[float]=None, raw: bool=False, speed_extreemes_percentiles: float=IGNORE_TOP_SPEED_PERCENTILES, ignore_nonstandard_distances: bool = True) -> MovingData:\n/testbed/gpxpy/gpx.py:1712:            moving_data = segment.get_moving_data(stopped_speed_threshold, raw, speed_extreemes_percentiles, ignore_nonstandard_distances)\n/testbed/gpxpy/gpx.py:2207:    def get_moving_data(self, stopped_speed_threshold: Optional[float]=None, raw: bool=False, speed_extreemes_percentiles: float=IGNORE_TOP_SPEED_PERCENTILES, ignore_nonstandard_distances: bool=True) -> MovingData:\n/testbed/gpxpy/gpx.py:2220:        moving_time, stopped_time, moving_distance, stopped_distance, max_speed_ms = cloned_gpx.get_moving_data\n/testbed/gpxpy/gpx.py:2236:            track_moving_time, track_stopped_time, track_moving_distance, track_stopped_distance, track_max_speed = track.get_moving_data(stopped_speed_threshold, raw=raw, speed_extreemes_percentiles=speed_extreemes_percentiles, ignore_nonstandard_distances=ignore_nonstandard_distances)\n/testbed/test.py:574:        moving_time, stopped_time, moving_distance, stopped_distance, max_speed = gpx.get_moving_data(stopped_speed_threshold=0.1)\n/testbed/test.py:906:    def test_speed_ignore_top_speed_percentiles(self) -> None:\n/testbed/test.py:909:        moving_data_1 = gpx.get_moving_data()\n/testbed/test.py:910:        moving_data_2 = gpx.get_moving_data(speed_extreemes_percentiles=0.05)\n/testbed/test.py:914:            data_1 = gpx.get_moving_data(speed_extreemes_percentiles=0.1*(i-1))\n/testbed/test.py:915:            data_2 = gpx.get_moving_data(speed_extreemes_percentiles=0.1*i)\n/testbed/test.py:923:            raw_moving_data = gpx.get_moving_data(speed_extreemes_percentiles=0, ignore_nonstandard_distances=False)\n/testbed/test.py:1121:        moving_data = gpx.get_moving_data()\n/testbed/test.py:1122:        moving_time, stopped_time, moving_distance, stopped_distance, max_speed = gpx.get_moving_data()\n/testbed/test.py:1336:        moving_time, stopped_time, moving_distance, stopped_distance, max_speed_with_too_small_segment = gpx.get_moving_data()\n/testbed/test.py:1350:        moving_time, stopped_time, moving_distance, stopped_distance, max_speed_with_equal_speeds = gpx.get_moving_data()\n/testbed/test.py:1360:        moving_time, stopped_time, moving_distance, stopped_distance, max_speed_with_extreemes = gpx.get_moving_data()\n/testbed/test.py:1373:        moving_time, stopped_time, moving_distance, stopped_distance, max_speed_with_more_extreemes = gpx.get_moving_data()\n"
+          }
+        ]
+      }
+    }
+  ]
+}

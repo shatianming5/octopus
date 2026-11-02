@@ -1,0 +1,45 @@
+{
+  "study_id": "semantic-control-repair-gpu",
+  "kind": "minimal_gpu_confirmation",
+  "authorized_at_utc": "2026-09-09T00:58:14Z",
+  "policy_commit": "fd582d0126958aa1a056e65684d0e31d7f7f1276",
+  "branch": "feat/semantic-control-repair",
+  "parent_protocol": "results/checkpoint-admission/repair-device/real-tool-gpu6-protocol.json",
+  "config_path": "results/semantic-control-repair-gpu/real-tool-gpu6-protocol.json",
+  "reused_calibration": {
+    "calibration_id": "independent-seed707-cuda-apc-v2-gpu6-independent-cost",
+    "source": "results/checkpoint-admission/repair-device/gpu6-cost-calibration.json",
+    "real_tool_priors_source": "results/checkpoint-admission/repair-device/real-tool-gpu6-protocol.json",
+    "reuse_condition": "same host 7443-5x4090-68, RTX 4090D, driver 570.133.20, GPU-aa7be32a-43d1-b13e-45dd-ef46033f7631, Qwen2.5-7B-Instruct a09a35458c702b33eeacc393d103063234e8bc28, 512 MiB tight_burst"
+  },
+  "lifecycle": {
+    "selector": "tests/test_gpu_admission.py::test_semantic_soft_gpu_preemption_consumer_binding_and_no_lease",
+    "only_new_case": true,
+    "unit_test_calibration": "lifecycle correctness only; not benchmark GPU calibration"
+  },
+  "matched_block": {
+    "mode": "real_tool",
+    "condition": "tight_burst",
+    "seed": 101,
+    "methods_in_order": [
+      "apc",
+      "queue_aware",
+      "semantic_soft"
+    ],
+    "background_requests": 96,
+    "foreground_tasks": 4,
+    "phase": "main",
+    "trace_timeout_seconds": 600,
+    "slo_relative_p95_limit": 0.05,
+    "seed_role": "diagnostic/design fixture; not held-out or general performance evidence",
+    "fresh_process_per_trace": true,
+    "same_physical_gpu": true
+  },
+  "non_goals": [
+    "no 81-trace rerun",
+    "no extra seeds/sweep/tuning",
+    "no predictor training",
+    "no cumulative walltime cap beyond per-trace 600s",
+    "do not treat old 81-row cost_greedy as this block"
+  ]
+}

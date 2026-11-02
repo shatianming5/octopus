@@ -1,0 +1,16 @@
+ckpt       n      y  fork  M1 paired vs base        M2 main-first           
+base     119  0.334   53%  -                        -0.049±0.067 n=56       
+s40      120  0.345   52%  +0.014±0.042 n=119       -0.009±0.063 n=57       
+pooled late M2 (steps 40): -0.009±0.063 n=57
+
+M3' by bundle size (tasks): fork rate, M2 main-first
+ckpt                            1-3                         4-7                        8-11                       12-16
+base     29%       +0.083±0.163 n=4  53%      -0.086±0.170 n=15  67%      -0.045±0.087 n=29  38%       -0.059±0.136 n=8
+s40      36%       -0.167±0.207 n=5  60%      +0.027±0.132 n=16  46%      +0.001±0.113 n=23  67%      -0.009±0.062 n=13
+
+M4 fork / control critical path over main-first pairs: median ratio, share fork faster; y per hour of wall
+ckpt    pairs       wall     tokens    y/h
+base       56  0.68  80%  0.59  82%   1.51
+s40        57  0.90  56%  0.78  70%   1.56
+
+best checkpoint: s40 (rule: max M1 among done steps with M2 95% CI upper bound >= 0)

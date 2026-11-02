@@ -1,0 +1,5 @@
+{
+  "instance_id": "GoogleChrome__lighthouse-10176",
+  "model_name_or_path": "octopus-software-agent7-lighthouse-reference",
+  "model_patch": "diff --git a/lighthouse-core/lib/stack-collector.js b/lighthouse-core/lib/stack-collector.js\nindex 8fd8633..051f3ca 100644\n--- a/lighthouse-core/lib/stack-collector.js\n+++ b/lighthouse-core/lib/stack-collector.js\n@@ -79,7 +79,9 @@ async function collectStacks(passContext) {\n   /** @type {JSLibrary[]} */\n   const jsLibraries = await passContext.driver.evaluateAsync(expression);\n \n-  return jsLibraries.map(lib => ({\n+  return jsLibraries.filter((lib, index, self) =>\n+    index === self.findIndex(t => t.id === lib.id)\n+  ).map(lib => ({\n     detector: /** @type {'js'} */ ('js'),\n     id: lib.id,\n     name: lib.name,\n"
+}
