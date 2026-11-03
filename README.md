@@ -18,7 +18,6 @@
 </p>
 
 <p>
-  <a href="https://shatianming5.github.io/octopus/"><img src="https://img.shields.io/badge/Project-Page-c44732?style=flat-square&logo=googlechrome&logoColor=white" alt="Project Page" /></a>
   <a href="paper/Octopus.pdf"><img src="https://img.shields.io/badge/Paper-PDF-b31b1b?style=flat-square&logo=adobeacrobatreader&logoColor=white" alt="Paper PDF" /></a>
   <a href="https://huggingface.co/datasets/Tommysha/octopus-train"><img src="https://img.shields.io/badge/HuggingFace-Tommysha%2Foctopus--train-fcd022?style=flat-square&logo=huggingface&logoColor=black" alt="HuggingFace Dataset" /></a>
   <a href="#supported-architectures"><img src="https://img.shields.io/badge/Architectures-Qwen3.5%20%7C%20Qwen3%20%7C%20Llama--3%20%7C%20Granite--4.0--H-0d9488?style=flat-square" alt="Supported Architectures" /></a>
@@ -33,7 +32,7 @@
   <img src="assets/fig1_overview.png" alt="Octopus Overview: Flat Long Context vs. Context Virtualization over a GPU-Resident DAG" width="98%" />
 </p>
 
-**Octopus** is a co-designed serving runtime, GPU memory manager, and reinforcement learning (RL) framework that replaces flat, append-only agent transcripts with a **stateful, GPU-resident execution DAG**. Instead of cramming parallel hypotheses and dead-end detours into one linear context window—or relying on stateless client-side multi-agent harnesses that duplicate shared prefixes and hijack recurrent states—Octopus executes episodes over immutable radix KV cursors via five primitives (`fork`, `rewind`, `read_thread`, `wait`, and `done`) and trains policies end-to-end with **1D Packed `DAG-GRPO`**.
+**Octopus** is a co-designed serving runtime, GPU memory manager, and reinforcement learning (RL) framework that replaces flat, append-only agent transcripts with a **stateful, GPU-resident execution DAG**. Instead of cramming parallel hypotheses and dead-end detours into one linear context window—or relying on stateless client-side multi-agent harnesses that duplicate shared prefixes and hijack recurrent states—Octopus executes episodes over immutable radix KV cursors via five primitives (`fork`, `rewind`, `read_thread`, `wait`, and `done`) and trains policies end-to-end with **Prefix-Tree Packed `DAG-GRPO`**.
 
 ---
 
@@ -41,8 +40,8 @@
 
 - **GPU-Resident Execution DAG (`89.6%` Live GPU KV Hit Rate):** Branches fork in $\mathcal{O}(1)$ zero copy with isolated `32K` context budgets and backtrack via exact hybrid recurrent checkpoint restoration—reusing **89.59%** of prompt tokens directly on GPU across `447,993` H200 prefill batches, cutting wire traffic by **98.3%** (`662.3 → 11.5 MB`), and accelerating `128K` prompt assembly by **249×** (`358.5 → 1.44 ms`).
 - **Hijack-Free Cross-Branch KV Mounting (`92.2%` Info Retention, `21×` Lower Hijacking):** To share findings across branches without overwriting recurrent working memory (`GDN` / `Mamba-2`), `read_thread` splices sibling KV pages in zero copy **exclusively into full-attention layers** under monotonic position offsets ($s(c'_B) = \max(p_B, e_A + 1)$) while recurrent layers skip mounted spans—retaining **92.2%** answer information and cutting off-task hijacking from **57.9%** to **2.7%** with **0 extra KV pages**.
-- **Differentiable 1D Packed `DAG-GRPO` (`32×` Lower KL, `8.1×` Avg / `11.1×` Peak Token Scaling):** Deduplicates shared prefixes into a single 1D token stream via single-ownership masking while keeping mounted KV edges live in the forward–backward graph, holding rollout–training divergence at $\mathrm{KL}(\pi_{\text{rollout}} \parallel \pi_\theta) = 4.45 \times 10^{-4}$ (vs. `0.0142` without mounts) and routing reader policy gradients directly into producer KV projections.
-- **Emergent Commander–Mesh Hierarchy & `4B` Frontier Dominance:** Trained on **Qwen3.5-4B** under **pure binary `0/1` outcome rewards** and **sparse BM25** (zero process shaping), Octopus undergoes a Step-15 phase transition into a sub-critical recursive hierarchy ($\mu < 1$) and lateral peer-to-peer KV mesh—reaching **49.6%** on **BrowseComp-Plus** (**+17.5 pts** over `143K` single-agent GRPO; **−21.7 pts** when test-time `fork` is disabled on the same weights) and **51.2%** on **OpenResearcher**, outperforming dense-retriever systems up to **250×** larger.
+- **Differentiable Prefix-Tree Packed `DAG-GRPO` (`32×` Lower KL, `8.1×` Avg / `11.1×` Peak Token Scaling):** Deduplicates shared prefixes into a single packed token stream via prefix-deduplicating loss masks while keeping mounted KV edges live in the forward–backward graph, holding rollout–training divergence at $\mathrm{KL}(\pi_{\text{rollout}} \parallel \pi_\theta) = 4.45 \times 10^{-4}$ (vs. `0.0142` without mounts) and routing reader policy gradients directly into producer KV projections.
+- **Emergent Recursive Coordination & `4B` Frontier Dominance:** Trained on **Qwen3.5-4B** under **pure binary `0/1` outcome rewards** and **sparse BM25** (zero process shaping), Octopus undergoes a Step-15 phase transition into a sub-critical recursive hierarchy ($\mu < 1$) and lateral peer-to-peer KV mesh—reaching **49.6%** on **BrowseComp-Plus** (**+17.5 pts** over `143K` single-agent GRPO; **−21.7 pts** when test-time `fork` is disabled on the same weights) and **51.2%** on **OpenResearcher**, outperforming dense-retriever systems up to **250×** larger.
 
 ---
 
@@ -75,7 +74,7 @@
 ### 3. Multi-Agent Collective Scaling & Emergent Step-15 Phase Transition
 
 <p align="center">
-  <img src="assets/fig_exp3_agent_scaling.png" alt="Collective Scaling, Causal Fork Knockout, and Emergent Division of Labor" width="96%" />
+  <img src="assets/fig_exp3_agent_scaling.png" alt="Collective Scaling, Test-Time Fork Ablation, and Emergent Division of Labor" width="96%" />
 </p>
 
 ---
@@ -94,12 +93,12 @@
 
 ### Supported Architectures
 
-Octopus integrates dense, sparse-MoE, and hybrid recurrent-attention families across both SGLang serving and 1D packed `DAG-GRPO` training via a declarative hook registry (`octopus/rl/model_hooks.py`, `lora_targets.py`, `seq_tiles.py`):
+Octopus integrates dense, sparse-MoE, and hybrid recurrent-attention families across both SGLang serving and prefix-tree packed `DAG-GRPO` training via a declarative hook registry (`octopus/rl/model_hooks.py`, `lora_targets.py`, `seq_tiles.py`):
 
-| Model Family | Layer Topology | Serving KV Mount & State Hook | 1D Prefix-Tree Training & LoRA Hook |
+| Model Family | Layer Topology | Serving KV Mount & State Hook | Prefix-Tree Packed Training & LoRA Hook |
 | :--- | :--- | :--- | :--- |
 | **`Qwen3` / `Llama-3` (Dense)** | $L$ Full-Attn + SwiGLU ($\mathcal{L}_{\text{rec}} = \emptyset$) | Middle-layer sparse mount (`OCTOPUS_MOUNT_LAYERS`, e.g., `9/36` layers, `96.9%` argmax agreement) | `CONV_CONTEXT = 0`; split mounted vs. unmounted varlen FlashAttention passes |
-| **`Qwen3-MoE`** | $L$ Full-Attn + Top-$K$ MoE ($K=8$) | Attention-only Radix KV mount; `0` expert state copy on `fork`/`rewind` | 1D deduplicated tree tokens batched into a single grouped MoE GEMM |
+| **`Qwen3-MoE`** | $L$ Full-Attn + Top-$K$ MoE ($K=8$) | Attention-only Radix KV mount; `0` expert state copy on `fork`/`rewind` | Deduplicated prefix-tree tokens batched into a single grouped MoE GEMM |
 | **`Qwen3.5` (Dense & MoE)** | `24` Gated DeltaNet + `8` Gated Full-Attn | All `8` Full-Attn layers 0-copy mount; `24` GDN layers clone/restore $\mathbf{h}_k$ & skip mounts | `CONV_CONTEXT = 3` (`tree_conv`) + `fla` `chunk_gated_delta_rule` + `16K` activation tiling + fused `in_proj_qkvz` LoRA |
 | **`Granite-4.0-H`** | Mamba-2 SSD + GQA Full-Attn + MoE | Transitive $X \leadsto A \leadsto C$ Attn KV mount (`98.5%` agreement); Mamba-2 state skips mounts | `CONV_CONTEXT = d_conv - 1`; Mamba-2 SSD mapped to `fla` `chunk_simple_gla` + patched Mamba `out_proj` LoRA |
 
@@ -111,7 +110,7 @@ Octopus integrates dense, sparse-MoE, and hybrid recurrent-attention families ac
 octopus/
   runtime/       Fork-tree execution runtime (tree.py: CursorRuntime), single-thread loop (core.py), OCTOPUS_* settings
   serving/       Server-resident cursor protocol (delta_render, cursor_store, cursor_audit) & attention-only KV mount (kv_mount)
-  rl/            1D Packed DAG-GRPO trainer on AReaL: workflow / group (R = 2y - 1), prefix_tree actor, model_hooks, LoRA, proxy
+  rl/            Prefix-Tree Packed DAG-GRPO trainer on AReaL: workflow / group (R = 2y - 1), prefix_tree actor, model_hooks, LoRA, proxy
   envs/search/   Offline deep-search environment (OpenResearcher training & BrowseComp-Plus evaluation, BM25 / reader service)
   envs/swe/      Containerized multi-task SWE environment on Harbor (udocker / Singularity, coupled task bundles)
   eval/          Evaluation harnesses: search_dev_eval (Validation & BrowseComp-Plus), bcp, dev_eval (SWE)
@@ -121,10 +120,7 @@ patches/         SGLang 0.5.19 & AReaL overlays for server-resident cursors, zer
 baselines/       External KV-sharing & multi-agent baseline reproductions (Route A cross-architecture KV-mount probes)
 tests/           Unit & GPU integration test suites (pytest)
 docs/            Detailed protocol specifications and systems design documents
-paper/           Technical report: PDF (Octopus.pdf) and its Overleaf LaTeX source (main.tex, figures/, scripts/)
-results/         Experiment records and reports, one directory per run (index: results/README.md)
-data/            Small dataset splits and manifests (search split, SWE task bundles)
-assets/          Figures used in this README
+paper/           Full technical report PDF (Octopus.pdf)
 ```
 
 Module imports enforce a strict acyclic layering (`runtime / serving ← rl ← envs ← eval ← tools`, with `envs.swe` and `envs.search` mutually isolated), verified automatically via `python scripts/import_graph.py`.
@@ -175,12 +171,12 @@ $ROOT/areal/.venv/bin/python -m octopus.envs.search.service serve \
   --workers 8
 ```
 
-### 3. Training with 1D Packed `DAG-GRPO`
+### 3. Training with Prefix-Tree Packed `DAG-GRPO`
 
 ```bash
 source $ROOT/harbor/scripts/env.sh
 
-# Launch SGLang cursor/mount rollout servers + AReaL 1D prefix-tree DAG-GRPO trainer
+# Launch SGLang cursor/mount rollout servers + AReaL prefix-tree packed DAG-GRPO trainer
 RL_ENV_FILE=scripts/rl_env/rl_run.search.env scripts/rl_env/rl_run.sh start search-run
 
 # Check live training & KV-pool admission status, or stop cleanly
@@ -209,12 +205,12 @@ OCTOPUS_SEARCH_URL=http://127.0.0.1:8000 \
 
 | Document | Scope |
 | :--- | :--- |
-| **[`paper/Octopus.pdf`](paper/Octopus.pdf)** | Full technical report (*Octopus: One Brain, Many Branches for Latent-KV Multi-Agent Reinforcement Learning*); LaTeX source in `paper/` (`main.tex`, `figures/`, figure scripts in `scripts/`) |
+| **[`paper/Octopus.pdf`](paper/Octopus.pdf)** | Full technical report (*Octopus: One Brain, Many Branches for Latent-KV Multi-Agent Reinforcement Learning*) |
 | [`docs/cursor-protocol.md`](docs/cursor-protocol.md) | Server-resident cursor protocol, cross-family chat-template delta probing, SGLang/AReaL patches, and KV mounting |
-| [`docs/cross-branch-read.md`](docs/cross-branch-read.md) | `read_thread` runtime execution and differentiable 1D prefix-tree + mounted-KV forward/backward pass |
-| [`docs/rl-plan-episodes.md`](docs/rl-plan-episodes.md) | Tree/DAG episode RL dataflow, outcome rewards ($R = 2y - 1$), fork/close contracts, and `rewind` credit |
+| [`docs/cross-branch-read.md`](docs/cross-branch-read.md) | `read_thread` runtime execution and differentiable prefix-tree packed + mounted-KV forward/backward pass |
+| [`docs/rl-plan-episodes.md`](docs/rl-plan-episodes.md) | Tree/DAG episode RL dataflow, outcome rewards ($R = 2y - 1$), fork/done protocol, and `rewind` credit |
 | [`docs/search-env.md`](docs/search-env.md) | Deep-search environment protocol, BrowseComp-Plus parity, and KV-aware episode admission (`OCTOPUS_ROUTE_KV`) |
-| [`docs/trainer-memory.md`](docs/trainer-memory.md) | 1D prefix-tree memory layout, `16K` sequence tiling, pinned-host activation slabs, and `chunk_major` FSDP2 execution |
+| [`docs/trainer-memory.md`](docs/trainer-memory.md) | Prefix-tree packed memory layout, `16K` sequence tiling, pinned-host activation slabs, and `chunk_major` FSDP2 execution |
 | [`docs/kv-read-probe.md`](docs/kv-read-probe.md) | Counterfactual probe suite comparing attention-only monotonic KV mounting against text copy, full splice, and RoPE relocation |
 | [`docs/search-read-hijack.md`](docs/search-read-hijack.md) | Live blind-judge off-task hijacking audit and counterfactual SGLang mount diagnostics |
 | [`docs/ablations.md`](docs/ablations.md) | Tree width ($W_{\max}$) and recursive depth ($D_{\max}$) scaling ablations |
@@ -235,7 +231,3 @@ If you find Octopus useful in your research or agent systems, please cite our te
   note    = {Technical Report}
 }
 ```
-
-## License
-
-Apache License 2.0; see [`LICENSE`](LICENSE). The SGLang and AReaL overlays in `patches/` modify Apache-2.0 projects and keep their terms.
