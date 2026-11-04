@@ -19,7 +19,8 @@
 
 <p>
   <a href="paper/Octopus.pdf"><img src="https://img.shields.io/badge/Paper-PDF-b31b1b?style=flat-square&logo=adobeacrobatreader&logoColor=white" alt="Paper PDF" /></a>
-  <a href="https://huggingface.co/datasets/Tommysha/octopus-train"><img src="https://img.shields.io/badge/HuggingFace-Tommysha%2Foctopus--train-fcd022?style=flat-square&logo=huggingface&logoColor=black" alt="HuggingFace Dataset" /></a>
+  <a href="https://huggingface.co/Tommysha/Octopus-Qwen3.5-4B"><img src="https://img.shields.io/badge/Model_Weights-Tommysha%2FOctopus--Qwen3.5--4B-fcd022?style=flat-square&logo=huggingface&logoColor=black" alt="HuggingFace Model Weights" /></a>
+  <a href="https://huggingface.co/datasets/Tommysha/octopus-train"><img src="https://img.shields.io/badge/Dataset_%26_Env-Tommysha%2Foctopus--train-fcd022?style=flat-square&logo=huggingface&logoColor=black" alt="HuggingFace Dataset" /></a>
   <a href="#supported-architectures"><img src="https://img.shields.io/badge/Architectures-Qwen3.5%20%7C%20Qwen3%20%7C%20Llama--3%20%7C%20Granite--4.0--H-0d9488?style=flat-square" alt="Supported Architectures" /></a>
   <a href="#quickstart"><img src="https://img.shields.io/badge/Runtime-SGLang%20%2B%20AReaL%20DAG--GRPO-2563eb?style=flat-square" alt="Runtime" /></a>
 </p>
@@ -131,7 +132,7 @@ Module imports enforce a strict acyclic layering (`runtime / serving ← rl ← 
 
 ### 1. Environment Setup & Automated Deployment
 
-Pre-packaged environments, SGLang/AReaL cursor-mount overlays, Harbor task bundles, and pre-built BM25 indices (`OpenResearcher` + `BrowseComp-Plus`) are hosted on HuggingFace at [`Tommysha/octopus-train`](https://huggingface.co/datasets/Tommysha/octopus-train) (`code` branch: ~330 MB; `search` branch: ~57 GB).
+Trained **Octopus-Qwen3.5-4B** Step-45 (`DAG-GRPO` Rank-64 LoRA) weights are hosted at [`Tommysha/Octopus-Qwen3.5-4B`](https://huggingface.co/Tommysha/Octopus-Qwen3.5-4B), and pre-packaged environments, SGLang/AReaL cursor-mount overlays, Harbor task bundles, and pre-built BM25 indices (`OpenResearcher` + `BrowseComp-Plus`) are hosted at [`Tommysha/octopus-train`](https://huggingface.co/datasets/Tommysha/octopus-train) (`code` branch: ~330 MB; `search` branch: ~57 GB).
 
 **Prerequisites:** Linux `x86_64` (or `aarch64` GB200 via `scripts/beta/install_env.sh`), NVIDIA driver supporting CUDA 12.9, `git`, `curl`, `patch`, `gcc`, and `fusermount3` (`/dev/fuse`; root/Docker not required).
 
@@ -186,8 +187,11 @@ RL_ENV_FILE=scripts/rl_env/rl_run.search.env scripts/rl_env/rl_run.sh status sea
 ### 4. Evaluating Branching Agents
 
 ```bash
+# Download the trained Step-45 Rank-64 LoRA adapter from HuggingFace
+hf download Tommysha/Octopus-Qwen3.5-4B --local-dir $ROOT/models/Octopus-Qwen3.5-4B
+
 # Start SGLang evaluation servers with trained LoRA adapter(s)
-scripts/rl_env/eval_serve.sh start 0,1,2,3 rq1-v45=/path/to/adapter
+scripts/rl_env/eval_serve.sh start 0,1,2,3 rq1-v45=$ROOT/models/Octopus-Qwen3.5-4B
 
 # Evaluate on BrowseComp-Plus (830 queries) or OpenResearcher Validation (500 queries)
 OCTOPUS_SEARCH_URL=http://127.0.0.1:8000 \
